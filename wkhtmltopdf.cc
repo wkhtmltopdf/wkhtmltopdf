@@ -28,10 +28,12 @@ void WKHtmlToPdf::run(int argc, char ** argv) {
 	v.load(url);
 	out = argv[2];
 	connect(&v, SIGNAL(loadProgress(int)), this, SLOT(loadProgress(int)));
-	connect(&v, SIGNAL(loadFinished()), this, SLOT(loadFinished()));
+	connect(&v, SIGNAL(loadFinished()), this, SLOT(loadFinished_()));
+	connect(&v, SIGNAL(loadFinished(bool)), this, SLOT(loadFinished(bool)));
 }
+void WKHtmlToPdf::_loadFinished() {loadFinished(true);}
 
-void WKHtmlToPdf::loadFinished() {
+void WKHtmlToPdf::loadFinished(bool ok) {
 	printf("Outputting page       \r");
 	fflush(stdout);
 	QPrinter p(QPrinter::HighResolution);

@@ -25,7 +25,8 @@ public:
 	char * out;
 	void run(int argc, char** argv);
 public slots:
-	void loadFinished();
+	void loadFinished(bool ok);
+	void _loadFinished();
 	void loadProgress(int progress);
 };
 #endif //__wkhtmltopdf_hh__
