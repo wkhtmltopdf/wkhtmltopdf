@@ -28,7 +28,7 @@ void WKHtmlToPdf::run(int argc, char ** argv) {
 	v.load(url);
 	out = argv[2];
 	connect(&v, SIGNAL(loadProgress(int)), this, SLOT(loadProgress(int)));
-	connect(&v, SIGNAL(loadFinished()), this, SLOT(loadFinished_()));
+	//connect(&v, SIGNAL(loadFinished()), this, SLOT(loadFinished_())); only used in qt 4.4 release candidates
 	connect(&v, SIGNAL(loadFinished(bool)), this, SLOT(loadFinished(bool)));
 }
 void WKHtmlToPdf::_loadFinished() {loadFinished(true);}
