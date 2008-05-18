@@ -18,15 +18,18 @@
 #include <QObject>
 #include <QtGui>
 #include <QWebView>
+
+//Class responsible for the convertion
 class WKHtmlToPdf : public QObject {
 	Q_OBJECT
 public:
-	QWebView v;
+	//The webview is used to fetch and render the webpage using webkit
+	QWebView v; 
+	//out is the path of the output file
 	char * out;
 	void run(int argc, char** argv);
 public slots:
 	void loadFinished(bool ok);
-	void _loadFinished();
 	void loadProgress(int progress);
 };
 #endif //__wkhtmltopdf_hh__

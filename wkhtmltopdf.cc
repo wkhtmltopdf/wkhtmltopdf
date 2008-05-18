@@ -17,6 +17,7 @@
 QApplication * app;
 
 void WKHtmlToPdf::run(int argc, char ** argv) {
+	//If the number of arguments is incorrect, print out usage information
 	if(argc != 3) {
 		fprintf(stderr,
 				"Usage: wkhtmltopdf <input file> <output file>\n"
@@ -24,35 +25,51 @@ void WKHtmlToPdf::run(int argc, char ** argv) {
 				"\t<output file> Name of ps or pdf file to be produced\n");
 		exit(1);
 	}
-	QUrl url(argv[1]);
-	v.load(url);
+	//Store the name of the output file
 	out = argv[2];
+	//Make a url of the input file
+	QUrl url(argv[1]);
+	//When loading is progressing we want loadProgress to be called
 	connect(&v, SIGNAL(loadProgress(int)), this, SLOT(loadProgress(int)));
-	//connect(&v, SIGNAL(loadFinished()), this, SLOT(loadFinished_())); only used in qt 4.4 release candidates
+	//Once the loading is done we want loadFinished to be called
 	connect(&v, SIGNAL(loadFinished(bool)), this, SLOT(loadFinished(bool)));
+	//Tell the vebview to load for the newly created url
+	v.load(url);
 }
-void WKHtmlToPdf::_loadFinished() {loadFinished(true);}
 
 void WKHtmlToPdf::loadFinished(bool ok) {
+	if(!ok) {
+		//It went bad, return with 1
+		printf("Failed loading page\n");
+		app->exit(1);
+		return;
+	}
+	//Print out that it went good
 	printf("Outputting page       \r");
 	fflush(stdout);
+	//Construct a printer object used to print the html to pdf
 	QPrinter p(QPrinter::HighResolution);
+	//Tell the printer object to print the file <out>
 	p.setOutputFileName(out);
+	//Tell the printer object that we use A4 paper
 	p.setPaperSize(QPrinter::A4);
+	//Do the actual printing
 	v.print(&p);
+	//Inform the user that everything went well
 	printf("Done                 \n");
 	app->quit();
 }
 
 void WKHtmlToPdf::loadProgress(int progress) {
+	//Print out the load status
 	printf("Loading page: %d%%   \r",progress);
 	fflush(stdout);
 }
 
 int main(int argc, char * argv[]) {
-	QApplication a(argc,argv);
+	QApplication a(argc,argv); //Construct application, required for printing
 	app = &a;
-	WKHtmlToPdf x;
-	x.run(argc,argv);
-	return a.exec();
+	WKHtmlToPdf x; //Create convertion instance
+	x.run(argc,argv); //Run convertion
+	return a.exec(); //Wait for application to terminate
 }
