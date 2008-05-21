@@ -13,22 +13,161 @@
 // You should have received a copy of the GNU General Public License
 // along with wkhtmltopdf.  If not, see <http://www.gnu.org/licenses/>.
 
+#include <string.h>
 #include "wkhtmltopdf.hh"
 QApplication * app;
 
-void WKHtmlToPdf::run(int argc, char ** argv) {
-	//If the number of arguments is incorrect, print out usage information
-	if(argc != 3) {
-		fprintf(stderr,
-				"Usage: wkhtmltopdf <input file> <output file>\n"
-				"\t<input file>  URL or local path to html document\n"
-				"\t<output file> Name of ps or pdf file to be produced\n");
-		exit(1);
+void WKHtmlToPdf::usage(FILE * fd) {
+	fprintf(fd,
+"Usage: wkhtmltopdf [OPTION]... [<input file> [<output file>]]\n"
+"converts a html page to pdf, if no <output file> is specified\n"
+"/dev/stdout is used, simular for <input file>.\n"
+"\n"
+"Options:\n"
+"  -h, --help             print this help.\n"
+"  -q, --quiet            be less verbose.\n"
+"  -i, --input <url>      use url as input.\n"
+"  -o, --output <url>     use url as output.\n"
+"  -p, --proxy <proxy>    use a proxy.\n"
+"\n"
+"Proxy:\n"
+"  By default proxyinformation will be read from the environment\n"
+"  variables: proxy, all_proxy and http_proxy, proxy options can\n"
+"  also by specified with the -p switch\n"
+"  <type> := \"http://\" | \"socks5://\"\n" 
+"  <userinfo> := <username> (\":\" <password>)? \"@\"\n"
+"  <proxy> := \"None\" | <type>? <userinfo>? <host> (\":\" <port>)?\n"
+"\n"
+"Mail bug reports and suggestions to <antialze@gmail.com>.\n"
+		);
+}
+
+void WKHtmlToPdf::setProxy(const char * proxy) {
+	//Allow users to use no proxy, even if one is specified in the env
+	if(!strcmp(proxy,"none")) {proxyHost = NULL;return;}
+
+	//Read proxy type bit "http://" or "socks5://"
+	proxyType = QNetworkProxy::HttpProxy;
+	if(!strncmp(proxy,"http://",7)) 
+		proxy += 7;
+	else if(!strncmp(proxy,"socks5://",8)) {
+		proxyType = QNetworkProxy::Socks5Proxy;
+		proxy += 8;
+	}	
+	//Read username and password
+	char * val = strchr(proxy,'@');
+	proxyUser = proxyPassword = NULL;
+	if(val != NULL) {
+		char * leak = (char*)malloc(val-proxy+1);
+		memcpy(leak,proxy,val-proxy);
+		leak[val-proxy] = 0;
+		proxy = val+1;
+		proxyUser = leak;
+		val = strchr(leak,':');
+		if(val) { //There is a password
+			val[0] = '\0';
+			proxyPassword = val+1;
+		}
 	}
-	//Store the name of the output file
-	out = argv[2];
+	//Read hostname and port
+	val = strchr(proxy,':');
+	proxyPort = 1080;
+	if(val == NULL) proxyHost = proxy;
+	else {
+		char * leak = (char*)malloc(val-proxy+1);
+		memcpy(leak,proxy,val-proxy);
+		leak[val-proxy] = 0;
+		proxyHost = leak;
+		proxyPort = atoi(val);
+	}
+}
+
+void WKHtmlToPdf::parseArgs(int argc, const char ** argv) {
+	int x=0;
+	char * val;
+	//Load default configuration
+	in = "/dev/stdin";
+	out = "/dev/stdout";
+	proxyHost = NULL;
+	quiet = false;
+
+	//Load configuration from enviornment
+	if((val = getenv("proxy"))) setProxy(val);
+	if((val = getenv("all_proxy"))) setProxy(val);
+	if((val = getenv("http_proxy"))) setProxy(val);
+	
+	//QNetworkProxy::NoProxy;
+	for(int i=1; i < argc; ++i) {
+		if(argv[i][0] != '-') {
+			//Default arguments
+			++x;
+			if(x==1) in = argv[i];
+			else if(x == 2)	out = argv[i];
+			else {usage(stderr);exit(1);}
+			continue;
+		}
+		if(argv[i][1] == '-') { //Long style arguments
+			if(!strcmp(argv[i],"--help")) {
+				usage(stdout); exit(0);
+			} else if(!strcmp(argv[i],"--quiet")) {
+				quiet = true;
+			} else if(!strcmp(argv[i],"--input")) {
+				if(i+1>= argc) {usage(stderr);exit(1);}
+				in = argv[++i];
+			} else if(!strcmp(argv[i],"--output")) {
+				if(i+1>= argc) {usage(stderr);exit(1);}
+				out = argv[++i];
+			} else if(!strcmp(argv[i],"--proxy")) {
+				if(i+1>= argc) {usage(stderr);exit(1);}
+				setProxy(argv[++i]);
+			} else {usage(stderr);exit(1);}
+			continue;
+		}
+		//Short style arguments
+		int c=i;
+		for(int j=1; argv[c][j] != '\0'; ++j) {
+			switch(argv[c][j]) {
+			case 'h':
+				usage(stdout); exit(0);
+			case 'i':
+				if(i+1>= argc) {usage(stderr);exit(1);}
+				in = argv[++i];
+				break;
+			case 'q':
+				quiet=true;
+				break;
+			case 'o':
+				if(i+1>= argc) {usage(stderr);exit(1);}
+				out = argv[++i];
+				break;
+			case 'p':
+				if(i+1>= argc) {usage(stderr);exit(1);}
+				setProxy(argv[++i]);
+				break;
+			default:
+				usage(stderr);exit(1);}
+		}
+	}
+}
+
+void WKHtmlToPdf::run(int argc, const char ** argv) {
+	//Parse the arguments
+	parseArgs(argc,argv);
 	//Make a url of the input file
-	QUrl url(argv[1]);
+	QUrl url(in);
+
+	//If we must use a proxy, create a host of objects
+	if(proxyHost) {
+		QNetworkProxy proxy;
+		QNetworkAccessManager * am = new QNetworkAccessManager();
+		proxy.setHostName(proxyHost);
+		proxy.setPort(proxyPort);
+		if(proxyUser) proxy.setUser(proxyUser);
+		if(proxyPassword) proxy.setPassword(proxyPassword);
+		am->setProxy(proxy);
+		v.page()->setNetworkAccessManager(am);
+	}
+
 	//When loading is progressing we want loadProgress to be called
 	connect(&v, SIGNAL(loadProgress(int)), this, SLOT(loadProgress(int)));
 	//Once the loading is done we want loadFinished to be called
@@ -45,7 +184,7 @@ void WKHtmlToPdf::loadFinished(bool ok) {
 		return;
 	}
 	//Print out that it went good
-	printf("Outputting page       \r");
+	if(!quiet) printf("Outputting page       \r");
 	fflush(stdout);
 	//Construct a printer object used to print the html to pdf
 	QPrinter p(QPrinter::HighResolution);
@@ -56,13 +195,13 @@ void WKHtmlToPdf::loadFinished(bool ok) {
 	//Do the actual printing
 	v.print(&p);
 	//Inform the user that everything went well
-	printf("Done                 \n");
+	if(!quiet) printf("Done                 \n");
 	app->quit();
 }
 
 void WKHtmlToPdf::loadProgress(int progress) {
 	//Print out the load status
-	printf("Loading page: %d%%   \r",progress);
+	if(!quiet) printf("Loading page: %d%%   \r",progress);
 	fflush(stdout);
 }
 
@@ -70,6 +209,6 @@ int main(int argc, char * argv[]) {
 	QApplication a(argc,argv); //Construct application, required for printing
 	app = &a;
 	WKHtmlToPdf x; //Create convertion instance
-	x.run(argc,argv); //Run convertion
+	x.run(argc,(const char **)argv); //Run convertion
 	return a.exec(); //Wait for application to terminate
 }

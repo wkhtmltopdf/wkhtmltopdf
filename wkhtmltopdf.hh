@@ -18,6 +18,8 @@
 #include <QObject>
 #include <QtGui>
 #include <QWebView>
+#include <QNetworkProxy>
+#include <stdlib.h>
 
 //Class responsible for the convertion
 class WKHtmlToPdf : public QObject {
@@ -25,9 +27,21 @@ class WKHtmlToPdf : public QObject {
 public:
 	//The webview is used to fetch and render the webpage using webkit
 	QWebView v; 
-	//out is the path of the output file
-	char * out;
-	void run(int argc, char** argv);
+
+	//Configuration variabels
+	const char * in; //Name of the input file
+	const char * out; //Name of the output file
+	QNetworkProxy::ProxyType proxyType; //Type of proxy to use
+	int proxyPort; //The port of the proxy to use
+	const char * proxyHost; //The host name of the proxy to use or NULL
+	const char * proxyUser; //Username for the said broxy or NULL
+	const char * proxyPassword; //Password for the said broxy or NULL
+	bool quiet; //Be less verbose
+
+	void usage(FILE * fd); //Print usage information to fd
+	void setProxy(const char * proxy); //parse proxy configuartion
+	void parseArgs(int argc, const char** argv); //Prase arguments
+	void run(int argc, const char** argv);
 public slots:
 	void loadFinished(bool ok);
 	void loadProgress(int progress);
