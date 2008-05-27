@@ -50,7 +50,7 @@ void WKHtmlToPdf::setProxy(const char * proxy) {
 	proxyType = QNetworkProxy::HttpProxy;
 	if(!strncmp(proxy,"http://",7)) 
 		proxy += 7;
-	else if(!strncmp(proxy,"socks5://",8)) {
+	else if(!strncmp(proxy,"socks5://",9)) {
 		proxyType = QNetworkProxy::Socks5Proxy;
 		proxy += 8;
 	}	
