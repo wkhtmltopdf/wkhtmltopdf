@@ -189,7 +189,12 @@ void WKHtmlToPdf::loadFinished(bool ok) {
 	//Construct a printer object used to print the html to pdf
 	QPrinter p(QPrinter::HighResolution);
 	//Tell the printer object to print the file <out>
+	p.setOutputFormat(
+		strcmp(out + (strlen(out)-3),".ps")==0?
+		QPrinter::PostScriptFormat : QPrinter::PdfFormat
+		);
 	p.setOutputFileName(out);
+
 	//Tell the printer object that we use A4 paper
 	p.setPaperSize(QPrinter::A4);
 	//Do the actual printing
