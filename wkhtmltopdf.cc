@@ -14,6 +14,7 @@
 // along with wkhtmltopdf.  If not, see <http://www.gnu.org/licenses/>.
 
 #include <string.h>
+#include <iostream>
 #include "wkhtmltopdf.hh"
 QApplication * app;
 
@@ -179,12 +180,12 @@ void WKHtmlToPdf::run(int argc, const char ** argv) {
 void WKHtmlToPdf::loadFinished(bool ok) {
 	if(!ok) {
 		//It went bad, return with 1
-		printf("Failed loading page\n");
+		fprintf(stderr, "Failed loading page\n");
 		app->exit(1);
 		return;
 	}
 	//Print out that it went good
-	if(!quiet) printf("Outputting page       \r");
+	if(!quiet) fprintf(stderr, "Outputting page       \r");
 	fflush(stdout);
 	//Construct a printer object used to print the html to pdf
 	QPrinter p(QPrinter::HighResolution);
@@ -194,19 +195,23 @@ void WKHtmlToPdf::loadFinished(bool ok) {
 		QPrinter::PostScriptFormat : QPrinter::PdfFormat
 		);
 	p.setOutputFileName(out);
-
+	
 	//Tell the printer object that we use A4 paper
 	p.setPaperSize(QPrinter::A4);
 	//Do the actual printing
-	v.print(&p);
-	//Inform the user that everything went well
-	if(!quiet) printf("Done                 \n");
+	if(!p.isValid()) {
+		fprintf(stderr,"Unable to write to output file\n");
+	} else {
+		v.print(&p);
+		if(!quiet) printf("Done                 \n");
+		//Inform the user that everything went well
+	}
 	app->quit();
 }
 
 void WKHtmlToPdf::loadProgress(int progress) {
 	//Print out the load status
-	if(!quiet) printf("Loading page: %d%%   \r",progress);
+	if(!quiet) fprintf(stderr,"Loading page: %d%%   \r",progress);
 	fflush(stdout);
 }
 
