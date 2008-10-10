@@ -17,7 +17,7 @@
 #include <iostream>
 #include "wkhtmltopdf.hh"
 #include <qnetworkreply.h>
-
+#include <map>
 QApplication * app;
 
 void WKHtmlToPdf::usage(FILE * fd) {
@@ -27,11 +27,14 @@ void WKHtmlToPdf::usage(FILE * fd) {
 "/dev/stdout is used, simular for <input file>.\n"
 "\n"
 "Options:\n"
-"  -h, --help             print this help.\n"
-"  -q, --quiet            be less verbose.\n"
-"  -i, --input <url>      use url as input.\n"
-"  -o, --output <url>     use url as output.\n"
-"  -p, --proxy <proxy>    use a proxy.\n"
+"  -h, --help                      print this help.\n"
+"  -q, --quiet                     be less verbose.\n"
+"  -i, --input <url>               use url as input.\n"
+"  -o, --output <url>              use url as output.\n"
+"  -p, --proxy <proxy>             use a proxy.\n"
+"  -O, --orientation <orientation> Set orientation to\n"
+"                                  Landscape or Portrait\n"
+"  -s, --pagesize <size>           Set pape size to: A4, Letter, ect.\n"
 "\n"
 "Proxy:\n"
 "  By default proxyinformation will be read from the environment\n"
@@ -44,6 +47,52 @@ void WKHtmlToPdf::usage(FILE * fd) {
 "Mail bug reports and suggestions to <antialze@gmail.com>.\n"
 		);
 }
+
+void WKHtmlToPdf::setOrientation(const char * o) {
+	if(!strcasecmp(o,"Landscape"))
+		orientation = QPrinter::Landscape;
+	else if(!strcasecmp(o,"Portrait"))
+		orientation = QPrinter::Portrait;
+	else
+		{usage(stderr);exit(1);}
+}
+
+void WKHtmlToPdf::setPageSize(const char * o) {
+	if(false);
+	else if(!strcasecmp("A0",o)) pageSize=QPrinter::A0;
+	else if(!strcasecmp("A1",o)) pageSize=QPrinter::A1;
+	else if(!strcasecmp("A2",o)) pageSize=QPrinter::A2;
+	else if(!strcasecmp("A3",o)) pageSize=QPrinter::A3;
+	else if(!strcasecmp("A4",o)) pageSize=QPrinter::A4;
+	else if(!strcasecmp("A5",o)) pageSize=QPrinter::A5;
+	else if(!strcasecmp("A6",o)) pageSize=QPrinter::A6;
+	else if(!strcasecmp("A7",o)) pageSize=QPrinter::A7;
+	else if(!strcasecmp("A8",o)) pageSize=QPrinter::A8;
+	else if(!strcasecmp("A9",o)) pageSize=QPrinter::A9;
+	else if(!strcasecmp("B0",o)) pageSize=QPrinter::B0;
+	else if(!strcasecmp("B1",o)) pageSize=QPrinter::B1;
+	else if(!strcasecmp("B10",o)) pageSize=QPrinter::B10;
+	else if(!strcasecmp("B2",o)) pageSize=QPrinter::B2;
+	else if(!strcasecmp("B3",o)) pageSize=QPrinter::B3;
+	else if(!strcasecmp("B4",o)) pageSize=QPrinter::B4;
+	else if(!strcasecmp("B5",o)) pageSize=QPrinter::B5;
+	else if(!strcasecmp("B6",o)) pageSize=QPrinter::B6;
+	else if(!strcasecmp("B7",o)) pageSize=QPrinter::B7;
+	else if(!strcasecmp("B8",o)) pageSize=QPrinter::B8;
+	else if(!strcasecmp("B9",o)) pageSize=QPrinter::B9;
+	else if(!strcasecmp("C5E",o)) pageSize=QPrinter::C5E;
+	else if(!strcasecmp("Comm10E",o)) pageSize=QPrinter::Comm10E;
+	else if(!strcasecmp("DLE",o)) pageSize=QPrinter::DLE;
+	else if(!strcasecmp("Executive",o)) pageSize=QPrinter::Executive;
+	else if(!strcasecmp("Folio",o)) pageSize=QPrinter::Folio;
+	else if(!strcasecmp("Ledger",o)) pageSize=QPrinter::Ledger;
+	else if(!strcasecmp("Legal",o)) pageSize=QPrinter::Legal;
+	else if(!strcasecmp("Letter",o)) pageSize=QPrinter::Letter;
+	else if(!strcasecmp("Tabloid",o)) pageSize=QPrinter::Tabloid;
+	else {usage(stderr);exit(1);}
+}
+
+
 
 void WKHtmlToPdf::setProxy(const char * proxy) {
 	//Allow users to use no proxy, even if one is specified in the env
@@ -93,7 +142,8 @@ void WKHtmlToPdf::parseArgs(int argc, const char ** argv) {
 	out = "/dev/stdout";
 	proxyHost = NULL;
 	quiet = false;
-
+	pageSize = QPrinter::A4;
+	orientation = QPrinter::Portrait;
 	//Load configuration from enviornment
 	if((val = getenv("proxy"))) setProxy(val);
 	if((val = getenv("all_proxy"))) setProxy(val);
@@ -123,6 +173,12 @@ void WKHtmlToPdf::parseArgs(int argc, const char ** argv) {
 			} else if(!strcmp(argv[i],"--proxy")) {
 				if(i+1>= argc) {usage(stderr);exit(1);}
 				setProxy(argv[++i]);
+			} else if(!strcmp(argv[i],"--orientation")) {
+				if(i+1>= argc) {usage(stderr);exit(1);}
+				setOrientation(argv[++i]);
+			} else if(!strcmp(argv[i],"--pagesize")) {
+				if(i+1>= argc) {usage(stderr);exit(1);}
+				setPageSize(argv[++i]);
 			} else {usage(stderr);exit(1);}
 			continue;
 		}
@@ -146,6 +202,14 @@ void WKHtmlToPdf::parseArgs(int argc, const char ** argv) {
 			case 'p':
 				if(i+1>= argc) {usage(stderr);exit(1);}
 				setProxy(argv[++i]);
+				break;
+			case 's':
+				if(i+1>= argc) {usage(stderr);exit(1);}
+				setPageSize(argv[++i]);
+				break;
+			case 'O':
+				if(i+1>= argc) {usage(stderr);exit(1);}
+				setOrientation(argv[++i]);
 				break;
 			default:
 				usage(stderr);exit(1);}
@@ -206,8 +270,8 @@ void WKHtmlToPdf::loadFinished(bool ok) {
 		);
 	p.setOutputFileName(out);
 	
-	//Tell the printer object that we use A4 paper
-	p.setPaperSize(QPrinter::A4);
+	p.setPageSize(pageSize);
+	p.setOrientation(orientation);
 	//Do the actual printing
 	if(!p.isValid()) {
 		fprintf(stderr,"Unable to write to output file\n");

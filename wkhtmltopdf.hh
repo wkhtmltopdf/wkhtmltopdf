@@ -37,8 +37,12 @@ public:
 	const char * proxyUser; //Username for the said broxy or NULL
 	const char * proxyPassword; //Password for the said broxy or NULL
 	bool quiet; //Be less verbose
+	QPrinter::PageSize pageSize; //What size paper should we use
+	QPrinter::Orientation orientation; //What orientation
 
 	void usage(FILE * fd); //Print usage information to fd
+	void setPageSize(const char * size);
+	void setOrientation(const char * orientation);
 	void setProxy(const char * proxy); //parse proxy configuartion
 	void parseArgs(int argc, const char** argv); //Prase arguments
 	void run(int argc, const char** argv);
