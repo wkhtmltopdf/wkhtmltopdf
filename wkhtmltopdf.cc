@@ -16,6 +16,8 @@
 #include <string.h>
 #include <iostream>
 #include "wkhtmltopdf.hh"
+#include <qnetworkreply.h>
+
 QApplication * app;
 
 void WKHtmlToPdf::usage(FILE * fd) {
@@ -157,17 +159,21 @@ void WKHtmlToPdf::run(int argc, const char ** argv) {
 	//Make a url of the input file
 	QUrl url(in);
 
+	QNetworkAccessManager * am = new QNetworkAccessManager();
+
 	//If we must use a proxy, create a host of objects
 	if(proxyHost) {
 		QNetworkProxy proxy;
-		QNetworkAccessManager * am = new QNetworkAccessManager();
 		proxy.setHostName(proxyHost);
 		proxy.setPort(proxyPort);
 		if(proxyUser) proxy.setUser(proxyUser);
 		if(proxyPassword) proxy.setPassword(proxyPassword);
 		am->setProxy(proxy);
-		v.page()->setNetworkAccessManager(am);
+
 	}
+	v.page()->setNetworkAccessManager(am);
+	connect(am, SIGNAL(sslErrors(QNetworkReply*, const QList<QSslError>&)),this,
+            SLOT(sslErrors(QNetworkReply*, const QList<QSslError>&)));
 
 	//When loading is progressing we want loadProgress to be called
 	connect(&v, SIGNAL(loadProgress(int)), this, SLOT(loadProgress(int)));
@@ -175,6 +181,10 @@ void WKHtmlToPdf::run(int argc, const char ** argv) {
 	connect(&v, SIGNAL(loadFinished(bool)), this, SLOT(loadFinished(bool)));
 	//Tell the vebview to load for the newly created url
 	v.load(url);
+}
+
+void WKHtmlToPdf::sslErrors(QNetworkReply *reply, const QList<QSslError> &error) {
+	reply->ignoreSslErrors();
 }
 
 void WKHtmlToPdf::loadFinished(bool ok) {

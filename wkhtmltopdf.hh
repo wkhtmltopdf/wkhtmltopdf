@@ -42,8 +42,10 @@ public:
 	void setProxy(const char * proxy); //parse proxy configuartion
 	void parseArgs(int argc, const char** argv); //Prase arguments
 	void run(int argc, const char** argv);
+
 public slots:
 	void loadFinished(bool ok);
 	void loadProgress(int progress);
+	void sslErrors(QNetworkReply *reply, const QList<QSslError> &error);
 };
 #endif //__wkhtmltopdf_hh__
