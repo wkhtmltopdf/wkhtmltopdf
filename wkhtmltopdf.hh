@@ -37,6 +37,7 @@ public:
 	const char * proxyUser; //Username for the said broxy or NULL
 	const char * proxyPassword; //Password for the said broxy or NULL
 	bool quiet; //Be less verbose
+	bool background; //Should we print the background?
 	QPrinter::PageSize pageSize; //What size paper should we use
 	QPrinter::Orientation orientation; //What orientation
 	QPrinter::ColorMode colorMode; //Color or grayscale

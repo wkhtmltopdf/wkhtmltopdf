@@ -33,7 +33,10 @@ void WKHtmlToPdf::usage(FILE * fd) {
 "  -o, --output <url>              use url as output.\n"
 "  -p, --proxy <proxy>             use a proxy.\n"
 "  -O, --orientation <orientation> Set orientation to\n"
+#if QT_VERSION >= 0x040500
+"  -b, --nobackground              Do not print background\n"
 "                                  Landscape or Portrait\n"
+#endif
 "  -s, --pagesize <size>           Set pape size to: A4, Letter, ect.\n"
 "  -g, --grayscale                 PDF will be generated in grayscale.\n"
 "  -l, --lowquality                Generates lower quality pdf/ps.\n"
@@ -152,6 +155,7 @@ void WKHtmlToPdf::parseArgs(int argc, const char ** argv) {
 	orientation = QPrinter::Portrait;
 	colorMode = QPrinter::Color;
 	resolution = QPrinter::HighResolution;
+	background = true;
 	dpi = -1;
 	//Load configuration from enviornment
 	if((val = getenv("proxy"))) setProxy(val);
@@ -192,6 +196,8 @@ void WKHtmlToPdf::parseArgs(int argc, const char ** argv) {
 				colorMode = QPrinter::GrayScale;
 			} else if(!strcmp(argv[i],"--lowquality")) {
 				resolution = QPrinter::ScreenResolution;
+			} else if(!strcmp(argv[i],"--nobackground")) {
+				background = false;
 			} else if(!strcmp(argv[i],"--dpi")) {
 				if(i+1>= argc) {usage(stderr);exit(1);}
 				dpi=atoi(argv[++i]);
@@ -236,6 +242,9 @@ void WKHtmlToPdf::parseArgs(int argc, const char ** argv) {
 				if(i+1>= argc) {usage(stderr);exit(1);}
 				dpi=atoi(argv[++i]);
 				break;
+			case 'b':
+				background = false;
+				break;
 			default:
 				usage(stderr);exit(1);}
 		}
@@ -260,6 +269,9 @@ void WKHtmlToPdf::run(int argc, const char ** argv) {
 		am->setProxy(proxy);
 
 	}
+#if QT_VERSION >= 0x040500
+	v.settings()->setAttribute(QWebSettings::PrintElementBackgrounds, background);
+#endif 
 	v.page()->setNetworkAccessManager(am);
 	connect(am, SIGNAL(sslErrors(QNetworkReply*, const QList<QSslError>&)),this,
             SLOT(sslErrors(QNetworkReply*, const QList<QSslError>&)));
