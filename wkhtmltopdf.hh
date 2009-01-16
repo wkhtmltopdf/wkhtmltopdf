@@ -41,6 +41,7 @@ public:
 	QPrinter::Orientation orientation; //What orientation
 	QPrinter::ColorMode colorMode; //Color or grayscale
 	QPrinter::PrinterMode resolution; //resolution
+	int dpi;
 
 	void usage(FILE * fd); //Print usage information to fd
 	void setPageSize(const char * size);

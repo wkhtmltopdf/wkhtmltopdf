@@ -36,8 +36,11 @@ void WKHtmlToPdf::usage(FILE * fd) {
 "                                  Landscape or Portrait\n"
 "  -s, --pagesize <size>           Set pape size to: A4, Letter, ect.\n"
 "  -g, --grayscale                 PDF will be generated in grayscale.\n"
-"  -l, --lowquality                Generates lower quality pdf/ps. \n"
-"                                  Usefull to shrink the result document space. \n"
+"  -l, --lowquality                Generates lower quality pdf/ps.\n"
+"                                  Usefull to shrink the result document space.\n"
+"  -d, --dpi <dpi>                 Set the dpi explicitly, be aware!\n"
+"                                  There is currently a bug in QT, setting this to low\n"
+"                                  will make the application CRASH!\n"
 "\n"
 "Proxy:\n"
 "  By default proxyinformation will be read from the environment\n"
@@ -149,6 +152,7 @@ void WKHtmlToPdf::parseArgs(int argc, const char ** argv) {
 	orientation = QPrinter::Portrait;
 	colorMode = QPrinter::Color;
 	resolution = QPrinter::HighResolution;
+	dpi = -1;
 	//Load configuration from enviornment
 	if((val = getenv("proxy"))) setProxy(val);
 	if((val = getenv("all_proxy"))) setProxy(val);
@@ -188,6 +192,9 @@ void WKHtmlToPdf::parseArgs(int argc, const char ** argv) {
 				colorMode = QPrinter::GrayScale;
 			} else if(!strcmp(argv[i],"--lowquality")) {
 				resolution = QPrinter::ScreenResolution;
+			} else if(!strcmp(argv[i],"--dpi")) {
+				if(i+1>= argc) {usage(stderr);exit(1);}
+				dpi=atoi(argv[++i]);
 			} else {usage(stderr);exit(1);}
 			continue;
 		}
@@ -225,6 +232,9 @@ void WKHtmlToPdf::parseArgs(int argc, const char ** argv) {
 			case 'O':
 				if(i+1>= argc) {usage(stderr);exit(1);}
 				setOrientation(argv[++i]);
+			case 'd':
+				if(i+1>= argc) {usage(stderr);exit(1);}
+				dpi=atoi(argv[++i]);
 				break;
 			default:
 				usage(stderr);exit(1);}
@@ -278,6 +288,8 @@ void WKHtmlToPdf::loadFinished(bool ok) {
 	fflush(stdout);
 	//Construct a printer object used to print the html to pdf
 	QPrinter p(resolution);
+	if(dpi != -1) p.setResolution(dpi);
+
 	//Tell the printer object to print the file <out>
 	p.setOutputFormat(
 		strcmp(out + (strlen(out)-3),".ps")==0?
