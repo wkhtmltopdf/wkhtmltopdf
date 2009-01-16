@@ -26,7 +26,7 @@ class WKHtmlToPdf : public QObject {
 	Q_OBJECT
 public:
 	//The webview is used to fetch and render the webpage using webkit
-	QWebView v; 
+	QWebView v;
 
 	//Configuration variabels
 	const char * in; //Name of the input file
@@ -39,6 +39,8 @@ public:
 	bool quiet; //Be less verbose
 	QPrinter::PageSize pageSize; //What size paper should we use
 	QPrinter::Orientation orientation; //What orientation
+	QPrinter::ColorMode colorMode; //Color or grayscale
+	QPrinter::PrinterMode resolution; //resolution
 
 	void usage(FILE * fd); //Print usage information to fd
 	void setPageSize(const char * size);

@@ -35,6 +35,9 @@ void WKHtmlToPdf::usage(FILE * fd) {
 "  -O, --orientation <orientation> Set orientation to\n"
 "                                  Landscape or Portrait\n"
 "  -s, --pagesize <size>           Set pape size to: A4, Letter, ect.\n"
+"  -g, --grayscale                 PDF will be generated in grayscale.\n"
+"  -l, --lowquality                Generates lower quality pdf/ps. \n"
+"                                  Usefull to shrink the result document space. \n"
 "\n"
 "Proxy:\n"
 "  By default proxyinformation will be read from the environment\n"
@@ -144,6 +147,8 @@ void WKHtmlToPdf::parseArgs(int argc, const char ** argv) {
 	quiet = false;
 	pageSize = QPrinter::A4;
 	orientation = QPrinter::Portrait;
+	colorMode = QPrinter::Color;
+	resolution = QPrinter::HighResolution;
 	//Load configuration from enviornment
 	if((val = getenv("proxy"))) setProxy(val);
 	if((val = getenv("all_proxy"))) setProxy(val);
@@ -179,6 +184,10 @@ void WKHtmlToPdf::parseArgs(int argc, const char ** argv) {
 			} else if(!strcmp(argv[i],"--pagesize")) {
 				if(i+1>= argc) {usage(stderr);exit(1);}
 				setPageSize(argv[++i]);
+			} else if(!strcmp(argv[i],"--grayscale")) {
+				colorMode = QPrinter::GrayScale;
+			} else if(!strcmp(argv[i],"--lowquality")) {
+				resolution = QPrinter::ScreenResolution;
 			} else {usage(stderr);exit(1);}
 			continue;
 		}
@@ -206,6 +215,12 @@ void WKHtmlToPdf::parseArgs(int argc, const char ** argv) {
 			case 's':
 				if(i+1>= argc) {usage(stderr);exit(1);}
 				setPageSize(argv[++i]);
+				break;
+			case 'g':
+				colorMode = QPrinter::GrayScale;
+				break;
+			case 'l':
+				resolution = QPrinter::ScreenResolution;
 				break;
 			case 'O':
 				if(i+1>= argc) {usage(stderr);exit(1);}
@@ -262,7 +277,7 @@ void WKHtmlToPdf::loadFinished(bool ok) {
 	if(!quiet) fprintf(stderr, "Outputting page       \r");
 	fflush(stdout);
 	//Construct a printer object used to print the html to pdf
-	QPrinter p(QPrinter::HighResolution);
+	QPrinter p(resolution);
 	//Tell the printer object to print the file <out>
 	p.setOutputFormat(
 		strcmp(out + (strlen(out)-3),".ps")==0?
@@ -272,6 +287,7 @@ void WKHtmlToPdf::loadFinished(bool ok) {
 	
 	p.setPageSize(pageSize);
 	p.setOrientation(orientation);
+	p.setColorMode(colorMode);
 	//Do the actual printing
 	if(!p.isValid()) {
 		fprintf(stderr,"Unable to write to output file\n");
