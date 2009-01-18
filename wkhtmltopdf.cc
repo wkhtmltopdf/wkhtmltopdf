@@ -28,6 +28,7 @@ void WKHtmlToPdf::usage(FILE * fd) {
 "\n"
 "Options:\n"
 "  -h, --help                      print this help.\n"
+"      --version                    output version information and exit\n"
 "  -q, --quiet                     be less verbose.\n"
 "  -i, --input <url>               use url as input.\n"
 "  -o, --output <url>              use url as output.\n"
@@ -55,6 +56,19 @@ void WKHtmlToPdf::usage(FILE * fd) {
 "\n"
 "Mail bug reports and suggestions to <antialze@gmail.com>.\n"
 		);
+}
+
+void WKHtmlToPdf::version(FILE * fd) {
+  fprintf(fd,
+"wkhtmltopdf %d.%d\n"
+"Copyright (C) 2008 Jakob Truelsen,\n"
+"License GPLv3+: GNU GPL version 3 or later <http://gnu.org/licenses/gpl.html>\n"
+"This is free software: you are free to change and redistribute it.\n"
+"There is NO WARRANTY, to the extent permitted by law.\n"
+"\n"
+"Written by Jakob Truelsen\n"
+"Patches by Mário Silva\n\n",
+	  MAJOR_VERSION, MINOR_VERSION);
 }
 
 void WKHtmlToPdf::setOrientation(const char * o) {
@@ -100,8 +114,6 @@ void WKHtmlToPdf::setPageSize(const char * o) {
 	else if(!strcasecmp("Tabloid",o)) pageSize=QPrinter::Tabloid;
 	else {usage(stderr);exit(1);}
 }
-
-
 
 void WKHtmlToPdf::setProxy(const char * proxy) {
 	//Allow users to use no proxy, even if one is specified in the env
@@ -175,6 +187,8 @@ void WKHtmlToPdf::parseArgs(int argc, const char ** argv) {
 		if(argv[i][1] == '-') { //Long style arguments
 			if(!strcmp(argv[i],"--help")) {
 				usage(stdout); exit(0);
+			} else if(!strcmp(argv[i],"--version")) {
+				version(stdout); exit(0);
 			} else if(!strcmp(argv[i],"--quiet")) {
 				quiet = true;
 			} else if(!strcmp(argv[i],"--input")) {

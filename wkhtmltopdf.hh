@@ -44,6 +44,7 @@ public:
 	QPrinter::PrinterMode resolution; //resolution
 	int dpi;
 
+	void version(FILE * fd); //Print version information to fd
 	void usage(FILE * fd); //Print usage information to fd
 	void setPageSize(const char * size);
 	void setOrientation(const char * orientation);
