@@ -1,0 +1,16 @@
+Usage:
+
+To convert a remote HTML file to PDF: 
+# wkhtmltopdf http://www.google.com google.pdf
+
+To convert a local HTML file to PDF: 
+#wkhtmltopdf my.html my.pdf
+
+You can also convert to PS files if you like: 
+#wkhtmltopdf my.html my.ps 
+
+Help:
+If you have any problems or comments please feel 
+free to contact me: see http://www.daimi.au.dk/~jakobt/#about
+
+For licence see COPYING 
