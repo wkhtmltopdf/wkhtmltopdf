@@ -18,7 +18,6 @@
 #include "wkhtmltopdf.hh"
 #include <qnetworkreply.h>
 #include <map>
-QApplication * app;
 
 void WKHtmlToPdf::usage(FILE * fd) {
 	fprintf(fd,
@@ -34,9 +33,9 @@ void WKHtmlToPdf::usage(FILE * fd) {
 "  -o, --output <url>              use url as output.\n"
 "  -p, --proxy <proxy>             use a proxy.\n"
 "  -O, --orientation <orientation> Set orientation to\n"
+"                                  Landscape or Portrait\n"
 #if QT_VERSION >= 0x040500
 "  -b, --nobackground              Do not print background\n"
-"                                  Landscape or Portrait\n"
 #endif
 "  -s, --pagesize <size>           Set pape size to: A4, Letter, ect.\n"
 "  -g, --grayscale                 PDF will be generated in grayscale.\n"
@@ -45,6 +44,11 @@ void WKHtmlToPdf::usage(FILE * fd) {
 "  -d, --dpi <dpi>                 Set the dpi explicitly, be aware!\n"
 "                                  There is currently a bug in QT, setting this to low\n"
 "                                  will make the application CRASH!\n"
+"\n"
+"  -T, --top <top>                 set page top margin (in milimeters) (default 10)\n"
+"  -R, --right <right>             set page right margin (in milimeters) (default 10)\n"
+"  -B, --bottom <bottom>           set page bottom margin (in milimeters) (default 10)\n"
+"  -L, --left <left>               set page left margin (in milimeters) (default 10)\n"
 "\n"
 "Proxy:\n"
 "  By default proxyinformation will be read from the environment\n"
@@ -115,6 +119,37 @@ void WKHtmlToPdf::setPageSize(const char * o) {
 	else {usage(stderr);exit(1);}
 }
 
+std::pair<qreal, QPrinter::Unit> WKHtmlToPdf::parseUnitReal(const char * o) {
+	qreal s=1.0;
+	QPrinter::Unit u;
+	int i=0; 
+	while('0' <= o[i]  && o[i] <= '9') ++i;
+	if(o[i] == '.') ++i;
+	while('0' <= o[i]  && o[i] <= '9') ++i;
+	
+	if(!strcasecmp(o+i,"") || !strcasecmp(o+i,"mm") || !strcasecmp(o+i,"millimeter")) {
+		u=QPrinter::Millimeter;
+	} else if(!strcasecmp(o+i,"cm") || !strcasecmp(o+i,"centimeter")) {
+		u=QPrinter::Millimeter;		
+		s=10.0;
+	} else if(!strcasecmp(o+i,"m") || !strcasecmp(o+i,"meter")) {
+		u=QPrinter::Millimeter;		
+		s=1000.0;
+	} else if(!strcasecmp(o+i,"didot"))
+		u=QPrinter::Didot;
+	else if(!strcasecmp(o+i,"inch") || !strcasecmp(o+i,"in"))
+		u=QPrinter::Inch;
+	else if(!strcasecmp(o+i,"pica") || !strcasecmp(o+i,"pc"))
+		u=QPrinter::Pica;
+	else if(!strcasecmp(o+i,"cicero"))
+		u=QPrinter::Cicero;	
+	else if(!strcasecmp(o+i,"pixel") || !strcasecmp(o+i,"px"))
+		u=QPrinter::DevicePixel;
+	else if(!strcasecmp(o+i,"point") || !strcasecmp(o+i,"pt"))	
+		u=QPrinter::Point;
+	return std::pair<qreal, QPrinter::Unit>(s*atof(o), u);
+}
+
 void WKHtmlToPdf::setProxy(const char * proxy) {
 	//Allow users to use no proxy, even if one is specified in the env
 	if(!strcmp(proxy,"none")) {proxyHost = NULL;return;}
@@ -155,6 +190,54 @@ void WKHtmlToPdf::setProxy(const char * proxy) {
 	}
 }
 
+int WKHtmlToPdf::parseLongArg(const char * arg, int morec, const char ** morev) {
+	size_t used=0;
+	if(!strcmp(arg,"help")) {
+		usage(stdout); exit(0);
+	} else if(!strcmp(arg,"version")) {
+		version(stdout); exit(0);
+	} else if(!strcmp(arg,"quiet")) {
+		quiet = true;
+	} else if(!strcmp(arg,"input")) {
+		if(morec < 1) {usage(stderr);exit(1);}
+		in = morev[++used];
+	} else if(!strcmp(arg,"output")) {
+		if(morec < 1) return -1;
+		out = morev[++used];
+	} else if(!strcmp(arg,"proxy")) {
+		if(morec < 1) return -1;
+		setProxy(morev[++used]);
+	} else if(!strcmp(arg,"orientation")) {
+		if(morec < 1) return -1;
+		setOrientation(morev[++used]);
+	} else if(!strcmp(arg,"pagesize")) {
+		if(morec < 1) return -1;
+		setPageSize(morev[++used]);
+	} else if(!strcmp(arg,"grayscale")) {
+		colorMode = QPrinter::GrayScale;
+	} else if(!strcmp(arg,"lowquality")) {
+		resolution = QPrinter::ScreenResolution;
+	} else if(!strcmp(arg,"nobackground")) {
+		background = false;
+	} else if(!strcmp(arg,"dpi")) {
+		if(morec < 1) return -1;
+		dpi=atoi(morev[++used]);
+	} else if(!strcmp(arg,"top")) {
+		if(morec < 1) return -1;
+		top=parseUnitReal(morev[++used]);
+	} else if(!strcmp(arg,"right")) {
+		if(morec < 1) return -1;
+		right=parseUnitReal(morev[++used]);
+	} else if(!strcmp(arg,"bottom")) {
+		if(morec < 1) return -1;
+		bottom=parseUnitReal(morev[++used]);
+	} else if(!strcmp(arg,"left")) {
+		if(morec < 1) return -1;
+		left=parseUnitReal(morev[++used]);
+	} else return -1;
+	return used;
+}
+
 void WKHtmlToPdf::parseArgs(int argc, const char ** argv) {
 	int x=0;
 	char * val;
@@ -169,10 +252,20 @@ void WKHtmlToPdf::parseArgs(int argc, const char ** argv) {
 	resolution = QPrinter::HighResolution;
 	background = true;
 	dpi = -1;
+	top = right = bottom = left=
+		std::pair<qreal,QPrinter::Unit>(10,QPrinter::Millimeter);
+	
 	//Load configuration from enviornment
 	if((val = getenv("proxy"))) setProxy(val);
 	if((val = getenv("all_proxy"))) setProxy(val);
 	if((val = getenv("http_proxy"))) setProxy(val);
+
+	std::map<const char, const char *> s2l;
+	s2l['h'] = "help";      s2l['i'] = "input";      s2l['q']="quiet";
+	s2l['o'] = "output";    s2l['p'] = "proxy";      s2l['s']="pagesize";
+	s2l['g'] = "grayscale"; s2l['l'] = "lowquality"; s2l['O']="orientation";
+	s2l['d'] = "dpi";       s2l['T'] = "top";        s2l['B']="bottom";
+	s2l['R'] = "right";     s2l['L'] = "left";       s2l['b']="nobackground";
 	
 	//QNetworkProxy::NoProxy;
 	for(int i=1; i < argc; ++i) {
@@ -181,86 +274,21 @@ void WKHtmlToPdf::parseArgs(int argc, const char ** argv) {
 			++x;
 			if(x==1) in = argv[i];
 			else if(x == 2)	out = argv[i];
-			else {usage(stderr);exit(1);}
+			else {usage(stderr); exit(1);}
 			continue;
 		}
-		if(argv[i][1] == '-') { //Long style arguments
-			if(!strcmp(argv[i],"--help")) {
-				usage(stdout); exit(0);
-			} else if(!strcmp(argv[i],"--version")) {
-				version(stdout); exit(0);
-			} else if(!strcmp(argv[i],"--quiet")) {
-				quiet = true;
-			} else if(!strcmp(argv[i],"--input")) {
-				if(i+1>= argc) {usage(stderr);exit(1);}
-				in = argv[++i];
-			} else if(!strcmp(argv[i],"--output")) {
-				if(i+1>= argc) {usage(stderr);exit(1);}
-				out = argv[++i];
-			} else if(!strcmp(argv[i],"--proxy")) {
-				if(i+1>= argc) {usage(stderr);exit(1);}
-				setProxy(argv[++i]);
-			} else if(!strcmp(argv[i],"--orientation")) {
-				if(i+1>= argc) {usage(stderr);exit(1);}
-				setOrientation(argv[++i]);
-			} else if(!strcmp(argv[i],"--pagesize")) {
-				if(i+1>= argc) {usage(stderr);exit(1);}
-				setPageSize(argv[++i]);
-			} else if(!strcmp(argv[i],"--grayscale")) {
-				colorMode = QPrinter::GrayScale;
-			} else if(!strcmp(argv[i],"--lowquality")) {
-				resolution = QPrinter::ScreenResolution;
-			} else if(!strcmp(argv[i],"--nobackground")) {
-				background = false;
-			} else if(!strcmp(argv[i],"--dpi")) {
-				if(i+1>= argc) {usage(stderr);exit(1);}
-				dpi=atoi(argv[++i]);
-			} else {usage(stderr);exit(1);}
-			continue;
-		}
-		//Short style arguments
-		int c=i;
-		for(int j=1; argv[c][j] != '\0'; ++j) {
-			switch(argv[c][j]) {
-			case 'h':
-				usage(stdout); exit(0);
-			case 'i':
-				if(i+1>= argc) {usage(stderr);exit(1);}
-				in = argv[++i];
-				break;
-			case 'q':
-				quiet=true;
-				break;
-			case 'o':
-				if(i+1>= argc) {usage(stderr);exit(1);}
-				out = argv[++i];
-				break;
-			case 'p':
-				if(i+1>= argc) {usage(stderr);exit(1);}
-				setProxy(argv[++i]);
-				break;
-			case 's':
-				if(i+1>= argc) {usage(stderr);exit(1);}
-				setPageSize(argv[++i]);
-				break;
-			case 'g':
-				colorMode = QPrinter::GrayScale;
-				break;
-			case 'l':
-				resolution = QPrinter::ScreenResolution;
-				break;
-			case 'O':
-				if(i+1>= argc) {usage(stderr);exit(1);}
-				setOrientation(argv[++i]);
-			case 'd':
-				if(i+1>= argc) {usage(stderr);exit(1);}
-				dpi=atoi(argv[++i]);
-				break;
-			case 'b':
-				background = false;
-				break;
-			default:
-				usage(stderr);exit(1);}
+		if(argv[i][1] == '-') {
+			int used = parseLongArg(argv[i]+2, argc - i, argv+i);
+			if(used == -1) {usage(stderr); exit(1);}
+			i += used;
+		} else {
+			int c=i;
+			for(int j=1; argv[c][j] != '\0'; ++j) {
+				if(s2l.count(argv[c][j]) == 0) {usage(stderr); exit(1);}
+				int used = parseLongArg(s2l[argv[c][j]], argc - i, argv+i);
+				if(used == -1) {usage(stderr); exit(1);}
+				i += used;
+			}
 		}
 	}
 }
@@ -306,7 +334,7 @@ void WKHtmlToPdf::loadFinished(bool ok) {
 	if(!ok) {
 		//It went bad, return with 1
 		fprintf(stderr, "Failed loading page\n");
-		app->exit(1);
+		exit(1);
 		return;
 	}
 	//Print out that it went good
@@ -322,6 +350,14 @@ void WKHtmlToPdf::loadFinished(bool ok) {
 		QPrinter::PostScriptFormat : QPrinter::PdfFormat
 		);
 	p.setOutputFileName(out);
+	if(left.second != right.second ||
+	   left.second != top.second ||	  
+	   left.second != bottom.second) {
+		fprintf(stderr, "Currently all margin units must be the same!\n");
+		exit(1);
+	}
+	   
+	p.setPageMargins(left.first, top.first, right.first, bottom.first, left.second);
 	
 	p.setPageSize(pageSize);
 	p.setOrientation(orientation);
@@ -334,7 +370,7 @@ void WKHtmlToPdf::loadFinished(bool ok) {
 		if(!quiet) printf("Done                 \n");
 		//Inform the user that everything went well
 	}
-	app->quit();
+	qApp->quit();
 }
 
 void WKHtmlToPdf::loadProgress(int progress) {
@@ -345,7 +381,6 @@ void WKHtmlToPdf::loadProgress(int progress) {
 
 int main(int argc, char * argv[]) {
 	QApplication a(argc,argv); //Construct application, required for printing
-	app = &a;
 	WKHtmlToPdf x; //Create convertion instance
 	x.run(argc,(const char **)argv); //Run convertion
 	return a.exec(); //Wait for application to terminate

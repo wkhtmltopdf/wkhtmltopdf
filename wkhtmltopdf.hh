@@ -43,12 +43,18 @@ public:
 	QPrinter::ColorMode colorMode; //Color or grayscale
 	QPrinter::PrinterMode resolution; //resolution
 	int dpi;
+	std::pair<qreal, QPrinter::Unit> top;
+	std::pair<qreal, QPrinter::Unit> right;
+	std::pair<qreal, QPrinter::Unit> bottom;
+	std::pair<qreal, QPrinter::Unit> left;
 
+	std::pair<qreal, QPrinter::Unit> parseUnitReal(const char * o);
 	void version(FILE * fd); //Print version information to fd
 	void usage(FILE * fd); //Print usage information to fd
 	void setPageSize(const char * size);
 	void setOrientation(const char * orientation);
 	void setProxy(const char * proxy); //parse proxy configuartion
+	int parseLongArg(const char * arg, int morec, const char ** morev);
 	void parseArgs(int argc, const char** argv); //Prase arguments
 	void run(int argc, const char** argv);
 
