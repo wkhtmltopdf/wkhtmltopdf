@@ -31,6 +31,8 @@ public:
 	//Configuration variabels
 	const char * in; //Name of the input file
 	const char * out; //Name of the output file
+	QNetworkAccessManager am;
+	
 	QNetworkProxy::ProxyType proxyType; //Type of proxy to use
 	int proxyPort; //The port of the proxy to use
 	const char * proxyHost; //The host name of the proxy to use or NULL
@@ -57,6 +59,7 @@ public:
 	void setProxy(const char * proxy); //parse proxy configuartion
 	int parseLongArg(const char * arg, int morec, const char ** morev);
 	void parseArgs(int argc, const char** argv); //Prase arguments
+	void init();
 	void run(int argc, const char** argv);
 
 public slots:

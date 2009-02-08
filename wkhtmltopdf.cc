@@ -28,7 +28,7 @@ void WKHtmlToPdf::usage(FILE * fd) {
 "\n"
 "Options:\n"
 "  -h, --help                      print this help.\n"
-"      --version                    output version information and exit\n"
+"      --version                   output version information and exit\n"
 "  -q, --quiet                     be less verbose.\n"
 "  -i, --input <url>               use url as input.\n"
 "  -o, --output <url>              use url as output.\n"
@@ -42,14 +42,18 @@ void WKHtmlToPdf::usage(FILE * fd) {
 "  -g, --grayscale                 PDF will be generated in grayscale.\n"
 "  -l, --lowquality                Generates lower quality pdf/ps.\n"
 "                                  Usefull to shrink the result document space.\n"
-"  -d, --dpi <dpi>                 Set the dpi explicitly, be aware!\n"
-"                                  There is currently a bug in QT, setting this to low\n"
+"  -d, --dpi <dpi>                 Set the dpi explicitly.\n"
+#if QT_VERSION < 0x040500
+"                                  Be aware! There is currently a bug in QT, setting this to low\n"
 "                                  will make the application CRASH!\n"
-"\n"
-"  -T, --top <top>                 set page top margin (in milimeters) (default 10)\n"
-"  -R, --right <right>             set page right margin (in milimeters) (default 10)\n"
-"  -B, --bottom <bottom>           set page bottom margin (in milimeters) (default 10)\n"
-"  -L, --left <left>               set page left margin (in milimeters) (default 10)\n"
+#endif
+"  -T, --top <top>                 set page top margin (default 10mm)\n"
+"  -R, --right <right>             set page right margin (default 10mm)\n"
+"  -B, --bottom <bottom>           set page bottom margin (default 10mm)\n"
+"  -L, --left <left>               set page left margin (default 10mm)\n"
+"      --read-args-from-stdin      Uses each line from stdin, as commandline options\n"
+"                                  for a convertion. Using multiple lines here, is much\n"
+"                                  faster then calling wkhtmltopdf multiple times\n"
 "\n"
 "Proxy:\n"
 "  By default proxyinformation will be read from the environment\n"
@@ -328,13 +332,22 @@ QUrl WKHtmlToPdf::guessUrlFromString(const QString &string)
 	return QUrl(string, QUrl::TolerantMode);
 }
 
+void WKHtmlToPdf::init() {
+	page.setNetworkAccessManager(&am);
+	connect(&am, SIGNAL(sslErrors(QNetworkReply*, const QList<QSslError>&)),this,
+            SLOT(sslErrors(QNetworkReply*, const QList<QSslError>&)));
+	//When loading is progressing we want loadProgress to be called
+	connect(&page, SIGNAL(loadProgress(int)), this, SLOT(loadProgress(int)));
+	//Once the loading is done we want loadFinished to be called
+	connect(&page, SIGNAL(loadFinished(bool)), this, SLOT(loadFinished(bool)));
+	//Tell the vebview to load for the newly created url
+}
+
 void WKHtmlToPdf::run(int argc, const char ** argv) {
 	//Parse the arguments
 	parseArgs(argc,argv);
 	//Make a url of the input file
 	QUrl url = guessUrlFromString(in);
-	QNetworkAccessManager * am = new QNetworkAccessManager();
-
 	//If we must use a proxy, create a host of objects
 	if(proxyHost) {
 		QNetworkProxy proxy;
@@ -342,21 +355,11 @@ void WKHtmlToPdf::run(int argc, const char ** argv) {
 		proxy.setPort(proxyPort);
 		if(proxyUser) proxy.setUser(proxyUser);
 		if(proxyPassword) proxy.setPassword(proxyPassword);
-		am->setProxy(proxy);
-
+		am.setProxy(proxy);
 	}
 #if QT_VERSION >= 0x040500
 	page.settings()->setAttribute(QWebSettings::PrintElementBackgrounds, background);
 #endif 
-	page.setNetworkAccessManager(am);
-	connect(am, SIGNAL(sslErrors(QNetworkReply*, const QList<QSslError>&)),this,
-            SLOT(sslErrors(QNetworkReply*, const QList<QSslError>&)));
-
-	//When loading is progressing we want loadProgress to be called
-	connect(&page, SIGNAL(loadProgress(int)), this, SLOT(loadProgress(int)));
-	//Once the loading is done we want loadFinished to be called
-	connect(&page, SIGNAL(loadFinished(bool)), this, SLOT(loadFinished(bool)));
-	//Tell the vebview to load for the newly created url
 	page.mainFrame()->load(url);
 }
 
@@ -413,9 +416,83 @@ void WKHtmlToPdf::loadProgress(int progress) {
 	fflush(stdout);
 }
 
+/**
+ * State mashine driven, shell like parser
+ */ 
+enum State {skip, tok, q1, q2, q1_esc, q2_esc, tok_esc};
+void parseString(char * buff, int &nargc, char **nargv) {
+	State state = skip;
+	int write_start=0;
+	int write=0;
+	for(int read=0; buff[read]!='\0'; ++read) {
+		State next_state=state;
+		switch(state) {
+		case skip:
+			if(buff[read]!=' ' && buff[read]!='\t' && buff[read]!='\r' && buff[read]!='\n') {
+				--read; next_state=tok;
+			}
+			break;
+		case tok:
+			if(buff[read]=='\'') next_state=q1;
+			else if(buff[read]=='"') next_state=q2;
+			else if(buff[read]=='\\') next_state=tok_esc;
+			else if(buff[read]==' ' || buff[read]=='\t' || buff[read]=='\n' || buff[read]=='\r') {
+				next_state=skip;
+				if(write_start != write) {
+					buff[write++]='\0';
+					nargv[nargc++] = buff+write_start;
+					if(nargc > 998) exit(1);
+				}
+				write_start = write;
+			}
+			else buff[write++] = buff[read];
+			break;
+		case q1:
+			if(buff[read]=='\'') next_state=tok;
+			else if(buff[read]=='\\') next_state=q1_esc;
+			else buff[write++] = buff[read];
+			break;
+		case q2:
+			if(buff[read]=='"') next_state=tok;
+			else if(buff[read]=='\\') next_state=q2_esc;
+			else buff[write++] = buff[read];
+			break;
+		case tok_esc:
+			next_state=tok; buff[write++] = buff[read];
+			break;
+		case q1_esc:
+			next_state=q1; buff[write++] = buff[read];
+			break;
+		case q2_esc:
+			next_state=q2; buff[write++] = buff[read];
+			break;
+		}
+		state=next_state;
+	}
+	if(write_start != write) {
+		buff[write++]='\0';
+		nargv[nargc++] = buff+write_start;
+	}
+	nargv[nargc]=NULL;
+}
+
 int main(int argc, char * argv[]) {
 	QApplication a(argc,argv); //Construct application, required for printing
 	WKHtmlToPdf x; //Create convertion instance
+	x.init();
+	for(int i=1; i < argc; ++i)
+		if(!strcmp(argv[i],"--read-args-from-stdin")) {
+			char buff[20400];
+			char *nargv[1000];
+			nargv[0] = argv[0];
+			while(fgets(buff,20398,stdin)) {
+				int nargc=1;
+				parseString(buff,nargc,nargv);
+				x.run(nargc,(const char**)nargv);
+				a.exec(); //Wait for application to terminate
+			}
+			exit(0);
+		}
 	x.run(argc,(const char **)argv); //Run convertion
 	return a.exec(); //Wait for application to terminate
 }
