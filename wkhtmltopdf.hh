@@ -47,8 +47,9 @@ public:
 	std::pair<qreal, QPrinter::Unit> right;
 	std::pair<qreal, QPrinter::Unit> bottom;
 	std::pair<qreal, QPrinter::Unit> left;
-
+	
 	std::pair<qreal, QPrinter::Unit> parseUnitReal(const char * o);
+	static QUrl guessUrlFromString(const QString &string);
 	void version(FILE * fd); //Print version information to fd
 	void usage(FILE * fd); //Print usage information to fd
 	void setPageSize(const char * size);
