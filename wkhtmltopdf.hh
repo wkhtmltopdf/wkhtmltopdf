@@ -26,7 +26,7 @@ class WKHtmlToPdf : public QObject {
 	Q_OBJECT
 public:
 	//The webview is used to fetch and render the webpage using webkit
-	QWebView v;
+	QWebPage page;
 
 	//Configuration variabels
 	const char * in; //Name of the input file

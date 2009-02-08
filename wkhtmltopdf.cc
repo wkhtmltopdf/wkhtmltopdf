@@ -18,6 +18,7 @@
 #include "wkhtmltopdf.hh"
 #include <qnetworkreply.h>
 #include <map>
+#include <QtWebKit>
 
 void WKHtmlToPdf::usage(FILE * fd) {
 	fprintf(fd,
@@ -63,7 +64,7 @@ void WKHtmlToPdf::usage(FILE * fd) {
 }
 
 void WKHtmlToPdf::version(FILE * fd) {
-  fprintf(fd,
+	fprintf(fd,
 "wkhtmltopdf %d.%d\n"
 "Copyright (C) 2008 Jakob Truelsen,\n"
 "License GPLv3+: GNU GPL version 3 or later <http://gnu.org/licenses/gpl.html>\n"
@@ -312,18 +313,18 @@ void WKHtmlToPdf::run(int argc, const char ** argv) {
 
 	}
 #if QT_VERSION >= 0x040500
-	v.settings()->setAttribute(QWebSettings::PrintElementBackgrounds, background);
+	page.settings()->setAttribute(QWebSettings::PrintElementBackgrounds, background);
 #endif 
-	v.page()->setNetworkAccessManager(am);
+	page.setNetworkAccessManager(am);
 	connect(am, SIGNAL(sslErrors(QNetworkReply*, const QList<QSslError>&)),this,
             SLOT(sslErrors(QNetworkReply*, const QList<QSslError>&)));
 
 	//When loading is progressing we want loadProgress to be called
-	connect(&v, SIGNAL(loadProgress(int)), this, SLOT(loadProgress(int)));
+	connect(&page, SIGNAL(loadProgress(int)), this, SLOT(loadProgress(int)));
 	//Once the loading is done we want loadFinished to be called
-	connect(&v, SIGNAL(loadFinished(bool)), this, SLOT(loadFinished(bool)));
+	connect(&page, SIGNAL(loadFinished(bool)), this, SLOT(loadFinished(bool)));
 	//Tell the vebview to load for the newly created url
-	v.load(url);
+	page.mainFrame()->load(url);
 }
 
 void WKHtmlToPdf::sslErrors(QNetworkReply *reply, const QList<QSslError> &error) {
@@ -331,7 +332,7 @@ void WKHtmlToPdf::sslErrors(QNetworkReply *reply, const QList<QSslError> &error)
 }
 
 void WKHtmlToPdf::loadFinished(bool ok) {
-	if(!ok) {
+  	if(!ok) {
 		//It went bad, return with 1
 		fprintf(stderr, "Failed loading page\n");
 		exit(1);
@@ -366,7 +367,7 @@ void WKHtmlToPdf::loadFinished(bool ok) {
 	if(!p.isValid()) {
 		fprintf(stderr,"Unable to write to output file\n");
 	} else {
-		v.print(&p);
+		page.mainFrame()->print(&p);
 		if(!quiet) printf("Done                 \n");
 		//Inform the user that everything went well
 	}
