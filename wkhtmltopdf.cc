@@ -20,6 +20,10 @@
 #include <map>
 #include <QtWebKit>
 
+/*!
+ * Print out program usage information
+ * \param fd the filedescriptor where the output will be printed
+ */
 void WKHtmlToPdf::usage(FILE * fd) {
 	fprintf(fd,
 "Usage: wkhtmltopdf [OPTION]... [<input file> [<output file>]]\n"
@@ -35,7 +39,7 @@ void WKHtmlToPdf::usage(FILE * fd) {
 "  -p, --proxy <proxy>             use a proxy.\n"
 "  -O, --orientation <orientation> Set orientation to\n"
 "                                  Landscape or Portrait\n"
-#if QT_VERSION >= 0x040500
+#if QT_VERSION >= 0x040500 //Not printing the background was added in QT4.5
 "  -b, --nobackground              Do not print background\n"
 #endif
 "  -s, --pagesize <size>           Set pape size to: A4, Letter, ect.\n"
@@ -43,7 +47,7 @@ void WKHtmlToPdf::usage(FILE * fd) {
 "  -l, --lowquality                Generates lower quality pdf/ps.\n"
 "                                  Usefull to shrink the result document space.\n"
 "  -d, --dpi <dpi>                 Set the dpi explicitly.\n"
-#if QT_VERSION < 0x040500
+#if QT_VERSION < 0x040500 //This bug was fixed in QT4.5
 "                                  Be aware! There is currently a bug in QT, setting this to low\n"
 "                                  will make the application CRASH!\n"
 #endif
@@ -67,6 +71,10 @@ void WKHtmlToPdf::usage(FILE * fd) {
 		);
 }
 
+/*!
+ * Print out vertion and license information
+ * \param fd the filedescriptor where the output will be printed
+ */
 void WKHtmlToPdf::version(FILE * fd) {
 	fprintf(fd,
 "wkhtmltopdf %d.%d\n"
@@ -80,6 +88,12 @@ void WKHtmlToPdf::version(FILE * fd) {
 	  MAJOR_VERSION, MINOR_VERSION);
 }
 
+/*!
+ * Set the page orientation from a string, allowed values are
+ * Landscape or Portrait (case insensitive), print usage
+ * and exit if other options are added.
+ * \param o the string describing the orientation
+ */
 void WKHtmlToPdf::setOrientation(const char * o) {
 	if(!strcasecmp(o,"Landscape"))
 		orientation = QPrinter::Landscape;
@@ -89,6 +103,12 @@ void WKHtmlToPdf::setOrientation(const char * o) {
 		{usage(stderr);exit(1);}
 }
 
+/*!
+ * Set the page/paper size from a string, basicly all thinkable values
+ * are allowed, in the odd case that a unallowd value is parsed,
+ * print usage information and exit
+ * \param o the string describing the paper size.
+ */
 void WKHtmlToPdf::setPageSize(const char * o) {
 	if(false);
 	else if(!strcasecmp("A0",o)) pageSize=QPrinter::A0;
@@ -124,24 +144,31 @@ void WKHtmlToPdf::setPageSize(const char * o) {
 	else {usage(stderr);exit(1);}
 }
 
+/*!
+ * Parse a string describing a distance, into a real number and a unit.
+ * \param o Tho string describing the distance
+ */
 std::pair<qreal, QPrinter::Unit> WKHtmlToPdf::parseUnitReal(const char * o) {
-	qreal s=1.0;
+	qreal s=1.0; //Since not all units are provided by qt, we use this variable to skale 
+	//Them into units that are.
 	QPrinter::Unit u;
+	//Skip the real number part
 	int i=0; 
 	while('0' <= o[i]  && o[i] <= '9') ++i;
 	if(o[i] == '.') ++i;
 	while('0' <= o[i]  && o[i] <= '9') ++i;
 	
+	//Try to match the unit used
 	if(!strcasecmp(o+i,"") || !strcasecmp(o+i,"mm") || !strcasecmp(o+i,"millimeter")) {
 		u=QPrinter::Millimeter;
 	} else if(!strcasecmp(o+i,"cm") || !strcasecmp(o+i,"centimeter")) {
 		u=QPrinter::Millimeter;		
-		s=10.0;
+		s=10.0; //1cm=10mm
 	} else if(!strcasecmp(o+i,"m") || !strcasecmp(o+i,"meter")) {
 		u=QPrinter::Millimeter;		
-		s=1000.0;
-	} else if(!strcasecmp(o+i,"didot"))
-		u=QPrinter::Didot;
+		s=1000.0; //1m=1000m
+	} else if(!strcasecmp(o+i,"didot")) 
+		u=QPrinter::Didot; //Todo is there a short for didot??
 	else if(!strcasecmp(o+i,"inch") || !strcasecmp(o+i,"in"))
 		u=QPrinter::Inch;
 	else if(!strcasecmp(o+i,"pica") || !strcasecmp(o+i,"pc"))
@@ -155,6 +182,12 @@ std::pair<qreal, QPrinter::Unit> WKHtmlToPdf::parseUnitReal(const char * o) {
 	return std::pair<qreal, QPrinter::Unit>(s*atof(o), u);
 }
 
+/*!
+ * Set proxy information from a string
+ * Proxy infromation will be parsed by the gramma described
+ * in --help
+ * \param proxy the proxy string to parse
+ */
 void WKHtmlToPdf::setProxy(const char * proxy) {
 	//Allow users to use no proxy, even if one is specified in the env
 	if(!strcmp(proxy,"none")) {proxyHost = NULL;return;}
@@ -171,22 +204,25 @@ void WKHtmlToPdf::setProxy(const char * proxy) {
 	char * val = strchr(proxy,'@');
 	proxyUser = proxyPassword = NULL;
 	if(val != NULL) {
+		//Todo we leak a little memory here
 		char * leak = (char*)malloc(val-proxy+1);
 		memcpy(leak,proxy,val-proxy);
 		leak[val-proxy] = 0;
 		proxy = val+1;
 		proxyUser = leak;
+		//Check to see that if a passwod is specified
 		val = strchr(leak,':');
 		if(val) { //There is a password
-			val[0] = '\0';
+			val[0] = '\0'; //Seperate the username from the password
 			proxyPassword = val+1;
 		}
 	}
 	//Read hostname and port
 	val = strchr(proxy,':');
-	proxyPort = 1080;
+	proxyPort = 1080; //Default proxy port
 	if(val == NULL) proxyHost = proxy;
 	else {
+		//Todo we leak some more memory here
 		char * leak = (char*)malloc(val-proxy+1);
 		memcpy(leak,proxy,val-proxy);
 		leak[val-proxy] = 0;
@@ -195,102 +231,138 @@ void WKHtmlToPdf::setProxy(const char * proxy) {
 	}
 }
 
+/*!
+ * Parse a long style command line argument, and set configuration accordingly
+ * \param arg the argument to parse without the leading --
+ * \param morec the number of additional argument availeble, 
+ * \param morev the additinal available arguments in a NULL terminated list.
+ * \return the number of additional arguments used, or -1 if some error occured
+ */
 int WKHtmlToPdf::parseLongArg(const char * arg, int morec, const char ** morev) {
 	size_t used=0;
 	if(!strcmp(arg,"help")) {
+		//Print usage information, and exit without an error
 		usage(stdout); exit(0);
 	} else if(!strcmp(arg,"version")) {
+		//Print version information, and exit witout an error
 		version(stdout); exit(0);
 	} else if(!strcmp(arg,"quiet")) {
+		//Suppres output
 		quiet = true;
 	} else if(!strcmp(arg,"input")) {
+		//Specify the input url
 		if(morec < 1) {usage(stderr);exit(1);}
 		in = morev[++used];
 	} else if(!strcmp(arg,"output")) {
+		//Specify the name of the output file
 		if(morec < 1) return -1;
 		out = morev[++used];
 	} else if(!strcmp(arg,"proxy")) {
+		//Set up proxy
 		if(morec < 1) return -1;
 		setProxy(morev[++used]);
 	} else if(!strcmp(arg,"orientation")) {
+		//Change page orientation
 		if(morec < 1) return -1;
 		setOrientation(morev[++used]);
 	} else if(!strcmp(arg,"pagesize")) {
+		//Setup paper size
 		if(morec < 1) return -1;
 		setPageSize(morev[++used]);
 	} else if(!strcmp(arg,"grayscale")) {
+		//Change into grayscale mode
 		colorMode = QPrinter::GrayScale;
 	} else if(!strcmp(arg,"lowquality")) {
+		//Lower the resolution of the output file (saves some space)
 		resolution = QPrinter::ScreenResolution;
 	} else if(!strcmp(arg,"nobackground")) {
+		//Do not print the background
 		background = false;
 	} else if(!strcmp(arg,"dpi")) {
+		//Change the dpi (the output resolution)
 		if(morec < 1) return -1;
 		dpi=atoi(morev[++used]);
 	} else if(!strcmp(arg,"top")) {
+		//Set the top margin
 		if(morec < 1) return -1;
 		top=parseUnitReal(morev[++used]);
 	} else if(!strcmp(arg,"right")) {
+		//Set the right margin
 		if(morec < 1) return -1;
 		right=parseUnitReal(morev[++used]);
 	} else if(!strcmp(arg,"bottom")) {
+		//Set the bottom margin
 		if(morec < 1) return -1;
 		bottom=parseUnitReal(morev[++used]);
 	} else if(!strcmp(arg,"left")) {
+		//Set the left margin
 		if(morec < 1) return -1;
 		left=parseUnitReal(morev[++used]);
-	} else return -1;
+	} else return -1; //An invalid option was specified
 	return used;
 }
 
+/*!
+ * Parse command line arguments, and set configuration accordingly.
+ * \param argc the number of command line arguments
+ * \param argv a NULL terminated list with the arguments
+ */
 void WKHtmlToPdf::parseArgs(int argc, const char ** argv) {
-	int x=0;
-	char * val;
 	//Load default configuration
-	in = "/dev/stdin";
+
+	//Note: We default to converting a file from stdin, this
+	//might confuse some users, perhaps we should display usage.
+	in = "/dev/stdin"; 
 	out = "/dev/stdout";
-	proxyHost = NULL;
+	proxyHost = NULL; 
 	quiet = false;
-	pageSize = QPrinter::A4;
+	pageSize = QPrinter::A4; //Can a better value be guessed from some system setting?
 	orientation = QPrinter::Portrait;
 	colorMode = QPrinter::Color;
-	resolution = QPrinter::HighResolution;
-	background = true;
-	dpi = -1;
+	resolution = QPrinter::HighResolution; //We default to producing good looking large files
+	background = true; //Draw the background
+	dpi = -1; //-1 indicates that we will use the default dpi provided by QT
 	top = right = bottom = left=
 		std::pair<qreal,QPrinter::Unit>(10,QPrinter::Millimeter);
-	
+
+	char * val;
 	//Load configuration from enviornment
 	if((val = getenv("proxy"))) setProxy(val);
 	if((val = getenv("all_proxy"))) setProxy(val);
 	if((val = getenv("http_proxy"))) setProxy(val);
 
+	//Provide some short commandline aliases
 	std::map<const char, const char *> s2l;
 	s2l['h'] = "help";      s2l['i'] = "input";      s2l['q']="quiet";
 	s2l['o'] = "output";    s2l['p'] = "proxy";      s2l['s']="pagesize";
 	s2l['g'] = "grayscale"; s2l['l'] = "lowquality"; s2l['O']="orientation";
 	s2l['d'] = "dpi";       s2l['T'] = "top";        s2l['B']="bottom";
 	s2l['R'] = "right";     s2l['L'] = "left";       s2l['b']="nobackground";
-	
-	//QNetworkProxy::NoProxy;
+
+
+	int x=0; //The number of default arguments read so fare
 	for(int i=1; i < argc; ++i) {
 		if(argv[i][0] != '-') {
 			//Default arguments
 			++x;
-			if(x==1) in = argv[i];
-			else if(x == 2)	out = argv[i];
-			else {usage(stderr); exit(1);}
+			if(x==1) in = argv[i]; //The first default argument is the input URL
+			else if(x == 2)	out = argv[i]; //The second default is the output filename
+			else {usage(stderr); exit(1);} //There are no bore default arguments
 			continue;
 		}
-		if(argv[i][1] == '-') {
+		if(argv[i][1] == '-') { //We have a long style argument
 			int used = parseLongArg(argv[i]+2, argc - i, argv+i);
-			if(used == -1) {usage(stderr); exit(1);}
+			//If some error occured print the usage information and exit indicating an error
+			if(used == -1) {usage(stderr); exit(1);} 
 			i += used;
 		} else {
-			int c=i;
+			int c=i;//Remember the current argument we are parsing
 			for(int j=1; argv[c][j] != '\0'; ++j) {
+				//If the short argument is invalid print usage information and exit
 				if(s2l.count(argv[c][j]) == 0) {usage(stderr); exit(1);}
+				//Set the correct options
 				int used = parseLongArg(s2l[argv[c][j]], argc - i, argv+i);
+				//If some error occured, print usage information and exit
 				if(used == -1) {usage(stderr); exit(1);}
 				i += used;
 			}
@@ -298,7 +370,11 @@ void WKHtmlToPdf::parseArgs(int argc, const char ** argv) {
 	}
 }
 
-// shamelessly copied from Qt Demo Browser
+/*!
+ * Guess a url, by looking at a string
+ * (shamelessly copied from Qt Demo Browser)
+ * \param string The string the is suppose to be some kind of url
+ */
 QUrl WKHtmlToPdf::guessUrlFromString(const QString &string)
 {
 	QString urlStr = string.trimmed();
@@ -331,6 +407,7 @@ QUrl WKHtmlToPdf::guessUrlFromString(const QString &string)
 	// Fall back to QUrl's own tolerant parser.
 	return QUrl(string, QUrl::TolerantMode);
 }
+
 
 void WKHtmlToPdf::init() {
 	page.setNetworkAccessManager(&am);
