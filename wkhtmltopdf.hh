@@ -44,12 +44,21 @@ public:
 	QPrinter::Orientation orientation; //What orientation
 	QPrinter::ColorMode colorMode; //Color or grayscale
 	QPrinter::PrinterMode resolution; //resolution
-	int dpi;
-	std::pair<qreal, QPrinter::Unit> top;
-	std::pair<qreal, QPrinter::Unit> right;
-	std::pair<qreal, QPrinter::Unit> bottom;
-	std::pair<qreal, QPrinter::Unit> left;
+	int dpi; //The printing dpi
+	//Specify page margins
+	std::pair<qreal, QPrinter::Unit> margin_top;
+	std::pair<qreal, QPrinter::Unit> margin_right;
+	std::pair<qreal, QPrinter::Unit> margin_bottom;
+	std::pair<qreal, QPrinter::Unit> margin_left;
 	
+	//Header / footer settings
+	int header_font_size, footer_font_size;
+	QString header_font_name, footer_font_name;
+	QString header_left, header_center, header_right;
+	bool header_line, footer_line;
+	QString footer_left, footer_center, footer_right;
+	
+	QString hfreplace(const QString & q, int f, int t, int p);
 	std::pair<qreal, QPrinter::Unit> parseUnitReal(const char * o);
 	static QUrl guessUrlFromString(const QString &string);
 	void version(FILE * fd); //Print version information to fd
@@ -63,6 +72,7 @@ public:
 	void run(int argc, const char** argv);
 
 public slots:
+	void newPage(QPrinter * p, int fromPage, int toPage, int page);
 	void loadFinished(bool ok);
 	void loadProgress(int progress);
 	void sslErrors(QNetworkReply *reply, const QList<QSslError> &error);

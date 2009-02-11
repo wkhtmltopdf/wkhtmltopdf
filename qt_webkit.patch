@@ -1,0 +1,41 @@
+diff --git a/src/3rdparty/webkit/WebKit/qt/Api/qwebframe.cpp b/src/3rdparty/webkit/WebKit/qt/Api/qwebframe.cpp
+index ae71356..574e14d 100644
+--- a/src/3rdparty/webkit/WebKit/qt/Api/qwebframe.cpp
++++ b/src/3rdparty/webkit/WebKit/qt/Api/qwebframe.cpp
+@@ -955,10 +955,13 @@ void QWebFrame::print(QPrinter *printer) const
+                     return;
+                 }
+                 printContext.spoolPage(ctx, page - 1, pageRect.width());
+-                if (j < pageCopies - 1)
++                if (j < pageCopies - 1) {
++                    emit printingNewPage(printer,fromPage,toPage,page);
+                     printer->newPage();
++                }
+             }
+-
++            emit printingNewPage(printer,fromPage,toPage,page);
++        
+             if (page == toPage)
+                 break;
+ 
+diff --git a/src/3rdparty/webkit/WebKit/qt/Api/qwebframe.h b/src/3rdparty/webkit/WebKit/qt/Api/qwebframe.h
+index 18ae697..1d40a29 100644
+--- a/src/3rdparty/webkit/WebKit/qt/Api/qwebframe.h
++++ b/src/3rdparty/webkit/WebKit/qt/Api/qwebframe.h
+@@ -21,6 +21,8 @@
+ #ifndef QWEBFRAME_H
+ #define QWEBFRAME_H
+ 
++#define WKHTMLTOPDF_QT_WEBFRAME_PATCH
++
+ #include <QtCore/qobject.h>
+ #include <QtCore/qurl.h>
+ #include <QtCore/qvariant.h>
+@@ -191,6 +193,7 @@ Q_SIGNALS:
+ 
+     void iconChanged();
+ 
++    void printingNewPage(QPrinter *p, int fromPage, int toPage, int Page) const;
+ private:
+     friend class QWebPage;
+     friend class QWebPagePrivate;

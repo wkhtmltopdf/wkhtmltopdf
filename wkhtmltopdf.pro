@@ -9,7 +9,8 @@ TARGET =
 DEPENDPATH += .
 INCLUDEPATH += .
 
-CONFIG -= app_bundle 
+CONFIG += qt debug
+CONFIG -= app_bundle
 QT += webkit network 
 
 # Input
