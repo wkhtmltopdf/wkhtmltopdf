@@ -19,6 +19,7 @@
 #include <QtGui>
 #include <QWebView>
 #include <QNetworkProxy>
+#include <QAtomicInt>
 #include <stdlib.h>
 
 //Class responsible for the convertion
@@ -58,6 +59,9 @@ public:
 	bool header_line, footer_line;
 	QString footer_left, footer_center, footer_right;
 	
+	QAtomicInt loading; //Keep track of the numer of pages loading
+	size_t jsredirectwait;
+
 	QString hfreplace(const QString & q, int f, int t, int p);
 	std::pair<qreal, QPrinter::Unit> parseUnitReal(const char * o);
 	static QUrl guessUrlFromString(const QString &string);
@@ -76,5 +80,7 @@ public slots:
 	void loadFinished(bool ok);
 	void loadProgress(int progress);
 	void sslErrors(QNetworkReply *reply, const QList<QSslError> &error);
+	void printPage();
+	void loadStarted();
 };
 #endif //__wkhtmltopdf_hh__

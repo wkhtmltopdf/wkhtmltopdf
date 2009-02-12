@@ -75,6 +75,7 @@ void WKHtmlToPdf::usage(FILE * fd) {
 "      --read-args-from-stdin      Uses each line from stdin, as commandline options\n"
 "                                  for a convertion. Using multiple lines here, is much\n"
 "                                  faster then calling wkhtmltopdf multiple times\n"
+"      --redirect-delay <msec>     wait some miliseconds for js-redirects (default 500)\n" 		   
 "\n"
 "Proxy:\n"
 "  By default proxyinformation will be read from the environment\n"
@@ -341,6 +342,8 @@ int WKHtmlToPdf::parseLongArg(const char * arg, int morec, const char ** morev) 
 			footer_center=morev[++used];
 		else if(!strcmp(arg,"footer-right"))
 			footer_right=morev[++used];
+		else if(!strcmp(arg,"redirect-delay"))
+			jsredirectwait=atoi(morev[++used]);
 		else return -1; //An invalid option was specified
 	} 
 	return used;
@@ -360,6 +363,7 @@ void WKHtmlToPdf::parseArgs(int argc, const char ** argv) {
 	out = "/dev/stdout";
 	proxyHost = NULL; 
 	quiet = false;
+	jsredirectwait = 500;
 	pageSize = QPrinter::A4; //Can a better value be guessed from some system setting?
 	orientation = QPrinter::Portrait;
 	colorMode = QPrinter::Color;
@@ -473,11 +477,20 @@ void WKHtmlToPdf::init() {
 	connect(&page, SIGNAL(loadProgress(int)), this, SLOT(loadProgress(int)));
 	//Once the loading is done we want loadFinished to be called
 	connect(&page, SIGNAL(loadFinished(bool)), this, SLOT(loadFinished(bool)));
-#ifdef	WKHTMLTOPDF_QT_WEBFRAME_PATCH
-	connect(page.mainFrame(), SIGNAL(printingNewPage(QPrinter*,int,int,int)), this, SLOT(newPage(QPrinter*,int,int,int)));
+	connect(&page, SIGNAL(loadStarted()), this, SLOT(loadStarted()));
+#ifdef WKHTMLTOPDF_QT_WEBFRAME_PATCH
+	connect(page.mainFrame(), SIGNAL(printingNewPage(QPrinter*,int,int,int)), 
+			this, SLOT(newPage(QPrinter*,int,int,int)));
 #endif
 }
 
+/*!
+ * Replace some variabels in a string used in a header or fooder
+ * \param q the string to substitute in
+ * \param f the number that [fromPage] is substituded for
+ * \param t the number that [toPage] is substituded for
+ * \param p the number that [page] is substituded for
+ */
 QString WKHtmlToPdf::hfreplace(const QString & q, int f, int t, int p) {
 	QString _=q;
 	return _
@@ -487,36 +500,61 @@ QString WKHtmlToPdf::hfreplace(const QString & q, int f, int t, int p) {
 		.replace("[webpage]",in);
 }
 
+/*!
+ * Called whenever a new page is printed: Display some progress, and puts in
+ * footers and headers
+ * \param printer the printer that prints a new page
+ * \prarm f the first page printed
+ * \param t the last page printed
+ * \param p the page currently printing
+ */
 void WKHtmlToPdf::newPage(QPrinter * printer, int f, int t, int p) {
-	if(!quiet) fprintf(stderr,"Printing page: %3d%%   \r",(p-f+1)*100/(t-f+1));
-	fflush(stdout);
+	//Display some progress information to the user
+	if(!quiet) {fprintf(stderr,"Printing page: %3d%%   \r",(p-f+1)*100/(t-f+1)); fflush(stdout);}
+
+	//Get the painter assosiated with the printer
 	QPainter & painter = *printer->paintEngine()->painter();
+
+	//Webkit used all kinds of crasy cordinate transformation, and font setup
+	//We save it here and restore some sane defaults
 	painter.save();
 	painter.resetMatrix();
 	int h=printer->pageRect().height();
 	int w=printer->pageRect().width();
 
-	painter.setFont(QFont(header_font_name, header_font_size));
+	//If needed draw the header line
 	if(header_line) painter.drawLine(0,0,w,0);
+	//Guess the height of the header text
+	painter.setFont(QFont(header_font_name, header_font_size));
 	int dy = painter.boundingRect(0,0,w,h,Qt::AlignTop,"M").height();
+	//Draw the header text
 	QRect r=QRect(0,0-dy,w,h);
-	QString  x = hfreplace(header_right,f,t,p);
-
 	painter.drawText(r, Qt::AlignTop | Qt::AlignLeft, hfreplace(header_left,f,t,p));
 	painter.drawText(r, Qt::AlignTop | Qt::AlignCenter, hfreplace(header_center,f,t,p));
 	painter.drawText(r, Qt::AlignTop | Qt::AlignRight, hfreplace(header_right,f,t,p));
 
-	painter.setFont(QFont(footer_font_name, footer_font_size));
+	//IF needed draw the footer line
 	if(footer_line) painter.drawLine(0,h,w,h);
+	//Guess the height of the footer text
+	painter.setFont(QFont(footer_font_name, footer_font_size));
 	dy = painter.boundingRect(0,0,w,h,Qt::AlignTop,"M").height();
+	//Draw the fooder text
 	r=QRect(0,0,w,h+dy);
 	painter.drawText(r, Qt::AlignBottom | Qt::AlignLeft, hfreplace(footer_left,f,t,p));
 	painter.drawText(r, Qt::AlignBottom | Qt::AlignCenter, hfreplace(footer_center,f,t,p));
 	painter.drawText(r, Qt::AlignBottom | Qt::AlignRight, hfreplace(footer_right,f,t,p));
+
+	//Restore wkebkits crasy scaling and font settings
 	painter.restore();
 }
 
+/*!
+ * Parse arguments, load page and print it
+ * \param argc the number of arguments
+ * \param argv NULL terminated array of arguments
+ */
 void WKHtmlToPdf::run(int argc, const char ** argv) {
+	loading=0;
 	//Parse the arguments
 	parseArgs(argc,argv);
 	//Make a url of the input file
@@ -530,32 +568,38 @@ void WKHtmlToPdf::run(int argc, const char ** argv) {
 		if(proxyPassword) proxy.setPassword(proxyPassword);
 		am.setProxy(proxy);
 	}
+	//Disable stuff we don't need
 	page.settings()->setAttribute(QWebSettings::JavaEnabled, false);
 	page.settings()->setAttribute(QWebSettings::JavascriptCanOpenWindows, false);
 	page.settings()->setAttribute(QWebSettings::JavascriptCanAccessClipboard, false);
 #if QT_VERSION >= 0x040500
+	//Newer vertions of QT have even more settings to change
 	page.settings()->setAttribute(QWebSettings::PrintElementBackgrounds, background);
 	page.settings()->setAttribute(QWebSettings::PluginsEnabled, false);
 #endif 
+	//Lets load the page
 	page.mainFrame()->load(url);
 }
 
+/*!
+ * Handel any ssl error by ignoring
+ */
 void WKHtmlToPdf::sslErrors(QNetworkReply *reply, const QList<QSslError> &error) {
 	//We ignore any ssl error, as it is next to impossible to send or receive
 	//any private information with wkhtmltopdf anyhow, seeing as you cannot authenticate
 	reply->ignoreSslErrors();
 }
 
-void WKHtmlToPdf::loadFinished(bool ok) {
-  	if(!ok) {
-		//It went bad, return with 1
-		fprintf(stderr, "Failed loading page\n");
-		exit(1);
-		return;
-	}
-	//Print out that it went good
-	if(!quiet) fprintf(stderr, "Outputting page       \r");
-	fflush(stdout);
+/*!
+ * Print out the document to the pdf file
+ */
+void WKHtmlToPdf::printPage() {
+	//If there are still pages loading wait til they are done
+	if(loading != 0) return;
+
+	//Give some user feed back
+	if(!quiet) {fprintf(stderr, "Outputting page       \r"); fflush(stdout);}
+	
 	//Construct a printer object used to print the html to pdf
 	QPrinter p(resolution);
 	if(dpi != -1) p.setResolution(dpi);
@@ -566,39 +610,78 @@ void WKHtmlToPdf::loadFinished(bool ok) {
 		QPrinter::PostScriptFormat : QPrinter::PdfFormat
 		);
 	p.setOutputFileName(out);
+	
+	//We currently only support margins with the same unit
 	if(margin_left.second != margin_right.second ||
 	   margin_left.second != margin_top.second ||	  
 	   margin_left.second != margin_bottom.second) {
 		fprintf(stderr, "Currently all margin units must be the same!\n");
 		exit(1);
 	}
-	   
+	
+	//Setup margins and papersize
 	p.setPageMargins(margin_left.first, margin_top.first, 
 					 margin_right.first, margin_bottom.first, 
 					 margin_left.second);
-	
 	p.setPageSize(pageSize);
 	p.setOrientation(orientation);
 	p.setColorMode(colorMode);
+
 	//Do the actual printing
 	if(!p.isValid()) {
 		fprintf(stderr,"Unable to write to output file\n");
 	} else {
 		page.mainFrame()->print(&p);
-		if(!quiet) printf("Done                 \n");
+		if(!quiet) {printf("Done                 \n"); fflush(stdout);}
 		//Inform the user that everything went well
 	}
-	qApp->quit();
+	//All went well, if there where no redirect since then, terminating
+	if(loading == 0) qApp->quit();	
 }
 
+/*!
+ * Once loading is finished, we start the printing
+ * \param ok did the loading finish correctly?
+ */
+void WKHtmlToPdf::loadFinished(bool ok) {
+	//Keep track of the number of pages currently loading
+	loading.deref();
+  	if(!ok) {
+		//It went bad, return with 1
+		fprintf(stderr, "Failed loading page\n");
+		exit(1);
+		return;
+	}
+	if(!quiet) {fprintf(stderr, "Waiting for redirect  \r");fflush(stdout);}
+														
+	//Wait a little while for js-redirects, and then print
+	QTimer::singleShot(jsredirectwait, this, SLOT(printPage()));
+}
+
+/*!
+ * Once loading starting, this is called
+ */
+void WKHtmlToPdf::loadStarted() {
+	//Keep track of the number of pages currently loading
+	loading.ref();
+}
+
+/*!
+ * Called when the page is loading, display some progress to the using
+ * \param progress the loading progress in percent
+ */
 void WKHtmlToPdf::loadProgress(int progress) {
 	//Print out the load status
 	if(!quiet) fprintf(stderr,"Loading page: %3d%%   \r",progress);
 	fflush(stdout);
 }
 
-/**
- * State mashine driven, shell like parser
+/*!
+ * State mashine driven, shell like parser. This is used for
+ * reading commandline options from stdin
+ * \param buff the line to parse
+ * \param nargc on return will hold the number of arguments read
+ * \param nargv on return will hold the argumenst read and be NULL terminated
  */ 
 enum State {skip, tok, q1, q2, q1_esc, q2_esc, tok_esc};
 void parseString(char * buff, int &nargc, char **nargv) {
@@ -609,11 +692,13 @@ void parseString(char * buff, int &nargc, char **nargv) {
 		State next_state=state;
 		switch(state) {
 		case skip:
+			//Whitespace skipping state
 			if(buff[read]!=' ' && buff[read]!='\t' && buff[read]!='\r' && buff[read]!='\n') {
 				--read; next_state=tok;
 			}
 			break;
 		case tok:
+			//Normal toking reading state
 			if(buff[read]=='\'') next_state=q1;
 			else if(buff[read]=='"') next_state=q2;
 			else if(buff[read]=='\\') next_state=tok_esc;
@@ -629,27 +714,33 @@ void parseString(char * buff, int &nargc, char **nargv) {
 			else buff[write++] = buff[read];
 			break;
 		case q1:
+			//State parsing a single qoute argument
 			if(buff[read]=='\'') next_state=tok;
 			else if(buff[read]=='\\') next_state=q1_esc;
 			else buff[write++] = buff[read];
 			break;
 		case q2:
+			//State parsing a double qoute argument
 			if(buff[read]=='"') next_state=tok;
 			else if(buff[read]=='\\') next_state=q2_esc;
 			else buff[write++] = buff[read];
 			break;
 		case tok_esc:
+			//Escape one char and return to the tokan parsing state
 			next_state=tok; buff[write++] = buff[read];
 			break;
 		case q1_esc:
+			//Espace one char and return to the single quote parsing state
 			next_state=q1; buff[write++] = buff[read];
 			break;
 		case q2_esc:
+			//Escape one char and return to the double qoute parsing state
 			next_state=q2; buff[write++] = buff[read];
 			break;
 		}
 		state=next_state;
 	}
+	//Remember the last parameter
 	if(write_start != write) {
 		buff[write++]='\0';
 		nargv[nargc++] = buff+write_start;
