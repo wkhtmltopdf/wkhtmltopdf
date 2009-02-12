@@ -488,7 +488,7 @@ QString WKHtmlToPdf::hfreplace(const QString & q, int f, int t, int p) {
 }
 
 void WKHtmlToPdf::newPage(QPrinter * printer, int f, int t, int p) {
-	if(!quiet) fprintf(stderr,"Printing page: %d%%   \r",(p-f)*100/(t-f));
+	if(!quiet) fprintf(stderr,"Printing page: %3d%%   \r",(p-f+1)*100/(t-f+1));
 	fflush(stdout);
 	QPainter & painter = *printer->paintEngine()->painter();
 	painter.save();
@@ -530,8 +530,12 @@ void WKHtmlToPdf::run(int argc, const char ** argv) {
 		if(proxyPassword) proxy.setPassword(proxyPassword);
 		am.setProxy(proxy);
 	}
+	page.settings()->setAttribute(QWebSettings::JavaEnabled, false);
+	page.settings()->setAttribute(QWebSettings::JavascriptCanOpenWindows, false);
+	page.settings()->setAttribute(QWebSettings::JavascriptCanAccessClipboard, false);
 #if QT_VERSION >= 0x040500
 	page.settings()->setAttribute(QWebSettings::PrintElementBackgrounds, background);
+	page.settings()->setAttribute(QWebSettings::PluginsEnabled, false);
 #endif 
 	page.mainFrame()->load(url);
 }
@@ -589,7 +593,7 @@ void WKHtmlToPdf::loadFinished(bool ok) {
 
 void WKHtmlToPdf::loadProgress(int progress) {
 	//Print out the load status
-	if(!quiet) fprintf(stderr,"Loading page: %d%%   \r",progress);
+	if(!quiet) fprintf(stderr,"Loading page: %3d%%   \r",progress);
 	fflush(stdout);
 }
 
