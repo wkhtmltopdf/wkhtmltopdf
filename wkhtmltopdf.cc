@@ -466,6 +466,7 @@ QUrl WKHtmlToPdf::guessUrlFromString(const QString &string)
 void WKHtmlToPdf::init() {
 	//Allow for network control fine touning.
 	page.setNetworkAccessManager(&am); 
+	//If some ssl error occures we want sslErrors to be called, so the we can ignore it
 	connect(&am, SIGNAL(sslErrors(QNetworkReply*, const QList<QSslError>&)),this,
             SLOT(sslErrors(QNetworkReply*, const QList<QSslError>&)));
 	//When loading is progressing we want loadProgress to be called
@@ -536,6 +537,8 @@ void WKHtmlToPdf::run(int argc, const char ** argv) {
 }
 
 void WKHtmlToPdf::sslErrors(QNetworkReply *reply, const QList<QSslError> &error) {
+	//We ignore any ssl error, as it is next to impossible to send or receive
+	//any private information with wkhtmltopdf anyhow, seeing as you cannot authenticate
 	reply->ignoreSslErrors();
 }
 
