@@ -427,41 +427,65 @@ void WKHtmlToPdf::parseArgs(int argc, const char ** argv) {
 
 /*!
  * Guess a url, by looking at a string
- * (shamelessly copied from Qt Demo Browser)
+ * (shamelessly copied from Arora Project)
  * \param string The string the is suppose to be some kind of url
  */
 QUrl WKHtmlToPdf::guessUrlFromString(const QString &string)
 {
-	QString urlStr = string.trimmed();
-	QRegExp test(QLatin1String("^[a-zA-Z]+\\:.*"));
-	
-	// Check if it looks like a qualified URL. Try parsing it and see.
-	bool hasSchema = test.exactMatch(urlStr);
-	if (hasSchema) {
-		QUrl url(urlStr, QUrl::TolerantMode);
-		if (url.isValid())
-			return url;
-	}
-	
-	// Might be a file.
-	if (QFile::exists(urlStr)) {
-	  return QUrl(urlStr, QUrl::TolerantMode);
-	}
+  QString urlStr = string.trimmed();
 
-	// Might be a shorturl - try to detect the schema.
-	if (!hasSchema) {
-		int dotIndex = urlStr.indexOf(QLatin1Char('.'));
-		if (dotIndex != -1) {
-			QString prefix = urlStr.left(dotIndex).toLower();
-			QString schema = (prefix == QLatin1String("ftp")) ? prefix : QLatin1String("http");
-			QUrl url(schema + QLatin1String("://") + urlStr, QUrl::TolerantMode);
-			if (url.isValid())
-				return url;
-		}
-	}
-	
-	// Fall back to QUrl's own tolerant parser.
-	return QUrl(string, QUrl::TolerantMode);
+  // check if the string is just a host with a port
+  QRegExp hostWithPort(QLatin1String("^[a-zA-Z\\.]+\\:[0-9]*$"));
+  if (hostWithPort.exactMatch(urlStr))
+    urlStr = QLatin1String("http://") + urlStr;
+
+  // Check if it looks like a qualified URL. Try parsing it and see.
+  QRegExp test(QLatin1String("^[a-zA-Z]+\\:.*"));
+  bool hasSchema = test.exactMatch(urlStr);
+  if (hasSchema) {
+    bool isAscii = true;
+    foreach (const QChar &c, urlStr) {
+      if (c >= 0x80) {
+	isAscii = false;
+	break;
+      }
+    }
+
+    QUrl url;
+    if (isAscii) {
+      url = QUrl::fromEncoded(urlStr.toAscii(), QUrl::TolerantMode);
+    } else {
+      url = QUrl(urlStr, QUrl::TolerantMode);
+    }
+    if (url.isValid())
+      return url;
+  }
+
+  // Might be a file.
+  if (QFile::exists(urlStr)) {
+    QFileInfo info(urlStr);
+    return QUrl::fromLocalFile(info.absoluteFilePath());
+  }
+
+  // Might be a shorturl - try to detect the schema.
+  if (!hasSchema) {
+    int dotIndex = urlStr.indexOf(QLatin1Char('.'));
+    if (dotIndex != -1) {
+      QString prefix = urlStr.left(dotIndex).toLower();
+      QString schema = (prefix == QLatin1String("ftp")) ? prefix : QLatin1String("http");
+      QUrl url(schema + QLatin1String("://") + urlStr, QUrl::TolerantMode);
+      if (url.isValid())
+	return url;
+    }
+  }
+
+  // Fall back to QUrl's own tolerant parser.
+  QUrl url = QUrl(string, QUrl::TolerantMode);
+
+  // finally for cases where the user just types in a hostname add http
+  if (url.scheme().isEmpty())
+    url = QUrl(QLatin1String("http://") + string, QUrl::TolerantMode);
+  return url;
 }
 
 /*!
