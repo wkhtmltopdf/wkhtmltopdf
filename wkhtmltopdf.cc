@@ -444,9 +444,10 @@ QUrl WKHtmlToPdf::guessUrlFromString(const QString &string)
 	}
 	
 	// Might be a file.
-	if (QFile::exists(urlStr))
-		return QUrl::fromLocalFile(urlStr);
-	
+	if (QFile::exists(urlStr)) {
+	  return QUrl(urlStr, QUrl::TolerantMode);
+	}
+
 	// Might be a shorturl - try to detect the schema.
 	if (!hasSchema) {
 		int dotIndex = urlStr.indexOf(QLatin1Char('.'));
