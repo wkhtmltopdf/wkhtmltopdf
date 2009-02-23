@@ -59,7 +59,7 @@ void WKHtmlToPdf::usage(FILE * fd) {
 "      --header-font-size <size>   header font size (default 11)\n"
 "      --header-font-name <name>   header font name (default Areal)\n"
 "      --header-left <text>        left aligned header text\n"		  
-"      --header-center <text       center aligned header text\n"		  
+"      --header-center <text>      center aligned header text\n"		  
 "      --header-right <text>       right aligned header text\n"
 "      --header-line <text>        display line below the header\n"
 "      --footer-font-size <size>   footer font size (default 11)\n"
@@ -70,7 +70,7 @@ void WKHtmlToPdf::usage(FILE * fd) {
 "      --footer-line <text>        display line above the footer\n"
 "  -H, --default-header            Add a default header, with the name of the page to the left,\n"
 "                                  and the page number to the right, this is short for:\n"
-"                                  --header-left='[webpage]' --header-right='[page]/[toPage]' --top 2cm --header-line\n"
+"                                  \"--header-left='[webpage]' --header-right='[page]/[toPage]' --top 2cm --header-line\"\n"
 #endif
 "      --read-args-from-stdin      Uses each line from stdin, as commandline options\n"
 "                                  for a convertion. Using multiple lines here, is much\n"
@@ -104,15 +104,15 @@ void WKHtmlToPdf::usage(FILE * fd) {
  */
 void WKHtmlToPdf::version(FILE * fd) {
 	fprintf(fd,
-"wkhtmltopdf %d.%d\n"
-"Copyright (C) 2008 Jakob Truelsen,\n"
+"wkhtmltopdf %d.%d.%d\n"
+"Copyright (C) 2008,2009 Jakob Truelsen,\n"
 "License GPLv3+: GNU GPL version 3 or later <http://gnu.org/licenses/gpl.html>\n"
 "This is free software: you are free to change and redistribute it.\n"
 "There is NO WARRANTY, to the extent permitted by law.\n"
 "\n"
 "Written by Jakob Truelsen\n"
 "Patches by Mário Silva\n\n",
-	  MAJOR_VERSION, MINOR_VERSION);
+			MAJOR_VERSION, MINOR_VERSION, PATCH_VERSION);
 }
 
 /*!
