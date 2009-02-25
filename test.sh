@@ -70,7 +70,6 @@ function testHeaderFooter() {
     rm -rf tmp.pdf
 	echo "<html><head><title>Local Test</title></head><body><h1>monster</h1></body></html>" > tmp.html
 	wk tmp.html tmp.pdf --footer-left hat --header-right emacs
-	pdftotext tmp.pdf /dev/stdout
     ([ -f tmp.pdf ] && 
 		pdftotext tmp.pdf /dev/stdout | grep -q monster &&
 		pdftotext tmp.pdf /dev/stdout | grep -q emacs &&
