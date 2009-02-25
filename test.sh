@@ -68,12 +68,13 @@ function testSSL() {
 #Test if the header footer stuff works
 function testHeaderFooter() {
     rm -rf tmp.pdf
-	echo "<html><head><title>Local Test</title></head><body><h1>Qb6G6PQMm4WJO7Mz</h1></body></html>" > tmp.html
-	wk tmp.html tmp.pdf --footer-left TjNdJZBjd1m8bEAJ --header-right rurf5ng9zCfBgKL4
+	echo "<html><head><title>Local Test</title></head><body><h1>monster</h1></body></html>" > tmp.html
+	wk tmp.html tmp.pdf --footer-left hat --header-right emacs
+	pdftotext tmp.pdf /dev/stdout
     ([ -f tmp.pdf ] && 
-		pdftotext tmp.pdf /dev/stdout | grep -q Qb6G6PQMm4WJO7Mz &&
-		pdftotext tmp.pdf /dev/stdout | grep -q TjNdJZBjd1m8bEAJ &&
-		pdftotext tmp.pdf /dev/stdout | grep -q rurf5ng9zCfBgKL4) && good HeaderFooter || bad HeaderFooter
+		pdftotext tmp.pdf /dev/stdout | grep -q monster &&
+		pdftotext tmp.pdf /dev/stdout | grep -q emacs &&
+		pdftotext tmp.pdf /dev/stdout | grep -q hat) && good HeaderFooter || bad HeaderFooter
 }
 
 
