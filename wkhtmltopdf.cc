@@ -555,7 +555,7 @@ void WKHtmlToPdf::newPage(QPrinter * printer, int f, int t, int p) {
 	//Draw the header text
 	QRect r=QRect(0,0-dy,w,h);
 	painter.drawText(r, Qt::AlignTop | Qt::AlignLeft, hfreplace(header_left,f,t,p));
-	painter.drawText(r, Qt::AlignTop | Qt::AlignCenter, hfreplace(header_center,f,t,p));
+	painter.drawText(r, Qt::AlignTop | Qt::AlignHCenter, hfreplace(header_center,f,t,p));
 	painter.drawText(r, Qt::AlignTop | Qt::AlignRight, hfreplace(header_right,f,t,p));
 
 	//IF needed draw the footer line
@@ -566,7 +566,7 @@ void WKHtmlToPdf::newPage(QPrinter * printer, int f, int t, int p) {
 	//Draw the fooder text
 	r=QRect(0,0,w,h+dy);
 	painter.drawText(r, Qt::AlignBottom | Qt::AlignLeft, hfreplace(footer_left,f,t,p));
-	painter.drawText(r, Qt::AlignBottom | Qt::AlignCenter, hfreplace(footer_center,f,t,p));
+	painter.drawText(r, Qt::AlignBottom | Qt::AlignHCenter, hfreplace(footer_center,f,t,p));
 	painter.drawText(r, Qt::AlignBottom | Qt::AlignRight, hfreplace(footer_right,f,t,p));
 
 	//Restore wkebkits crasy scaling and font settings
