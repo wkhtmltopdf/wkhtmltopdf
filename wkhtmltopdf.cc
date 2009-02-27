@@ -19,6 +19,14 @@
 #include <qnetworkreply.h>
 #include <map>
 #include <QtWebKit>
+#include <QtPlugin>
+
+#ifdef QT_STATIC
+Q_IMPORT_PLUGIN(qjpeg)
+Q_IMPORT_PLUGIN(qgif)
+Q_IMPORT_PLUGIN(qtiff)
+Q_IMPORT_PLUGIN(qmng)
+#endif
 
 /*!
  * Print out program usage information

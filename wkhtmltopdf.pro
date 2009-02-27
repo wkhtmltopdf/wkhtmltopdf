@@ -15,6 +15,15 @@
 
 DEFINES += MAJOR_VERSION=0 MINOR_VERSION=6 PATCH_VERSION=1
 
+TEMP = $$[QT_INSTALL_LIBS] libQtGui.prl
+include($$join(TEMP, "/"))
+
+contains(QMAKE_PRL_CONFIG, shared) {
+    DEFINES += QT_SHARED
+} else {
+    DEFINES += QT_STATIC
+}
+
 TEMPLATE = app
 TARGET = 
 DEPENDPATH += .
@@ -35,9 +44,11 @@ unix {
     INSTALLS += manins
 }
 
-INSTALLS +=  target
+INSTALLS += target
 target.path=$$INSTALLBASE/bin
-QT += webkit network 
+QTPLUGIN += qjpeg qgif qtiff qmng
+
+QT += webkit network
 
 # Input
 HEADERS += wkhtmltopdf.hh
