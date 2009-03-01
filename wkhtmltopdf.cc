@@ -69,13 +69,13 @@ void WKHtmlToPdf::usage(FILE * fd) {
 "      --header-left <text>        left aligned header text\n"		  
 "      --header-center <text>      center aligned header text\n"		  
 "      --header-right <text>       right aligned header text\n"
-"      --header-line <text>        display line below the header\n"
+"      --header-line               display line below the header\n"
 "      --footer-font-size <size>   footer font size (default 11)\n"
 "      --footer-font-name <name>   footer font name (default Areal)\n"
 "      --footer-left <text>        left aligned footer text\n"		  
 "      --footer-center <text>      center aligned footer text\n"		  
 "      --footer-right <text>       right aligned footer text\n"
-"      --footer-line <text>        display line above the footer\n"
+"      --footer-line               display line above the footer\n"
 "  -H, --default-header            Add a default header, with the name of the page to the left,\n"
 "                                  and the page number to the right, this is short for:\n"
 "                                  \"--header-left='[webpage]' --header-right='[page]/[toPage]' --top 2cm --header-line\"\n"
@@ -186,7 +186,7 @@ void WKHtmlToPdf::setPageSize(const char * o) {
 std::pair<qreal, QPrinter::Unit> WKHtmlToPdf::parseUnitReal(const char * o) {
 	qreal s=1.0; //Since not all units are provided by qt, we use this variable to skale 
 	//Them into units that are.
-	QPrinter::Unit u;
+	QPrinter::Unit u=QPrinter::Millimeter;
 	//Skip the real number part
 	int i=0; 
 	while('0' <= o[i]  && o[i] <= '9') ++i;
@@ -290,6 +290,10 @@ int WKHtmlToPdf::parseLongArg(const char * arg, int morec, const char ** morev) 
 	} else if(!strcmp(arg,"nobackground")) {
 		//Do not print the background
 		background = false;
+	} else if(!strcmp(arg,"footer-line")) {
+		footer_line = true;
+	} else if(!strcmp(arg,"header-line")) {
+		header_line = true;
 	} else {
 		if(morec < 1) {usage(stderr);exit(1);}
 		if(!strcmp(arg,"input"))
@@ -618,6 +622,7 @@ void WKHtmlToPdf::run(int argc, const char ** argv) {
  * Handel any ssl error by ignoring
  */
 void WKHtmlToPdf::sslErrors(QNetworkReply *reply, const QList<QSslError> &error) {
+	Q_UNUSED(error);
 	//We ignore any ssl error, as it is next to impossible to send or receive
 	//any private information with wkhtmltopdf anyhow, seeing as you cannot authenticate
 	reply->ignoreSslErrors();

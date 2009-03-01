@@ -22,6 +22,7 @@ contains(QMAKE_PRL_CONFIG, shared) {
     DEFINES += QT_SHARED
 } else {
     DEFINES += QT_STATIC
+    QTPLUGIN += qjpeg qgif qtiff qmng
 }
 
 TEMPLATE = app
@@ -46,7 +47,6 @@ unix {
 
 INSTALLS += target
 target.path=$$INSTALLBASE/bin
-QTPLUGIN += qjpeg qgif qtiff qmng
 
 QT += webkit network
 
