@@ -25,10 +25,11 @@ cd test
 
 
 export WK=../wkhtmltopdf
+failed=0
 
 function result() { printf "%-30s [%-4s]\n" "$1" "$2";}
 function good() { result "$1" " OK ";}
-function bad() { result "$1" "Fail";}
+function bad() { result "$1" "Fail"; export failed=$(($failed+1));}
 function fs() { du -b "$1" | sed -re 's/([0-9]*).*/\1/';}
 function wk() { $WK --redirect-delay 0 -q $*;}
 
@@ -82,11 +83,12 @@ testLocalFileSupport
 testImgSupport jpg
 testImgSupport gif
 testImgSupport png
-testImgSupport mng
-testImgSupport tiff
+#testImgSupport mng
+#testImgSupport tiff
 testRemote 
 testSSL
 testHeaderFooter
 
 #Lets clean up
 rm tmp.html tmp.pdf
+exit $failed 
