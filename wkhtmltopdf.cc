@@ -670,7 +670,7 @@ void WKHtmlToPdf::printPage() {
 		fprintf(stderr,"Unable to write to output file\n");
 	} else {
 		page.mainFrame()->print(&p);
-		if(!quiet) {printf("Done                 \n"); fflush(stdout);}
+		if(!quiet) {fprintf(stderr,"Done                 \n"); fflush(stderr);}
 		//Inform the user that everything went well
 	}
 	//All went well, if there where no redirect since then, terminating
