@@ -53,7 +53,7 @@ void WKHtmlToPdf::usage(FILE * fd) {
 "  -s, --pagesize <size>           Set pape size to: A4, Letter, ect.\n"
 "  -g, --grayscale                 PDF will be generated in grayscale.\n"
 "  -l, --lowquality                Generates lower quality pdf/ps.\n"
-"                                  Usefull to shrink the result document space.\n"
+"                                  Useful to shrink the result document space.\n"
 "  -d, --dpi <dpi>                 Set the dpi explicitly.\n"
 #if QT_VERSION < 0x040500 //This bug was fixed in QT4.5
 "                                  Be aware! There is currently a bug in QT, setting this to low\n"
