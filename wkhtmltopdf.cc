@@ -787,6 +787,15 @@ void parseString(char * buff, int &nargc, char **nargv) {
 }
 
 int main(int argc, char * argv[]) {
+	//This is a hack, to allow the generation of the man page without X11 support
+	if(argc == 2 && !strcmp(argv[1],"--help")) {
+		WKHtmlToPdf::usage(stdout);
+		exit(0);
+	}
+	if(argc == 2 && !strcmp(argv[1],"--version")) {
+		WKHtmlToPdf::version(stdout);
+		exit(0);
+	}
 	QApplication a(argc,argv); //Construct application, required for printing
 	WKHtmlToPdf x; //Create convertion instance
 	x.init();
@@ -799,10 +808,10 @@ int main(int argc, char * argv[]) {
 				int nargc=1;
 				parseString(buff,nargc,nargv);
 				x.run(nargc,(const char**)nargv);
-				a.exec(); //Wait for application to terminate
+				qApp->exec(); //Wait for application to terminate
 			}
 			exit(0);
 		}
 	x.run(argc,(const char **)argv); //Run convertion
-	return a.exec(); //Wait for application to terminate
+	return qApp->exec(); //Wait for application to terminate
 }

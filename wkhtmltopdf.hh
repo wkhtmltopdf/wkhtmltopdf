@@ -65,8 +65,8 @@ public:
 	QString hfreplace(const QString & q, int f, int t, int p);
 	std::pair<qreal, QPrinter::Unit> parseUnitReal(const char * o);
 	static QUrl guessUrlFromString(const QString &string);
-	void version(FILE * fd); //Print version information to fd
-	void usage(FILE * fd); //Print usage information to fd
+	static void version(FILE * fd); //Print version information to fd
+	static void usage(FILE * fd); //Print usage information to fd
 	void setPageSize(const char * size);
 	void setOrientation(const char * orientation);
 	void setProxy(const char * proxy); //parse proxy configuartion
