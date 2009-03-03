@@ -17,16 +17,84 @@
 #include <iostream>
 #include "wkhtmltopdf.hh"
 #include <qnetworkreply.h>
-#include <map>
 #include <QtWebKit>
 #include <QtPlugin>
 
 #ifdef QT_STATIC
+//When doing a static build, we need to load the plugins to make images work
 Q_IMPORT_PLUGIN(qjpeg)
 Q_IMPORT_PLUGIN(qgif)
 Q_IMPORT_PLUGIN(qtiff)
 Q_IMPORT_PLUGIN(qmng)
 #endif
+
+//Argumet handler setting a variable of the type T to some constant
+template <typename T> class AHConstSetter: public ArgHandler {
+public:
+	T & dst;
+	const T src;
+	AHConstSetter(T & arg, const T s): dst(arg), src(s) {};
+	bool operator() (const char ** args, WKHtmlToPdf * w) {Q_UNUSED(args); Q_UNUSED(w); dst=src; return true;}
+};
+
+//Argument handler setting an int variable 
+struct AHIntSetter: public ArgHandler {
+	int & val;
+	AHIntSetter(int & a, QString an): val(a) {argn.push_back(an);}
+	bool operator() (const char ** vals, WKHtmlToPdf * w) {Q_UNUSED(w); val = atoi(vals[0]); return true;}
+};
+//Argument handler setting a string variable 
+struct AHStrSetter: public ArgHandler {
+	const char * & val;
+	AHStrSetter(const char * & a, QString an): val(a) {argn.push_back(an);}
+	bool operator() (const char ** vals, WKHtmlToPdf * w) {Q_UNUSED(w); val = vals[0]; return true;}
+};
+//Argument handler setting a real-number/unit combo variable 
+struct AHUnitRealSetter: public ArgHandler {
+	QPair<qreal, QPrinter::Unit> & val;
+	AHUnitRealSetter(QPair<qreal, QPrinter::Unit> & a, QString an): val(a) {argn.push_back(an);}
+	bool operator() (const char ** vals, WKHtmlToPdf *w) {val=w->parseUnitReal(vals[0]); return true;}
+};
+
+//Argument handler responsible for calling a function
+template <typename T> struct AHCaller: public ArgHandler {
+	AHCaller() {}
+	AHCaller(QString a1) {argn.push_back(a1);}
+	bool operator() (const char **vals, WKHtmlToPdf * w) {return T()(vals,w);}
+};
+
+//All these function would have been lambda function, had C++ supported them, now we are forced to write them here
+
+//Call the help method
+struct HelpFunc {bool operator()(const char **vals, WKHtmlToPdf * w){
+	Q_UNUSED(vals); w->usage(stdout); exit(0);
+}};
+//Call the version method
+struct VersionFunc {bool operator()(const char **vals, WKHtmlToPdf * w){
+	Q_UNUSED(vals); w->version(stdout); exit(0);
+}};
+//Call the sotProxy method
+struct ProxyFunc{bool operator()(const char **vals, WKHtmlToPdf *w){
+	return w->setProxy(vals[0]);
+}};
+//Call the setOrientation method
+struct OrientationFunc{bool operator()(const char ** vals, WKHtmlToPdf * w){
+	return w->setOrientation(vals[0]);
+}};
+//Call the stePageSize method
+struct PageSizeFunc{bool operator()(const char ** vals, WKHtmlToPdf * w){
+	return w->setPageSize(vals[0]);
+}};
+
+//Setup default header values
+struct DefaultHeaderFunc{bool operator()(const char **vals, WKHtmlToPdf * w){
+	Q_UNUSED(vals); Q_UNUSED(w);
+	w->header_left="[webpage]";
+	w->header_right="[page]/[toPage]";
+	w->header_line=true;
+	w->margin_top=w->parseUnitReal("2cm");
+	return true;
+}};
 
 /*!
  * Print out program usage information
@@ -38,53 +106,40 @@ void WKHtmlToPdf::usage(FILE * fd) {
 "converts a html page to pdf, if no <output file> is specified\n"
 "/dev/stdout is used, simular for <input file>.\n"
 "\n"
-"Options:\n"
-"  -h, --help                      print this help.\n"
-"      --version                   output version information and exit\n"
-"  -q, --quiet                     be less verbose.\n"
-"  -i, --input <url>               use url as input.\n"
-"  -o, --output <url>              use url as output.\n"
-"  -p, --proxy <proxy>             use a proxy.\n"
-"  -O, --orientation <orientation> Set orientation to\n"
-"                                  Landscape or Portrait\n"
-#if QT_VERSION >= 0x040500 //Not printing the background was added in QT4.5
-"  -b, --nobackground              Do not print background\n"
-#endif
-"  -s, --pagesize <size>           Set pape size to: A4, Letter, ect.\n"
-"  -g, --grayscale                 PDF will be generated in grayscale.\n"
-"  -l, --lowquality                Generates lower quality pdf/ps.\n"
-"                                  Useful to shrink the result document space.\n"
-"  -d, --dpi <dpi>                 Set the dpi explicitly.\n"
-#if QT_VERSION < 0x040500 //This bug was fixed in QT4.5
-"                                  Be aware! There is currently a bug in QT, setting this to low\n"
-"                                  will make the application CRASH!\n"
-#endif
-"  -T, --top <top>                 page top margin (default 10mm)\n"
-"  -R, --right <right>             page right margin (default 10mm)\n"
-"  -B, --bottom <bottom>           page bottom margin (default 10mm)\n"
-"  -L, --left <left>               page left margin (default 10mm)\n"
-#ifdef	WKHTMLTOPDF_QT_WEBFRAME_PATCH
-"      --header-font-size <size>   header font size (default 11)\n"
-"      --header-font-name <name>   header font name (default Areal)\n"
-"      --header-left <text>        left aligned header text\n"		  
-"      --header-center <text>      center aligned header text\n"		  
-"      --header-right <text>       right aligned header text\n"
-"      --header-line               display line below the header\n"
-"      --footer-font-size <size>   footer font size (default 11)\n"
-"      --footer-font-name <name>   footer font name (default Areal)\n"
-"      --footer-left <text>        left aligned footer text\n"		  
-"      --footer-center <text>      center aligned footer text\n"		  
-"      --footer-right <text>       right aligned footer text\n"
-"      --footer-line               display line above the footer\n"
-"  -H, --default-header            Add a default header, with the name of the page to the left,\n"
-"                                  and the page number to the right, this is short for:\n"
-"                                  \"--header-left='[webpage]' --header-right='[page]/[toPage]' --top 2cm --header-line\"\n"
-#endif
-"      --read-args-from-stdin      Uses each line from stdin, as commandline options\n"
-"                                  for a convertion. Using multiple lines here, is much\n"
-"                                  faster then calling wkhtmltopdf multiple times\n"
-"      --redirect-delay <msec>     wait some miliseconds for js-redirects (default 500)\n" 		   
-"\n"
+"Options:\n");
+	//Go ower the list of supported arguments in alphabetital order
+	for(QMap<QString, ArgHandler*>::const_iterator i=longToHandler.begin(); i != longToHandler.end(); ++i) {
+		const ArgHandler * h = i.value();
+		//Print its short switch
+		if(h->shortSwitch) fprintf(fd,"  -%c,",h->shortSwitch);
+		else fprintf(fd,"     ");
+		int w=5; //Keep track of the number of chars written
+		//Write out the longswitch
+		fprintf(fd," --%s",(const char*)h->longName.toLocal8Bit());
+		w+=3+h->longName.length();
+		//Write out all of the arguments to the switch
+		for(int j=0; j<h->argn.size(); ++j) {
+			fprintf(fd," <%s>",(const char*)h->argn[j].toLocal8Bit());
+			w+=3+h->argn[j].length();
+		}
+		//Write out the description with word wrapping
+		QStringList list = (h->desc+".").split(" ");
+		int j=0;
+		while(j < list.size()) {//We will get here once per line
+			//A line should start after some indentation
+			for(;w<33;++w) fprintf(fd," ");
+			//A line is not allowed to tart with a '-' as this, messes with the man page generation
+			if(list[j][0] == '-') {fprintf(fd," *"); w+=2;}
+			//Write as many words as we can, before running out of space
+			for(; j < list.size() && w < 84; ++j) {
+				fprintf(fd," %s",(const char*)list[j].toLocal8Bit());
+				w += list[j].length()+1;
+			}
+			fprintf(fd,"\n");
+			w=0;
+		}
+	}
+	fprintf(fd,
 "Proxy:\n"
 "  By default proxyinformation will be read from the environment\n"
 "  variables: proxy, all_proxy and http_proxy, proxy options can\n"
@@ -129,13 +184,14 @@ void WKHtmlToPdf::version(FILE * fd) {
  * and exit if other options are added.
  * \param o the string describing the orientation
  */
-void WKHtmlToPdf::setOrientation(const char * o) {
+bool WKHtmlToPdf::setOrientation(const char * o) {
 	if(!strcasecmp(o,"Landscape"))
 		orientation = QPrinter::Landscape;
 	else if(!strcasecmp(o,"Portrait"))
 		orientation = QPrinter::Portrait;
 	else
-		{usage(stderr);exit(1);}
+		return false;
+	return true;
 }
 
 /*!
@@ -144,7 +200,7 @@ void WKHtmlToPdf::setOrientation(const char * o) {
  * print usage information and exit
  * \param o the string describing the paper size.
  */
-void WKHtmlToPdf::setPageSize(const char * o) {
+bool WKHtmlToPdf::setPageSize(const char * o) {
 	if(false);
 	else if(!strcasecmp("A0",o)) pageSize=QPrinter::A0;
 	else if(!strcasecmp("A1",o)) pageSize=QPrinter::A1;
@@ -176,14 +232,15 @@ void WKHtmlToPdf::setPageSize(const char * o) {
 	else if(!strcasecmp("Legal",o)) pageSize=QPrinter::Legal;
 	else if(!strcasecmp("Letter",o)) pageSize=QPrinter::Letter;
 	else if(!strcasecmp("Tabloid",o)) pageSize=QPrinter::Tabloid;
-	else {usage(stderr);exit(1);}
+	else return false;
+	return true;
 }
 
 /*!
  * Parse a string describing a distance, into a real number and a unit.
  * \param o Tho string describing the distance
  */
-std::pair<qreal, QPrinter::Unit> WKHtmlToPdf::parseUnitReal(const char * o) {
+QPair<qreal, QPrinter::Unit> WKHtmlToPdf::parseUnitReal(const char * o) {
 	qreal s=1.0; //Since not all units are provided by qt, we use this variable to skale 
 	//Them into units that are.
 	QPrinter::Unit u=QPrinter::Millimeter;
@@ -214,7 +271,7 @@ std::pair<qreal, QPrinter::Unit> WKHtmlToPdf::parseUnitReal(const char * o) {
 		u=QPrinter::DevicePixel;
 	else if(!strcasecmp(o+i,"point") || !strcasecmp(o+i,"pt"))	
 		u=QPrinter::Point;
-	return std::pair<qreal, QPrinter::Unit>(s*atof(o), u);
+	return QPair<qreal, QPrinter::Unit>(s*atof(o), u);
 }
 
 /*!
@@ -223,9 +280,9 @@ std::pair<qreal, QPrinter::Unit> WKHtmlToPdf::parseUnitReal(const char * o) {
  * in --help
  * \param proxy the proxy string to parse
  */
-void WKHtmlToPdf::setProxy(const char * proxy) {
+bool WKHtmlToPdf::setProxy(const char * proxy) {
 	//Allow users to use no proxy, even if one is specified in the env
-	if(!strcmp(proxy,"none")) {proxyHost = NULL;return;}
+	if(!strcmp(proxy,"none")) {proxyHost = NULL;return true;}
 
 	//Read proxy type bit "http://" or "socks5://"
 	proxyType = QNetworkProxy::HttpProxy;
@@ -264,101 +321,7 @@ void WKHtmlToPdf::setProxy(const char * proxy) {
 		proxyHost = leak;
 		proxyPort = atoi(val);
 	}
-}
-
-/*!
- * Parse a long style command line argument, and set configuration accordingly
- * \param arg the argument to parse without the leading --
- * \param morec the number of additional argument availeble, 
- * \param morev the additinal available arguments in a NULL terminated list.
- * \return the number of additional arguments used, or -1 if some error occured
- */
-int WKHtmlToPdf::parseLongArg(const char * arg, int morec, const char ** morev) {
-	size_t used=0;
-	if(!strcmp(arg,"help")) {
-		//Print usage information, and exit without an error
-		usage(stdout); exit(0);
-	} else if(!strcmp(arg,"version")) {
-		//Print version information, and exit witout an error
-		version(stdout); exit(0);
-	} else if(!strcmp(arg,"quiet")) {
-		//Suppres output
-		quiet = true;
-	}  else if(!strcmp(arg,"lowquality")) {
-		//Lower the resolution of the output file (saves some space)
-		resolution = QPrinter::ScreenResolution;
-	} else if(!strcmp(arg,"nobackground")) {
-		//Do not print the background
-		background = false;
-	} else if(!strcmp(arg,"footer-line")) {
-		footer_line = true;
-	} else if(!strcmp(arg,"header-line")) {
-		header_line = true;
-	} else {
-		if(morec < 1) {usage(stderr);exit(1);}
-		if(!strcmp(arg,"input"))
-			//Specify the input url
-			in = morev[++used];
-		else if(!strcmp(arg,"output"))
-			//Specify the name of the output file
-			out = morev[++used];
-		else if(!strcmp(arg,"proxy"))
-			//Set up proxy
-			setProxy(morev[++used]);
-		else if(!strcmp(arg,"orientation"))
-			//Change page orientation
-			setOrientation(morev[++used]);
-		else if(!strcmp(arg,"pagesize"))
-			//Setup paper size
-			setPageSize(morev[++used]);
-		else if(!strcmp(arg,"grayscale"))
-			//Change into grayscale mode
-			colorMode = QPrinter::GrayScale;
-		else if(!strcmp(arg,"dpi"))
-			//Change the dpi (the output resolution)
-			dpi=atoi(morev[++used]);
-		else if(!strcmp(arg,"top"))
-			//Set the top margin
-			margin_top=parseUnitReal(morev[++used]);
-		else if(!strcmp(arg,"right"))
-			//Set the right margin
-			margin_right=parseUnitReal(morev[++used]);
-		else if(!strcmp(arg,"bottom"))
-			//Set the bottom margin
-			margin_bottom=parseUnitReal(morev[++used]);
-		else if(!strcmp(arg,"left"))
-			//Set the left margin
-			margin_left=parseUnitReal(morev[++used]);
-		else if(!strcmp(arg,"default-header")) {
-			header_left="[webpage]";
-			header_right="[page]/[toPage]";
-			header_line=true;
-			margin_top=parseUnitReal("2cm");
-		} else if(!strcmp(arg,"header-font-name"))
-			header_font_name=morev[++used];
-		else if(!strcmp(arg,"header-font-size"))
-			header_font_size=atoi(morev[++used]);
-		else if(!strcmp(arg,"header-left"))
-			header_left=morev[++used];
-		else if(!strcmp(arg,"header-center"))
-			header_center=morev[++used];
-		else if(!strcmp(arg,"header-right"))
-			header_right=morev[++used];
-		else if(!strcmp(arg,"footer-font-name"))
-			footer_font_name=morev[++used];
-		else if(!strcmp(arg,"footer-font-size"))
-			footer_font_size=atoi(morev[++used]);
-		else if(!strcmp(arg,"footer-left"))
-			footer_left=morev[++used];
-		else if(!strcmp(arg,"footer-center"))
-			footer_center=morev[++used];
-		else if(!strcmp(arg,"footer-right"))
-			footer_right=morev[++used];
-		else if(!strcmp(arg,"redirect-delay"))
-			jsredirectwait=atoi(morev[++used]);
-		else return -1; //An invalid option was specified
-	} 
-	return used;
+	return true;
 }
 
 /*!
@@ -381,9 +344,10 @@ void WKHtmlToPdf::parseArgs(int argc, const char ** argv) {
 	colorMode = QPrinter::Color;
 	resolution = QPrinter::HighResolution; //We default to producing good looking large files
 	background = true; //Draw the background
+	disable_javascript = false;
 	dpi = -1; //-1 indicates that we will use the default dpi provided by QT
 	margin_top = margin_right = margin_bottom = margin_left=
-		std::pair<qreal,QPrinter::Unit>(10,QPrinter::Millimeter);
+		QPair<qreal,QPrinter::Unit>(10,QPrinter::Millimeter);
 	
 	//Setup default header and footer settings
 	header_font_size = footer_font_size = 11;
@@ -398,15 +362,6 @@ void WKHtmlToPdf::parseArgs(int argc, const char ** argv) {
 	if((val = getenv("all_proxy"))) setProxy(val);
 	if((val = getenv("http_proxy"))) setProxy(val);
 
-	//Provide some short commandline aliases
-	std::map<const char, const char *> s2l;
-	s2l['h'] = "help";      s2l['i'] = "input";      s2l['q']="quiet";
-	s2l['o'] = "output";    s2l['p'] = "proxy";      s2l['s']="pagesize";
-	s2l['g'] = "grayscale"; s2l['l'] = "lowquality"; s2l['O']="orientation";
-	s2l['d'] = "dpi";       s2l['T'] = "top";        s2l['B']="bottom";
-	s2l['R'] = "right";     s2l['L'] = "left";       s2l['b']="nobackground";
-	s2l['H'] = "default-header";
-
 	int x=0; //The number of default arguments read so fare
 	for(int i=1; i < argc; ++i) {
 		if(argv[i][0] != '-') {
@@ -418,20 +373,32 @@ void WKHtmlToPdf::parseArgs(int argc, const char ** argv) {
 			continue;
 		}
 		if(argv[i][1] == '-') { //We have a long style argument
-			int used = parseLongArg(argv[i]+2, argc - i, argv+i);
-			//If some error occured print the usage information and exit indicating an error
-			if(used == -1) {usage(stderr); exit(1);} 
-			i += used;
+			QMap<QString, ArgHandler*>::iterator j = longToHandler.find(argv[i]+2);
+			if(j == longToHandler.end()) {
+				fprintf(stderr,"Unknown long argument %s\n\n",argv[i]);
+				usage(stderr); exit(1);
+			}
+			if(argc-i < j.value()->argn.size()+1) {
+				fprintf(stderr,"Not enough arguments parsed to %s\n\n",argv[i]);
+				usage(stderr); exit(1);
+			}
+			if(!(*(j.value()))(argv+i+1,this)) {usage(stderr); exit(1);}
+			i += j.value()->argn.size();
 		} else {
 			int c=i;//Remember the current argument we are parsing
 			for(int j=1; argv[c][j] != '\0'; ++j) {
 				//If the short argument is invalid print usage information and exit
-				if(s2l.count(argv[c][j]) == 0) {usage(stderr); exit(1);}
-				//Set the correct options
-				int used = parseLongArg(s2l[argv[c][j]], argc - i, argv+i);
-				//If some error occured, print usage information and exit
-				if(used == -1) {usage(stderr); exit(1);}
-				i += used;
+				QMap<char, ArgHandler*>::iterator k = shortToHandler.find(argv[c][j]);
+				if(k == shortToHandler.end()) {
+					fprintf(stderr,"Unknown switch -%c\n\n",argv[c][j]);
+					usage(stderr); exit(1);
+				}
+				if(argc-i < k.value()->argn.size()+1) {
+					fprintf(stderr,"Not enough arguments parsed to -%c\n\n",argv[c][j]);
+					usage(stderr); exit(1);
+				}
+				if(!(*(k.value()))(argv+i+1,this)) {usage(stderr); exit(1);}
+				i += k.value()->argn.size();
 			}
 		}
 	}
@@ -500,23 +467,69 @@ QUrl WKHtmlToPdf::guessUrlFromString(const QString &string)
   return url;
 }
 
+void WKHtmlToPdf::addarg(QString l, char s, QString d, ArgHandler * h) {
+	h->longName=l; h->shortSwitch=s; h->desc=d;
+	longToHandler[l] = h;
+	if(s) shortToHandler[s] = h;
+};
+
+WKHtmlToPdf::WKHtmlToPdf() {
+	addarg("disable-javascript",'n',"Do not allow webpages to run javascript", new AHConstSetter<bool>(disable_javascript,true));
+	addarg("dpi",'d',"Change the dpi explicitly", new AHIntSetter(dpi,"dpi"));
+#ifdef	WKHTMLTOPDF_QT_WEBFRAME_PATCH
+	addarg("default-header",'H',"Add a default header, with the name of the page to the left, and the page number to the right, this is short for: --header-left='[webpage]' --header-right='[page]/[toPage]' --top 2cm --header-line", new AHCaller<DefaultHeaderFunc>());
+	addarg("footer-center",0,"Centered footer text", new AHStrSetter(footer_center,"text"));
+	addarg("footer-font-name",0,"Set footer font name (default Areal)", new AHStrSetter(footer_font_name,"name"));
+	addarg("footer-font-size",0,"Set footer font size (default 11)", new AHIntSetter(footer_font_size,"size"));
+	addarg("footer-left",0,"Left aligned footer text", new AHStrSetter(footer_left,"text"));
+	addarg("footer-line",0,"Display line above the footer", new AHConstSetter<bool>(footer_line,true));
+	addarg("footer-right",0,"Right aligned footer text", new AHStrSetter(footer_right,"text"));
+	addarg("header-center",0,"Centered header text", new AHStrSetter(header_center,"text"));
+	addarg("header-font-name",0,"Set header font name (default Areal)", new AHStrSetter(header_font_name,"name"));
+	addarg("header-font-size",0,"Set header font size (default 11)", new AHIntSetter(header_font_size,"size"));
+	addarg("header-left",0,"Left aligned header text", new AHStrSetter(header_left,"text"));
+	addarg("header-line",0,"Display line below the header", new AHConstSetter<bool>(header_line,true));
+	addarg("header-right",0,"Right aligned header text", new AHStrSetter(header_right,"text"));
+#endif
+	addarg("grayscale",'g',"PDF will be generated in grayscale", new AHConstSetter<QPrinter::ColorMode>(colorMode,QPrinter::GrayScale));
+	addarg("help",'h',"Display help",new AHCaller<HelpFunc>());
+	addarg("input",'i',"Use url as input", new AHStrSetter(in,"url"));
+	addarg("lowquality",'l',"Generates lower quality pdf/ps. Useful to shrink the result document space.", new AHConstSetter<QPrinter::PrinterMode>(resolution,QPrinter::ScreenResolution));
+	addarg("margin-bottom",'B',"Set the page bottom margin (default 10mm)", new AHUnitRealSetter(margin_bottom,"unitread"));
+	addarg("margin-left",'L',"Set the page left margin (default 10mm)", new AHUnitRealSetter(margin_left,"unitread"));
+	addarg("margin-right",'R',"Set the page right margin (default 10mm)", new AHUnitRealSetter(margin_right,"unitread"));
+	addarg("margin-top",'T',"Set the page top margin (default 10mm)", new AHUnitRealSetter(margin_top,"unitread"));
+#if QT_VERSION >= 0x040500 //Not printing the background was added in QT4.5
+	addarg("no-background",'b',"Do not print background", new AHConstSetter<bool>(background,false));
+#endif
+	addarg("orientation",'O',"Set orientation to Landscape or Portrait", new AHCaller<OrientationFunc>("orientation"));
+	addarg("output",'o',"Use path as output", new AHStrSetter(out,"path"));
+	addarg("page-size",'s',"Set pape size to: A4, Letter, ect.", new AHCaller<PageSizeFunc>("size"));
+	addarg("proxy",'p',"Use a proxy", new AHCaller<ProxyFunc>("proxy"));
+	addarg("quit",'q',"Be less verbose",new AHConstSetter<bool>(quiet,true));
+	addarg("redirect-delay",0,"Wait some miliseconds for js-redirects (default 500)", new AHIntSetter(jsredirectwait,"msec"));
+	addarg("version",0,"Output version information an exit", new AHCaller<VersionFunc>());
+}
+
 /*!
  * Connect page signals, to our methods. And do other page
  * configurations.
  */
 void WKHtmlToPdf::init() {
+	page = new QWebPage();
+	am = new QNetworkAccessManager();
 	//Allow for network control fine touning.
-	page.setNetworkAccessManager(&am); 
+	page->setNetworkAccessManager(am); 
 	//If some ssl error occures we want sslErrors to be called, so the we can ignore it
-	connect(&am, SIGNAL(sslErrors(QNetworkReply*, const QList<QSslError>&)),this,
+	connect(am, SIGNAL(sslErrors(QNetworkReply*, const QList<QSslError>&)),this,
             SLOT(sslErrors(QNetworkReply*, const QList<QSslError>&)));
 	//When loading is progressing we want loadProgress to be called
-	connect(&page, SIGNAL(loadProgress(int)), this, SLOT(loadProgress(int)));
+	connect(page, SIGNAL(loadProgress(int)), this, SLOT(loadProgress(int)));
 	//Once the loading is done we want loadFinished to be called
-	connect(&page, SIGNAL(loadFinished(bool)), this, SLOT(loadFinished(bool)));
-	connect(&page, SIGNAL(loadStarted()), this, SLOT(loadStarted()));
+	connect(page, SIGNAL(loadFinished(bool)), this, SLOT(loadFinished(bool)));
+	connect(page, SIGNAL(loadStarted()), this, SLOT(loadStarted()));
 #ifdef WKHTMLTOPDF_QT_WEBFRAME_PATCH
-	connect(page.mainFrame(), SIGNAL(printingNewPage(QPrinter*,int,int,int)), 
+	connect(page->mainFrame(), SIGNAL(printingNewPage(QPrinter*,int,int,int)), 
 			this, SLOT(newPage(QPrinter*,int,int,int)));
 #endif
 }
@@ -603,19 +616,20 @@ void WKHtmlToPdf::run(int argc, const char ** argv) {
 		proxy.setPort(proxyPort);
 		if(proxyUser) proxy.setUser(proxyUser);
 		if(proxyPassword) proxy.setPassword(proxyPassword);
-		am.setProxy(proxy);
+		am->setProxy(proxy);
 	}
 	//Disable stuff we don't need
-	page.settings()->setAttribute(QWebSettings::JavaEnabled, false);
-	page.settings()->setAttribute(QWebSettings::JavascriptCanOpenWindows, false);
-	page.settings()->setAttribute(QWebSettings::JavascriptCanAccessClipboard, false);
+	page->settings()->setAttribute(QWebSettings::JavaEnabled, false);
+	page->settings()->setAttribute(QWebSettings::JavascriptEnabled, disable_javascript);
+	page->settings()->setAttribute(QWebSettings::JavascriptCanOpenWindows, false);
+	page->settings()->setAttribute(QWebSettings::JavascriptCanAccessClipboard, false);
 #if QT_VERSION >= 0x040500
 	//Newer vertions of QT have even more settings to change
-	page.settings()->setAttribute(QWebSettings::PrintElementBackgrounds, background);
-	page.settings()->setAttribute(QWebSettings::PluginsEnabled, false);
+	page->settings()->setAttribute(QWebSettings::PrintElementBackgrounds, background);
+	page->settings()->setAttribute(QWebSettings::PluginsEnabled, false);
 #endif 
 	//Lets load the page
-	page.mainFrame()->load(url);
+	page->mainFrame()->load(url);
 }
 
 /*!
@@ -669,7 +683,7 @@ void WKHtmlToPdf::printPage() {
 	if(!p.isValid()) {
 		fprintf(stderr,"Unable to write to output file\n");
 	} else {
-		page.mainFrame()->print(&p);
+		page->mainFrame()->print(&p);
 		if(!quiet) {fprintf(stderr,"Done                 \n"); fflush(stderr);}
 		//Inform the user that everything went well
 	}
@@ -788,16 +802,16 @@ void parseString(char * buff, int &nargc, char **nargv) {
 
 int main(int argc, char * argv[]) {
 	//This is a hack, to allow the generation of the man page without X11 support
+	WKHtmlToPdf x;
 	if(argc == 2 && !strcmp(argv[1],"--help")) {
-		WKHtmlToPdf::usage(stdout);
+		x.usage(stdout);
 		exit(0);
 	}
 	if(argc == 2 && !strcmp(argv[1],"--version")) {
-		WKHtmlToPdf::version(stdout);
+		x.version(stdout);
 		exit(0);
 	}
 	QApplication a(argc,argv); //Construct application, required for printing
-	WKHtmlToPdf x; //Create convertion instance
 	x.init();
 	for(int i=1; i < argc; ++i)
 		if(!strcmp(argv[i],"--read-args-from-stdin")) {

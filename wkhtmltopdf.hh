@@ -21,18 +21,32 @@
 #include <QNetworkProxy>
 #include <QAtomicInt>
 #include <stdlib.h>
+#include <QMap>
+#include <QString>
+#include <QVector>
+
+class WKHtmlToPdf;
+
+//Class responsible for describing and handling a command line argument
+struct ArgHandler {
+	QString longName, desc; //Long -- style name and the description of the switch
+	char shortSwitch; //Short - style name, 0 if no short switch
+	QVector<QString> argn; //The name of the arguments to the switch
+	//Called whenever an argument is parsed
+	virtual bool operator() (const char ** args, WKHtmlToPdf * w) = 0;
+};
 
 //Class responsible for the convertion
 class WKHtmlToPdf : public QObject {
 	Q_OBJECT
 public:
 	//The webview is used to fetch and render the webpage using webkit
-	QWebPage page;
+	QWebPage * page;
 
 	//Configuration variabels
 	const char * in; //Name of the input file
 	const char * out; //Name of the output file
-	QNetworkAccessManager am;
+	QNetworkAccessManager * am;
 	
 	QNetworkProxy::ProxyType proxyType; //Type of proxy to use
 	int proxyPort; //The port of the proxy to use
@@ -41,38 +55,45 @@ public:
 	const char * proxyPassword; //Password for the said broxy or NULL
 	bool quiet; //Be less verbose
 	bool background; //Should we print the background?
+	bool disable_javascript; //Should we disable javascript
+	int jsredirectwait; //How meny milliseconds should we wait for a javascrit redirect
 	QPrinter::PageSize pageSize; //What size paper should we use
 	QPrinter::Orientation orientation; //What orientation
 	QPrinter::ColorMode colorMode; //Color or grayscale
 	QPrinter::PrinterMode resolution; //resolution
 	int dpi; //The printing dpi
 	//Specify page margins
-	std::pair<qreal, QPrinter::Unit> margin_top;
-	std::pair<qreal, QPrinter::Unit> margin_right;
-	std::pair<qreal, QPrinter::Unit> margin_bottom;
-	std::pair<qreal, QPrinter::Unit> margin_left;
-	
+	QPair<qreal, QPrinter::Unit> margin_top;
+	QPair<qreal, QPrinter::Unit> margin_right;
+	QPair<qreal, QPrinter::Unit> margin_bottom;
+	QPair<qreal, QPrinter::Unit> margin_left;
+		
 	//Header / footer settings
 	int header_font_size, footer_font_size;
-	QString header_font_name, footer_font_name;
-	QString header_left, header_center, header_right;
+	const char * header_font_name, * footer_font_name;
+	const char * header_left, * header_center, * header_right;
 	bool header_line, footer_line;
-	QString footer_left, footer_center, footer_right;
+	const char * footer_left, * footer_center, * footer_right;
 	
 	QAtomicInt loading; //Keep track of the numer of pages loading
-	size_t jsredirectwait;
 
+	QMap<QString, ArgHandler *> longToHandler; //Map from the long name of an argument, to its handler
+	QMap<char, ArgHandler *> shortToHandler; //Map form the short switch of an argument, to its handlr
+	
+	//Add a new argument to the list of handled arguments
+	void addarg(QString l, char s, QString desc, ArgHandler * h);
+
+	WKHtmlToPdf(); //Setup stuff not depending on X
 	QString hfreplace(const QString & q, int f, int t, int p);
-	std::pair<qreal, QPrinter::Unit> parseUnitReal(const char * o);
+	QPair<qreal, QPrinter::Unit> parseUnitReal(const char * o);
 	static QUrl guessUrlFromString(const QString &string);
-	static void version(FILE * fd); //Print version information to fd
-	static void usage(FILE * fd); //Print usage information to fd
-	void setPageSize(const char * size);
-	void setOrientation(const char * orientation);
-	void setProxy(const char * proxy); //parse proxy configuartion
-	int parseLongArg(const char * arg, int morec, const char ** morev);
+	void version(FILE * fd); //Print version information to fd
+	void usage(FILE * fd); //Print usage information to fd
+	bool setPageSize(const char * size);
+	bool setOrientation(const char * orientation);
+	bool setProxy(const char * proxy); //parse proxy configuartion
 	void parseArgs(int argc, const char** argv); //Prase arguments
-	void init();
+	void init(); //Setup stuff that depends on x
 	void run(int argc, const char** argv);
 
 public slots:
