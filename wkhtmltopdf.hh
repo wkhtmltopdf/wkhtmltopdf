@@ -34,17 +34,19 @@ struct ArgHandler {
 	QVector<QString> argn; //The name of the arguments to the switch
 	//Called whenever an argument is parsed
 	virtual bool operator() (const char ** args, WKHtmlToPdf * w) = 0;
+	virtual ~ArgHandler() {};
 };
 
 //Class responsible for the convertion
 class WKHtmlToPdf : public QObject {
 	Q_OBJECT
 public:
-	//The webview is used to fetch and render the webpage using webkit
-	QWebPage * page;
-
+	//The webpages is used to fetch and render the webpages using webkit
+	QVector<QWebPage *> pages;
+	QVector<uint> pageStart;
+	
 	//Configuration variabels
-	const char * in; //Name of the input file
+	QVector<const char *> in; //Names of the input files
 	const char * out; //Name of the output file
 	QNetworkAccessManager * am;
 	
@@ -79,10 +81,11 @@ public:
 
 	QMap<QString, ArgHandler *> longToHandler; //Map from the long name of an argument, to its handler
 	QMap<char, ArgHandler *> shortToHandler; //Map form the short switch of an argument, to its handlr
+	int currentPage;
 	
 	//Add a new argument to the list of handled arguments
 	void addarg(QString l, char s, QString desc, ArgHandler * h);
-
+	
 	WKHtmlToPdf(); //Setup stuff not depending on X
 	QString hfreplace(const QString & q, int f, int t, int p);
 	QPair<qreal, QPrinter::Unit> parseUnitReal(const char * o);

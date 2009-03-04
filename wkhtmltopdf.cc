@@ -12,7 +12,7 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with wkhtmltopdf.  If not, see <http://www.gnu.org/licenses/>.
-
+#define __EXTENSIVE_WKHTMLTOPDF_QT_HACK__
 #include <string.h>
 #include <iostream>
 #include "wkhtmltopdf.hh"
@@ -35,6 +35,7 @@ public:
 	const T src;
 	AHConstSetter(T & arg, const T s): dst(arg), src(s) {};
 	bool operator() (const char ** args, WKHtmlToPdf * w) {Q_UNUSED(args); Q_UNUSED(w); dst=src; return true;}
+	virtual ~AHConstSetter() {};
 };
 
 //Argument handler setting an int variable 
@@ -334,7 +335,6 @@ void WKHtmlToPdf::parseArgs(int argc, const char ** argv) {
 
 	//Note: We default to converting a file from stdin, this
 	//might confuse some users, perhaps we should display usage.
-	in = "/dev/stdin"; 
 	out = "/dev/stdout";
 	proxyHost = NULL; 
 	quiet = false;
@@ -362,14 +362,10 @@ void WKHtmlToPdf::parseArgs(int argc, const char ** argv) {
 	if((val = getenv("all_proxy"))) setProxy(val);
 	if((val = getenv("http_proxy"))) setProxy(val);
 
-	int x=0; //The number of default arguments read so fare
 	for(int i=1; i < argc; ++i) {
-		if(argv[i][0] != '-') {
+		if(argv[i][0] != '-' || argv[i][1] == '\0') {
 			//Default arguments
-			++x;
-			if(x==1) in = argv[i]; //The first default argument is the input URL
-			else if(x == 2)	out = argv[i]; //The second default is the output filename
-			else {usage(stderr); exit(1);} //There are no bore default arguments
+			in.push_back(argv[i]);
 			continue;
 		}
 		if(argv[i][1] == '-') { //We have a long style argument
@@ -402,6 +398,7 @@ void WKHtmlToPdf::parseArgs(int argc, const char ** argv) {
 			}
 		}
 	}
+	if(in.size() > 1) {out = in.back(); in.pop_back();}
 }
 
 /*!
@@ -493,7 +490,6 @@ WKHtmlToPdf::WKHtmlToPdf() {
 #endif
 	addarg("grayscale",'g',"PDF will be generated in grayscale", new AHConstSetter<QPrinter::ColorMode>(colorMode,QPrinter::GrayScale));
 	addarg("help",'h',"Display help",new AHCaller<HelpFunc>());
-	addarg("input",'i',"Use url as input", new AHStrSetter(in,"url"));
 	addarg("lowquality",'l',"Generates lower quality pdf/ps. Useful to shrink the result document space.", new AHConstSetter<QPrinter::PrinterMode>(resolution,QPrinter::ScreenResolution));
 	addarg("margin-bottom",'B',"Set the page bottom margin (default 10mm)", new AHUnitRealSetter(margin_bottom,"unitread"));
 	addarg("margin-left",'L',"Set the page left margin (default 10mm)", new AHUnitRealSetter(margin_left,"unitread"));
@@ -503,7 +499,6 @@ WKHtmlToPdf::WKHtmlToPdf() {
 	addarg("no-background",'b',"Do not print background", new AHConstSetter<bool>(background,false));
 #endif
 	addarg("orientation",'O',"Set orientation to Landscape or Portrait", new AHCaller<OrientationFunc>("orientation"));
-	addarg("output",'o',"Use path as output", new AHStrSetter(out,"path"));
 	addarg("page-size",'s',"Set pape size to: A4, Letter, ect.", new AHCaller<PageSizeFunc>("size"));
 	addarg("proxy",'p',"Use a proxy", new AHCaller<ProxyFunc>("proxy"));
 	addarg("quit",'q',"Be less verbose",new AHConstSetter<bool>(quiet,true));
@@ -516,22 +511,10 @@ WKHtmlToPdf::WKHtmlToPdf() {
  * configurations.
  */
 void WKHtmlToPdf::init() {
-	page = new QWebPage();
 	am = new QNetworkAccessManager();
-	//Allow for network control fine touning.
-	page->setNetworkAccessManager(am); 
 	//If some ssl error occures we want sslErrors to be called, so the we can ignore it
 	connect(am, SIGNAL(sslErrors(QNetworkReply*, const QList<QSslError>&)),this,
             SLOT(sslErrors(QNetworkReply*, const QList<QSslError>&)));
-	//When loading is progressing we want loadProgress to be called
-	connect(page, SIGNAL(loadProgress(int)), this, SLOT(loadProgress(int)));
-	//Once the loading is done we want loadFinished to be called
-	connect(page, SIGNAL(loadFinished(bool)), this, SLOT(loadFinished(bool)));
-	connect(page, SIGNAL(loadStarted()), this, SLOT(loadStarted()));
-#ifdef WKHTMLTOPDF_QT_WEBFRAME_PATCH
-	connect(page->mainFrame(), SIGNAL(printingNewPage(QPrinter*,int,int,int)), 
-			this, SLOT(newPage(QPrinter*,int,int,int)));
-#endif
 }
 
 /*!
@@ -544,10 +527,10 @@ void WKHtmlToPdf::init() {
 QString WKHtmlToPdf::hfreplace(const QString & q, int f, int t, int p) {
 	QString _=q;
 	return _
-		.replace("[page]",QString::number(p),Qt::CaseInsensitive)
-		.replace("[toPage]",QString::number(t),Qt::CaseInsensitive)
-		.replace("[fromPage]",QString::number(f),Qt::CaseInsensitive)
-		.replace("[webpage]",in);
+		.replace("[page]",QString::number(pageStart[currentPage]+p-f+1),Qt::CaseInsensitive)
+		.replace("[toPage]",QString::number(pageStart.back()),Qt::CaseInsensitive)
+		.replace("[fromPage]",QString::number(1),Qt::CaseInsensitive)
+		.replace("[webpage]",in[currentPage]);
 }
 
 /*!
@@ -607,8 +590,6 @@ void WKHtmlToPdf::run(int argc, const char ** argv) {
 	loading=0;
 	//Parse the arguments
 	parseArgs(argc,argv);
-	//Make a url of the input file
-	QUrl url = guessUrlFromString(in);
 	//If we must use a proxy, create a host of objects
 	if(proxyHost) {
 		QNetworkProxy proxy;
@@ -618,18 +599,36 @@ void WKHtmlToPdf::run(int argc, const char ** argv) {
 		if(proxyPassword) proxy.setPassword(proxyPassword);
 		am->setProxy(proxy);
 	}
-	//Disable stuff we don't need
-	page->settings()->setAttribute(QWebSettings::JavaEnabled, false);
-	page->settings()->setAttribute(QWebSettings::JavascriptEnabled, disable_javascript);
-	page->settings()->setAttribute(QWebSettings::JavascriptCanOpenWindows, false);
-	page->settings()->setAttribute(QWebSettings::JavascriptCanAccessClipboard, false);
+		
+	for(int i=0; i < in.size(); ++i) {
+		QWebPage * page = new QWebPage();
+		//Allow for network control fine touning.
+		page->setNetworkAccessManager(am); 
+		//When loading is progressing we want loadProgress to be called
+		connect(page, SIGNAL(loadProgress(int)), this, SLOT(loadProgress(int)));
+		//Once the loading is done we want loadFinished to be called
+		connect(page, SIGNAL(loadFinished(bool)), this, SLOT(loadFinished(bool)));
+		connect(page, SIGNAL(loadStarted()), this, SLOT(loadStarted()));
+#ifdef WKHTMLTOPDF_QT_WEBFRAME_PATCH
+		connect(page->mainFrame(), SIGNAL(printingNewPage(QPrinter*,int,int,int)), 
+				this, SLOT(newPage(QPrinter*,int,int,int)));
+#endif
+		//Disable stuff we don't need
+		page->settings()->setAttribute(QWebSettings::JavaEnabled, false);
+		page->settings()->setAttribute(QWebSettings::JavascriptEnabled, disable_javascript);
+		page->settings()->setAttribute(QWebSettings::JavascriptCanOpenWindows, false);
+		page->settings()->setAttribute(QWebSettings::JavascriptCanAccessClipboard, false);
 #if QT_VERSION >= 0x040500
-	//Newer vertions of QT have even more settings to change
-	page->settings()->setAttribute(QWebSettings::PrintElementBackgrounds, background);
-	page->settings()->setAttribute(QWebSettings::PluginsEnabled, false);
-#endif 
-	//Lets load the page
-	page->mainFrame()->load(url);
+		//Newer vertions of QT have even more settings to change
+		page->settings()->setAttribute(QWebSettings::PrintElementBackgrounds, background);
+		page->settings()->setAttribute(QWebSettings::PluginsEnabled, false);
+#endif
+
+		QString u = in[i];
+		if(u == "-") u="/dev/stdin";
+		page->mainFrame()->load(guessUrlFromString(u));
+		pages.push_back(page);
+	}
 }
 
 /*!
@@ -650,45 +649,67 @@ void WKHtmlToPdf::printPage() {
 	if(loading != 0) return;
 
 	//Give some user feed back
-	if(!quiet) {fprintf(stderr, "Outputting page       \r"); fflush(stdout);}
-	
-	//Construct a printer object used to print the html to pdf
-	QPrinter p(resolution);
-	if(dpi != -1) p.setResolution(dpi);
+	if(!quiet) {fprintf(stderr, "Outputting pages       \r"); fflush(stdout);}
 
+	QPrinter printer(resolution);
+	if(dpi != -1) printer.setResolution(dpi);
+		
 	//Tell the printer object to print the file <out>
-	p.setOutputFormat(
+	printer.setOutputFormat(
 		strcmp(out + (strlen(out)-3),".ps")==0?
 		QPrinter::PostScriptFormat : QPrinter::PdfFormat
 		);
-	p.setOutputFileName(out);
-	
+	printer.setOutputFileName(out);
+
 	//We currently only support margins with the same unit
 	if(margin_left.second != margin_right.second ||
 	   margin_left.second != margin_top.second ||	  
 	   margin_left.second != margin_bottom.second) {
 		fprintf(stderr, "Currently all margin units must be the same!\n");
 		exit(1);
-	}
+ 	}
 	
 	//Setup margins and papersize
-	p.setPageMargins(margin_left.first, margin_top.first, 
-					 margin_right.first, margin_bottom.first, 
-					 margin_left.second);
-	p.setPageSize(pageSize);
-	p.setOrientation(orientation);
-	p.setColorMode(colorMode);
-
-	//Do the actual printing
-	if(!p.isValid()) {
+	printer.setPageMargins(margin_left.first, margin_top.first, 
+							margin_right.first, margin_bottom.first, 
+							margin_left.second);
+	printer.setPageSize(pageSize);
+	printer.setOrientation(orientation);
+	printer.setColorMode(colorMode);
+	
+	if(!printer.isValid()) {
 		fprintf(stderr,"Unable to write to output file\n");
-	} else {
-		page->mainFrame()->print(&p);
-		if(!quiet) {fprintf(stderr,"Done                 \n"); fflush(stderr);}
-		//Inform the user that everything went well
+		exit(1);
 	}
-	//All went well, if there where no redirect since then, terminating
-	if(loading == 0) qApp->quit();	
+#ifdef __EXTENSIVE_WKHTMLTOPDF_QT_HACK__
+	QPainter painter;
+	painter.begin(&printer);
+#endif
+
+	pageStart.push_back(0);
+	for(int i=0; i < in.size(); ++i) {
+		pageStart.push_back( pageStart.back() + pages[i]->mainFrame()->countPages(&printer) );
+		QVector<QWebFrame::Heading> h = pages[i]->mainFrame()->headings(&printer);
+		for(int j=0; j < h.size(); ++j) {
+			qDebug() << h[j].text << "\n";
+		}
+	}
+
+	for(int i=0; i < in.size(); ++i) {
+		currentPage = i;
+		if(i != 0) printer.newPage();
+#ifdef __EXTENSIVE_WKHTMLTOPDF_QT_HACK__
+		pages[i]->mainFrame()->print(&printer,&painter);
+#else
+		pages[i]->mainFrame()->print(&printer);
+#endif
+	}
+
+	if(loading == 0) {
+		if(!quiet) {fprintf(stderr,"Done                 \n"); fflush(stderr);}
+		for(int i=0; i < pages.size(); ++i) delete pages[i];
+		qApp->quit();
+	}
 }
 
 /*!
@@ -705,9 +726,11 @@ void WKHtmlToPdf::loadFinished(bool ok) {
 		return;
 	}
 	if(!quiet) {fprintf(stderr, "Waiting for redirect  \r");fflush(stdout);}
-														
-	//Wait a little while for js-redirects, and then print
-	QTimer::singleShot(jsredirectwait, this, SLOT(printPage()));
+	
+	if(loading == 0) {
+		//Wait a little while for js-redirects, and then print
+		QTimer::singleShot(jsredirectwait, this, SLOT(printPage()));
+	}
 }
 
 /*!
