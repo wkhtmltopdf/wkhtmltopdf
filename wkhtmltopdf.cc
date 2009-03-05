@@ -148,7 +148,7 @@ void WKHtmlToPdf::usage(FILE * fd) {
 "  <userinfo> := <username> (\":\" <password>)? \"@\"\n"
 "  <proxy> := \"None\" | <type>? <userinfo>? <host> (\":\" <port>)?\n"
 "\n"
-#ifdef	WKHTMLTOPDF_QT_WEBFRAME_PATCH
+#ifdef __EXTENSIVE_WKHTMLTOPDF_QT_HACK__
 "Header and footer text:\n"
 "In a header or footer text the following variables can be used\n"
 " * [page]     Replaced by the number of the pages currently beeing printed\n"
@@ -472,7 +472,7 @@ void WKHtmlToPdf::addarg(QString l, char s, QString d, ArgHandler * h) {
 WKHtmlToPdf::WKHtmlToPdf() {
 	addarg("disable-javascript",'n',"Do not allow webpages to run javascript", new AHConstSetter<bool>(disable_javascript,true));
 	addarg("dpi",'d',"Change the dpi explicitly", new AHIntSetter(dpi,"dpi"));
-#ifdef	WKHTMLTOPDF_QT_WEBFRAME_PATCH
+#ifdef __EXTENSIVE_WKHTMLTOPDF_QT_HACK__
 	addarg("default-header",'H',"Add a default header, with the name of the page to the left, and the page number to the right, this is short for: --header-left='[webpage]' --header-right='[page]/[toPage]' --top 2cm --header-line", new AHCaller<DefaultHeaderFunc>());
 	addarg("footer-center",0,"Centered footer text", new AHStrSetter(footer_center,"text"));
 	addarg("footer-font-name",0,"Set footer font name (default Areal)", new AHStrSetter(footer_font_name,"name"));
@@ -608,7 +608,7 @@ void WKHtmlToPdf::run(int argc, const char ** argv) {
 		//Once the loading is done we want loadFinished to be called
 		connect(page, SIGNAL(loadFinished(bool)), this, SLOT(loadFinished(bool)));
 		connect(page, SIGNAL(loadStarted()), this, SLOT(loadStarted()));
-#ifdef WKHTMLTOPDF_QT_WEBFRAME_PATCH
+#ifdef  __EXTENSIVE_WKHTMLTOPDF_QT_HACK__
 		connect(page->mainFrame(), SIGNAL(printingNewPage(QPrinter*,int,int,int)), 
 				this, SLOT(newPage(QPrinter*,int,int,int)));
 #endif
@@ -683,7 +683,6 @@ void WKHtmlToPdf::printPage() {
 #ifdef __EXTENSIVE_WKHTMLTOPDF_QT_HACK__
 	QPainter painter;
 	painter.begin(&printer);
-#endif
 
 	pageStart.push_back(0);
 	for(int i=0; i < in.size(); ++i) {
@@ -693,6 +692,7 @@ void WKHtmlToPdf::printPage() {
 			qDebug() << h[j].text << "\n";
 		}
 	}
+#endif
 
 	for(int i=0; i < in.size(); ++i) {
 		currentPage = i;
