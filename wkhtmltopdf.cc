@@ -12,7 +12,6 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with wkhtmltopdf.  If not, see <http://www.gnu.org/licenses/>.
-#define __EXTENSIVE_WKHTMLTOPDF_QT_HACK__
 #include <string.h>
 #include <iostream>
 #include "wkhtmltopdf.hh"
