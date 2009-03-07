@@ -1,7 +1,7 @@
 -release
 #-debug
--shared
-#-static
+#-shared
+-static
 -fast
 -largefile
 -no-exceptions
