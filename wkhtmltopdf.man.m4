@@ -23,12 +23,10 @@
 wkhtmltopdf - convert webpages to pdf
 
 .SH SYNOPSIS
-wkhtmltopdf [OPTIONS]... [<input file> [<output file>]]
-
+wkhtmltopdf [OPTIONS]... <input file> [More inputfiles] <output file>
 
 .SH DESCRIPTION
-Converts a htmlpage to a pdf document, if no <output file> is specified /dev/stdout is used, simular for <input file>.
-
+Converts one or more htmlpage to a pdf document.
 
 .SH OPTIONS
 
@@ -36,7 +34,6 @@ esyscmd(`./wkhtmltopdf --help | sed -ne /Options:/,/Proxy:/p | sed -e /Options:/
 
 .SH BUGS
 Report bugs to <antialize@gmail.com>.
-
 
 .SH AUTHORS
 wkhtmltopdf was written by Jakob Truelsen. 

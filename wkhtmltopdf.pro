@@ -35,7 +35,6 @@ unix {
     man.commands=m4 wkhtmltopdf.man.m4 | gzip > $@
     man.depends=wkhtmltopdf wkhtmltopdf.man.m4 
     
-    
     manins.target=manins
     manins.depends=man
     manins.files=wkhtmltopdf.1.gz
@@ -51,5 +50,5 @@ target.path=$$INSTALLBASE/bin
 QT += webkit network
 
 # Input
-HEADERS += wkhtmltopdf.hh
-SOURCES += wkhtmltopdf.cc
+HEADERS += wkhtmltopdf.hh toc.hh
+SOURCES += wkhtmltopdf.cc toc.cc arguments.cc

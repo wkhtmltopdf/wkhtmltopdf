@@ -12,7 +12,6 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with wkhtmltopdf.  If not, see <http://www.gnu.org/licenses/>.
-
 #ifndef __wkhtmltopdf_hh__
 #define __wkhtmltopdf_hh__
 #include <QObject>
@@ -24,6 +23,7 @@
 #include <QMap>
 #include <QString>
 #include <QVector>
+#include "toc.hh"
 
 class WKHtmlToPdf;
 
@@ -31,9 +31,12 @@ class WKHtmlToPdf;
 struct ArgHandler {
 	QString longName, desc; //Long -- style name and the description of the switch
 	char shortSwitch; //Short - style name, 0 if no short switch
-	QVector<QString> argn; //The name of the arguments to the switch
+	QVector<QString> argn; //The name of the arguments to the switch.
+	bool display;
 	//Called whenever an argument is parsed
 	virtual bool operator() (const char ** args, WKHtmlToPdf * w) = 0;
+	virtual void useDefault() {};
+	virtual QString getDesc() const {return desc;}
 	virtual ~ArgHandler() {};
 };
 
@@ -57,6 +60,7 @@ public:
 	const char * proxyPassword; //Password for the said broxy or NULL
 	bool quiet; //Be less verbose
 	bool background; //Should we print the background?
+	bool print_toc;
 	bool disable_javascript; //Should we disable javascript
 	int jsredirectwait; //How meny milliseconds should we wait for a javascrit redirect
 	QPrinter::PageSize pageSize; //What size paper should we use
@@ -69,7 +73,9 @@ public:
 	QPair<qreal, QPrinter::Unit> margin_right;
 	QPair<qreal, QPrinter::Unit> margin_bottom;
 	QPair<qreal, QPrinter::Unit> margin_left;
-		
+
+	const char * cover;
+	bool outline;
 	//Header / footer settings
 	int header_font_size, footer_font_size;
 	const char * header_font_name, * footer_font_name;
@@ -78,16 +84,18 @@ public:
 	const char * footer_left, * footer_center, * footer_right;
 	
 	QAtomicInt loading; //Keep track of the numer of pages loading
-
 	QMap<QString, ArgHandler *> longToHandler; //Map from the long name of an argument, to its handler
 	QMap<char, ArgHandler *> shortToHandler; //Map form the short switch of an argument, to its handlr
 	int currentPage;
-	
+	int pageNum;
+
+	TocPrinter tocPrinter;
+
 	//Add a new argument to the list of handled arguments
-	void addarg(QString l, char s, QString desc, ArgHandler * h);
+	void addarg(QString l, char s, QString desc, ArgHandler * h, bool display=true);
 	
 	WKHtmlToPdf(); //Setup stuff not depending on X
-	QString hfreplace(const QString & q, int f, int t, int p);
+	QString hfreplace(const QString & q);
 	QPair<qreal, QPrinter::Unit> parseUnitReal(const char * o);
 	static QUrl guessUrlFromString(const QString &string);
 	void version(FILE * fd); //Print version information to fd
@@ -98,7 +106,8 @@ public:
 	void parseArgs(int argc, const char** argv); //Prase arguments
 	void init(); //Setup stuff that depends on x
 	void run(int argc, const char** argv);
-
+	void loadDefaults();
+	void initArgs();
 public slots:
 	void newPage(QPrinter * p, int fromPage, int toPage, int page);
 	void loadFinished(bool ok);
