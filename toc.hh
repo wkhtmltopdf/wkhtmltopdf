@@ -15,10 +15,11 @@
 #ifndef __toc_hh__
 #define __toc_hh__
 
+#include <QtWebKit>
+#ifdef  __EXTENSIVE_WKHTMLTOPDF_QT_HACK__
 #include <QPainter>
 #include <QPrinter>
 #include <QString>
-#include <QtWebKit>
 
 class TocItem {
 public:
@@ -44,10 +45,15 @@ public:
 	int font_size[levels];
 	int header_font_size;
 	const char * header_text;
+
+	QMap<int,TocItem *> page2sectionslow[levels];
+	QMap<int,TocItem *> page2sectionshigh[levels];
+
 private:
 	void printChildren(TocItem * item, QPrinter * printer, QPainter * painter, bool dryRun, uint level, uint & page, double & y); 
 	uint print(TocItem * root, QPrinter * printer, QPainter * painter, bool dryRun);
 	void outlineChildren(TocItem * item, QPrinter * printer, int level);
+	void populateSectionsChildren(TocItem * item, int level);
 public:
 	uint print(TocItem * root, QPrinter * printer, QPainter * painter) {
 		return print(root,printer,painter,false);
@@ -58,7 +64,15 @@ public:
 	void outline(TocItem * root, QPrinter * printer) { 
 		outlineChildren(root,printer,0);
 	}
+	void populateSections(TocItem * root) {
+		for(uint i=0; i < levels; ++i) {
+			page2sectionslow[i].clear();
+			page2sectionshigh[i].clear();
+		}
+		populateSectionsChildren(root,0);
+	}
 Q_SIGNALS:
 	void printingNewPage(QPrinter *p, int fromPage, int toPage, int Page) const;
 };
+#endif
 #endif

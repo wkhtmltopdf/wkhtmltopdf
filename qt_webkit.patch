@@ -1,8 +1,148 @@
-diff --git a/src/3rdparty/webkit/WebKit/qt/Api/qwebframe.cpp b/src/3rdparty/webkit/WebKit/qt/Api/qwebframe.cpp
-index ae71356..574e14d 100644
---- a/src/3rdparty/webkit/WebKit/qt/Api/qwebframe.cpp
-+++ b/src/3rdparty/webkit/WebKit/qt/Api/qwebframe.cpp
-@@ -955,10 +955,13 @@ void QWebFrame::print(QPrinter *printer) const
+diff -ur qt-x11-opensource-src-4.5.0-old/src/3rdparty/webkit/WebCore/page/PrintContext.h qt-x11-opensource-src-4.5.0/src/3rdparty/webkit/WebCore/page/PrintContext.h
+--- qt-x11-opensource-src-4.5.0-old/src/3rdparty/webkit/WebCore/page/PrintContext.h	2009-02-25 22:09:20.000000000 +0100
++++ qt-x11-opensource-src-4.5.0/src/3rdparty/webkit/WebCore/page/PrintContext.h	2009-03-10 20:31:32.000000000 +0100
+@@ -50,6 +50,8 @@
+ protected:
+     Frame* m_frame;
+     Vector<IntRect> m_pageRects;
++public:
++    const Vector<IntRect> & getPageRects() {return m_pageRects;}
+ };
+ 
+ }
+diff -ur qt-x11-opensource-src-4.5.0-old/src/3rdparty/webkit/WebKit/qt/Api/qwebframe.cpp qt-x11-opensource-src-4.5.0/src/3rdparty/webkit/WebKit/qt/Api/qwebframe.cpp
+--- qt-x11-opensource-src-4.5.0-old/src/3rdparty/webkit/WebKit/qt/Api/qwebframe.cpp	2009-02-25 22:09:21.000000000 +0100
++++ qt-x11-opensource-src-4.5.0/src/3rdparty/webkit/WebKit/qt/Api/qwebframe.cpp	2009-03-10 21:07:09.000000000 +0100
+@@ -75,6 +75,7 @@
+ #include <qevent.h>
+ #include <qfileinfo.h>
+ #include <qpainter.h>
++#include <qprintengine.h>
+ #include <QMultiMap>
+ #if QT_VERSION >= 0x040400
+ #include <qnetworkrequest.h>
+@@ -886,16 +887,105 @@
+ }
+ 
+ #ifndef QT_NO_PRINTER
++struct HeadingsGenerator {
++    QVector<QWebFrame::Heading> res;
++    HeadingsGenerator(): res() {};
++        
++    static QPoint getObjectLocation(RenderObject * r) {
++        return QPoint(r->xPos(),r->yPos()+r->height()/2);
++    }
++
++    static void extractText(Node * n, QString & text) {
++        text.append(n->nodeValue());
++        for(Node *i=n->firstChild(); i != NULL; i = i->nextSibling())
++        extractText(i,text);
++    }
++                                               
++    bool addHeading(Node * n) {
++        if(!n || n->nodeName()[0] != 'H' || '1' >= n->nodeName()[1] || n->nodeName()[1] >= '6') return false;
++        QWebFrame::Heading h;
++        h.text = QString();
++        h.page = 1;
++        h.locationOnPage = QPointF();
++        h.level = n->nodeName()[1]-'0';
++        extractText(n,h.text);
++        h.text = h.text.simplified();
++        h.location = getObjectLocation(n->renderer());
++        res.push_back(h);
++        return true;
++    }
++
++    void visitNode(Node * n) {
++        if(!addHeading(n)) 
++            for(Node * i=n->firstChild(); i != NULL; i = i->nextSibling())
++                visitNode(i);
++    }
++};
++
++QVector<QWebFrame::Heading> QWebFrame::headings(QPrinter * printer) {
++    HeadingsGenerator gen;
++    if(!printer) {
++        gen.visitNode(d->frame->document());
++        return gen.res;
++    }
++    const qreal zoomFactorX = printer->logicalDpiX() / qt_defaultDpi();
++    const qreal zoomFactorY = printer->logicalDpiY() / qt_defaultDpi();
++        
++    PrintContext printContext(d->frame);
++    float pageHeight = 0;
++    QRect qprinterRect = printer->pageRect();
++    IntRect pageRect(0, 0,
++                     int(qprinterRect.width() / zoomFactorX),
++                     int(qprinterRect.height() / zoomFactorY));
++    printContext.begin(pageRect.width());
++    printContext.computePageRects(pageRect, 0, 0, 1.0, pageHeight);
++    
++    const Vector<IntRect> & pageRects = printContext.getPageRects();
++    QMap<float, uint> pageEnd;
++    for(uint i=0; i < pageRects.size(); ++i) pageEnd[pageRects[i].bottom()] = i;
++    for(RenderObject * o=d->frame->document()->renderer(); o; o=o->nextInPreOrder()) 
++        if(gen.addHeading(o->node())) {
++            QWebFrame::Heading & h = gen.res.back(); 
++            h.locationOnPage = gen.getObjectLocation(o);
++            QMap<float, uint>::const_iterator pageI = pageEnd.upperBound(h.locationOnPage.y());            
++            h.page=(pageI == pageEnd.end())?pageRects.size()-1:pageI.value();
++            h.locationOnPage -= QPointF(0,pageRects[h.page].y());
++        }
++    printContext.end();
++    return gen.res;
++}
++
++uint QWebFrame::countPages(QPrinter *printer) {
++    const qreal zoomFactorX = printer->logicalDpiX() / qt_defaultDpi();
++    const qreal zoomFactorY = printer->logicalDpiY() / qt_defaultDpi();
++
++    PrintContext printContext(d->frame);
++    float pageHeight = 0;
++
++    QRect qprinterRect = printer->pageRect();
++
++    IntRect pageRect(0, 0,
++                     int(qprinterRect.width() / zoomFactorX),
++                     int(qprinterRect.height() / zoomFactorY));
++
++    printContext.begin(pageRect.width());
++    printContext.computePageRects(pageRect, /*headerHeight*/0, /*footerHeight*/0, /*userScaleFactor*/1.0, pageHeight);
++    uint count = printContext.pageCount();
++    printContext.end();
++    return count;
++}
++
+ /*!
+     Prints the frame to the given \a printer.
+ 
+     \sa render()
+ */
+-void QWebFrame::print(QPrinter *printer) const
++void QWebFrame::print(QPrinter *printer, QPainter * painter) const
+ {
+-    QPainter painter;
+-    if (!painter.begin(printer))
+-        return;
++    QPainter * ipainter = painter;
++    if(!ipainter) ipainter = new QPainter();
++    if(!ipainter->isActive()) ipainter->begin(printer);
++    ipainter->save();
+ 
+     const qreal zoomFactorX = printer->logicalDpiX() / qt_defaultDpi();
+     const qreal zoomFactorY = printer->logicalDpiY() / qt_defaultDpi();
+@@ -942,8 +1032,8 @@
+         ascending = false;
+     }
+ 
+-    painter.scale(zoomFactorX, zoomFactorY);
+-    GraphicsContext ctx(&painter);
++    ipainter->scale(zoomFactorX, zoomFactorY);
++    GraphicsContext ctx(ipainter);
+ 
+     for (int i = 0; i < docCopies; ++i) {
+         int page = fromPage;
+@@ -955,10 +1045,13 @@
                      return;
                  }
                  printContext.spoolPage(ctx, page - 1, pageRect.width());
@@ -18,20 +158,58 @@ index ae71356..574e14d 100644
              if (page == toPage)
                  break;
  
-diff --git a/src/3rdparty/webkit/WebKit/qt/Api/qwebframe.h b/src/3rdparty/webkit/WebKit/qt/Api/qwebframe.h
-index 18ae697..1d40a29 100644
---- a/src/3rdparty/webkit/WebKit/qt/Api/qwebframe.h
-+++ b/src/3rdparty/webkit/WebKit/qt/Api/qwebframe.h
+@@ -975,6 +1068,8 @@
+     }
+ 
+     printContext.end();
++    ipainter->restore();
++    if(ipainter != painter) delete ipainter;
+ }
+ #endif // QT_NO_PRINTER
+ 
+diff -ur qt-x11-opensource-src-4.5.0-old/src/3rdparty/webkit/WebKit/qt/Api/qwebframe.h qt-x11-opensource-src-4.5.0/src/3rdparty/webkit/WebKit/qt/Api/qwebframe.h
+--- qt-x11-opensource-src-4.5.0-old/src/3rdparty/webkit/WebKit/qt/Api/qwebframe.h	2009-02-25 22:09:21.000000000 +0100
++++ qt-x11-opensource-src-4.5.0/src/3rdparty/webkit/WebKit/qt/Api/qwebframe.h	2009-03-10 20:31:32.000000000 +0100
 @@ -21,6 +21,8 @@
  #ifndef QWEBFRAME_H
  #define QWEBFRAME_H
  
-+#define WKHTMLTOPDF_QT_WEBFRAME_PATCH
++#define  __EXTENSIVE_WKHTMLTOPDF_QT_HACK__
 +
  #include <QtCore/qobject.h>
  #include <QtCore/qurl.h>
  #include <QtCore/qvariant.h>
-@@ -191,6 +193,7 @@ Q_SIGNALS:
+@@ -115,6 +117,14 @@
+ public:
+     QWebPage *page() const;
+ 
++    struct Heading {
++        QString text;
++        uint level;
++        QPoint location;
++        uint page;
++        QPointF locationOnPage;
++    };
++
+     void load(const QUrl &url);
+ #if QT_VERSION < 0x040400
+     void load(const QWebNetworkRequest &request);
+@@ -174,10 +184,13 @@
+ 
+     QWebSecurityOrigin securityOrigin() const;
+ 
++    QVector<Heading> headings(QPrinter * printer=NULL);
++    uint countPages(QPrinter *printer);
++
+ public Q_SLOTS:
+     QVariant evaluateJavaScript(const QString& scriptSource);
+ #ifndef QT_NO_PRINTER
+-    void print(QPrinter *printer) const;
++    void print(QPrinter *printer, QPainter * painter=NULL) const;
+ #endif
+ 
+ Q_SIGNALS:
+@@ -191,6 +204,7 @@
  
      void iconChanged();
  
@@ -39,3 +217,193 @@ index 18ae697..1d40a29 100644
  private:
      friend class QWebPage;
      friend class QWebPagePrivate;
+diff -ur qt-x11-opensource-src-4.5.0-old/src/gui/painting/qprintengine.h qt-x11-opensource-src-4.5.0/src/gui/painting/qprintengine.h
+--- qt-x11-opensource-src-4.5.0-old/src/gui/painting/qprintengine.h	2009-02-25 22:09:23.000000000 +0100
++++ qt-x11-opensource-src-4.5.0/src/gui/painting/qprintengine.h	2009-03-10 20:31:32.000000000 +0100
+@@ -95,6 +95,8 @@
+     virtual QVariant property(PrintEnginePropertyKey key) const = 0;
+ 
+     virtual bool newPage() = 0;
++    virtual void beginSectionOutline(const QString & text, uint page, const QPointF & location) {Q_UNUSED(text); Q_UNUSED(page); Q_UNUSED(location);}
++    virtual void endSectionOutline() {}
+     virtual bool abort() = 0;
+ 
+     virtual int metric(QPaintDevice::PaintDeviceMetric) const = 0;
+diff -ur qt-x11-opensource-src-4.5.0-old/src/gui/painting/qprintengine_pdf.cpp qt-x11-opensource-src-4.5.0/src/gui/painting/qprintengine_pdf.cpp
+--- qt-x11-opensource-src-4.5.0-old/src/gui/painting/qprintengine_pdf.cpp	2009-02-25 22:09:23.000000000 +0100
++++ qt-x11-opensource-src-4.5.0/src/gui/painting/qprintengine_pdf.cpp	2009-03-10 20:31:32.000000000 +0100
+@@ -115,6 +115,28 @@
+     state = QPrinter::Idle;
+ }
+ 
++void QPdfEngine::beginSectionOutline(const QString & text, uint p, const QPointF & location) {
++    Q_D(QPdfEngine);
++    if(d->outlineCurrent == NULL) {
++        if(d->outlineRoot) delete d->outlineRoot;
++        d->outlineCurrent = d->outlineRoot = new QPdfEnginePrivate::OutlineItem(QString(), 0, QPointF() );
++    }
++    QPdfEnginePrivate::OutlineItem * i = new QPdfEnginePrivate::OutlineItem(text, p, location);
++    i->parent = d->outlineCurrent;
++    i->prev = d->outlineCurrent->lastChild;
++    if(d->outlineCurrent->firstChild) 
++        d->outlineCurrent->lastChild->next = i;
++    else 
++        d->outlineCurrent->firstChild = i;
++    d->outlineCurrent->lastChild = i;
++    d->outlineCurrent = i;
++}
++
++void QPdfEngine::endSectionOutline() {
++    Q_D(QPdfEngine);
++    if(d->outlineCurrent) d->outlineCurrent = d->outlineCurrent->parent;
++}
++
+ QPdfEngine::~QPdfEngine()
+ {
+ }
+@@ -156,6 +178,24 @@
+ bool QPdfEngine::end()
+ {
+     Q_D(QPdfEngine);
++
++    if(d->outlineRoot) {
++        d->outlineRoot->obj = d->requestObject();
++        d->writeOutlineChildren(d->outlineRoot);
++        d->addXrefEntry(d->outlineRoot->obj);
++        d->xprintf("<</Type /Outlines /First %d 0 R\n/Last %d 0 R>>\nendobj\n",
++                   d->outlineRoot->firstChild->obj,d->outlineRoot->lastChild->obj);
++    }
++    
++    d->catalog = d->addXrefEntry(-1);
++    d->xprintf("<<\n"
++               "/Type /Catalog\n"
++               "/Pages %d 0 R\n", d->pageRoot);
++    if(d->outlineRoot)
++        d->xprintf("/Outlines %d 0 R\n"
++                "/PageMode /UseOutlines", d->outlineRoot->obj);
++    d->xprintf(">>\n"
++            "endobj\n");
+     d->writeTail();
+ 
+     d->stream->unsetDevice();
+@@ -305,14 +345,58 @@
+     stream = new QDataStream;
+     pageOrder = QPrinter::FirstPageFirst;
+     orientation = QPrinter::Portrait;
++    outlineRoot = NULL;
++    outlineCurrent = NULL;
+     fullPage = false;
+ }
+ 
+ QPdfEnginePrivate::~QPdfEnginePrivate()
+ {
++    if(outlineRoot) delete outlineRoot;
+     delete stream;
+ }
+ 
++void QPdfEnginePrivate::writeOutlineChildren(OutlineItem * node) {
++    for(OutlineItem * i = node->firstChild; i != NULL; i = i->next)
++       i->obj = requestObject();
++    for(OutlineItem * i = node->firstChild; i != NULL; i = i->next) {
++       QPdfEnginePrivate::writeOutlineChildren(i);
++       addXrefEntry(i->obj);
++       xprintf("<</Title (",254,255);
++       const ushort * tit = i->text.utf16();
++       int l=0;
++       for(;tit[l]; ++l);
++        ushort * buff = new ushort[l*2+2];
++        buff[0] = 0xFEFF;
++        char * buff_;
++        for(int j=0; j<l;++j) buff[j+1] = tit[j];
++        ++l;
++        buff_ = (char*)buff;
++        if((unsigned char)buff_[0] == 0xFF)
++          for(int j=0; j < l;++j) {
++            char t=buff_[j*2];
++            buff_[j*2]=buff_[j*2+1];
++            buff_[j*2+1]=t;
++          }
++            
++        stream->writeRawData(buff_, l*2);
++        streampos += l*2;
++        delete[] buff;
++        xprintf(")\n"
++                "  /Parent %d 0 R\n"
++                "  /Dest [%d 0 R /XYZ %d.0 %d.0 null]\n"
++                "  /Count 0\n",
++                i->parent->obj,
++                pages[i->page<pages.size()?i->page:pages.size()-1],
++                (int)i->location.x(),(int)i->location.y()) ; 
++        if(i->next) xprintf("  /Next %d 0 R\n", i->next->obj);
++        if(i->prev) xprintf("  /Prev %d 0 R\n", i->prev->obj);
++        if(i->firstChild) xprintf("  /First %d 0 R\n", i->firstChild->obj);
++        if(i->lastChild) xprintf("  /Last %d 0 R\n", i->lastChild->obj);
++        xprintf(">>\n"
++                "endobj\n");
++    }
++}
+ 
+ #ifdef USE_NATIVE_GRADIENTS
+ int QPdfEnginePrivate::gradientBrush(const QBrush &b, const QMatrix &matrix, int *gStateObject)
+@@ -901,13 +985,7 @@
+ 
+     writeInfo();
+ 
+-    catalog = addXrefEntry(-1);
+     pageRoot = requestObject();
+-    xprintf("<<\n"
+-            "/Type /Catalog\n"
+-            "/Pages %d 0 R\n"
+-            ">>\n"
+-            "endobj\n", pageRoot);
+ 
+     // graphics state
+     graphicsState = addXrefEntry(-1);
+diff -ur qt-x11-opensource-src-4.5.0-old/src/gui/painting/qprintengine_pdf_p.h qt-x11-opensource-src-4.5.0/src/gui/painting/qprintengine_pdf_p.h
+--- qt-x11-opensource-src-4.5.0-old/src/gui/painting/qprintengine_pdf_p.h	2009-02-25 22:09:23.000000000 +0100
++++ qt-x11-opensource-src-4.5.0/src/gui/painting/qprintengine_pdf_p.h	2009-03-10 20:31:32.000000000 +0100
+@@ -113,6 +113,8 @@
+     QString author() const;
+ 
+     void setDevice(QIODevice* dev);
++    void beginSectionOutline(const QString & text, uint page, const QPointF & location);
++    void endSectionOutline();
+ 
+ private:
+     Q_DISABLE_COPY(QPdfEngine)
+@@ -124,6 +126,35 @@
+ {
+     Q_DECLARE_PUBLIC(QPdfEngine)
+ public:
++    class OutlineItem {
++    public:
++        OutlineItem * parent;
++        OutlineItem * next;
++        OutlineItem * prev;
++        OutlineItem * firstChild;
++        OutlineItem * lastChild;
++        uint obj;
++        QString text;
++        uint page;
++        QPointF location;
++        
++        OutlineItem(const QString & t, uint p, const QPointF & l): 
++            parent(NULL), next(NULL), prev(NULL), firstChild(NULL), lastChild(NULL),
++            obj(0), text(t), page(p), location(l) {}
++        ~OutlineItem() {
++            OutlineItem * i = firstChild;
++            while(i != NULL) { 
++                OutlineItem * n = i->next;
++                delete i;
++                i=n;
++            }
++        }
++    };
++    
++    OutlineItem * outlineRoot;
++    OutlineItem * outlineCurrent;
++    void writeOutlineChildren(OutlineItem * node);
++    
+     QPdfEnginePrivate(QPrinter::PrinterMode m);
+     ~QPdfEnginePrivate();
+ 

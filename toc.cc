@@ -15,6 +15,7 @@
 #include "toc.hh"
 #include <QObject>
 #include <QtGui>
+#ifdef  __EXTENSIVE_WKHTMLTOPDF_QT_HACK__
 
 /*!
  * Build a toc structure out of headings elements
@@ -130,3 +131,20 @@ void TocPrinter::outlineChildren(TocItem * item, QPrinter * printer, int level) 
 		printer->printEngine()->endSectionOutline();
 	} 
 }
+
+/**
+ * Fill in structure telling on which page a toc item begin
+ */
+void TocPrinter::populateSectionsChildren(TocItem * item, int level) {
+	for(int i=0; i < item->children.size(); ++i) {
+		TocItem * j = item->children[i];	
+		if(page2sectionslow[level].count(j->page) == 0
+		   || page2sectionslow[level][j->page]->location.y() > j->location.y())
+			page2sectionslow[level][j->page] = j;
+		if(page2sectionshigh[level].count(j->page) == 0
+		   || page2sectionshigh[level][j->page]->location.y() < j->location.y())
+			page2sectionshigh[level][j->page] = j;
+		populateSectionsChildren(j,level+1);
+	}
+}
+#endif

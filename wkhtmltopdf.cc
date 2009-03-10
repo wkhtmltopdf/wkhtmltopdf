@@ -16,7 +16,6 @@
 #include <iostream>
 #include "wkhtmltopdf.hh"
 #include <qnetworkreply.h>
-#include <QtWebKit>
 #include <QtPlugin>
 #include "toc.hh"
 
@@ -105,8 +104,10 @@ void WKHtmlToPdf::init() {
 	//If some ssl error occures we want sslErrors to be called, so the we can ignore it
 	connect(am, SIGNAL(sslErrors(QNetworkReply*, const QList<QSslError>&)),this,
             SLOT(sslErrors(QNetworkReply*, const QList<QSslError>&)));
+#ifdef  __EXTENSIVE_WKHTMLTOPDF_QT_HACK__
 	connect(&tocPrinter, SIGNAL(printingNewPage(QPrinter*,int,int,int)), 
 			this, SLOT(newPage(QPrinter*,int,int,int)));
+#endif
 }
 
 /*!
@@ -118,10 +119,27 @@ void WKHtmlToPdf::init() {
  */
 QString WKHtmlToPdf::hfreplace(const QString & q) {
 	QString _=q;
+#ifdef  __EXTENSIVE_WKHTMLTOPDF_QT_HACK__
+	QString sec[TocPrinter::levels];
+	for(uint i=0; i < TocPrinter::levels; ++i) {
+		QMap<int, TocItem*>::const_iterator j = tocPrinter.page2sectionslow[i].find(pageNum);
+		if(j == tocPrinter.page2sectionslow[i].end()) {
+			j = tocPrinter.page2sectionshigh[i].upperBound(pageNum);
+			--j;
+			if(j == tocPrinter.page2sectionshigh[i].end()) continue;
+		}
+		sec[i] = j.value()->value;
+	}
+#endif
 	return _
 		.replace("[page]",QString::number(pageNum),Qt::CaseInsensitive)
 		.replace("[toPage]",QString::number(pageStart.back()),Qt::CaseInsensitive)
 		.replace("[fromPage]",QString::number(1),Qt::CaseInsensitive)
+#ifdef  __EXTENSIVE_WKHTMLTOPDF_QT_HACK__
+		.replace("[section]",sec[0],Qt::CaseInsensitive)
+		.replace("[subsection]",sec[1],Qt::CaseInsensitive)
+		.replace("[subsubsection]",sec[3],Qt::CaseInsensitive)
+#endif
 		.replace("[webpage]",currentPage ==-1?"Table Of Content":in[currentPage]);
 }
 
@@ -200,7 +218,9 @@ void WKHtmlToPdf::run(int argc, const char ** argv) {
 		if(proxyPassword) proxy.setPassword(proxyPassword);
 		am->setProxy(proxy);
 	}
+#ifdef  __EXTENSIVE_WKHTMLTOPDF_QT_HACK__
 	if(cover[0]) in.push_front(cover);
+#endif
 	for(int i=0; i < in.size(); ++i) {
 		QWebPage * page = new QWebPage();
 		//Allow for network control fine touning.
@@ -247,7 +267,6 @@ void WKHtmlToPdf::sslErrors(QNetworkReply *reply, const QList<QSslError> &error)
 void WKHtmlToPdf::printPage() {
 	//If there are still pages loading wait til they are done
 	if(loading != 0) return;
-
 	//Give some user feed back
 	if(!quiet) {fprintf(stderr, "Outputting pages       \r"); fflush(stdout);}
 
@@ -323,6 +342,14 @@ void WKHtmlToPdf::printPage() {
 	if(print_toc || outline) {
  		root = new TocItem();
 		for(int i=0; i < in.size(); ++i) buildToc(root,headings[i],pageStart[i]+1);
+		tocPrinter.populateSections(root);
+	}
+	TocItem toc;
+	if(print_toc) {
+	  tocPrinter.page2sectionshigh[0][0] = &toc;
+	  tocPrinter.page2sectionslow[0][0] = &toc;
+	  toc.value = QString(tocPrinter.header_text);
+	  
 	}
 
 	for(int i=0; i < in.size(); ++i) {

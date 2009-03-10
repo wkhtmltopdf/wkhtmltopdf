@@ -14,6 +14,7 @@
 // along with wkhtmltopdf.  If not, see <http://www.gnu.org/licenses/>.
 #ifndef __wkhtmltopdf_hh__
 #define __wkhtmltopdf_hh__
+#include <QtWebKit>
 #include <QObject>
 #include <QtGui>
 #include <QWebView>
@@ -23,7 +24,9 @@
 #include <QMap>
 #include <QString>
 #include <QVector>
+#ifdef  __EXTENSIVE_WKHTMLTOPDF_QT_HACK__
 #include "toc.hh"
+#endif
 
 class WKHtmlToPdf;
 
@@ -89,7 +92,9 @@ public:
 	int currentPage;
 	int pageNum;
 
+#ifdef  __EXTENSIVE_WKHTMLTOPDF_QT_HACK__
 	TocPrinter tocPrinter;
+#endif
 
 	//Add a new argument to the list of handled arguments
 	void addarg(QString l, char s, QString desc, ArgHandler * h, bool display=true);

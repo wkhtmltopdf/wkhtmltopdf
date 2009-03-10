@@ -384,11 +384,11 @@ void WKHtmlToPdf::initArgs() {
 	addarg("outline",0,"Put an outline into the pdf", new AHConstSetter<bool>(outline,true,false));
 	addarg("outline-depth",0,"Set the depth of the outline", new AHIntSetter(tocPrinter.outline_depth,"level",4));
 	addarg("book",'b',"Set the options one would usualy set when printing a book", new AHCaller<BookFunc>());	
+	addarg("cover",0,"Use html document as cover. It will be inserted before the toc with no headers and footers",new AHStrSetter(cover,"url",""));
 #endif
-	addarg("cover",0,"Use html document as cover. It will be inserted before the toc with no headers and footers.",new AHStrSetter(cover,"url",""));
 	addarg("grayscale",'g',"PDF will be generated in grayscale", new AHConstSetter<QPrinter::ColorMode>(colorMode,QPrinter::GrayScale,QPrinter::Color));
 	addarg("help",'h',"Display help",new AHCaller<HelpFunc>());
-	addarg("lowquality",'l',"Generates lower quality pdf/ps. Useful to shrink the result document space.", new AHConstSetter<QPrinter::PrinterMode>(resolution,QPrinter::ScreenResolution,QPrinter::HighResolution));
+	addarg("lowquality",'l',"Generates lower quality pdf/ps. Useful to shrink the result document space", new AHConstSetter<QPrinter::PrinterMode>(resolution,QPrinter::ScreenResolution,QPrinter::HighResolution));
 	addarg("margin-bottom",'B',"Set the page bottom margin (default 10mm)", new AHUnitRealSetter(margin_bottom,"unitread",QPair<qreal,QPrinter::Unit>(10,QPrinter::Millimeter)));
 	addarg("margin-left",'L',"Set the page left margin (default 10mm)", new AHUnitRealSetter(margin_left,"unitread",QPair<qreal,QPrinter::Unit>(10,QPrinter::Millimeter)));
 	addarg("margin-right",'R',"Set the page right margin (default 10mm)", new AHUnitRealSetter(margin_right,"unitread",QPair<qreal,QPrinter::Unit>(10,QPrinter::Millimeter)));
@@ -401,7 +401,7 @@ void WKHtmlToPdf::initArgs() {
 	addarg("proxy",'p',"Use a proxy", new AHCaller<ProxyFunc>("proxy"));
 	addarg("quit",'q',"Be less verbose",new AHConstSetter<bool>(quiet,true,false));
 	addarg("redirect-delay",0,"Wait some miliseconds for js-redirects", new AHIntSetter(jsredirectwait,"msec",200));
-	addarg("version",0,"Output version information an exit", new AHCaller<VersionFunc>());
+	addarg("version",'V',"Output version information an exit", new AHCaller<VersionFunc>());
 }
 
 /*!
