@@ -1,6 +1,6 @@
-diff -ur qt-x11-opensource-src-4.5.0-old/src/3rdparty/webkit/WebCore/page/PrintContext.h qt-x11-opensource-src-4.5.0/src/3rdparty/webkit/WebCore/page/PrintContext.h
---- qt-x11-opensource-src-4.5.0-old/src/3rdparty/webkit/WebCore/page/PrintContext.h	2009-02-25 22:09:20.000000000 +0100
-+++ qt-x11-opensource-src-4.5.0/src/3rdparty/webkit/WebCore/page/PrintContext.h	2009-03-10 20:31:32.000000000 +0100
+diff -ur qt-x11-opensource-src-4.5.0.old/src/3rdparty/webkit/WebCore/page/PrintContext.h qt-x11-opensource-src-4.5.0/src/3rdparty/webkit/WebCore/page/PrintContext.h
+--- qt-x11-opensource-src-4.5.0.old/src/3rdparty/webkit/WebCore/page/PrintContext.h	2009-02-25 22:09:20.000000000 +0100
++++ qt-x11-opensource-src-4.5.0/src/3rdparty/webkit/WebCore/page/PrintContext.h	2009-03-10 21:39:05.000000000 +0100
 @@ -50,6 +50,8 @@
  protected:
      Frame* m_frame;
@@ -10,9 +10,9 @@ diff -ur qt-x11-opensource-src-4.5.0-old/src/3rdparty/webkit/WebCore/page/PrintC
  };
  
  }
-diff -ur qt-x11-opensource-src-4.5.0-old/src/3rdparty/webkit/WebKit/qt/Api/qwebframe.cpp qt-x11-opensource-src-4.5.0/src/3rdparty/webkit/WebKit/qt/Api/qwebframe.cpp
---- qt-x11-opensource-src-4.5.0-old/src/3rdparty/webkit/WebKit/qt/Api/qwebframe.cpp	2009-02-25 22:09:21.000000000 +0100
-+++ qt-x11-opensource-src-4.5.0/src/3rdparty/webkit/WebKit/qt/Api/qwebframe.cpp	2009-03-10 21:07:09.000000000 +0100
+diff -ur qt-x11-opensource-src-4.5.0.old/src/3rdparty/webkit/WebKit/qt/Api/qwebframe.cpp qt-x11-opensource-src-4.5.0/src/3rdparty/webkit/WebKit/qt/Api/qwebframe.cpp
+--- qt-x11-opensource-src-4.5.0.old/src/3rdparty/webkit/WebKit/qt/Api/qwebframe.cpp	2009-02-25 22:09:21.000000000 +0100
++++ qt-x11-opensource-src-4.5.0/src/3rdparty/webkit/WebKit/qt/Api/qwebframe.cpp	2009-03-11 13:14:16.000000000 +0100
 @@ -75,6 +75,7 @@
  #include <qevent.h>
  #include <qfileinfo.h>
@@ -21,7 +21,7 @@ diff -ur qt-x11-opensource-src-4.5.0-old/src/3rdparty/webkit/WebKit/qt/Api/qwebf
  #include <QMultiMap>
  #if QT_VERSION >= 0x040400
  #include <qnetworkrequest.h>
-@@ -886,16 +887,105 @@
+@@ -886,16 +887,114 @@
  }
  
  #ifndef QT_NO_PRINTER
@@ -30,7 +30,14 @@ diff -ur qt-x11-opensource-src-4.5.0-old/src/3rdparty/webkit/WebKit/qt/Api/qwebf
 +    HeadingsGenerator(): res() {};
 +        
 +    static QPoint getObjectLocation(RenderObject * r) {
-+        return QPoint(r->xPos(),r->yPos()+r->height()/2);
++		int x=0;
++		int y=r->height()/2;
++		while(r) {
++			x += r->xPos();
++			y += r->yPos();
++			r = r->parent();
++		}
++        return QPoint(x,y);
 +    }
 +
 +    static void extractText(Node * n, QString & text) {
@@ -40,7 +47,7 @@ diff -ur qt-x11-opensource-src-4.5.0-old/src/3rdparty/webkit/WebKit/qt/Api/qwebf
 +    }
 +                                               
 +    bool addHeading(Node * n) {
-+        if(!n || n->nodeName()[0] != 'H' || '1' >= n->nodeName()[1] || n->nodeName()[1] >= '6') return false;
++        if(!n || n->nodeName()[0] != 'H' || '1' > n->nodeName()[1] || n->nodeName()[1] > '6') return false;
 +        QWebFrame::Heading h;
 +        h.text = QString();
 +        h.page = 1;
@@ -85,9 +92,11 @@ diff -ur qt-x11-opensource-src-4.5.0-old/src/3rdparty/webkit/WebKit/qt/Api/qwebf
 +        if(gen.addHeading(o->node())) {
 +            QWebFrame::Heading & h = gen.res.back(); 
 +            h.locationOnPage = gen.getObjectLocation(o);
-+            QMap<float, uint>::const_iterator pageI = pageEnd.upperBound(h.locationOnPage.y());            
++			QMap<float, uint>::const_iterator pageI = pageEnd.upperBound(h.locationOnPage.y());            
 +            h.page=(pageI == pageEnd.end())?pageRects.size()-1:pageI.value();
 +            h.locationOnPage -= QPointF(0,pageRects[h.page].y());
++			h.locationOnPage= QPointF(h.locationOnPage.x() / pageRects[h.page].x(),
++									  h.locationOnPage.y() / pageRects[h.page].y());
 +        }
 +    printContext.end();
 +    return gen.res;
@@ -131,7 +140,7 @@ diff -ur qt-x11-opensource-src-4.5.0-old/src/3rdparty/webkit/WebKit/qt/Api/qwebf
  
      const qreal zoomFactorX = printer->logicalDpiX() / qt_defaultDpi();
      const qreal zoomFactorY = printer->logicalDpiY() / qt_defaultDpi();
-@@ -942,8 +1032,8 @@
+@@ -942,8 +1041,8 @@
          ascending = false;
      }
  
@@ -142,7 +151,7 @@ diff -ur qt-x11-opensource-src-4.5.0-old/src/3rdparty/webkit/WebKit/qt/Api/qwebf
  
      for (int i = 0; i < docCopies; ++i) {
          int page = fromPage;
-@@ -955,10 +1045,13 @@
+@@ -955,10 +1054,13 @@
                      return;
                  }
                  printContext.spoolPage(ctx, page - 1, pageRect.width());
@@ -158,7 +167,7 @@ diff -ur qt-x11-opensource-src-4.5.0-old/src/3rdparty/webkit/WebKit/qt/Api/qwebf
              if (page == toPage)
                  break;
  
-@@ -975,6 +1068,8 @@
+@@ -975,6 +1077,8 @@
      }
  
      printContext.end();
@@ -167,9 +176,9 @@ diff -ur qt-x11-opensource-src-4.5.0-old/src/3rdparty/webkit/WebKit/qt/Api/qwebf
  }
  #endif // QT_NO_PRINTER
  
-diff -ur qt-x11-opensource-src-4.5.0-old/src/3rdparty/webkit/WebKit/qt/Api/qwebframe.h qt-x11-opensource-src-4.5.0/src/3rdparty/webkit/WebKit/qt/Api/qwebframe.h
---- qt-x11-opensource-src-4.5.0-old/src/3rdparty/webkit/WebKit/qt/Api/qwebframe.h	2009-02-25 22:09:21.000000000 +0100
-+++ qt-x11-opensource-src-4.5.0/src/3rdparty/webkit/WebKit/qt/Api/qwebframe.h	2009-03-10 20:31:32.000000000 +0100
+diff -ur qt-x11-opensource-src-4.5.0.old/src/3rdparty/webkit/WebKit/qt/Api/qwebframe.h qt-x11-opensource-src-4.5.0/src/3rdparty/webkit/WebKit/qt/Api/qwebframe.h
+--- qt-x11-opensource-src-4.5.0.old/src/3rdparty/webkit/WebKit/qt/Api/qwebframe.h	2009-02-25 22:09:21.000000000 +0100
++++ qt-x11-opensource-src-4.5.0/src/3rdparty/webkit/WebKit/qt/Api/qwebframe.h	2009-03-10 21:39:05.000000000 +0100
 @@ -21,6 +21,8 @@
  #ifndef QWEBFRAME_H
  #define QWEBFRAME_H
@@ -217,9 +226,9 @@ diff -ur qt-x11-opensource-src-4.5.0-old/src/3rdparty/webkit/WebKit/qt/Api/qwebf
  private:
      friend class QWebPage;
      friend class QWebPagePrivate;
-diff -ur qt-x11-opensource-src-4.5.0-old/src/gui/painting/qprintengine.h qt-x11-opensource-src-4.5.0/src/gui/painting/qprintengine.h
---- qt-x11-opensource-src-4.5.0-old/src/gui/painting/qprintengine.h	2009-02-25 22:09:23.000000000 +0100
-+++ qt-x11-opensource-src-4.5.0/src/gui/painting/qprintengine.h	2009-03-10 20:31:32.000000000 +0100
+diff -ur qt-x11-opensource-src-4.5.0.old/src/gui/painting/qprintengine.h qt-x11-opensource-src-4.5.0/src/gui/painting/qprintengine.h
+--- qt-x11-opensource-src-4.5.0.old/src/gui/painting/qprintengine.h	2009-02-25 22:09:23.000000000 +0100
++++ qt-x11-opensource-src-4.5.0/src/gui/painting/qprintengine.h	2009-03-10 21:39:05.000000000 +0100
 @@ -95,6 +95,8 @@
      virtual QVariant property(PrintEnginePropertyKey key) const = 0;
  
@@ -229,9 +238,9 @@ diff -ur qt-x11-opensource-src-4.5.0-old/src/gui/painting/qprintengine.h qt-x11-
      virtual bool abort() = 0;
  
      virtual int metric(QPaintDevice::PaintDeviceMetric) const = 0;
-diff -ur qt-x11-opensource-src-4.5.0-old/src/gui/painting/qprintengine_pdf.cpp qt-x11-opensource-src-4.5.0/src/gui/painting/qprintengine_pdf.cpp
---- qt-x11-opensource-src-4.5.0-old/src/gui/painting/qprintengine_pdf.cpp	2009-02-25 22:09:23.000000000 +0100
-+++ qt-x11-opensource-src-4.5.0/src/gui/painting/qprintengine_pdf.cpp	2009-03-10 20:31:32.000000000 +0100
+diff -ur qt-x11-opensource-src-4.5.0.old/src/gui/painting/qprintengine_pdf.cpp qt-x11-opensource-src-4.5.0/src/gui/painting/qprintengine_pdf.cpp
+--- qt-x11-opensource-src-4.5.0.old/src/gui/painting/qprintengine_pdf.cpp	2009-02-25 22:09:23.000000000 +0100
++++ qt-x11-opensource-src-4.5.0/src/gui/painting/qprintengine_pdf.cpp	2009-03-11 12:15:42.000000000 +0100
 @@ -115,6 +115,28 @@
      state = QPrinter::Idle;
  }
@@ -286,7 +295,7 @@ diff -ur qt-x11-opensource-src-4.5.0-old/src/gui/painting/qprintengine_pdf.cpp q
      d->writeTail();
  
      d->stream->unsetDevice();
-@@ -305,14 +345,58 @@
+@@ -305,14 +345,59 @@
      stream = new QDataStream;
      pageOrder = QPrinter::FirstPageFirst;
      orientation = QPrinter::Portrait;
@@ -327,13 +336,14 @@ diff -ur qt-x11-opensource-src-4.5.0-old/src/gui/painting/qprintengine_pdf.cpp q
 +        stream->writeRawData(buff_, l*2);
 +        streampos += l*2;
 +        delete[] buff;
++        double x = width() * qMax(0.0,qMin(1.0,i->location.x()));
++        double y = height() * qMax(0.0,qMin(1.0,(1.0 - i->location.y())));
 +        xprintf(")\n"
 +                "  /Parent %d 0 R\n"
-+                "  /Dest [%d 0 R /XYZ %d.0 %d.0 null]\n"
++                "  /Dest [%d 0 R /XYZ %lf %lf null]\n"
 +                "  /Count 0\n",
 +                i->parent->obj,
-+                pages[i->page<pages.size()?i->page:pages.size()-1],
-+                (int)i->location.x(),(int)i->location.y()) ; 
++                pages[i->page<pages.size()?i->page:pages.size()-1],x,y);
 +        if(i->next) xprintf("  /Next %d 0 R\n", i->next->obj);
 +        if(i->prev) xprintf("  /Prev %d 0 R\n", i->prev->obj);
 +        if(i->firstChild) xprintf("  /First %d 0 R\n", i->firstChild->obj);
@@ -345,7 +355,7 @@ diff -ur qt-x11-opensource-src-4.5.0-old/src/gui/painting/qprintengine_pdf.cpp q
  
  #ifdef USE_NATIVE_GRADIENTS
  int QPdfEnginePrivate::gradientBrush(const QBrush &b, const QMatrix &matrix, int *gStateObject)
-@@ -901,13 +985,7 @@
+@@ -901,13 +986,7 @@
  
      writeInfo();
  
@@ -359,9 +369,9 @@ diff -ur qt-x11-opensource-src-4.5.0-old/src/gui/painting/qprintengine_pdf.cpp q
  
      // graphics state
      graphicsState = addXrefEntry(-1);
-diff -ur qt-x11-opensource-src-4.5.0-old/src/gui/painting/qprintengine_pdf_p.h qt-x11-opensource-src-4.5.0/src/gui/painting/qprintengine_pdf_p.h
---- qt-x11-opensource-src-4.5.0-old/src/gui/painting/qprintengine_pdf_p.h	2009-02-25 22:09:23.000000000 +0100
-+++ qt-x11-opensource-src-4.5.0/src/gui/painting/qprintengine_pdf_p.h	2009-03-10 20:31:32.000000000 +0100
+diff -ur qt-x11-opensource-src-4.5.0.old/src/gui/painting/qprintengine_pdf_p.h qt-x11-opensource-src-4.5.0/src/gui/painting/qprintengine_pdf_p.h
+--- qt-x11-opensource-src-4.5.0.old/src/gui/painting/qprintengine_pdf_p.h	2009-02-25 22:09:23.000000000 +0100
++++ qt-x11-opensource-src-4.5.0/src/gui/painting/qprintengine_pdf_p.h	2009-03-10 21:39:05.000000000 +0100
 @@ -113,6 +113,8 @@
      QString author() const;
  

@@ -111,7 +111,7 @@ uint TocPrinter::print(TocItem * root, QPrinter * printer, QPainter * painter, b
 	painter->setFont(QFont(font_name, header_font_size));
 	QRect pr = printer->pageRect();
 	double h = painter->boundingRect(pr,Qt::AlignTop | Qt::AlignHCenter, header_text).height();
-	QRect r(h,0,pr.width(),h*3);
+	QRect r((int)h,0,pr.width(),(int)h*3);
 	if(!dryRun) {
 		painter->drawText(r,Qt::AlignVCenter | Qt::AlignHCenter, header_text);
 	}
@@ -124,6 +124,7 @@ uint TocPrinter::print(TocItem * root, QPrinter * printer, QPainter * painter, b
 }
 
 void TocPrinter::outlineChildren(TocItem * item, QPrinter * printer, int level) {
+	if(level >= outline_depth) return; 
 	for(int i=0; i < item->children.size(); ++i) {	
 		TocItem * j = item->children[i];
 		printer->printEngine()->beginSectionOutline(j->value,j->page-1,j->location);

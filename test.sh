@@ -77,9 +77,29 @@ function testHeaderFooter() {
 		pdftotext tmp.pdf /dev/stdout | grep -q hat) && good HeaderFooter || bad HeaderFooter
 }
 
+function testToc() {
+	echo "<html><head></head><body><h1 style=\"visibility: hidden\">foo</h1><h2 style=\"visibility: hidden\">bar</h2><h3 style=\"visibility: hidden\">baz</h3></body>" > tmp.html
+	wk tmp.html tmp.pdf --toc --toc-depth 2
+	([ -f tmp.pdf ] && 
+		pdftotext tmp.pdf /dev/stdout | grep -q foo &&
+		pdftotext tmp.pdf /dev/stdout | grep -q bar &&
+		! pdftotext tmp.pdf /dev/stdout | grep -q baz) && good Toc || bad Toc 
+}
+
+
+function testOutline() {
+	echo "<html><head></head><body><h1 style=\"visibility: hidden\">foo</h1><h2 style=\"visibility: hidden\">bar</h2><h3 style=\"visibility: hidden\">baz</h3></body>" > tmp.html
+	wk tmp.html tmp.pdf --outline --outline-depth 2
+	([ -f tmp.pdf ] && 
+		cat tmp.pdf | grep -q ".f.o.o" &&
+		cat tmp.pdf | grep -q ".b.a.r" &&
+		! cat tmp.pdf | grep -q ".b.a.z") && good Outline || bad Outline
+}
 
 good TestTest
 testLocalFileSupport 
+testToc
+testOutline
 testImgSupport jpg
 testImgSupport gif
 testImgSupport png
