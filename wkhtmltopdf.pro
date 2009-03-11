@@ -13,7 +13,7 @@
 # You should have received a copy of the GNU General Public License
 # along with wkhtmltopdf.  If not, see <http:#www.gnu.org/licenses/>.
 
-DEFINES += MAJOR_VERSION=0 MINOR_VERSION=7 PATCH_VERSION=0
+DEFINES += MAJOR_VERSION=0 MINOR_VERSION=7 PATCH_VERSION=1
 
 TEMP = $$[QT_INSTALL_LIBS] libQtGui.prl
 include($$join(TEMP, "/"))
