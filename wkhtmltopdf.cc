@@ -236,7 +236,7 @@ void WKHtmlToPdf::run(int argc, const char ** argv) {
 #endif
 		//Disable stuff we don't need
 		page->settings()->setAttribute(QWebSettings::JavaEnabled, false);
-		page->settings()->setAttribute(QWebSettings::JavascriptEnabled, disable_javascript);
+		page->settings()->setAttribute(QWebSettings::JavascriptEnabled, !disable_javascript);
 		page->settings()->setAttribute(QWebSettings::JavascriptCanOpenWindows, false);
 		page->settings()->setAttribute(QWebSettings::JavascriptCanAccessClipboard, false);
 #if QT_VERSION >= 0x040500
