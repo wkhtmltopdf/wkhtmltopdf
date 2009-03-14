@@ -377,6 +377,7 @@ void WKHtmlToPdf::initArgs() {
 	addarg("toc-depth",0,"Set the depth of the toc", new AHIntSetter(tocPrinter.depth,"level",3));
 	addarg("toc-header-text",0,"The header text of the toc", new AHStrSetter(tocPrinter.header_text,"text","Table Of Contents"));
 	addarg("toc-header-fs",0,"The font size of the toc header", new AHIntSetter(tocPrinter.header_font_size,"size",15));
+	addarg("print-media-type",0,"Use print media-type instead of screen", new AHConstSetter<bool>(printMediaType,true,false));
 	for(uint i=0; i < TocPrinter::levels; ++i) {
 		addarg(QString("toc-l")+QString::number(i+1)+"-font-size",0,QString("Set the font size on level ")+QString::number(i+1)+" of the toc",new AHIntSetter(tocPrinter.font_size[i],"size",12-2*i), i < 3);
 		addarg(QString("toc-l")+QString::number(i+1)+"-indentation",0,QString("Set indentation on level ")+QString::number(i+1)+" of the toc",new AHIntSetter(tocPrinter.indentation[i],"num",i*20), i < 3); 

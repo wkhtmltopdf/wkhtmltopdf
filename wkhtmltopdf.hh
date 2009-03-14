@@ -76,6 +76,7 @@ public:
 	QPair<qreal, QPrinter::Unit> margin_right;
 	QPair<qreal, QPrinter::Unit> margin_bottom;
 	QPair<qreal, QPrinter::Unit> margin_left;
+	bool printMediaType;
 
 	const char * cover;
 	bool outline;

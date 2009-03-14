@@ -1,6 +1,67 @@
-diff -ur qt-x11-opensource-src-4.5.0.old/src/3rdparty/webkit/WebCore/page/PrintContext.h qt-x11-opensource-src-4.5.0/src/3rdparty/webkit/WebCore/page/PrintContext.h
---- qt-x11-opensource-src-4.5.0.old/src/3rdparty/webkit/WebCore/page/PrintContext.h	2009-02-25 22:09:20.000000000 +0100
-+++ qt-x11-opensource-src-4.5.0/src/3rdparty/webkit/WebCore/page/PrintContext.h	2009-03-10 21:39:05.000000000 +0100
+diff -ur qt-x11-opensource-src-4.5.0-old/src/3rdparty/webkit/WebCore/page/Frame.cpp qt-x11-opensource-src-4.5.0/src/3rdparty/webkit/WebCore/page/Frame.cpp
+--- qt-x11-opensource-src-4.5.0-old/src/3rdparty/webkit/WebCore/page/Frame.cpp	2009-02-25 22:09:20.000000000 +0100
++++ qt-x11-opensource-src-4.5.0/src/3rdparty/webkit/WebCore/page/Frame.cpp	2009-03-14 10:11:45.000000000 +0100
+@@ -726,13 +726,13 @@
+         view()->layout();
+ }
+ 
+-void Frame::setPrinting(bool printing, float minPageWidth, float maxPageWidth, bool adjustViewSize)
++void Frame::setPrinting(bool printing, float minPageWidth, float maxPageWidth, bool adjustViewSize, bool usePrintMediaType)
+ {
+     if (!d->m_doc)
+         return;
+ 
+     d->m_doc->setPrinting(printing);
+-    view()->setMediaType(printing ? "print" : "screen");
++    view()->setMediaType((printing && usePrintMediaType) ? "print" : "screen");
+     d->m_doc->updateStyleSelector();
+     forceLayoutWithPageWidthRange(minPageWidth, maxPageWidth, adjustViewSize);
+ 
+diff -ur qt-x11-opensource-src-4.5.0-old/src/3rdparty/webkit/WebCore/page/Frame.h qt-x11-opensource-src-4.5.0/src/3rdparty/webkit/WebCore/page/Frame.h
+--- qt-x11-opensource-src-4.5.0-old/src/3rdparty/webkit/WebCore/page/Frame.h	2009-02-25 22:09:20.000000000 +0100
++++ qt-x11-opensource-src-4.5.0/src/3rdparty/webkit/WebCore/page/Frame.h	2009-03-14 10:11:52.000000000 +0100
+@@ -125,7 +125,7 @@
+     void setUserStyleSheet(const String& styleSheetData);
+ #endif
+ 
+-    void setPrinting(bool printing, float minPageWidth, float maxPageWidth, bool adjustViewSize);
++    void setPrinting(bool printing, float minPageWidth, float maxPageWidth, bool adjustViewSize, bool usePrintMediaType=true);
+ 
+     bool inViewSourceMode() const;
+     void setInViewSourceMode(bool = true) const;
+diff -ur qt-x11-opensource-src-4.5.0-old/src/3rdparty/webkit/WebCore/page/PrintContext.cpp qt-x11-opensource-src-4.5.0/src/3rdparty/webkit/WebCore/page/PrintContext.cpp
+--- qt-x11-opensource-src-4.5.0-old/src/3rdparty/webkit/WebCore/page/PrintContext.cpp	2009-02-25 22:09:20.000000000 +0100
++++ qt-x11-opensource-src-4.5.0/src/3rdparty/webkit/WebCore/page/PrintContext.cpp	2009-03-14 10:12:43.000000000 +0100
+@@ -93,7 +93,7 @@
+     } while (printedPagesHeight < docHeight);
+ }
+ 
+-void PrintContext::begin(float width)
++void PrintContext::begin(float width, bool usePrintMediaType)
+ {
+     // By imaging to a width a little wider than the available pixels,
+     // thin pages will be scaled down a little, matching the way they
+@@ -113,7 +113,7 @@
+ 
+     // FIXME: This will modify the rendering of the on-screen frame.
+     // Could lead to flicker during printing.
+-    m_frame->setPrinting(true, minLayoutWidth, maxLayoutWidth, true);
++    m_frame->setPrinting(true, minLayoutWidth, maxLayoutWidth, true, usePrintMediaType);
+ }
+ 
+ void PrintContext::spoolPage(GraphicsContext& ctx, int pageNumber, float width)
+diff -ur qt-x11-opensource-src-4.5.0-old/src/3rdparty/webkit/WebCore/page/PrintContext.h qt-x11-opensource-src-4.5.0/src/3rdparty/webkit/WebCore/page/PrintContext.h
+--- qt-x11-opensource-src-4.5.0-old/src/3rdparty/webkit/WebCore/page/PrintContext.h	2009-02-25 22:09:20.000000000 +0100
++++ qt-x11-opensource-src-4.5.0/src/3rdparty/webkit/WebCore/page/PrintContext.h	2009-03-14 10:12:19.000000000 +0100
+@@ -40,7 +40,7 @@
+     void computePageRects(const FloatRect& printRect, float headerHeight, float footerHeight, float userScaleFactor, float& outPageHeight);
+ 
+     // TODO: eliminate width param
+-    void begin(float width);
++    void begin(float width, bool usePrintMediaType=true);
+ 
+     // TODO: eliminate width param
+     void spoolPage(GraphicsContext& ctx, int pageNumber, float width);
 @@ -50,6 +50,8 @@
  protected:
      Frame* m_frame;
@@ -10,9 +71,9 @@ diff -ur qt-x11-opensource-src-4.5.0.old/src/3rdparty/webkit/WebCore/page/PrintC
  };
  
  }
-diff -ur qt-x11-opensource-src-4.5.0.old/src/3rdparty/webkit/WebKit/qt/Api/qwebframe.cpp qt-x11-opensource-src-4.5.0/src/3rdparty/webkit/WebKit/qt/Api/qwebframe.cpp
---- qt-x11-opensource-src-4.5.0.old/src/3rdparty/webkit/WebKit/qt/Api/qwebframe.cpp	2009-02-25 22:09:21.000000000 +0100
-+++ qt-x11-opensource-src-4.5.0/src/3rdparty/webkit/WebKit/qt/Api/qwebframe.cpp	2009-03-11 13:14:16.000000000 +0100
+diff -ur qt-x11-opensource-src-4.5.0-old/src/3rdparty/webkit/WebKit/qt/Api/qwebframe.cpp qt-x11-opensource-src-4.5.0/src/3rdparty/webkit/WebKit/qt/Api/qwebframe.cpp
+--- qt-x11-opensource-src-4.5.0-old/src/3rdparty/webkit/WebKit/qt/Api/qwebframe.cpp	2009-02-25 22:09:21.000000000 +0100
++++ qt-x11-opensource-src-4.5.0/src/3rdparty/webkit/WebKit/qt/Api/qwebframe.cpp	2009-03-14 10:24:02.000000000 +0100
 @@ -75,6 +75,7 @@
  #include <qevent.h>
  #include <qfileinfo.h>
@@ -67,7 +128,7 @@ diff -ur qt-x11-opensource-src-4.5.0.old/src/3rdparty/webkit/WebKit/qt/Api/qwebf
 +    }
 +};
 +
-+QVector<QWebFrame::Heading> QWebFrame::headings(QPrinter * printer) {
++QVector<QWebFrame::Heading> QWebFrame::headings(QPrinter * printer, bool usePrintMediaType) {
 +    HeadingsGenerator gen;
 +    if(!printer) {
 +        gen.visitNode(d->frame->document());
@@ -82,7 +143,7 @@ diff -ur qt-x11-opensource-src-4.5.0.old/src/3rdparty/webkit/WebKit/qt/Api/qwebf
 +    IntRect pageRect(0, 0,
 +                     int(qprinterRect.width() / zoomFactorX),
 +                     int(qprinterRect.height() / zoomFactorY));
-+    printContext.begin(pageRect.width());
++    printContext.begin(pageRect.width(), usePrintMediaType);
 +    printContext.computePageRects(pageRect, 0, 0, 1.0, pageHeight);
 +    
 +    const Vector<IntRect> & pageRects = printContext.getPageRects();
@@ -92,17 +153,17 @@ diff -ur qt-x11-opensource-src-4.5.0.old/src/3rdparty/webkit/WebKit/qt/Api/qwebf
 +        if(gen.addHeading(o->node())) {
 +            QWebFrame::Heading & h = gen.res.back(); 
 +            h.locationOnPage = gen.getObjectLocation(o);
-+			QMap<float, uint>::const_iterator pageI = pageEnd.upperBound(h.locationOnPage.y());            
++            QMap<float, uint>::const_iterator pageI = pageEnd.upperBound(h.locationOnPage.y());            
 +            h.page=(pageI == pageEnd.end())?pageRects.size()-1:pageI.value();
 +            h.locationOnPage -= QPointF(0,pageRects[h.page].y());
-+			h.locationOnPage= QPointF(h.locationOnPage.x() / pageRects[h.page].x(),
-+									  h.locationOnPage.y() / pageRects[h.page].y());
++            h.locationOnPage= QPointF(h.locationOnPage.x() / pageRects[h.page].x(),
++                                      h.locationOnPage.y() / pageRects[h.page].y());
 +        }
 +    printContext.end();
 +    return gen.res;
 +}
 +
-+uint QWebFrame::countPages(QPrinter *printer) {
++uint QWebFrame::countPages(QPrinter *printer, bool usePrintMediaType) {
 +    const qreal zoomFactorX = printer->logicalDpiX() / qt_defaultDpi();
 +    const qreal zoomFactorY = printer->logicalDpiY() / qt_defaultDpi();
 +
@@ -115,7 +176,7 @@ diff -ur qt-x11-opensource-src-4.5.0.old/src/3rdparty/webkit/WebKit/qt/Api/qwebf
 +                     int(qprinterRect.width() / zoomFactorX),
 +                     int(qprinterRect.height() / zoomFactorY));
 +
-+    printContext.begin(pageRect.width());
++    printContext.begin(pageRect.width(), usePrintMediaType);
 +    printContext.computePageRects(pageRect, /*headerHeight*/0, /*footerHeight*/0, /*userScaleFactor*/1.0, pageHeight);
 +    uint count = printContext.pageCount();
 +    printContext.end();
@@ -128,7 +189,7 @@ diff -ur qt-x11-opensource-src-4.5.0.old/src/3rdparty/webkit/WebKit/qt/Api/qwebf
      \sa render()
  */
 -void QWebFrame::print(QPrinter *printer) const
-+void QWebFrame::print(QPrinter *printer, QPainter * painter) const
++void QWebFrame::print(QPrinter *printer, QPainter * painter, bool usePrintMediaType) const
  {
 -    QPainter painter;
 -    if (!painter.begin(printer))
@@ -140,7 +201,16 @@ diff -ur qt-x11-opensource-src-4.5.0.old/src/3rdparty/webkit/WebKit/qt/Api/qwebf
  
      const qreal zoomFactorX = printer->logicalDpiX() / qt_defaultDpi();
      const qreal zoomFactorY = printer->logicalDpiY() / qt_defaultDpi();
-@@ -942,8 +1041,8 @@
+@@ -909,7 +999,7 @@
+                      int(qprinterRect.width() / zoomFactorX),
+                      int(qprinterRect.height() / zoomFactorY));
+ 
+-    printContext.begin(pageRect.width());
++    printContext.begin(pageRect.width(), usePrintMediaType);
+ 
+     printContext.computePageRects(pageRect, /*headerHeight*/0, /*footerHeight*/0, /*userScaleFactor*/1.0, pageHeight);
+ 
+@@ -942,8 +1032,8 @@
          ascending = false;
      }
  
@@ -151,7 +221,7 @@ diff -ur qt-x11-opensource-src-4.5.0.old/src/3rdparty/webkit/WebKit/qt/Api/qwebf
  
      for (int i = 0; i < docCopies; ++i) {
          int page = fromPage;
-@@ -955,10 +1054,13 @@
+@@ -955,10 +1045,13 @@
                      return;
                  }
                  printContext.spoolPage(ctx, page - 1, pageRect.width());
@@ -167,7 +237,7 @@ diff -ur qt-x11-opensource-src-4.5.0.old/src/3rdparty/webkit/WebKit/qt/Api/qwebf
              if (page == toPage)
                  break;
  
-@@ -975,6 +1077,8 @@
+@@ -975,6 +1068,8 @@
      }
  
      printContext.end();
@@ -176,9 +246,9 @@ diff -ur qt-x11-opensource-src-4.5.0.old/src/3rdparty/webkit/WebKit/qt/Api/qwebf
  }
  #endif // QT_NO_PRINTER
  
-diff -ur qt-x11-opensource-src-4.5.0.old/src/3rdparty/webkit/WebKit/qt/Api/qwebframe.h qt-x11-opensource-src-4.5.0/src/3rdparty/webkit/WebKit/qt/Api/qwebframe.h
---- qt-x11-opensource-src-4.5.0.old/src/3rdparty/webkit/WebKit/qt/Api/qwebframe.h	2009-02-25 22:09:21.000000000 +0100
-+++ qt-x11-opensource-src-4.5.0/src/3rdparty/webkit/WebKit/qt/Api/qwebframe.h	2009-03-10 21:39:05.000000000 +0100
+diff -ur qt-x11-opensource-src-4.5.0-old/src/3rdparty/webkit/WebKit/qt/Api/qwebframe.h qt-x11-opensource-src-4.5.0/src/3rdparty/webkit/WebKit/qt/Api/qwebframe.h
+--- qt-x11-opensource-src-4.5.0-old/src/3rdparty/webkit/WebKit/qt/Api/qwebframe.h	2009-02-25 22:09:21.000000000 +0100
++++ qt-x11-opensource-src-4.5.0/src/3rdparty/webkit/WebKit/qt/Api/qwebframe.h	2009-03-14 10:23:07.000000000 +0100
 @@ -21,6 +21,8 @@
  #ifndef QWEBFRAME_H
  #define QWEBFRAME_H
@@ -207,14 +277,14 @@ diff -ur qt-x11-opensource-src-4.5.0.old/src/3rdparty/webkit/WebKit/qt/Api/qwebf
  
      QWebSecurityOrigin securityOrigin() const;
  
-+    QVector<Heading> headings(QPrinter * printer=NULL);
-+    uint countPages(QPrinter *printer);
++    QVector<Heading> headings(QPrinter * printer=NULL, bool usePrintMediaType=true);
++    uint countPages(QPrinter *printer, bool usePrintMediaType=true);
 +
  public Q_SLOTS:
      QVariant evaluateJavaScript(const QString& scriptSource);
  #ifndef QT_NO_PRINTER
 -    void print(QPrinter *printer) const;
-+    void print(QPrinter *printer, QPainter * painter=NULL) const;
++    void print(QPrinter *printer, QPainter * painter=NULL, bool usePrintMediaType=true) const;
  #endif
  
  Q_SIGNALS:
@@ -226,9 +296,9 @@ diff -ur qt-x11-opensource-src-4.5.0.old/src/3rdparty/webkit/WebKit/qt/Api/qwebf
  private:
      friend class QWebPage;
      friend class QWebPagePrivate;
-diff -ur qt-x11-opensource-src-4.5.0.old/src/gui/painting/qprintengine.h qt-x11-opensource-src-4.5.0/src/gui/painting/qprintengine.h
---- qt-x11-opensource-src-4.5.0.old/src/gui/painting/qprintengine.h	2009-02-25 22:09:23.000000000 +0100
-+++ qt-x11-opensource-src-4.5.0/src/gui/painting/qprintengine.h	2009-03-10 21:39:05.000000000 +0100
+diff -ur qt-x11-opensource-src-4.5.0-old/src/gui/painting/qprintengine.h qt-x11-opensource-src-4.5.0/src/gui/painting/qprintengine.h
+--- qt-x11-opensource-src-4.5.0-old/src/gui/painting/qprintengine.h	2009-02-25 22:09:23.000000000 +0100
++++ qt-x11-opensource-src-4.5.0/src/gui/painting/qprintengine.h	2009-03-10 20:31:32.000000000 +0100
 @@ -95,6 +95,8 @@
      virtual QVariant property(PrintEnginePropertyKey key) const = 0;
  
@@ -238,9 +308,9 @@ diff -ur qt-x11-opensource-src-4.5.0.old/src/gui/painting/qprintengine.h qt-x11-
      virtual bool abort() = 0;
  
      virtual int metric(QPaintDevice::PaintDeviceMetric) const = 0;
-diff -ur qt-x11-opensource-src-4.5.0.old/src/gui/painting/qprintengine_pdf.cpp qt-x11-opensource-src-4.5.0/src/gui/painting/qprintengine_pdf.cpp
---- qt-x11-opensource-src-4.5.0.old/src/gui/painting/qprintengine_pdf.cpp	2009-02-25 22:09:23.000000000 +0100
-+++ qt-x11-opensource-src-4.5.0/src/gui/painting/qprintengine_pdf.cpp	2009-03-11 12:15:42.000000000 +0100
+diff -ur qt-x11-opensource-src-4.5.0-old/src/gui/painting/qprintengine_pdf.cpp qt-x11-opensource-src-4.5.0/src/gui/painting/qprintengine_pdf.cpp
+--- qt-x11-opensource-src-4.5.0-old/src/gui/painting/qprintengine_pdf.cpp	2009-02-25 22:09:23.000000000 +0100
++++ qt-x11-opensource-src-4.5.0/src/gui/painting/qprintengine_pdf.cpp	2009-03-10 20:31:32.000000000 +0100
 @@ -115,6 +115,28 @@
      state = QPrinter::Idle;
  }
@@ -355,7 +425,7 @@ diff -ur qt-x11-opensource-src-4.5.0.old/src/gui/painting/qprintengine_pdf.cpp q
  
  #ifdef USE_NATIVE_GRADIENTS
  int QPdfEnginePrivate::gradientBrush(const QBrush &b, const QMatrix &matrix, int *gStateObject)
-@@ -901,13 +986,7 @@
+@@ -901,13 +985,7 @@
  
      writeInfo();
  
@@ -369,9 +439,9 @@ diff -ur qt-x11-opensource-src-4.5.0.old/src/gui/painting/qprintengine_pdf.cpp q
  
      // graphics state
      graphicsState = addXrefEntry(-1);
-diff -ur qt-x11-opensource-src-4.5.0.old/src/gui/painting/qprintengine_pdf_p.h qt-x11-opensource-src-4.5.0/src/gui/painting/qprintengine_pdf_p.h
---- qt-x11-opensource-src-4.5.0.old/src/gui/painting/qprintengine_pdf_p.h	2009-02-25 22:09:23.000000000 +0100
-+++ qt-x11-opensource-src-4.5.0/src/gui/painting/qprintengine_pdf_p.h	2009-03-10 21:39:05.000000000 +0100
+diff -ur qt-x11-opensource-src-4.5.0-old/src/gui/painting/qprintengine_pdf_p.h qt-x11-opensource-src-4.5.0/src/gui/painting/qprintengine_pdf_p.h
+--- qt-x11-opensource-src-4.5.0-old/src/gui/painting/qprintengine_pdf_p.h	2009-02-25 22:09:23.000000000 +0100
++++ qt-x11-opensource-src-4.5.0/src/gui/painting/qprintengine_pdf_p.h	2009-03-10 20:31:32.000000000 +0100
 @@ -113,6 +113,8 @@
      QString author() const;
  

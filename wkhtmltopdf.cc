@@ -311,7 +311,7 @@ void WKHtmlToPdf::printPage() {
 		for(int i=0; i < in.size(); ++i) {
 			if(cover[0] && i == 0) {headings.push_back( QVector<QWebFrame::Heading>() ); continue;}
 			if(!quiet) {fprintf(stderr, "Finding headings %d of %d      \r",i,in.size()); fflush(stdout);}
-			headings.push_back(pages[i]->mainFrame()->headings(&printer));
+			headings.push_back(pages[i]->mainFrame()->headings(&printer, printMediaType));
 		}
 	}
 	
@@ -331,10 +331,10 @@ void WKHtmlToPdf::printPage() {
 			if(!quiet) {fprintf(stderr, "Counting pages %d of %d      \r",i,in.size()); fflush(stdout);}
 			if(cover[0] && i == 0) {
 				pageStart.push_front(0);
-				pageStart.back() +=  pages[i]->mainFrame()->countPages(&printer);
+				pageStart.back() +=  pages[i]->mainFrame()->countPages(&printer, printMediaType);
 				continue;
 			}
-			pageStart.push_back( pageStart.back() + pages[i]->mainFrame()->countPages(&printer) );
+			pageStart.push_back( pageStart.back() + pages[i]->mainFrame()->countPages(&printer, printMediaType) );
 		}
 	}
 
@@ -361,7 +361,7 @@ void WKHtmlToPdf::printPage() {
 			printer.newPage();
 			currentPage = i;
 		}
-		pages[i]->mainFrame()->print(&printer,&painter);
+		pages[i]->mainFrame()->print(&printer,&painter, printMediaType);
 	}
 	if(outline) tocPrinter.outline(root, &printer);
 	if(root) delete root;
