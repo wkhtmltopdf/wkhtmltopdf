@@ -1,5 +1,9 @@
 #!/bin/bash
 svn status
+if [[ $1 == "" ]] || [[ $2 == "" ]] || [[ $3 == "" ]]; then
+	echo "Bad vertion"
+	exit 1
+fi
 v="$1.$2.$3"
 echo "About to release $v" 
 read -p "Are you sure you are ready: " N
@@ -10,10 +14,8 @@ sed -ri "s/SET\(CPACK_PACKAGE_VERSION_MINOR \"[0-9]+\"\)/SET(CPACK_PACKAGE_VERSI
 sed -ri "s/SET\(CPACK_PACKAGE_VERSION_PATCH \"[0-9]+\"\)/SET(CPACK_PACKAGE_VERSION_PATCH \"$3\")/" CMakeLists.txt
 sed -ri "s/MAJOR_VERSION=[0-9]+ MINOR_VERSION=[0-9]+ PATCH_VERSION=[0-9]+/MAJOR_VERSION=$1 MINOR_VERSION=$2 PATCH_VERSION=$3/" wkhtmltopdf.pro
 
-if !(make clean && make -j5); then
-	echo "Build failed"
-	exit 1
-fi
+./static-build.sh linux || (echo Build failed; exit 1)
+cp build/wkhtmltopdf wkhtmltopdf
 if ! ./test.sh; then
 	echo "Test failed"
 	exit 1
