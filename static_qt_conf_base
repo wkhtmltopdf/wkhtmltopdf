@@ -1,0 +1,51 @@
+# This file is part of wkhtmltopdf.
+#
+# wkhtmltopdf is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# wkhtmltopdf is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with wkhtmltopdf.  If not, see <http:#www.gnu.org/licenses/>.
+-release
+-static
+-fast
+-no-exceptions
+-no-accessibility
+-no-stl
+-no-sql-ibase
+-no-sql-mysql
+-no-sql-odbc
+-no-sql-psql
+-no-sql-sqlite
+-no-sql-sqlite2
+-no-qt3support
+-no-xmlpatterns
+-no-phonon
+-no-phonon-backend
+-webkit
+-no-scripttools
+-no-mmx
+-no-3dnow
+-no-sse
+-no-sse2 
+-qt-zlib
+-qt-gif
+-qt-libtiff
+-qt-libpng
+-qt-libmng
+-qt-libjpeg
+-openssl
+#-openssl-linked
+-nomake tools
+-nomake examples
+-nomake demos
+-nomake docs
+-nomake translations
+-no-opengl
+-no-dbus
