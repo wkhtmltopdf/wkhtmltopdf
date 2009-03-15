@@ -44,6 +44,10 @@ unix {
     INSTALLS += manins
 }
 
+win32 {
+    CONFIG += console
+}
+
 INSTALLS += target
 target.path=$$INSTALLBASE/bin
 
