@@ -20,6 +20,7 @@ if ! ./test.sh; then
 	echo "Test failed"
 	exit 1
 fi
+./static-build.sh win || (echo Build failed; exit 1)
 
 svn ci -m "Making ready for vertion $v" CMakeLists.txt wkhtmltopdf.pro
 svn cp https://wkhtmltopdf.googlecode.com/svn/trunk https://wkhtmltopdf.googlecode.com/svn/tags/$v -m "Tagged $v"
@@ -28,6 +29,7 @@ rm -rf release-$v
 mkdir release-$v
 svn export . release-$v/wkhtmltopdf-$v
 tar -cjvf release-$v/wkhtmltopdf-$v.tar.bz2 -C release-$v wkhtmltopdf-$v
-strip wkhtmltopdf
+cp ../build/wkhtmltopdf wkhtmltopdf
+cp ../build/wkhtmltopdf.exe wkhtmltopdf.exe
 tar -cjvf release-$v/wkhtmltopdf-$v-static.tar.bz2 wkhtmltopdf
 

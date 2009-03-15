@@ -76,6 +76,7 @@ if [[ "$1" == "all" ]] || [[ "$1" == "linux" ]]; then
 	../qt/bin/qmake || exit 1
 	make -j5 || exit 1
 	strip wkhtmltopdf || exit 1
+	rm -rf ${BUILD}/wkhtmltopdf
 	${BUILD}/${UPX}/upx --best wkhtmltopdf -o ${BUILD}/wkhtmltopdf || exit 1
 fi
 if [[ "$1" == "all" ]] || [[ "$1" == "win" ]]; then 
@@ -131,7 +132,8 @@ EOF
 	wine ../qt/bin/qmake.exe wkhtmltopdf.pro -o Makefile -spec win32-g++ || exit 1
 	wine mingw32-make -j5 || exit 1
 	wine strip.exe release/wkhtmltopdf.exe || exit 1
-	${BUILD}/${UPX}/upx --best release/wkhtmltopdf.exe -o ${BUILD}/khtmltopdf.exe || exit 1
+	rm -rf ${BUILD}/wkhtmltopdf.exe
+	${BUILD}/${UPX}/upx --best release/wkhtmltopdf.exe -o ${BUILD}/wkhtmltopdf.exe || exit 1
 fi
 if [[ "$1" != "all" ]] && [[ "$1" != "linux" ]] && [[ "$1" != "win" ]]; then
 	echo "please specify what static binary you want build (linux, win or all)"
