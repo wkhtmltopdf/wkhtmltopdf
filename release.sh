@@ -29,7 +29,7 @@ rm -rf release-$v
 mkdir release-$v
 svn export . release-$v/wkhtmltopdf-$v
 tar -cjvf release-$v/wkhtmltopdf-$v.tar.bz2 -C release-$v wkhtmltopdf-$v
-cp ../build/wkhtmltopdf wkhtmltopdf
-cp ../build/wkhtmltopdf.exe wkhtmltopdf.exe
+cp build/wkhtmltopdf wkhtmltopdf
+cp build/wkhtmltopdf.exe release-$v/wkhtmltopdf-$v.exe
 tar -cjvf release-$v/wkhtmltopdf-$v-static.tar.bz2 wkhtmltopdf
 
