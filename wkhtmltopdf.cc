@@ -244,8 +244,16 @@ void WKHtmlToPdf::run(int argc, const char ** argv) {
 		page->settings()->setAttribute(QWebSettings::PrintElementBackgrounds, background);
  		page->settings()->setAttribute(QWebSettings::PluginsEnabled, false);
 #endif
-		QString u = in[i];
-		if(u == "-") u="/dev/stdin";
+		QString u= in[i];
+		if(u == "-") {
+			QFile stdin;
+			stdin.open(0,QIODevice::ReadOnly);
+			temp.push_back(new QTemporaryFile());
+			temp.back()->open();
+			temp.back()->write(stdin.readAll());
+			temp.back()->flush();
+			u=temp.back()->fileName();
+		}
 		page->mainFrame()->load(guessUrlFromString(u));
 		pages.push_back(page);
 	}
@@ -272,7 +280,8 @@ void WKHtmlToPdf::printPage() {
 
 	QPrinter printer(resolution);
 	if(dpi != -1) printer.setResolution(dpi);
-		
+ 
+	if(!strcmp(out,"-")) out="/dev/stdout";
 	//Tell the printer object to print the file <out>
 	printer.setOutputFormat(
 		strcmp(out + (strlen(out)-3),".ps")==0?

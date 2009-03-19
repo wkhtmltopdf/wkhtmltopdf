@@ -55,7 +55,7 @@ public:
 	QVector<const char *> in; //Names of the input files
 	const char * out; //Name of the output file
 	QNetworkAccessManager * am;
-	
+
 	QNetworkProxy::ProxyType proxyType; //Type of proxy to use
 	int proxyPort; //The port of the proxy to use
 	const char * proxyHost; //The host name of the proxy to use or NULL
@@ -88,11 +88,12 @@ public:
 	const char * footer_left, * footer_center, * footer_right;
 	
 	QAtomicInt loading; //Keep track of the numer of pages loading
+	QVector<QTemporaryFile *> temp;
 	QMap<QString, ArgHandler *> longToHandler; //Map from the long name of an argument, to its handler
 	QMap<char, ArgHandler *> shortToHandler; //Map form the short switch of an argument, to its handlr
 	int currentPage;
 	int pageNum;
-
+  
 #ifdef  __EXTENSIVE_WKHTMLTOPDF_QT_HACK__
 	TocPrinter tocPrinter;
 #endif
