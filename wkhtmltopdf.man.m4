@@ -30,8 +30,7 @@ Converts one or more htmlpage to a pdf document.
 
 .SH OPTIONS
 
-esyscmd(`./wkhtmltopdf --help | sed -ne /Options:/,/Proxy:/p | sed -e /Options:/d -e /Proxy/d | sed -re "s/^[ \t]*//" |  sed -re "s/^((-[a-zA-Z], )?--[a-z-]+)[\t ]*(<[a-z]+>)?[ \t]*/.TP\n\\\fB\1\\\fR \\\fI\3\\\fR\n/" | sed -re "s/''/\\\'/g")
-
+esyscmd(`./wkhtmltopdf --help | sed -ne /Options:/,/Proxy:/p | sed -e /Options:/d -e /Proxy/d | sed -re "s/^[ \t]*//" |  sed -re "s/^((-[a-zA-Z], )?--[a-z-]+)[\t ]*(<[a-z]+>)?[ \t]*/.TP\n\\\fB\1\\\fR \\\fI\3\\\fR\n/" | sed -re "s/''/\\\'/g" | sed -re "s/-/\\\\-/"g)
 .SH BUGS
 Report bugs to <antialize@gmail.com>.
 
