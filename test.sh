@@ -52,11 +52,18 @@ function testLocalFileSupport() {
     ([ -f tmp.pdf ] && pdftotext tmp.pdf /dev/stdout | grep -q Hello) && good LocalFile || bad LocalFile
 }
 
-function testPipeSupport() {
+function testPipeInSupport() {
     rm -rf tmp.pdf
     echo "<html><head><title>Local Test</title></head><body><h1>Hello</h1></body></html>" > tmp.html
-    cat tmp.html | wk - - > tmp.pdf
-    ([ -f tmp.pdf ] && pdftotext tmp.pdf /dev/stdout | grep -q Hello) && good PipeFile || bad PipeFile
+    cat tmp.html | wk - tmp.pdf
+    ([ -f tmp.pdf ] && pdftotext tmp.pdf /dev/stdout | grep -q Hello) && good PipeInFile || bad PipeInFile
+}
+
+function testPipeOutSupport() {
+    rm -rf tmp.pdf
+    echo "<html><head><title>Local Test</title></head><body><h1>Hello</h1></body></html>" > tmp.html
+    wk tmp.html - > tmp.pdf
+    ([ -f tmp.pdf ] && pdftotext tmp.pdf /dev/stdout | grep -q Hello) && good PipeOutFile || bad PipeQutFile
 }
 
 #Test if we can convert a remove site.
@@ -119,7 +126,8 @@ function testBuild() {
 
 good TestTest
 testLocalFileSupport
-testPipeSupport 
+testPipeInSupport
+testPipeOutSupport 
 testToc
 testOutline
 testImgSupport jpg

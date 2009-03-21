@@ -88,7 +88,7 @@ public:
 	const char * footer_left, * footer_center, * footer_right;
 	
 	QAtomicInt loading; //Keep track of the numer of pages loading
-	QVector<QTemporaryFile *> temp;
+	QVector<QString> temp;
 	QMap<QString, ArgHandler *> longToHandler; //Map from the long name of an argument, to its handler
 	QMap<char, ArgHandler *> shortToHandler; //Map form the short switch of an argument, to its handlr
 	int currentPage;

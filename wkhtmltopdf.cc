@@ -200,6 +200,8 @@ void WKHtmlToPdf::newPage(QPrinter * printer, int f, int t, int p) {
 	painter.restore();
 }
 
+#include <QUuid>
+
 /*!
  * Parse arguments, load page and print it
  * \param argc the number of arguments
@@ -248,11 +250,11 @@ void WKHtmlToPdf::run(int argc, const char ** argv) {
 		if(u == "-") {
 			QFile stdin;
 			stdin.open(0,QIODevice::ReadOnly);
-			temp.push_back(new QTemporaryFile());
-			temp.back()->open();
-			temp.back()->write(stdin.readAll());
-			temp.back()->flush();
-			u=temp.back()->fileName();
+			u = QDir::tempPath()+"/wktemp"+QUuid::createUuid().toString()+".html";
+			temp.push_back(u);
+			QFile tmp(u);
+			tmp.open(QIODevice::WriteOnly);
+			tmp.write(stdin.readAll());
 		}
 		page->mainFrame()->load(guessUrlFromString(u));
 		pages.push_back(page);
@@ -279,15 +281,22 @@ void WKHtmlToPdf::printPage() {
 	if(!quiet) {fprintf(stderr, "Outputting pages       \r"); fflush(stdout);}
 
 	QPrinter printer(resolution);
+	QString lout = out;
 	if(dpi != -1) printer.setResolution(dpi);
- 
-	if(!strcmp(out,"-")) out="/dev/stdout";
+	if(!strcmp(out,"-")) {
+		if(QFile::exists("/dev/stdout"))
+			lout = "/dev/stdout";
+		else {
+			lout = QDir::tempPath()+"/wktemp"+QUuid::createUuid().toString()+".pdf";
+			temp.push_back(lout);
+		}
+	}
 	//Tell the printer object to print the file <out>
 	printer.setOutputFormat(
 		strcmp(out + (strlen(out)-3),".ps")==0?
 		QPrinter::PostScriptFormat : QPrinter::PdfFormat
 		);
-	printer.setOutputFileName(out);
+	printer.setOutputFileName(lout);
 
 	//We currently only support margins with the same unit
 	if(margin_left.second != margin_right.second ||
@@ -379,11 +388,19 @@ void WKHtmlToPdf::printPage() {
 	pages[0]->mainFrame()->print(&printer);
 #endif
 
-	if(loading == 0) {
-		if(!quiet) {fprintf(stderr,"Done                 \n"); fflush(stderr);}
-		for(int i=0; i < pages.size(); ++i) delete pages[i];
-		qApp->quit();
+	if(loading != 0) return;
+	
+	if(!quiet) {fprintf(stderr,"Done                 \n"); fflush(stderr);}
+	for(int i=0; i < pages.size(); ++i) delete pages[i];
+	if(!strcmp(out,"-") && lout != "/dev/stdout") {
+		QFile i(lout);
+		QFile o;
+		i.open(QIODevice::ReadOnly);
+		o.open(1,QIODevice::WriteOnly);
+		o.write(i.readAll());
 	}
+	for(int i=0; i < temp.size(); ++i) QFile::remove(temp[i]);
+	qApp->quit();
 }
 
 /*!
