@@ -248,13 +248,13 @@ void WKHtmlToPdf::run(int argc, const char ** argv) {
 #endif
 		QString u= in[i];
 		if(u == "-") {
-			QFile stdin;
-			stdin.open(0,QIODevice::ReadOnly);
+			QFile in;
+			in.open(0,QIODevice::ReadOnly);
 			u = QDir::tempPath()+"/wktemp"+QUuid::createUuid().toString()+".html";
 			temp.push_back(u);
 			QFile tmp(u);
 			tmp.open(QIODevice::WriteOnly);
-			tmp.write(stdin.readAll());
+			tmp.write(in.readAll());
 		}
 		page->mainFrame()->load(guessUrlFromString(u));
 		pages.push_back(page);
