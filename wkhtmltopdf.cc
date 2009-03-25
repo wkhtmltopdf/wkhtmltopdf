@@ -216,6 +216,14 @@ void WKHtmlToPdf::run(int argc, const char ** argv) {
 		QNetworkProxy proxy;
 		proxy.setHostName(proxyHost);
 		proxy.setPort(proxyPort);
+		proxy.setType(proxyType);
+		// to retrieve a web page, it's not needed to use a fully transparent
+		// http proxy. Moreover, the CONNECT() method is frequently disabled
+		// by proxies administrators.
+#if QT_VERSION >= 0x040500
+		if (proxyType == QNetworkProxy::HttpProxy)
+			proxy.setCapabilities(QNetworkProxy::CachingCapability);
+#endif
 		if(proxyUser) proxy.setUser(proxyUser);
 		if(proxyPassword) proxy.setPassword(proxyPassword);
 		am->setProxy(proxy);

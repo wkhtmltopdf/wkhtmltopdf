@@ -217,13 +217,14 @@ bool WKHtmlToPdf::setProxy(const char * proxy) {
 	if(!strcmp(proxy,"none")) {proxyHost = NULL;return true;}
 
 	//Read proxy type bit "http://" or "socks5://"
-	proxyType = QNetworkProxy::HttpProxy;
-	if(!strncmp(proxy,"http://",7)) 
+	if(!strncmp(proxy,"http://",7)) {
+		proxyType = QNetworkProxy::HttpProxy;
 		proxy += 7;
+	}
 	else if(!strncmp(proxy,"socks5://",9)) {
 		proxyType = QNetworkProxy::Socks5Proxy;
-		proxy += 8;
-	}	
+		proxy += 9;
+	}
 	//Read username and password
 	char * val = strchr(proxy,'@');
 	proxyUser = proxyPassword = NULL;
@@ -251,7 +252,7 @@ bool WKHtmlToPdf::setProxy(const char * proxy) {
 		memcpy(leak,proxy,val-proxy);
 		leak[val-proxy] = 0;
 		proxyHost = leak;
-		proxyPort = atoi(val);
+		proxyPort = atoi(val+1);
 	}
 	return true;
 }
@@ -451,7 +452,7 @@ void WKHtmlToPdf::usage(FILE * fd) {
 	fprintf(fd,
 "\n"
 "Proxy:\n"
-"  By default proxyinformation will be read from the environment\n"
+"  By default proxy information will be read from the environment\n"
 "  variables: proxy, all_proxy and http_proxy, proxy options can\n"
 "  also by specified with the -p switch\n"
 "  <type> := \"http://\" | \"socks5://\"\n" 
@@ -496,6 +497,6 @@ void WKHtmlToPdf::version(FILE * fd) {
 "There is NO WARRANTY, to the extent permitted by law.\n"
 "\n"
 "Written by Jakob Truelsen\n"
-"Patches by Mário Silva\n\n",
+"Patches by Mário Silva and Emmanuel Bouthenot\n\n",
 			MAJOR_VERSION, MINOR_VERSION, PATCH_VERSION);
 }

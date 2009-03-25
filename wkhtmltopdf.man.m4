@@ -29,20 +29,19 @@ wkhtmltopdf [OPTIONS]... <input file> [More inputfiles] <output file>
 Converts one or more htmlpage to a pdf document.
 
 .SH OPTIONS
+esyscmd(`./wkhtmltopdf --help | sed -ne /Options:/,/Proxy:/p | sed -e /Options:/d -e /Proxy/d | sed -re "s/^[ \t]*//" |  sed -re "s/^((-[a-zA-Z], )?--[a-z-]+)[\t ]*(<[a-z]+>)?[ \t]*/.TP\n\\\fB\1\\\fR \\\fI\3\\\fR\n/" | sed -re "s/''/\\\'/g" | sed -re "s/-/\\\\-/g")
 
-esyscmd(`./wkhtmltopdf --help | sed -ne /Options:/,/Proxy:/p | sed -e /Options:/d -e /Proxy/d | sed -re "s/^[ \t]*//" |  sed -re "s/^((-[a-zA-Z], )?--[a-z-]+)[\t ]*(<[a-z]+>)?[ \t]*/.TP\n\\\fB\1\\\fR \\\fI\3\\\fR\n/" | sed -re "s/''/\\\'/g" | sed -re "s/-/\\\\-/"g)
+.SH PROXY
+.PD 0
+esyscmd(`./wkhtmltopdf --help | sed -ne "/By default proxy/,/<proxy> :=/p" | sed -re "s/^  (.*)/.PP\n\1/" | sed -re "s/-/\\\\-/g"')
+.PD
 .SH BUGS
 Report bugs to <antialize@gmail.com>.
-
 .SH AUTHORS
 wkhtmltopdf was written by Jakob Truelsen. 
 Patches by esyscmd(`./wkhtmltopdf --version | sed -nre "s/Patches by (.*)/\1/p"')
-
 .SH COPYING
-.P  
 esyscmd(`./wkhtmltopdf --version | sed -nre "s/Copyright .*/\0/p"')
-
-.P
 Permission is granted to copy, distribute and/or modify this document under the terms of the GNU Free Documentation License, Version 1.1 or any later  version  published
 by the Free Software Foundation; with no Invariant Sections, with no Front-Cover Texts, and no Back-Cover Texts.
 This  document is part of a collection distributed under the GNU Free Documentation License.  If you want to distribute this document separately from the collection, you
