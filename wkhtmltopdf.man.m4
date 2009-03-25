@@ -29,8 +29,9 @@ wkhtmltopdf [OPTIONS]... <input file> [More inputfiles] <output file>
 Converts one or more htmlpage to a pdf document.
 
 .SH OPTIONS
+.PD 0
 esyscmd(`./wkhtmltopdf --help | sed -ne /Options:/,/Proxy:/p | sed -e /Options:/d -e /Proxy/d | sed -re "s/^[ \t]*//" |  sed -re "s/^((-[a-zA-Z], )?--[a-z-]+)[\t ]*(<[a-z]+>)?[ \t]*/.TP\n\\\fB\1\\\fR \\\fI\3\\\fR\n/" | sed -re "s/''/\\\'/g" | sed -re "s/-/\\\\-/g")
-
+.PD
 .SH PROXY
 .PD 0
 esyscmd(`./wkhtmltopdf --help | sed -ne "/By default proxy/,/<proxy> :=/p" | sed -re "s/^  (.*)/.PP\n\1/" | sed -re "s/-/\\\\-/g"')
