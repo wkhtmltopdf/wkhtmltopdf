@@ -469,7 +469,7 @@ void WKHtmlToPdf::usage(FILE * fd) {
 " * [subsection] Replaced by the name of the current subsection\n" 
 "\n"
 #else 
-"This vertion of wkhtmltopdf has been compiled against a vertion of qt\n"
+"This version of wkhtmltopdf has been compiled against a version of qt\n"
 "without the wkhtmltopdf patches, so some features are missign, if you need\n"
 "these features please use the staic edition\n"
 "\n"
@@ -479,7 +479,7 @@ void WKHtmlToPdf::usage(FILE * fd) {
 }
 
 /*!
- * Print out vertion and license information
+ * Print out version and license information
  * \param fd the filedescriptor where the output will be printed
  */
 void WKHtmlToPdf::version(FILE * fd) {
