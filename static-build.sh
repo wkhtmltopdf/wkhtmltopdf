@@ -41,6 +41,7 @@ function applypatch() {
 
 #Create static build directory
 mkdir -p build
+cat qt-*.patch > qt_webkit.patch
 cd build
 BUILD=`pwd`
 
