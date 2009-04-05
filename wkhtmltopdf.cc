@@ -1,3 +1,4 @@
+//-*- mode: c++; tab-width: 4; indent-tabs-mode: t; c-file-style: "stroustrup"; -*-
 // This file is part of wkhtmltopdf.
 //
 // wkhtmltopdf is free software: you can redistribute it and/or modify
@@ -243,6 +244,8 @@ void WKHtmlToPdf::run(int argc, const char ** argv) {
 #ifdef  __EXTENSIVE_WKHTMLTOPDF_QT_HACK__
 		connect(page->mainFrame(), SIGNAL(printingNewPage(QPrinter*,int,int,int)), 
 				this, SLOT(newPage(QPrinter*,int,int,int)));
+		if(strcmp(default_encoding,""))
+			page->settings()->setDefaultTextEncoding(default_encoding);
 #endif
 		//Disable stuff we don't need
 		page->settings()->setAttribute(QWebSettings::JavaEnabled, false);
@@ -253,6 +256,8 @@ void WKHtmlToPdf::run(int argc, const char ** argv) {
 		//Newer vertions of QT have even more settings to change
 		page->settings()->setAttribute(QWebSettings::PrintElementBackgrounds, background);
  		page->settings()->setAttribute(QWebSettings::PluginsEnabled, false);
+		if(strcmp(user_style_sheet,"")) 
+			page->settings()->setUserStyleSheetUrl(guessUrlFromString(user_style_sheet));
 #endif
 		QString u= in[i];
 		if(u == "-") {

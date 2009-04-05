@@ -1,3 +1,4 @@
+//-*- mode: c++; tab-width: 4; indent-tabs-mode: t; c-file-style: "stroustrup"; -*-
 // This file is part of wkhtmltopdf.
 //
 // wkhtmltopdf is free software: you can redistribute it and/or modify
@@ -77,6 +78,8 @@ public:
 	QPair<qreal, QPrinter::Unit> margin_bottom;
 	QPair<qreal, QPrinter::Unit> margin_left;
 	bool printMediaType;
+	const char * default_encoding;
+	const char * user_style_sheet;
 
 	const char * cover;
 	bool outline;

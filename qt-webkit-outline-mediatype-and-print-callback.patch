@@ -1,0 +1,216 @@
+diff -ur qt-x11-opensource-src-4.5.0-old/src/3rdparty/webkit/WebKit/qt/Api/qwebframe.cpp qt-x11-opensource-src-4.5.0/src/3rdparty/webkit/WebKit/qt/Api/qwebframe.cpp
+--- qt-x11-opensource-src-4.5.0-old/src/3rdparty/webkit/WebKit/qt/Api/qwebframe.cpp	2009-02-25 22:09:21.000000000 +0100
++++ qt-x11-opensource-src-4.5.0/src/3rdparty/webkit/WebKit/qt/Api/qwebframe.cpp	2009-03-14 10:24:02.000000000 +0100
+@@ -75,6 +75,7 @@
+ #include <qevent.h>
+ #include <qfileinfo.h>
+ #include <qpainter.h>
++#include <qprintengine.h>
+ #include <QMultiMap>
+ #if QT_VERSION >= 0x040400
+ #include <qnetworkrequest.h>
+@@ -886,16 +887,114 @@
+ }
+ 
+ #ifndef QT_NO_PRINTER
++struct HeadingsGenerator {
++    QVector<QWebFrame::Heading> res;
++    HeadingsGenerator(): res() {};
++        
++    static QPoint getObjectLocation(RenderObject * r) {
++		int x=0;
++		int y=r->height()/2;
++		while(r) {
++			x += r->xPos();
++			y += r->yPos();
++			r = r->parent();
++		}
++        return QPoint(x,y);
++    }
++
++    static void extractText(Node * n, QString & text) {
++        text.append(n->nodeValue());
++        for(Node *i=n->firstChild(); i != NULL; i = i->nextSibling())
++        extractText(i,text);
++    }
++                                               
++    bool addHeading(Node * n) {
++        if(!n || n->nodeName()[0] != 'H' || '1' > n->nodeName()[1] || n->nodeName()[1] > '6') return false;
++        QWebFrame::Heading h;
++        h.text = QString();
++        h.page = 1;
++        h.locationOnPage = QPointF();
++        h.level = n->nodeName()[1]-'0';
++        extractText(n,h.text);
++        h.text = h.text.simplified();
++        h.location = getObjectLocation(n->renderer());
++        res.push_back(h);
++        return true;
++    }
++
++    void visitNode(Node * n) {
++        if(!addHeading(n)) 
++            for(Node * i=n->firstChild(); i != NULL; i = i->nextSibling())
++                visitNode(i);
++    }
++};
++
++QVector<QWebFrame::Heading> QWebFrame::headings(QPrinter * printer, bool usePrintMediaType) {
++    HeadingsGenerator gen;
++    if(!printer) {
++        gen.visitNode(d->frame->document());
++        return gen.res;
++    }
++    const qreal zoomFactorX = printer->logicalDpiX() / qt_defaultDpi();
++    const qreal zoomFactorY = printer->logicalDpiY() / qt_defaultDpi();
++        
++    PrintContext printContext(d->frame);
++    float pageHeight = 0;
++    QRect qprinterRect = printer->pageRect();
++    IntRect pageRect(0, 0,
++                     int(qprinterRect.width() / zoomFactorX),
++                     int(qprinterRect.height() / zoomFactorY));
++    printContext.begin(pageRect.width(), usePrintMediaType);
++    printContext.computePageRects(pageRect, 0, 0, 1.0, pageHeight);
++    
++    const Vector<IntRect> & pageRects = printContext.getPageRects();
++    QMap<float, uint> pageEnd;
++    for(uint i=0; i < pageRects.size(); ++i) pageEnd[pageRects[i].bottom()] = i;
++    for(RenderObject * o=d->frame->document()->renderer(); o; o=o->nextInPreOrder()) 
++        if(gen.addHeading(o->node())) {
++            QWebFrame::Heading & h = gen.res.back(); 
++            h.locationOnPage = gen.getObjectLocation(o);
++            QMap<float, uint>::const_iterator pageI = pageEnd.upperBound(h.locationOnPage.y());            
++            h.page=(pageI == pageEnd.end())?pageRects.size()-1:pageI.value();
++            h.locationOnPage -= QPointF(0,pageRects[h.page].y());
++            h.locationOnPage= QPointF(h.locationOnPage.x() / pageRects[h.page].x(),
++                                      h.locationOnPage.y() / pageRects[h.page].y());
++        }
++    printContext.end();
++    return gen.res;
++}
++
++uint QWebFrame::countPages(QPrinter *printer, bool usePrintMediaType) {
++    const qreal zoomFactorX = printer->logicalDpiX() / qt_defaultDpi();
++    const qreal zoomFactorY = printer->logicalDpiY() / qt_defaultDpi();
++
++    PrintContext printContext(d->frame);
++    float pageHeight = 0;
++
++    QRect qprinterRect = printer->pageRect();
++
++    IntRect pageRect(0, 0,
++                     int(qprinterRect.width() / zoomFactorX),
++                     int(qprinterRect.height() / zoomFactorY));
++
++    printContext.begin(pageRect.width(), usePrintMediaType);
++    printContext.computePageRects(pageRect, /*headerHeight*/0, /*footerHeight*/0, /*userScaleFactor*/1.0, pageHeight);
++    uint count = printContext.pageCount();
++    printContext.end();
++    return count;
++}
++
+ /*!
+     Prints the frame to the given \a printer.
+ 
+     \sa render()
+ */
+-void QWebFrame::print(QPrinter *printer) const
++void QWebFrame::print(QPrinter *printer, QPainter * painter, bool usePrintMediaType) const
+ {
+-    QPainter painter;
+-    if (!painter.begin(printer))
+-        return;
++    QPainter * ipainter = painter;
++    if(!ipainter) ipainter = new QPainter();
++    if(!ipainter->isActive()) ipainter->begin(printer);
++    ipainter->save();
+ 
+     const qreal zoomFactorX = printer->logicalDpiX() / qt_defaultDpi();
+     const qreal zoomFactorY = printer->logicalDpiY() / qt_defaultDpi();
+@@ -909,7 +999,7 @@
+                      int(qprinterRect.width() / zoomFactorX),
+                      int(qprinterRect.height() / zoomFactorY));
+ 
+-    printContext.begin(pageRect.width());
++    printContext.begin(pageRect.width(), usePrintMediaType);
+ 
+     printContext.computePageRects(pageRect, /*headerHeight*/0, /*footerHeight*/0, /*userScaleFactor*/1.0, pageHeight);
+ 
+@@ -942,8 +1032,8 @@
+         ascending = false;
+     }
+ 
+-    painter.scale(zoomFactorX, zoomFactorY);
+-    GraphicsContext ctx(&painter);
++    ipainter->scale(zoomFactorX, zoomFactorY);
++    GraphicsContext ctx(ipainter);
+ 
+     for (int i = 0; i < docCopies; ++i) {
+         int page = fromPage;
+@@ -955,10 +1045,13 @@
+                     return;
+                 }
+                 printContext.spoolPage(ctx, page - 1, pageRect.width());
+-                if (j < pageCopies - 1)
++                if (j < pageCopies - 1) {
++                    emit printingNewPage(printer,fromPage,toPage,page);
+                     printer->newPage();
++                }
+             }
+-
++            emit printingNewPage(printer,fromPage,toPage,page);
++        
+             if (page == toPage)
+                 break;
+ 
+@@ -975,6 +1068,8 @@
+     }
+ 
+     printContext.end();
++    ipainter->restore();
++    if(ipainter != painter) delete ipainter;
+ }
+ #endif // QT_NO_PRINTER
+ 
+diff -ur qt-x11-opensource-src-4.5.0-old/src/3rdparty/webkit/WebKit/qt/Api/qwebframe.h qt-x11-opensource-src-4.5.0/src/3rdparty/webkit/WebKit/qt/Api/qwebframe.h
+--- qt-x11-opensource-src-4.5.0-old/src/3rdparty/webkit/WebKit/qt/Api/qwebframe.h	2009-02-25 22:09:21.000000000 +0100
++++ qt-x11-opensource-src-4.5.0/src/3rdparty/webkit/WebKit/qt/Api/qwebframe.h	2009-03-14 10:23:07.000000000 +0100
+@@ -115,6 +117,14 @@
+ public:
+     QWebPage *page() const;
+ 
++    struct Heading {
++        QString text;
++        uint level;
++        QPoint location;
++        uint page;
++        QPointF locationOnPage;
++    };
++
+     void load(const QUrl &url);
+ #if QT_VERSION < 0x040400
+     void load(const QWebNetworkRequest &request);
+@@ -174,10 +184,13 @@
+ 
+     QWebSecurityOrigin securityOrigin() const;
+ 
++    QVector<Heading> headings(QPrinter * printer=NULL, bool usePrintMediaType=true);
++    uint countPages(QPrinter *printer, bool usePrintMediaType=true);
++
+ public Q_SLOTS:
+     QVariant evaluateJavaScript(const QString& scriptSource);
+ #ifndef QT_NO_PRINTER
+-    void print(QPrinter *printer) const;
++    void print(QPrinter *printer, QPainter * painter=NULL, bool usePrintMediaType=true) const;
+ #endif
+ 
+ Q_SIGNALS:
+@@ -191,6 +204,7 @@
+ 
+     void iconChanged();
+ 
++    void printingNewPage(QPrinter *p, int fromPage, int toPage, int Page) const;
+ private:
+     friend class QWebPage;
+     friend class QWebPagePrivate;

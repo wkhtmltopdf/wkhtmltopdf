@@ -1,3 +1,4 @@
+//-*- mode: c++; tab-width: 4; indent-tabs-mode: t; c-file-style: "stroustrup"; -*-
 // This file is part of wkhtmltopdf.
 //
 // wkhtmltopdf is free software: you can redistribute it and/or modify
@@ -387,6 +388,7 @@ void WKHtmlToPdf::initArgs() {
 	addarg("outline-depth",0,"Set the depth of the outline", new AHIntSetter(tocPrinter.outline_depth,"level",4));
 	addarg("book",'b',"Set the options one would usualy set when printing a book", new AHCaller<BookFunc>());	
 	addarg("cover",0,"Use html document as cover. It will be inserted before the toc with no headers and footers",new AHStrSetter(cover,"url",""));
+	addarg("encoding",0,"Set the default text encoding, for input", new AHStrSetter(default_encoding,"encoding",""));
 #endif
 	addarg("grayscale",'g',"PDF will be generated in grayscale", new AHConstSetter<QPrinter::ColorMode>(colorMode,QPrinter::GrayScale,QPrinter::Color));
 	addarg("help",'h',"Display help",new AHCaller<HelpFunc>());
@@ -397,6 +399,7 @@ void WKHtmlToPdf::initArgs() {
 	addarg("margin-top",'T',"Set the page top margin (default 10mm)", new AHUnitRealSetter(margin_top,"unitread",QPair<qreal,QPrinter::Unit>(10,QPrinter::Millimeter)));
 #if QT_VERSION >= 0x040500 //Not printing the background was added in QT4.5
 	addarg("no-background",0,"Do not print background", new AHConstSetter<bool>(background,false,true));
+	addarg("user-style-sheet",0,"Specify a user style sheet, to load with every page", new AHStrSetter(user_style_sheet,"url",""));
 #endif
 	addarg("orientation",'O',"Set orientation to Landscape or Portrait", new AHCaller<OrientationFunc>("orientation"));
 	addarg("page-size",'s',"Set pape size to: A4, Letter, ect.", new AHCaller<PageSizeFunc>("size"));

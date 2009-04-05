@@ -1,0 +1,64 @@
+diff -ur qt-x11-opensource-src-4.5.0-old/src/3rdparty/webkit/WebCore/page/Frame.cpp qt-x11-opensource-src-4.5.0/src/3rdparty/webkit/WebCore/page/Frame.cpp
+--- qt-x11-opensource-src-4.5.0-old/src/3rdparty/webkit/WebCore/page/Frame.cpp	2009-02-25 22:09:20.000000000 +0100
++++ qt-x11-opensource-src-4.5.0/src/3rdparty/webkit/WebCore/page/Frame.cpp	2009-03-14 10:11:45.000000000 +0100
+@@ -726,13 +726,13 @@
+         view()->layout();
+ }
+ 
+-void Frame::setPrinting(bool printing, float minPageWidth, float maxPageWidth, bool adjustViewSize)
++void Frame::setPrinting(bool printing, float minPageWidth, float maxPageWidth, bool adjustViewSize, bool usePrintMediaType)
+ {
+     if (!d->m_doc)
+         return;
+ 
+     d->m_doc->setPrinting(printing);
+-    view()->setMediaType(printing ? "print" : "screen");
++    view()->setMediaType((printing && usePrintMediaType) ? "print" : "screen");
+     d->m_doc->updateStyleSelector();
+     forceLayoutWithPageWidthRange(minPageWidth, maxPageWidth, adjustViewSize);
+ 
+diff -ur qt-x11-opensource-src-4.5.0-old/src/3rdparty/webkit/WebCore/page/Frame.h qt-x11-opensource-src-4.5.0/src/3rdparty/webkit/WebCore/page/Frame.h
+--- qt-x11-opensource-src-4.5.0-old/src/3rdparty/webkit/WebCore/page/Frame.h	2009-02-25 22:09:20.000000000 +0100
++++ qt-x11-opensource-src-4.5.0/src/3rdparty/webkit/WebCore/page/Frame.h	2009-03-14 10:11:52.000000000 +0100
+@@ -125,7 +125,7 @@
+     void setUserStyleSheet(const String& styleSheetData);
+ #endif
+ 
+-    void setPrinting(bool printing, float minPageWidth, float maxPageWidth, bool adjustViewSize);
++    void setPrinting(bool printing, float minPageWidth, float maxPageWidth, bool adjustViewSize, bool usePrintMediaType=true);
+ 
+     bool inViewSourceMode() const;
+     void setInViewSourceMode(bool = true) const;
+diff -ur qt-x11-opensource-src-4.5.0-old/src/3rdparty/webkit/WebCore/page/PrintContext.cpp qt-x11-opensource-src-4.5.0/src/3rdparty/webkit/WebCore/page/PrintContext.cpp
+--- qt-x11-opensource-src-4.5.0-old/src/3rdparty/webkit/WebCore/page/PrintContext.cpp	2009-02-25 22:09:20.000000000 +0100
++++ qt-x11-opensource-src-4.5.0/src/3rdparty/webkit/WebCore/page/PrintContext.cpp	2009-03-14 10:12:43.000000000 +0100
+@@ -93,7 +93,7 @@
+     } while (printedPagesHeight < docHeight);
+ }
+ 
+-void PrintContext::begin(float width)
++void PrintContext::begin(float width, bool usePrintMediaType)
+ {
+     // By imaging to a width a little wider than the available pixels,
+     // thin pages will be scaled down a little, matching the way they
+@@ -113,7 +113,7 @@
+ 
+     // FIXME: This will modify the rendering of the on-screen frame.
+     // Could lead to flicker during printing.
+-    m_frame->setPrinting(true, minLayoutWidth, maxLayoutWidth, true);
++    m_frame->setPrinting(true, minLayoutWidth, maxLayoutWidth, true, usePrintMediaType);
+ }
+ 
+ void PrintContext::spoolPage(GraphicsContext& ctx, int pageNumber, float width)
+diff -ur qt-x11-opensource-src-4.5.0-old/src/3rdparty/webkit/WebCore/page/PrintContext.h qt-x11-opensource-src-4.5.0/src/3rdparty/webkit/WebCore/page/PrintContext.h
+--- qt-x11-opensource-src-4.5.0-old/src/3rdparty/webkit/WebCore/page/PrintContext.h	2009-02-25 22:09:20.000000000 +0100
++++ qt-x11-opensource-src-4.5.0/src/3rdparty/webkit/WebCore/page/PrintContext.h	2009-03-14 10:12:19.000000000 +0100
+@@ -40,7 +40,7 @@
+     void computePageRects(const FloatRect& printRect, float headerHeight, float footerHeight, float userScaleFactor, float& outPageHeight);
+ 
+     // TODO: eliminate width param
+-    void begin(float width);
++    void begin(float width, bool usePrintMediaType=true);
+ 
+     // TODO: eliminate width param
+     void spoolPage(GraphicsContext& ctx, int pageNumber, float width);
