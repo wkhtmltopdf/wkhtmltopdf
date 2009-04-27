@@ -41,9 +41,3 @@ Report bugs to <antialize@gmail.com>.
 .SH AUTHORS
 wkhtmltopdf was written by Jakob Truelsen. 
 Patches by esyscmd(`./wkhtmltopdf --version | sed -nre "s/Patches by (.*)/\1/p"')
-.SH COPYING
-esyscmd(`./wkhtmltopdf --version | sed -nre "s/Copyright .*/\0/p"')
-Permission is granted to copy, distribute and/or modify this document under the terms of the GNU Free Documentation License, Version 1.1 or any later  version  published
-by the Free Software Foundation; with no Invariant Sections, with no Front-Cover Texts, and no Back-Cover Texts.
-This  document is part of a collection distributed under the GNU Free Documentation License.  If you want to distribute this document separately from the collection, you
-can do so by adding a copy of the license to the document, as described in section 6 of the license.  A copy of the license is included in the gfdl(1) man page.
