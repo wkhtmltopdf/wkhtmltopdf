@@ -1,6 +1,6 @@
-diff -ur qt-x11-opensource-src-4.5.0-old/src/gui/painting/qprintengine.h qt-x11-opensource-src-4.5.0/src/gui/painting/qprintengine.h
---- qt-x11-opensource-src-4.5.0-old/src/gui/painting/qprintengine.h	2009-02-25 22:09:23.000000000 +0100
-+++ qt-x11-opensource-src-4.5.0/src/gui/painting/qprintengine.h	2009-03-10 20:31:32.000000000 +0100
+diff -ur qt-x11-opensource-src-4.5.1.orig/src/gui/painting/qprintengine.h qt-x11-opensource-src-4.5.1/src/gui/painting/qprintengine.h
+--- qt-x11-opensource-src-4.5.1.orig/src/gui/painting/qprintengine.h	2009-04-22 01:57:41.000000000 +0200
++++ qt-x11-opensource-src-4.5.1/src/gui/painting/qprintengine.h	2009-06-20 12:03:10.154006704 +0200
 @@ -95,6 +95,8 @@
      virtual QVariant property(PrintEnginePropertyKey key) const = 0;
  
@@ -10,9 +10,9 @@ diff -ur qt-x11-opensource-src-4.5.0-old/src/gui/painting/qprintengine.h qt-x11-
      virtual bool abort() = 0;
  
      virtual int metric(QPaintDevice::PaintDeviceMetric) const = 0;
-diff -ur qt-x11-opensource-src-4.5.0-old/src/gui/painting/qprintengine_pdf.cpp qt-x11-opensource-src-4.5.0/src/gui/painting/qprintengine_pdf.cpp
---- qt-x11-opensource-src-4.5.0-old/src/gui/painting/qprintengine_pdf.cpp	2009-02-25 22:09:23.000000000 +0100
-+++ qt-x11-opensource-src-4.5.0/src/gui/painting/qprintengine_pdf.cpp	2009-03-10 20:31:32.000000000 +0100
+diff -ur qt-x11-opensource-src-4.5.1.orig/src/gui/painting/qprintengine_pdf.cpp qt-x11-opensource-src-4.5.1/src/gui/painting/qprintengine_pdf.cpp
+--- qt-x11-opensource-src-4.5.1.orig/src/gui/painting/qprintengine_pdf.cpp	2009-04-22 01:57:41.000000000 +0200
++++ qt-x11-opensource-src-4.5.1/src/gui/painting/qprintengine_pdf.cpp	2009-06-20 14:51:37.922141190 +0200
 @@ -115,6 +115,28 @@
      state = QPrinter::Idle;
  }
@@ -42,7 +42,15 @@ diff -ur qt-x11-opensource-src-4.5.0-old/src/gui/painting/qprintengine_pdf.cpp q
  QPdfEngine::~QPdfEngine()
  {
  }
-@@ -156,6 +178,24 @@
+@@ -122,7 +144,6 @@
+ bool QPdfEngine::begin(QPaintDevice *pdev)
+ {
+     Q_D(QPdfEngine);
+-
+     if(!QPdfBaseEngine::begin(pdev)) {
+         state = QPrinter::Error;
+         return false;
+@@ -156,6 +177,24 @@
  bool QPdfEngine::end()
  {
      Q_D(QPdfEngine);
@@ -67,7 +75,7 @@ diff -ur qt-x11-opensource-src-4.5.0-old/src/gui/painting/qprintengine_pdf.cpp q
      d->writeTail();
  
      d->stream->unsetDevice();
-@@ -305,14 +345,59 @@
+@@ -305,14 +344,59 @@
      stream = new QDataStream;
      pageOrder = QPrinter::FirstPageFirst;
      orientation = QPrinter::Portrait;
@@ -141,9 +149,9 @@ diff -ur qt-x11-opensource-src-4.5.0-old/src/gui/painting/qprintengine_pdf.cpp q
  
      // graphics state
      graphicsState = addXrefEntry(-1);
-diff -ur qt-x11-opensource-src-4.5.0-old/src/gui/painting/qprintengine_pdf_p.h qt-x11-opensource-src-4.5.0/src/gui/painting/qprintengine_pdf_p.h
---- qt-x11-opensource-src-4.5.0-old/src/gui/painting/qprintengine_pdf_p.h	2009-02-25 22:09:23.000000000 +0100
-+++ qt-x11-opensource-src-4.5.0/src/gui/painting/qprintengine_pdf_p.h	2009-03-10 20:31:32.000000000 +0100
+diff -ur qt-x11-opensource-src-4.5.1.orig/src/gui/painting/qprintengine_pdf_p.h qt-x11-opensource-src-4.5.1/src/gui/painting/qprintengine_pdf_p.h
+--- qt-x11-opensource-src-4.5.1.orig/src/gui/painting/qprintengine_pdf_p.h	2009-04-22 01:57:41.000000000 +0200
++++ qt-x11-opensource-src-4.5.1/src/gui/painting/qprintengine_pdf_p.h	2009-06-20 12:03:10.158507555 +0200
 @@ -113,6 +113,8 @@
      QString author() const;
  
@@ -153,7 +161,7 @@ diff -ur qt-x11-opensource-src-4.5.0-old/src/gui/painting/qprintengine_pdf_p.h q
  
  private:
      Q_DISABLE_COPY(QPdfEngine)
-@@ -124,5 +126,34 @@
+@@ -124,6 +126,35 @@
  {
      Q_DECLARE_PUBLIC(QPdfEngine)
  public:
@@ -188,3 +196,4 @@ diff -ur qt-x11-opensource-src-4.5.0-old/src/gui/painting/qprintengine_pdf_p.h q
 +    
      QPdfEnginePrivate(QPrinter::PrinterMode m);
      ~QPdfEnginePrivate();
+ 

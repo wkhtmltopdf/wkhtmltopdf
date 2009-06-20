@@ -1,6 +1,6 @@
-diff -ur qt-x11-opensource-src-4.5.0-o/src/3rdparty/webkit/WebKit/qt/Api/qwebsettings.cpp qt-x11-opensource-src-4.5.0/src/3rdparty/webkit/WebKit/qt/Api/qwebsettings.cpp
---- qt-x11-opensource-src-4.5.0-o/src/3rdparty/webkit/WebKit/qt/Api/qwebsettings.cpp	2009-04-05 12:42:47.000000000 +0200
-+++ qt-x11-opensource-src-4.5.0/src/3rdparty/webkit/WebKit/qt/Api/qwebsettings.cpp	2009-04-05 12:59:36.000000000 +0200
+diff -ur qt-x11-opensource-src-4.5.1.orig/src/3rdparty/webkit/WebKit/qt/Api/qwebsettings.cpp qt-x11-opensource-src-4.5.1/src/3rdparty/webkit/WebKit/qt/Api/qwebsettings.cpp
+--- qt-x11-opensource-src-4.5.1.orig/src/3rdparty/webkit/WebKit/qt/Api/qwebsettings.cpp	2009-04-22 01:57:40.000000000 +0200
++++ qt-x11-opensource-src-4.5.1/src/3rdparty/webkit/WebKit/qt/Api/qwebsettings.cpp	2009-06-20 12:21:10.150007711 +0200
 @@ -52,6 +52,7 @@
      QHash<int, int> fontSizes;
      QHash<int, bool> attributes;
@@ -19,7 +19,7 @@ diff -ur qt-x11-opensource-src-4.5.0-o/src/3rdparty/webkit/WebKit/qt/Api/qwebset
          QString localStoragePath = !localStorageDatabasePath.isEmpty() ? localStorageDatabasePath : global->localStorageDatabasePath;
          settings->setLocalStorageDatabasePath(localStoragePath);
  
-@@ -425,6 +429,29 @@
+@@ -424,6 +428,29 @@
  }
  
  /*!
@@ -49,9 +49,9 @@ diff -ur qt-x11-opensource-src-4.5.0-o/src/3rdparty/webkit/WebKit/qt/Api/qwebset
      Sets the path of the icon database to \a path. The icon database is used
      to store "favicons" associated with web sites.
  
-diff -ur qt-x11-opensource-src-4.5.0-o/src/3rdparty/webkit/WebKit/qt/Api/qwebsettings.h qt-x11-opensource-src-4.5.0/src/3rdparty/webkit/WebKit/qt/Api/qwebsettings.h
---- qt-x11-opensource-src-4.5.0-o/src/3rdparty/webkit/WebKit/qt/Api/qwebsettings.h	2009-04-05 12:42:47.000000000 +0200
-+++ qt-x11-opensource-src-4.5.0/src/3rdparty/webkit/WebKit/qt/Api/qwebsettings.h	2009-04-05 12:46:45.000000000 +0200
+diff -ur qt-x11-opensource-src-4.5.1.orig/src/3rdparty/webkit/WebKit/qt/Api/qwebsettings.h qt-x11-opensource-src-4.5.1/src/3rdparty/webkit/WebKit/qt/Api/qwebsettings.h
+--- qt-x11-opensource-src-4.5.1.orig/src/3rdparty/webkit/WebKit/qt/Api/qwebsettings.h	2009-04-22 01:57:40.000000000 +0200
++++ qt-x11-opensource-src-4.5.1/src/3rdparty/webkit/WebKit/qt/Api/qwebsettings.h	2009-06-20 12:21:10.150007711 +0200
 @@ -95,6 +95,9 @@
      void setUserStyleSheetUrl(const QUrl &location);
      QUrl userStyleSheetUrl() const;

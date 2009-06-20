@@ -41,7 +41,8 @@
 -qt-libmng
 -qt-libjpeg
 -openssl
-#-openssl-linked
+-graphicssystem raster
+-opensource
 -nomake tools
 -nomake examples
 -nomake demos

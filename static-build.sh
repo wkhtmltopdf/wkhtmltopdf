@@ -18,7 +18,7 @@
 # It requires build-essential and wine to run. Please note that it will take quite a while
 
 #Configuration for the static build
-QT=qt-all-opensource-src-4.5.0
+QT=qt-all-opensource-src-4.5.1
 MIRROR=kent
 MINGWFILES="binutils-2.19.1-mingw32-bin.tar.gz mingw32-make-3.81-20080326-3.tar.gz \
 gcc-g++-3.4.5-20060117-3.tar.gz gcc-core-3.4.5-20060117-3.tar.gz w32api-3.13-mingw32-dev.tar.gz \

@@ -1,6 +1,6 @@
-diff -ur qt-x11-opensource-src-4.5.0-old/src/3rdparty/webkit/WebCore/page/Frame.cpp qt-x11-opensource-src-4.5.0/src/3rdparty/webkit/WebCore/page/Frame.cpp
---- qt-x11-opensource-src-4.5.0-old/src/3rdparty/webkit/WebCore/page/Frame.cpp	2009-02-25 22:09:20.000000000 +0100
-+++ qt-x11-opensource-src-4.5.0/src/3rdparty/webkit/WebCore/page/Frame.cpp	2009-03-14 10:11:45.000000000 +0100
+diff -ur qt-x11-opensource-src-4.5.1.orig/src/3rdparty/webkit/WebCore/page/Frame.cpp qt-x11-opensource-src-4.5.1/src/3rdparty/webkit/WebCore/page/Frame.cpp
+--- qt-x11-opensource-src-4.5.1.orig/src/3rdparty/webkit/WebCore/page/Frame.cpp	2009-04-22 01:57:40.000000000 +0200
++++ qt-x11-opensource-src-4.5.1/src/3rdparty/webkit/WebCore/page/Frame.cpp	2009-06-20 12:21:48.626007908 +0200
 @@ -726,13 +726,13 @@
          view()->layout();
  }
@@ -17,9 +17,9 @@ diff -ur qt-x11-opensource-src-4.5.0-old/src/3rdparty/webkit/WebCore/page/Frame.
      d->m_doc->updateStyleSelector();
      forceLayoutWithPageWidthRange(minPageWidth, maxPageWidth, adjustViewSize);
  
-diff -ur qt-x11-opensource-src-4.5.0-old/src/3rdparty/webkit/WebCore/page/Frame.h qt-x11-opensource-src-4.5.0/src/3rdparty/webkit/WebCore/page/Frame.h
---- qt-x11-opensource-src-4.5.0-old/src/3rdparty/webkit/WebCore/page/Frame.h	2009-02-25 22:09:20.000000000 +0100
-+++ qt-x11-opensource-src-4.5.0/src/3rdparty/webkit/WebCore/page/Frame.h	2009-03-14 10:11:52.000000000 +0100
+diff -ur qt-x11-opensource-src-4.5.1.orig/src/3rdparty/webkit/WebCore/page/Frame.h qt-x11-opensource-src-4.5.1/src/3rdparty/webkit/WebCore/page/Frame.h
+--- qt-x11-opensource-src-4.5.1.orig/src/3rdparty/webkit/WebCore/page/Frame.h	2009-04-22 01:57:40.000000000 +0200
++++ qt-x11-opensource-src-4.5.1/src/3rdparty/webkit/WebCore/page/Frame.h	2009-06-20 12:21:48.626007908 +0200
 @@ -125,7 +125,7 @@
      void setUserStyleSheet(const String& styleSheetData);
  #endif
@@ -29,9 +29,9 @@ diff -ur qt-x11-opensource-src-4.5.0-old/src/3rdparty/webkit/WebCore/page/Frame.
  
      bool inViewSourceMode() const;
      void setInViewSourceMode(bool = true) const;
-diff -ur qt-x11-opensource-src-4.5.0-old/src/3rdparty/webkit/WebCore/page/PrintContext.cpp qt-x11-opensource-src-4.5.0/src/3rdparty/webkit/WebCore/page/PrintContext.cpp
---- qt-x11-opensource-src-4.5.0-old/src/3rdparty/webkit/WebCore/page/PrintContext.cpp	2009-02-25 22:09:20.000000000 +0100
-+++ qt-x11-opensource-src-4.5.0/src/3rdparty/webkit/WebCore/page/PrintContext.cpp	2009-03-14 10:12:43.000000000 +0100
+diff -ur qt-x11-opensource-src-4.5.1.orig/src/3rdparty/webkit/WebCore/page/PrintContext.cpp qt-x11-opensource-src-4.5.1/src/3rdparty/webkit/WebCore/page/PrintContext.cpp
+--- qt-x11-opensource-src-4.5.1.orig/src/3rdparty/webkit/WebCore/page/PrintContext.cpp	2009-04-22 01:57:40.000000000 +0200
++++ qt-x11-opensource-src-4.5.1/src/3rdparty/webkit/WebCore/page/PrintContext.cpp	2009-06-20 12:21:48.630007375 +0200
 @@ -93,7 +93,7 @@
      } while (printedPagesHeight < docHeight);
  }
@@ -50,9 +50,9 @@ diff -ur qt-x11-opensource-src-4.5.0-old/src/3rdparty/webkit/WebCore/page/PrintC
  }
  
  void PrintContext::spoolPage(GraphicsContext& ctx, int pageNumber, float width)
-diff -ur qt-x11-opensource-src-4.5.0-old/src/3rdparty/webkit/WebCore/page/PrintContext.h qt-x11-opensource-src-4.5.0/src/3rdparty/webkit/WebCore/page/PrintContext.h
---- qt-x11-opensource-src-4.5.0-old/src/3rdparty/webkit/WebCore/page/PrintContext.h	2009-02-25 22:09:20.000000000 +0100
-+++ qt-x11-opensource-src-4.5.0/src/3rdparty/webkit/WebCore/page/PrintContext.h	2009-03-14 10:12:19.000000000 +0100
+diff -ur qt-x11-opensource-src-4.5.1.orig/src/3rdparty/webkit/WebCore/page/PrintContext.h qt-x11-opensource-src-4.5.1/src/3rdparty/webkit/WebCore/page/PrintContext.h
+--- qt-x11-opensource-src-4.5.1.orig/src/3rdparty/webkit/WebCore/page/PrintContext.h	2009-04-22 01:57:40.000000000 +0200
++++ qt-x11-opensource-src-4.5.1/src/3rdparty/webkit/WebCore/page/PrintContext.h	2009-06-20 12:21:48.630007375 +0200
 @@ -40,7 +40,7 @@
      void computePageRects(const FloatRect& printRect, float headerHeight, float footerHeight, float userScaleFactor, float& outPageHeight);
  
@@ -62,3 +62,12 @@ diff -ur qt-x11-opensource-src-4.5.0-old/src/3rdparty/webkit/WebCore/page/PrintC
  
      // TODO: eliminate width param
      void spoolPage(GraphicsContext& ctx, int pageNumber, float width);
+@@ -50,6 +50,8 @@
+ protected:
+     Frame* m_frame;
+     Vector<IntRect> m_pageRects;
++public:
++    const Vector<IntRect> & getPageRects() {return m_pageRects;}
+ };
+ 
+ }

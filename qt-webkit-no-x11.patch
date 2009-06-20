@@ -1,0 +1,130 @@
+diff -ur qt-x11-opensource-src-4.5.1.orig/src/3rdparty/webkit/WebCore/platform/qt/PlatformScreenQt.cpp qt-x11-opensource-src-4.5.1/src/3rdparty/webkit/WebCore/platform/qt/PlatformScreenQt.cpp
+--- qt-x11-opensource-src-4.5.1.orig/src/3rdparty/webkit/WebCore/platform/qt/PlatformScreenQt.cpp	2009-04-22 01:57:40.000000000 +0200
++++ qt-x11-opensource-src-4.5.1/src/3rdparty/webkit/WebCore/platform/qt/PlatformScreenQt.cpp	2009-06-20 14:33:32.734849089 +0200
+@@ -43,6 +43,7 @@
+ 
+ int screenDepth(Widget* w)
+ {
++    if (QApplication::type()==QApplication::Tty) return 32;
+     QDesktopWidget* d = QApplication::desktop();
+     QWidget *view = w ? w->root()->hostWindow()->platformWindow() : 0;
+     int screenNumber = view ? d->screenNumber(view) : 0;
+@@ -51,12 +52,14 @@
+ 
+ int screenDepthPerComponent(Widget* w)
+ {
++    if (QApplication::type()==QApplication::Tty) return 32;
+     QWidget *view = w ? w->root()->hostWindow()->platformWindow() : 0;
+     return view ? view->depth() : QApplication::desktop()->screen(0)->depth();
+ }
+ 
+ bool screenIsMonochrome(Widget* w)
+ {
++    if (QApplication::type()==QApplication::Tty) return false;
+     QDesktopWidget* d = QApplication::desktop();
+     QWidget *view = w ? w->root()->hostWindow()->platformWindow(): 0;
+     int screenNumber = view ? d->screenNumber(view) : 0;
+@@ -65,12 +68,14 @@
+ 
+ FloatRect screenRect(Widget* w)
+ {
++    if (QApplication::type()==QApplication::Tty) return FloatRect(0,0,800,600);
+     QRect r = QApplication::desktop()->screenGeometry(w ? w->root()->hostWindow()->platformWindow(): 0);
+     return FloatRect(r.x(), r.y(), r.width(), r.height());
+ }
+ 
+ FloatRect screenAvailableRect(Widget* w)
+ {
++    if (QApplication::type()==QApplication::Tty) return FloatRect(0,0,800,600);
+     QRect r = QApplication::desktop()->availableGeometry(w ? w->root()->hostWindow()->platformWindow(): 0);
+     return FloatRect(r.x(), r.y(), r.width(), r.height());
+ }
+diff -ur qt-x11-opensource-src-4.5.1.orig/src/3rdparty/webkit/WebCore/platform/qt/RenderThemeQt.cpp qt-x11-opensource-src-4.5.1/src/3rdparty/webkit/WebCore/platform/qt/RenderThemeQt.cpp
+--- qt-x11-opensource-src-4.5.1.orig/src/3rdparty/webkit/WebCore/platform/qt/RenderThemeQt.cpp	2009-04-22 01:57:40.000000000 +0200
++++ qt-x11-opensource-src-4.5.1/src/3rdparty/webkit/WebCore/platform/qt/RenderThemeQt.cpp	2009-06-20 14:14:38.030006806 +0200
+@@ -114,22 +114,27 @@
+ RenderThemeQt::RenderThemeQt()
+     : RenderTheme()
+ {
+-    QPushButton button;
+-    button.setAttribute(Qt::WA_MacSmallSize);
+-    QFont defaultButtonFont = QApplication::font(&button);
+-    QFontInfo fontInfo(defaultButtonFont);
+-    m_buttonFontFamily = defaultButtonFont.family();
++    if (QApplication::type()!=QApplication::Tty) {
++        QPushButton button;
++        button.setAttribute(Qt::WA_MacSmallSize);
++        QFont defaultButtonFont = QApplication::font(&button);
++        QFontInfo fontInfo(defaultButtonFont);
++        m_buttonFontFamily = defaultButtonFont.family();
++        // this will need to be regenerated when the style changes
++        QLineEdit lineEdit;
++        QStyleOptionFrameV2 opt;
++        m_frameLineWidth = QApplication::style()->pixelMetric(QStyle::PM_DefaultFrameWidth,
++                                                          &opt, &lineEdit);
++
+ #ifdef Q_WS_MAC
+-    m_buttonFontPixelSize = fontInfo.pixelSize();
++        m_buttonFontPixelSize = fontInfo.pixelSize();
+ #endif
+-
++    } else {
++        m_buttonFontFamily = "sans-serif";
++        m_frameLineWidth = 1;
++    }
+     m_fallbackStyle = 0;
+ 
+-    // this will need to be regenerated when the style changes
+-    QLineEdit lineEdit;
+-    QStyleOptionFrameV2 opt;
+-    m_frameLineWidth = QApplication::style()->pixelMetric(QStyle::PM_DefaultFrameWidth,
+-                                                          &opt, &lineEdit);
+ }
+ 
+ RenderThemeQt::~RenderThemeQt()
+diff -ur qt-x11-opensource-src-4.5.1.orig/src/3rdparty/webkit/WebCore/platform/qt/ScreenQt.cpp qt-x11-opensource-src-4.5.1/src/3rdparty/webkit/WebCore/platform/qt/ScreenQt.cpp
+--- qt-x11-opensource-src-4.5.1.orig/src/3rdparty/webkit/WebCore/platform/qt/ScreenQt.cpp	2009-04-22 01:57:40.000000000 +0200
++++ qt-x11-opensource-src-4.5.1/src/3rdparty/webkit/WebCore/platform/qt/ScreenQt.cpp	2009-06-20 14:26:25.935256173 +0200
+@@ -54,6 +54,7 @@
+     
+ FloatRect screenRect(const Page* page)
+ {
++    if (QApplication::type()==QApplication::Tty) return FloatRect();
+     QWidget* qw = qwidgetForPage(page);
+     if (!qw)
+         return FloatRect();
+@@ -68,6 +69,7 @@
+ 
+ int screenDepth(const Page* page)
+ {
++    if (QApplication::type()==QApplication::Tty) return 32;
+     QWidget* qw = qwidgetForPage(page);
+     if (!qw)
+         return 32;
+@@ -77,6 +79,7 @@
+ 
+ FloatRect usableScreenRect(const Page* page)
+ {
++    if (QApplication::type()==QApplication::Tty) return FloatRect();
+     QWidget* qw = qwidgetForPage(page);
+     if (!qw)
+         return FloatRect();
+diff -ur qt-x11-opensource-src-4.5.1.orig/src/3rdparty/webkit/WebCore/platform/qt/WidgetQt.cpp qt-x11-opensource-src-4.5.1/src/3rdparty/webkit/WebCore/platform/qt/WidgetQt.cpp
+--- qt-x11-opensource-src-4.5.1.orig/src/3rdparty/webkit/WebCore/platform/qt/WidgetQt.cpp	2009-04-22 01:57:40.000000000 +0200
++++ qt-x11-opensource-src-4.5.1/src/3rdparty/webkit/WebCore/platform/qt/WidgetQt.cpp	2009-06-20 14:26:39.103281847 +0200
+@@ -44,6 +44,7 @@
+ #include "qwebframe_p.h"
+ #include "qwebpage.h"
+ 
++#include <QApplication>
+ #include <QCoreApplication>
+ #include <QPainter>
+ #include <QPaintEngine>
+@@ -81,6 +82,7 @@
+ void Widget::setCursor(const Cursor& cursor)
+ {
+ #ifndef QT_NO_CURSOR
++    if (QApplication::type()==QApplication::Tty) return;
+     if (QWidget* widget = root()->hostWindow()->platformWindow())
+         QCoreApplication::postEvent(widget, new SetCursorEvent(cursor.impl()));
+ #endif

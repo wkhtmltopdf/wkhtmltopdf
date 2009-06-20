@@ -538,7 +538,13 @@ int main(int argc, char * argv[]) {
 		x.version(stdout);
 		exit(0);
 	}
+#ifdef  __EXTENSIVE_WKHTMLTOPDF_QT_HACK__
+	QApplication::setGraphicsSystem("raster");
+	QApplication a(argc, argv, false); //Construct application, required for printing
+	a.setStyle(new QCommonStyle()); // Plain style
+#else
 	QApplication a(argc,argv); //Construct application, required for printing
+#endif
 	x.init();
 	for(int i=1; i < argc; ++i)
 		if(!strcmp(argv[i],"--read-args-from-stdin")) {
