@@ -39,14 +39,16 @@ function applypatch() {
 	patch -p1 < $1 && cp $1 $2;
 }
 
+BUILD=/tmp/build
 #Create static build directory
-mkdir -p build
-cat qt-*.patch > qt_webkit.patch
-cd build
-BUILD=`pwd`
+mkdir -p $BUILD
+cat qt-*.patch > $BUILD/qt.patch
+cat static_qt_conf_base static_qt_conf_win | sed -re 's/#.*//' | sed -re '/^[ \t]*$/d' | sort -u > $BUILD/conf_win
+cat static_qt_conf_base static_qt_conf_linux | sed -re 's/#.*//' | sed -re '/^[ \t]*$/d' | sort -u > $BUILD/conf_linux
 
-cat ../static_qt_conf_base ../static_qt_conf_win | sed -re 's/#.*//' | sed -re '/^[ \t]*$/d' | sort -u > conf_win
+BASE=${PWD}
 
+cd ${BUILD}
 #Fetch most the vertion of qt
 get http://download.qtsoftware.com/qt/source/${QT}.tar.bz2 $QT.tar.bz2 || exit 1
 
@@ -55,7 +57,7 @@ get http://upx.sourceforge.net/download/${UPX}.tar.bz2 ${UPX}.tar.bz2 || exit 1
 unpack ${UPX}.tar.bz2 || exit 1
 
 if [[ "$1" == "all" ]] || [[ "$1" == "linux" ]]; then
-	cat ../static_qt_conf_base ../static_qt_conf_linux | sed -re 's/#.*//' | sed -re '/^[ \t]*$/d' | sort -u > conf_linux
+
 	cd ${BUILD}
 	mkdir -p linux
 	cd linux
@@ -65,20 +67,20 @@ if [[ "$1" == "all" ]] || [[ "$1" == "linux" ]]; then
 	if ! cmp ${BUILD}/conf_linux conf_linux; then
  		(yes yes | ./configure `cat ${BUILD}/conf_linux` -prefix "${BUILD}/linux/qt" && cp ${BUILD}/conf_linux conf_linux) || exit 1
 	fi
-	applypatch ${BUILD}/../qt_webkit.patch qt_webkit.patch || exit 1
+	applypatch ${BUILD}/qt.patch qt.patch || exit 1
 	if ! make -j5 -q; then
  		make -j5 || exit 1
  		make install || exit 1
 	fi
 	cd ..
 	rm -rf wkhtmltopdf
-	svn export ${BUILD}/.. wkhtmltopdf --force || exit 1
+	svn export ${BASE} wkhtmltopdf --force || exit 1
 	cd wkhtmltopdf
 	../qt/bin/qmake || exit 1
 	make -j5 || exit 1
 	strip wkhtmltopdf || exit 1
 	rm -rf ${BUILD}/wkhtmltopdf
-	${BUILD}/${UPX}/upx --best wkhtmltopdf -o ${BUILD}/wkhtmltopdf || exit 1
+	${BUILD}/${UPX}/upx --best wkhtmltopdf -o ${BASE}/wkhtmltopdf || exit 1
 fi
 if [[ "$1" == "all" ]] || [[ "$1" == "win" ]]; then 
 	export WINEPREFIX=`pwd`/mingw
@@ -121,20 +123,20 @@ EOF
 	if ! cmp ${BUILD}/conf_win conf_win; then
 		(yes | wine configure.exe `cat ${BUILD}/conf_win` -prefix "C:\qt" && cp ${BUILD}/conf_win conf_win) || exit 1
 	fi
-	applypatch ${BUILD}/../qt_webkit.patch qt_webkit.patch || exit 1
+	applypatch ${BUILD}/qt.patch qt.patch || exit 1
 	if ! wine mingw32-make -j5 -q; then
 		wine mingw32-make -j5 || exit 1
 		wine mingw32-make install || exit 1
 	fi
 	cd ..
 	rm -rf wkhtmltopdf
-	svn export ${BUILD}/.. wkhtmltopdf --force || exit 1
+	svn export ${BASE} wkhtmltopdf --force || exit 1
 	cd wkhtmltopdf
 	wine ../qt/bin/qmake.exe wkhtmltopdf.pro -o Makefile -spec win32-g++ || exit 1
 	wine mingw32-make -j5 || exit 1
 	wine strip.exe release/wkhtmltopdf.exe || exit 1
 	rm -rf ${BUILD}/wkhtmltopdf.exe
-	${BUILD}/${UPX}/upx --best release/wkhtmltopdf.exe -o ${BUILD}/wkhtmltopdf.exe || exit 1
+	${BUILD}/${UPX}/upx --best release/wkhtmltopdf.exe -o ${BASE}/wkhtmltopdf.exe || exit 1
 fi
 if [[ "$1" != "all" ]] && [[ "$1" != "linux" ]] && [[ "$1" != "win" ]]; then
 	echo "please specify what static binary you want build (linux, win or all)"
