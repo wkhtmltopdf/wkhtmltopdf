@@ -82,22 +82,22 @@ diff -ur qt-x11-opensource-src-4.5.1.orig/src/3rdparty/webkit/WebCore/platform/q
  }
  
  RenderThemeQt::~RenderThemeQt()
-@@ -276,8 +276,13 @@                                                                                                                                                                     
-                                                                                                                                                                                         
- int RenderThemeQt::minimumMenuListSize(RenderStyle*) const                                                                                                                              
- {                                                                                                                                                                                       
--    const QFontMetrics &fm = QApplication::fontMetrics();                                                                                                                               
--    return 7 * fm.width(QLatin1Char('x'));                                                                                                                                              
-+                                                                                                                                                                                        
-+    if (QApplication::type()!=QApplication::Tty) {                                                                                                                                      
-+        const QFontMetrics &fm = QApplication::fontMetrics();                                                                                                                           
-+        return 7 * fm.width(QLatin1Char('x'));                                                                                                                                          
-+    } else {                                                                                                                                                                            
-+        return 0;                                                                                                                                                                       
-+    }                                                                                                                                                                                   
- }                                                                                                                                                                                       
-                                                                                                                                                                                         
- void RenderThemeQt::computeSizeBasedOnStyle(RenderStyle* renderStyle) const   
+@@ -276,0 +276,0 @@
+
+ int RenderThemeQt::minimumMenuListSize(RenderStyle*) const
+ {
+-    const QFontMetrics &fm = QApplication::fontMetrics();
+-    return 7 * fm.width(QLatin1Char('x'));
++    if (QApplication::type()!=QApplication::Tty) {
++        const QFontMetrics &fm = QApplication::fontMetrics();
++        return 7 * fm.width(QLatin1Char('x'));
++    } else {
++         return 1;
++    }
+ }
+
+ void RenderThemeQt::computeSizeBasedOnStyle(RenderStyle* renderStyle) const
+
 diff -ur qt-x11-opensource-src-4.5.1.orig/src/3rdparty/webkit/WebCore/platform/qt/ScreenQt.cpp qt-x11-opensource-src-4.5.1/src/3rdparty/webkit/WebCore/platform/qt/ScreenQt.cpp
 --- qt-x11-opensource-src-4.5.1.orig/src/3rdparty/webkit/WebCore/platform/qt/ScreenQt.cpp	2009-04-22 01:57:40.000000000 +0200
 +++ qt-x11-opensource-src-4.5.1/src/3rdparty/webkit/WebCore/platform/qt/ScreenQt.cpp	2009-06-20 14:26:25.935256173 +0200
