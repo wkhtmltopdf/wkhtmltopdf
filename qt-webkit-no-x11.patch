@@ -39,65 +39,6 @@ diff -ur qt-x11-opensource-src-4.5.1.orig/src/3rdparty/webkit/WebCore/platform/q
      QRect r = QApplication::desktop()->availableGeometry(w ? w->root()->hostWindow()->platformWindow(): 0);
      return FloatRect(r.x(), r.y(), r.width(), r.height());
  }
-diff -ur qt-x11-opensource-src-4.5.1.orig/src/3rdparty/webkit/WebCore/platform/qt/RenderThemeQt.cpp qt-x11-opensource-src-4.5.1/src/3rdparty/webkit/WebCore/platform/qt/RenderThemeQt.cpp
---- qt-x11-opensource-src-4.5.1.orig/src/3rdparty/webkit/WebCore/platform/qt/RenderThemeQt.cpp	2009-04-22 01:57:40.000000000 +0200
-+++ qt-x11-opensource-src-4.5.1/src/3rdparty/webkit/WebCore/platform/qt/RenderThemeQt.cpp	2009-06-20 14:14:38.030006806 +0200
-@@ -114,22 +114,27 @@
- RenderThemeQt::RenderThemeQt()
-     : RenderTheme()
- {
--    QPushButton button;
--    button.setAttribute(Qt::WA_MacSmallSize);
--    QFont defaultButtonFont = QApplication::font(&button);
--    QFontInfo fontInfo(defaultButtonFont);
--    m_buttonFontFamily = defaultButtonFont.family();
-+    if (QApplication::type()!=QApplication::Tty) {
-+        QPushButton button;
-+        button.setAttribute(Qt::WA_MacSmallSize);
-+        QFont defaultButtonFont = QApplication::font(&button);
-+        QFontInfo fontInfo(defaultButtonFont);
-+        m_buttonFontFamily = defaultButtonFont.family();
-+        // this will need to be regenerated when the style changes
-+        QLineEdit lineEdit;
-+        QStyleOptionFrameV2 opt;
-+        m_frameLineWidth = QApplication::style()->pixelMetric(QStyle::PM_DefaultFrameWidth,
-+                                                          &opt, &lineEdit);
-+
- #ifdef Q_WS_MAC
--    m_buttonFontPixelSize = fontInfo.pixelSize();
-+        m_buttonFontPixelSize = fontInfo.pixelSize();
- #endif
--
-+    } else {
-+        m_buttonFontFamily = "sans-serif";
-+        m_frameLineWidth = 1;
-+    }
-     m_fallbackStyle = 0;
- 
--    // this will need to be regenerated when the style changes
--    QLineEdit lineEdit;
--    QStyleOptionFrameV2 opt;
--    m_frameLineWidth = QApplication::style()->pixelMetric(QStyle::PM_DefaultFrameWidth,
--                                                          &opt, &lineEdit);
- }
- 
- RenderThemeQt::~RenderThemeQt()
-@@ -276,0 +276,0 @@
-
- int RenderThemeQt::minimumMenuListSize(RenderStyle*) const
- {
--    const QFontMetrics &fm = QApplication::fontMetrics();
--    return 7 * fm.width(QLatin1Char('x'));
-+    if (QApplication::type()!=QApplication::Tty) {
-+        const QFontMetrics &fm = QApplication::fontMetrics();
-+        return 7 * fm.width(QLatin1Char('x'));
-+    } else {
-+         return 1;
-+    }
- }
-
- void RenderThemeQt::computeSizeBasedOnStyle(RenderStyle* renderStyle) const
-
 diff -ur qt-x11-opensource-src-4.5.1.orig/src/3rdparty/webkit/WebCore/platform/qt/ScreenQt.cpp qt-x11-opensource-src-4.5.1/src/3rdparty/webkit/WebCore/platform/qt/ScreenQt.cpp
 --- qt-x11-opensource-src-4.5.1.orig/src/3rdparty/webkit/WebCore/platform/qt/ScreenQt.cpp	2009-04-22 01:57:40.000000000 +0200
 +++ qt-x11-opensource-src-4.5.1/src/3rdparty/webkit/WebCore/platform/qt/ScreenQt.cpp	2009-06-20 14:26:25.935256173 +0200
@@ -144,3 +85,60 @@ diff -ur qt-x11-opensource-src-4.5.1.orig/src/3rdparty/webkit/WebCore/platform/q
      if (QWidget* widget = root()->hostWindow()->platformWindow())
          QCoreApplication::postEvent(widget, new SetCursorEvent(cursor.impl()));
  #endif
+--- qt-x11-opensource-src-4.5.1.orig/src/3rdparty/webkit/WebCore/platform/qt/RenderThemeQt.cpp	2009-06-20 20:07:50.876825870 +0200
++++ qt-x11-opensource-src-4.5.1/src/3rdparty/webkit/WebCore/platform/qt/RenderThemeQt.cpp	2009-06-20 19:44:25.420825552 +0200
+@@ -114,22 +114,27 @@
+ RenderThemeQt::RenderThemeQt()
+     : RenderTheme()
+ {
+-    QPushButton button;
+-    button.setAttribute(Qt::WA_MacSmallSize);
+-    QFont defaultButtonFont = QApplication::font(&button);
+-    QFontInfo fontInfo(defaultButtonFont);
+-    m_buttonFontFamily = defaultButtonFont.family();
++    if (QApplication::type()!=QApplication::Tty) {
++        QPushButton button;
++        button.setAttribute(Qt::WA_MacSmallSize);
++        QFont defaultButtonFont = QApplication::font(&button);
++        QFontInfo fontInfo(defaultButtonFont);
++        m_buttonFontFamily = defaultButtonFont.family();
++        // this will need to be regenerated when the style changes
++        QLineEdit lineEdit;
++        QStyleOptionFrameV2 opt;
++        m_frameLineWidth = QApplication::style()->pixelMetric(QStyle::PM_DefaultFrameWidth,
++                                                          &opt, &lineEdit);
++
+ #ifdef Q_WS_MAC
+-    m_buttonFontPixelSize = fontInfo.pixelSize();
++        m_buttonFontPixelSize = fontInfo.pixelSize();
+ #endif
+-
++    } else {
++        m_buttonFontFamily = "sans-serif";
++        m_frameLineWidth = 1;
++    }
+     m_fallbackStyle = 0;
+ 
+-    // this will need to be regenerated when the style changes
+-    QLineEdit lineEdit;
+-    QStyleOptionFrameV2 opt;
+-    m_frameLineWidth = QApplication::style()->pixelMetric(QStyle::PM_DefaultFrameWidth,
+-                                                          &opt, &lineEdit);
+ }
+ 
+ RenderThemeQt::~RenderThemeQt()
+@@ -271,8 +276,12 @@
+ 
+ int RenderThemeQt::minimumMenuListSize(RenderStyle*) const
+ {
+-    const QFontMetrics &fm = QApplication::fontMetrics();
+-    return 7 * fm.width(QLatin1Char('x'));
++    if (QApplication::type()!=QApplication::Tty) {
++        const QFontMetrics &fm = QApplication::fontMetrics();
++        return 7 * fm.width(QLatin1Char('x'));
++    } else {
++         return 1;
++    }
+ }
+ 
+ void RenderThemeQt::computeSizeBasedOnStyle(RenderStyle* renderStyle) const
