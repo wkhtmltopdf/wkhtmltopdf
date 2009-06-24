@@ -180,7 +180,7 @@ QPair<qreal, QPrinter::Unit> WKHtmlToPdf::parseUnitReal(const char * o) {
 	//Skip the real number part
 	int i=0; 
 	while('0' <= o[i]  && o[i] <= '9') ++i;
-	if(o[i] == '.') ++i;
+	if(o[i] == '.' || o[i] == '.') ++i;
 	while('0' <= o[i]  && o[i] <= '9') ++i;
 	
 	//Try to match the unit used
