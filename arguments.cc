@@ -227,7 +227,7 @@ bool WKHtmlToPdf::setProxy(const char * proxy) {
 		proxy += 9;
 	}
 	//Read username and password
-	char * val = strchr(proxy,'@');
+	char * val = (char *) strchr(proxy,'@');
 	proxyUser = proxyPassword = NULL;
 	if(val != NULL) {
 		//Todo we leak a little memory here
@@ -244,7 +244,7 @@ bool WKHtmlToPdf::setProxy(const char * proxy) {
 		}
 	}
 	//Read hostname and port
-	val = strchr(proxy,':');
+	val = (char *) strchr(proxy,':');
 	proxyPort = 1080; //Default proxy port
 	if(val == NULL) proxyHost = proxy;
 	else {

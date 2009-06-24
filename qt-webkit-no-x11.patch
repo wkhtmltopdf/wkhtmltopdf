@@ -46,7 +46,7 @@ diff -ur qt-x11-opensource-src-4.5.1.orig/src/3rdparty/webkit/WebCore/platform/q
      
  FloatRect screenRect(const Page* page)
  {
-+    if (QApplication::type()==QApplication::Tty) return FloatRect();
++    if (QApplication::type()==QApplication::Tty) return FloatRect(0,0,800,600);
      QWidget* qw = qwidgetForPage(page);
      if (!qw)
          return FloatRect();
