@@ -248,14 +248,14 @@ void WKHtmlToPdf::run(int argc, const char ** argv) {
 			page->settings()->setDefaultTextEncoding(default_encoding);
 #endif
 		//Disable stuff we don't need
-		page->settings()->setAttribute(QWebSettings::JavaEnabled, false);
+		page->settings()->setAttribute(QWebSettings::JavaEnabled, enable_plugins);
 		page->settings()->setAttribute(QWebSettings::JavascriptEnabled, !disable_javascript);
 		page->settings()->setAttribute(QWebSettings::JavascriptCanOpenWindows, false);
 		page->settings()->setAttribute(QWebSettings::JavascriptCanAccessClipboard, false);
 #if QT_VERSION >= 0x040500
 		//Newer vertions of QT have even more settings to change
 		page->settings()->setAttribute(QWebSettings::PrintElementBackgrounds, background);
- 		page->settings()->setAttribute(QWebSettings::PluginsEnabled, false);
+ 		page->settings()->setAttribute(QWebSettings::PluginsEnabled, enable_plugins);
 		if(strcmp(user_style_sheet,"")) 
 			page->settings()->setUserStyleSheetUrl(guessUrlFromString(user_style_sheet));
 #endif
@@ -538,13 +538,16 @@ int main(int argc, char * argv[]) {
 		x.version(stdout);
 		exit(0);
 	}
-#ifdef  __EXTENSIVE_WKHTMLTOPDF_QT_HACK__
-	QApplication::setGraphicsSystem("raster");
-	QApplication a(argc, argv, false); //Construct application, required for printing
-	a.setStyle(new QCommonStyle()); // Plain style
-#else
-	QApplication a(argc,argv); //Construct application, required for printing
+	bool use_graphics=true;
+#ifdef Q_WS_X11
+	use_graphics=false;
+	for(int i=1; i < argc; ++i) 
+		if(!strcmp(argv[i],"--use-xserver")) use_graphics=true;
 #endif
+	if(!use_graphics) QApplication::setGraphicsSystem("raster");
+	QApplication a(argc,argv, use_graphics); //Construct application, required for printing
+	a.setStyle(new QCommonStyle()); // Plain style
+
 	x.init();
 	for(int i=1; i < argc; ++i)
 		if(!strcmp(argv[i],"--read-args-from-stdin")) {

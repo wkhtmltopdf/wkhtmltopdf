@@ -65,6 +65,8 @@ public:
 	bool quiet; //Be less verbose
 	bool background; //Should we print the background?
 	bool print_toc;
+	bool enable_plugins;
+	bool use_x11;
 	bool disable_javascript; //Should we disable javascript
 	int jsredirectwait; //How meny milliseconds should we wait for a javascrit redirect
 	QPrinter::PageSize pageSize; //What size paper should we use

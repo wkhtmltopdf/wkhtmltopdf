@@ -407,6 +407,10 @@ void WKHtmlToPdf::initArgs() {
 	addarg("quit",'q',"Be less verbose",new AHConstSetter<bool>(quiet,true,false));
 	addarg("redirect-delay",0,"Wait some miliseconds for js-redirects", new AHIntSetter(jsredirectwait,"msec",200));
 	addarg("version",'V',"Output version information an exit", new AHCaller<VersionFunc>());
+	addarg("enable-plugins",0,"Enable installed plugins (such as flash", new AHConstSetter<bool>(enable_plugins,true,false));
+#ifdef Q_WS_X11
+	addarg("use-xserver",0,"Use the X server (some plugins and other stuff might not work without X11)", new AHConstSetter<bool>(use_x11,true,false));
+#endif
 }
 
 /*!
