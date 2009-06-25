@@ -96,6 +96,13 @@ WKHtmlToPdf::WKHtmlToPdf() {
 	initArgs();
 }
 
+
+// Needed to reset the pages and pageStart Vectors
+void WKHtmlToPdf::resetPages() {
+	pages.clear();
+	pageStart.clear();
+}
+
 /*!
  * Connect page signals, to our methods. And do other page
  * configurations.
@@ -555,6 +562,7 @@ int main(int argc, char * argv[]) {
 			char *nargv[1000];
 			nargv[0] = argv[0];
 			while(fgets(buff,20398,stdin)) {
+				x.resetPages();
 				int nargc=1;
 				parseString(buff,nargc,nargv);
 				x.run(nargc,(const char**)nargv);

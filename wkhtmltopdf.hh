@@ -127,5 +127,6 @@ public slots:
 	void sslErrors(QNetworkReply *reply, const QList<QSslError> &error);
 	void printPage();
 	void loadStarted();
+	void resetPages();
 };
 #endif //__wkhtmltopdf_hh__

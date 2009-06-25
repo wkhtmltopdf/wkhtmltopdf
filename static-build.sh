@@ -79,7 +79,7 @@ if [[ "$1" == "all" ]] || [[ "$1" == "linux" ]]; then
 	../qt/bin/qmake || exit 1
 	make -j5 || exit 1
 	strip wkhtmltopdf || exit 1
-	rm -rf ${BUILD}/wkhtmltopdf
+	rm -rf ${BASE}/wkhtmltopdf
 	${BUILD}/${UPX}/upx --best wkhtmltopdf -o ${BASE}/wkhtmltopdf || exit 1
 fi
 if [[ "$1" == "all" ]] || [[ "$1" == "win" ]]; then 
@@ -135,7 +135,7 @@ EOF
 	wine ../qt/bin/qmake.exe wkhtmltopdf.pro -o Makefile -spec win32-g++ || exit 1
 	wine mingw32-make -j5 || exit 1
 	wine strip.exe release/wkhtmltopdf.exe || exit 1
-	rm -rf ${BUILD}/wkhtmltopdf.exe
+	rm -rf ${BASE}/wkhtmltopdf.exe
 	${BUILD}/${UPX}/upx --best release/wkhtmltopdf.exe -o ${BASE}/wkhtmltopdf.exe || exit 1
 fi
 if [[ "$1" != "all" ]] && [[ "$1" != "linux" ]] && [[ "$1" != "win" ]]; then
