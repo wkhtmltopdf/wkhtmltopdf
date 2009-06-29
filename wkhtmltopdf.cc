@@ -547,9 +547,11 @@ int main(int argc, char * argv[]) {
 	}
 	bool use_graphics=true;
 #ifdef Q_WS_X11
+#ifdef  __EXTENSIVE_WKHTMLTOPDF_QT_HACK__
 	use_graphics=false;
 	for(int i=1; i < argc; ++i) 
 		if(!strcmp(argv[i],"--use-xserver")) use_graphics=true;
+#endif
 #endif
 	if(!use_graphics) QApplication::setGraphicsSystem("raster");
 	QApplication a(argc,argv, use_graphics); //Construct application, required for printing
