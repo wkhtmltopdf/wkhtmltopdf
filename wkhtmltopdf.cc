@@ -551,9 +551,9 @@ int main(int argc, char * argv[]) {
 	use_graphics=false;
 	for(int i=1; i < argc; ++i) 
 		if(!strcmp(argv[i],"--use-xserver")) use_graphics=true;
-#endif
-#endif
 	if(!use_graphics) QApplication::setGraphicsSystem("raster");
+#endif
+#endif
 	QApplication a(argc,argv, use_graphics); //Construct application, required for printing
 	a.setStyle(new QCommonStyle()); // Plain style
 
