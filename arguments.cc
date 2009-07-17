@@ -411,6 +411,8 @@ void WKHtmlToPdf::initArgs() {
 #ifdef Q_WS_X11
 	addarg("use-xserver",0,"Use the X server (some plugins and other stuff might not work without X11)", new AHConstSetter<bool>(use_x11,true,false));
 #endif
+	addarg("username",0,"HTTP Authentication username", new AHStrSetter(username, "username",""));
+	addarg("password",0,"HTTP Authentication password", new AHStrSetter(password, "password",""));
 }
 
 /*!

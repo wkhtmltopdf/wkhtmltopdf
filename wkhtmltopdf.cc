@@ -13,12 +13,13 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with wkhtmltopdf.  If not, see <http://www.gnu.org/licenses/>.
-#include <string.h>
-#include <iostream>
-#include "wkhtmltopdf.hh"
-#include <qnetworkreply.h>
-#include <QtPlugin>
 #include "toc.hh"
+#include "wkhtmltopdf.hh"
+#include <QUuid>
+#include <QtPlugin>
+#include <iostream>
+#include <qnetworkreply.h>
+#include <string.h>
 
 #ifdef QT_STATIC
 //When doing a static build, we need to load the plugins to make images work
@@ -113,6 +114,10 @@ void WKHtmlToPdf::init() {
 	//If some ssl error occures we want sslErrors to be called, so the we can ignore it
 	connect(am, SIGNAL(sslErrors(QNetworkReply*, const QList<QSslError>&)),this,
             SLOT(sslErrors(QNetworkReply*, const QList<QSslError>&)));
+	
+	connect(am, SIGNAL(authenticationRequired(QNetworkReply*, QAuthenticator *)),this,
+			SLOT(authenticationRequired(QNetworkReply *, QAuthenticator *)));
+
 #ifdef  __EXTENSIVE_WKHTMLTOPDF_QT_HACK__
 	connect(&tocPrinter, SIGNAL(printingNewPage(QPrinter*,int,int,int)), 
 			this, SLOT(newPage(QPrinter*,int,int,int)));
@@ -209,8 +214,6 @@ void WKHtmlToPdf::newPage(QPrinter * printer, int f, int t, int p) {
 	painter.restore();
 }
 
-#include <QUuid>
-
 /*!
  * Parse arguments, load page and print it
  * \param argc the number of arguments
@@ -277,6 +280,7 @@ void WKHtmlToPdf::run(int argc, const char ** argv) {
 			tmp.open(QIODevice::WriteOnly);
 			tmp.write(in.readAll());
 		}
+		loginTry=0;
 		page->mainFrame()->load(guessUrlFromString(u));
 		pages.push_back(page);
 	}
@@ -461,6 +465,28 @@ void WKHtmlToPdf::loadProgress(int progress) {
 	//Print out the load status
 	if(!quiet) fprintf(stderr,"Loading page: %3d%%   \r",progress);
 	fflush(stdout);
+}
+
+
+/*!
+ * Called when the page requires authentication, filles in the username 
+ * and password supplied on the command line
+ */
+void WKHtmlToPdf::authenticationRequired(QNetworkReply *reply, QAuthenticator *authenticator) {
+	if(!strcmp(username,"")) {
+		//If no username is given, complain the such is required
+		fprintf(stderr, "Authentication Required\n");
+		reply->abort();
+	} else if(loginTry >= 2) {
+		//If the login has failed a sufficient number of times,
+		//the username or password must be wrong
+		fprintf(stderr, "Invalid username or password\n");
+		reply->abort();
+	} else {
+		authenticator->setUser(username);
+		authenticator->setPassword(password);
+		++loginTry;
+	}
 }
 
 /*!

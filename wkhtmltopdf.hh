@@ -62,6 +62,8 @@ public:
 	const char * proxyHost; //The host name of the proxy to use or NULL
 	const char * proxyUser; //Username for the said broxy or NULL
 	const char * proxyPassword; //Password for the said broxy or NULL
+	const char * username;
+	const char * password;
 	bool quiet; //Be less verbose
 	bool background; //Should we print the background?
 	bool print_toc;
@@ -98,7 +100,7 @@ public:
 	QMap<char, ArgHandler *> shortToHandler; //Map form the short switch of an argument, to its handlr
 	int currentPage;
 	int pageNum;
-  
+	int loginTry;
 #ifdef  __EXTENSIVE_WKHTMLTOPDF_QT_HACK__
 	TocPrinter tocPrinter;
 #endif
@@ -125,6 +127,7 @@ public slots:
 	void loadFinished(bool ok);
 	void loadProgress(int progress);
 	void sslErrors(QNetworkReply *reply, const QList<QSslError> &error);
+	void authenticationRequired(QNetworkReply *     , QAuthenticator *);
 	void printPage();
 	void loadStarted();
 	void resetPages();
