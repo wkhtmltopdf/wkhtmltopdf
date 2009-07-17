@@ -101,6 +101,7 @@ WKHtmlToPdf::WKHtmlToPdf() {
 void WKHtmlToPdf::resetPages() {
 	pages.clear();
 	pageStart.clear();
+	in.clear();
 }
 
 /*!
