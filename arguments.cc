@@ -373,6 +373,7 @@ void WKHtmlToPdf::initArgs() {
 	addarg("header-left",0,"Left aligned header text", new AHStrSetter(header_left,"text",""));
 	addarg("header-line",0,"Display line below the header", new AHConstSetter<bool>(header_line,true,false));
 	addarg("header-right",0,"Right aligned header text", new AHStrSetter(header_right,"text",""));
+	addarg("page-offset",0,"Set the starting page number", new AHIntSetter(page_offset,"offset",1));
 	addarg("toc",'t',"Insert a table of content in the beginning of the document", new AHConstSetter<bool>(print_toc,true,false));
 	addarg("toc-font-name",0,"Set the font used for the toc", new AHStrSetter(tocPrinter.font_name,"name","Arial"));
 	addarg("toc-no-dots",0,"Do not use dots, in the toc", new AHConstSetter<bool>(tocPrinter.useDots,false,true));

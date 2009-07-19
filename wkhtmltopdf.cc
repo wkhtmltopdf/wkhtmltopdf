@@ -146,9 +146,9 @@ QString WKHtmlToPdf::hfreplace(const QString & q) {
 	}
 #endif
 	return _
-		.replace("[page]",QString::number(pageNum),Qt::CaseInsensitive)
-		.replace("[toPage]",QString::number(pageStart.back()),Qt::CaseInsensitive)
-		.replace("[fromPage]",QString::number(1),Qt::CaseInsensitive)
+		.replace("[page]",QString::number(pageNum+page_offset-1),Qt::CaseInsensitive)
+		.replace("[toPage]",QString::number(pageStart.back()+page_offset-1),Qt::CaseInsensitive)
+		.replace("[fromPage]",QString::number(page_offset),Qt::CaseInsensitive)
 #ifdef  __EXTENSIVE_WKHTMLTOPDF_QT_HACK__
 		.replace("[section]",sec[0],Qt::CaseInsensitive)
 		.replace("[subsection]",sec[1],Qt::CaseInsensitive)

@@ -76,6 +76,7 @@ public:
 	QPrinter::ColorMode colorMode; //Color or grayscale
 	QPrinter::PrinterMode resolution; //resolution
 	int dpi; //The printing dpi
+	int page_offset;
 	//Specify page margins
 	QPair<qreal, QPrinter::Unit> margin_top;
 	QPair<qreal, QPrinter::Unit> margin_right;
