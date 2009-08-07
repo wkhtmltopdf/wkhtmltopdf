@@ -16,7 +16,9 @@
 DEFINES += MAJOR_VERSION=0 MINOR_VERSION=8 PATCH_VERSION=3
 
 TEMP = $$[QT_INSTALL_LIBS] libQtGui.prl
+PRL  = $$[QT_INSTALL_LIBS] QtGui.framework/QtGui.prl
 include($$join(TEMP, "/"))
+include($$join(PRL, "/"))
 
 contains(QMAKE_PRL_CONFIG, shared) {
     DEFINES += QT_SHARED
@@ -27,8 +29,10 @@ contains(QMAKE_PRL_CONFIG, shared) {
 
 TEMPLATE = app
 TARGET = 
-DEPENDPATH += .
-INCLUDEPATH += .
+DEPENDPATH += . src
+INCLUDEPATH += . src
+
+MOC_DIR = build
 
 unix {
     man.target=wkhtmltopdf.1.gz
@@ -54,5 +58,5 @@ target.path=$$INSTALLBASE/bin
 QT += webkit network
 
 # Input
-HEADERS += wkhtmltopdf.hh toc.hh
-SOURCES += wkhtmltopdf.cc toc.cc arguments.cc
+HEADERS += src/wkhtmltopdf.hh src/toc.hh
+SOURCES += src/wkhtmltopdf.cc src/toc.cc src/arguments.cc
