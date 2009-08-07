@@ -138,8 +138,8 @@ testImgSupport png
 testRemote 
 testSSL
 testHeaderFooter
-#testBuild qmake
-testBuild cmake
+testBuild qmake
+#testBuild cmake
 #Lets clean up
 rm tmp.html tmp.pdf
 exit $failed 
