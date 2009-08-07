@@ -40,7 +40,9 @@ struct ArgHandler {
 	//Called whenever an argument is parsed
 	virtual bool operator() (const char ** args, WKHtmlToPdf * w) = 0;
 	virtual void useDefault() {};
-	virtual QString getDesc() const {return desc;}
+	virtual QString getDesc() const {
+		return desc;
+	}
 	virtual ~ArgHandler() {};
 };
 
@@ -51,7 +53,7 @@ public:
 	//The webpages is used to fetch and render the webpages using webkit
 	QVector<QWebPage *> pages;
 	QVector<uint> pageStart;
-	
+
 	//Configuration variabels
 	QVector<const char *> in; //Names of the input files
 	const char * out; //Name of the output file
@@ -94,7 +96,7 @@ public:
 	const char * header_left, * header_center, * header_right;
 	bool header_line, footer_line;
 	const char * footer_left, * footer_center, * footer_right;
-	
+
 	QAtomicInt loading; //Keep track of the numer of pages loading
 	QVector<QString> temp;
 	QMap<QString, ArgHandler *> longToHandler; //Map from the long name of an argument, to its handler
@@ -108,7 +110,7 @@ public:
 
 	//Add a new argument to the list of handled arguments
 	void addarg(QString l, char s, QString desc, ArgHandler * h, bool display=true);
-	
+
 	WKHtmlToPdf(); //Setup stuff not depending on X
 	QString hfreplace(const QString & q);
 	QPair<qreal, QPrinter::Unit> parseUnitReal(const char * o);

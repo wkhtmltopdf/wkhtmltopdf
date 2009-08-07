@@ -32,13 +32,13 @@ void buildToc(TocItem * root, const QVector<QWebFrame::Heading> & headings, uint
 	QVector<uint> levelStack;
 	levelStack.push_back(0);
 	TocItem * old = root;
-	for(int i=0; i < headings.size(); ++i) {
-		const QWebFrame::Heading & h = headings[i]; 
+	for (int i=0; i < headings.size(); ++i) {
+		const QWebFrame::Heading & h = headings[i];
 		TocItem * item = new TocItem();
 		item->page = firstPage + h.page;
 		item->value = h.text;
 		item->location = h.locationOnPage;
-		while(levelStack.back() >= h.level){
+		while (levelStack.back() >= h.level) {
 			old = old->parent;
 			levelStack.pop_back();
 		}
@@ -62,36 +62,37 @@ void buildToc(TocItem * root, const QVector<QWebFrame::Heading> & headings, uint
 void TocPrinter::printChildren(TocItem * item, QPrinter * printer, QPainter * painter, bool dryRun, uint level, uint & page, double & y) {
 	painter->save();
 	painter->setFont(QFont(font_name, font_size[level]));
-	
+
 	double step=painter->fontMetrics().height();
 	QRect pr = printer->pageRect();
 	double dw = painter->boundingRect(pr, Qt::AlignRight | Qt::AlignTop, ".").width();
-	for(int i=0; i < item->children.size(); ++i) {
-		if(y + step > pr.height()) {
-			++page; y=0;
-			if(!dryRun) {
+	for (int i=0; i < item->children.size(); ++i) {
+		if (y + step > pr.height()) {
+			++page;
+			y=0;
+			if (!dryRun) {
 				printer->newPage();
 				//Print headers and footers
 				emit printingNewPage(printer, 0, 0, page);
 			}
 		}
-		if(!dryRun) {
-			double startX = pr.width()*indentation[level]/1000.0;; 
+		if (!dryRun) {
+			double startX = pr.width()*indentation[level]/1000.0;;
 			QRectF lineRect(startX,y,pr.width()-startX,step);
 			QRectF br;
 			painter->drawText(lineRect,Qt::AlignBottom | Qt::AlignRight, QString::number(item->children[i]->page),&br);
 			QString v =item->children[i]->value;
-			if(useDots) {
+			if (useDots) {
 				v += " ";
 				//Calculate the number of dots needed to fill the line
 				int ndots = (br.left() - startX - painter->boundingRect(lineRect, Qt::AlignLeft, v+" ").width())/dw;
-				for(int i=0; i < ndots; ++i) v += ".";
+				for (int i=0; i < ndots; ++i) v += ".";
 			}
 			painter->drawText(lineRect,Qt::AlignBottom | Qt::AlignLeft, v);
 		}
 		y += step;
 		//If it is not too deep, print my children
-		if(item->children[i]->children.size() && level+1 < (uint)depth) 
+		if (item->children[i]->children.size() && level+1 < (uint)depth)
 			printChildren(item->children[i], printer, painter, dryRun, level+1, page, y);
 	}
 	painter->restore();
@@ -105,7 +106,7 @@ void TocPrinter::printChildren(TocItem * item, QPrinter * printer, QPainter * pa
  * \param dryRun Do not actualy print anything, just count the pages
  */
 uint TocPrinter::print(TocItem * root, QPrinter * printer, QPainter * painter, bool dryRun) {
-	if(!dryRun)
+	if (!dryRun)
 		emit printingNewPage(printer, 0, 0, 0);
 	painter->save();
 	painter->resetTransform();
@@ -113,7 +114,7 @@ uint TocPrinter::print(TocItem * root, QPrinter * printer, QPainter * painter, b
 	QRect pr = printer->pageRect();
 	double h = painter->boundingRect(pr,Qt::AlignTop | Qt::AlignHCenter, header_text).height();
 	QRect r((int)h,0,pr.width(),(int)h*3);
-	if(!dryRun) {
+	if (!dryRun) {
 		painter->drawText(r,Qt::AlignVCenter | Qt::AlignHCenter, header_text);
 	}
 	uint page = 0;
@@ -125,26 +126,26 @@ uint TocPrinter::print(TocItem * root, QPrinter * printer, QPainter * painter, b
 }
 
 void TocPrinter::outlineChildren(TocItem * item, QPrinter * printer, int level) {
-	if(level >= outline_depth) return; 
-	for(int i=0; i < item->children.size(); ++i) {	
+	if (level >= outline_depth) return;
+	for (int i=0; i < item->children.size(); ++i) {
 		TocItem * j = item->children[i];
 		printer->printEngine()->beginSectionOutline(j->value,j->page-1,j->location);
 		outlineChildren(j,printer,level+1);
 		printer->printEngine()->endSectionOutline();
-	} 
+	}
 }
 
 /**
  * Fill in structure telling on which page a toc item begin
  */
 void TocPrinter::populateSectionsChildren(TocItem * item, int level) {
-	for(int i=0; i < item->children.size(); ++i) {
-		TocItem * j = item->children[i];	
-		if(page2sectionslow[level].count(j->page) == 0
-		   || page2sectionslow[level][j->page]->location.y() > j->location.y())
+	for (int i=0; i < item->children.size(); ++i) {
+		TocItem * j = item->children[i];
+		if (page2sectionslow[level].count(j->page) == 0
+		        || page2sectionslow[level][j->page]->location.y() > j->location.y())
 			page2sectionslow[level][j->page] = j;
-		if(page2sectionshigh[level].count(j->page) == 0
-		   || page2sectionshigh[level][j->page]->location.y() < j->location.y())
+		if (page2sectionshigh[level].count(j->page) == 0
+		        || page2sectionshigh[level][j->page]->location.y() < j->location.y())
 			page2sectionshigh[level][j->page] = j;
 		populateSectionsChildren(j,level+1);
 	}

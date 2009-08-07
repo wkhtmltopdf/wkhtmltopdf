@@ -29,7 +29,9 @@ public:
 	uint page;
 	QString value;
 	QPointF location;
-	~TocItem() {for(int i=0; i < children.size(); ++i) delete children[i];}
+	~TocItem() {
+		for (int i=0; i < children.size(); ++i) delete children[i];
+	}
 };
 
 void buildToc(TocItem * root, const QVector<QWebFrame::Heading> & headings, uint firstPage);
@@ -51,7 +53,7 @@ public:
 	QMap<int,TocItem *> page2sectionshigh[levels];
 
 private:
-	void printChildren(TocItem * item, QPrinter * printer, QPainter * painter, bool dryRun, uint level, uint & page, double & y); 
+	void printChildren(TocItem * item, QPrinter * printer, QPainter * painter, bool dryRun, uint level, uint & page, double & y);
 	uint print(TocItem * root, QPrinter * printer, QPainter * painter, bool dryRun);
 	void outlineChildren(TocItem * item, QPrinter * printer, int level);
 	void populateSectionsChildren(TocItem * item, int level);
@@ -62,11 +64,11 @@ public:
 	uint countPages(TocItem * root, QPrinter * printer, QPainter * painter) {
 		return print(root,printer,painter,true);
 	}
-	void outline(TocItem * root, QPrinter * printer) { 
+	void outline(TocItem * root, QPrinter * printer) {
 		outlineChildren(root,printer,0);
 	}
 	void populateSections(TocItem * root) {
-		for(uint i=0; i < levels; ++i) {
+		for (uint i=0; i < levels; ++i) {
 			page2sectionslow[i].clear();
 			page2sectionshigh[i].clear();
 		}
