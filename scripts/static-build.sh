@@ -14,10 +14,11 @@
 # You should have received a copy of the GNU General Public License
 # along with wkhtmltopdf.  If not, see <http:#www.gnu.org/licenses/>.
 
-# This script will compile static vertions of wkhtmltopdf for linux and for windows (it must run in linux)
+# This script will compile static versions of wkhtmltopdf for linux and for windows (it must run in linux)
 # It requires build-essential and wine to run. Please note that it will take quite a while
 
 #Configuration for the static build
+
 QT=qt-all-opensource-src-4.5.1
 MIRROR=kent
 MINGWFILES="binutils-2.19.1-mingw32-bin.tar.gz mingw32-make-3.81-20080326-3.tar.gz \
@@ -42,17 +43,17 @@ function applypatch() {
 BUILD=/tmp/build
 #Create static build directory
 mkdir -p $BUILD
-cat qt-*.patch > $BUILD/qt.patch
+cat ./src/qt-patches/qt-*.patch > $BUILD/qt.patch
 cat static_qt_conf_base static_qt_conf_win | sed -re 's/#.*//' | sed -re '/^[ \t]*$/d' | sort -u > $BUILD/conf_win
 cat static_qt_conf_base static_qt_conf_linux | sed -re 's/#.*//' | sed -re '/^[ \t]*$/d' | sort -u > $BUILD/conf_linux
 
 BASE=${PWD}
 
 cd ${BUILD}
-#Fetch most the vertion of qt
+#Fetch most recent version of qt
 get http://download.qtsoftware.com/qt/source/${QT}.tar.bz2 $QT.tar.bz2 || exit 1
 
-#Fetch an unpack upx
+#Fetch and unpack upx
 get http://upx.sourceforge.net/download/${UPX}.tar.bz2 ${UPX}.tar.bz2 || exit 1
 unpack ${UPX}.tar.bz2 || exit 1
 
@@ -74,7 +75,7 @@ if [[ "$1" == "all" ]] || [[ "$1" == "linux" ]]; then
 	fi
 	cd ..
 	rm -rf wkhtmltopdf
-	svn export ${BASE} wkhtmltopdf --force || exit 1
+	git checkout-index --prefix=./wkhtmltopdf/ -a -f || exit 1
 	cd wkhtmltopdf
 	../qt/bin/qmake || exit 1
 	make -j5 || exit 1
@@ -130,7 +131,7 @@ EOF
 	fi
 	cd ..
 	rm -rf wkhtmltopdf
-	svn export ${BASE} wkhtmltopdf --force || exit 1
+	git checkout-index --prefix=./wkhtmltopdf/ -a -f || exit 1
 	cd wkhtmltopdf
 	wine ../qt/bin/qmake.exe wkhtmltopdf.pro -o Makefile -spec win32-g++ || exit 1
 	wine mingw32-make -j5 || exit 1

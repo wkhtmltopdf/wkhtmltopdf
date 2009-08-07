@@ -14,7 +14,7 @@
 # You should have received a copy of the GNU General Public License
 # along with wkhtmltopdf.  If not, see <http:#www.gnu.org/licenses/>.
 
-#This script will the a compiled wkhtmltopdf for some basic functionality
+#This script will test a compiled wkhtmltopdf for some basic functionality
 
 #This is just some random image
 img=http://upload.wikimedia.org/wikipedia/en/thumb/0/0e/TS3_logo_4.JPG/200px-TS3_logo_4.JPG
@@ -112,7 +112,7 @@ function testOutline() {
 
 function testBuild() {
 	rm -rf wkhtmltopdf
-	svn export -q .. wkhtmltopdf || (bad "Build $1 (1)" && return 1)
+	git checkout-index --prefix=./wkhtmltopdf/ -a || (bad "Build $1 (1)" && return 1)
 	cd wkhtmltopdf
 	if [[ "$1" == "qmake" ]]; then
 		qmake 2>/dev/null >/dev/null || (bad "Build $1 (2)" && return 1)
