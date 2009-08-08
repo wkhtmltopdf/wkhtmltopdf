@@ -17,7 +17,7 @@
 #This script will test a compiled wkhtmltopdf for some basic functionality
 
 #This is just some random image
-img=http://upload.wikimedia.org/wikipedia/en/thumb/0/0e/TS3_logo_4.JPG/200px-TS3_logo_4.JPG
+img=http://madalgo.au.dk/img/Forside/KatrinebjMay-05.jpg
 [ -d test ] || mkdir test
 cd test
 
@@ -138,7 +138,7 @@ testImgSupport png
 testRemote 
 testSSL
 testHeaderFooter
-testBuild qmake
+#testBuild qmake
 #testBuild cmake
 #Lets clean up
 rm tmp.html tmp.pdf

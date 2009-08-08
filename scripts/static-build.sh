@@ -40,6 +40,14 @@ function applypatch() {
 	patch -p1 < $1 && cp $1 $2;
 }
 
+function exportHere() {
+	rm -rf wkhtmltopdf
+	local HERE=${PWD}
+	cd $BASE || exti 1
+	git checkout-index --prefix=${HERE}/wkhtmltopdf/ -a -f || exit 1	
+	cd $HERE
+}
+
 BUILD=/tmp/build
 #Create static build directory
 mkdir -p $BUILD
@@ -74,8 +82,7 @@ if [[ "$1" == "all" ]] || [[ "$1" == "linux" ]]; then
  		make install || exit 1
 	fi
 	cd ..
-	rm -rf wkhtmltopdf
-	git checkout-index --prefix=./wkhtmltopdf/ -a -f || exit 1
+	exportHere
 	cd wkhtmltopdf
 	../qt/bin/qmake || exit 1
 	make -j5 || exit 1
@@ -130,8 +137,7 @@ EOF
 		wine mingw32-make install || exit 1
 	fi
 	cd ..
-	rm -rf wkhtmltopdf
-	git checkout-index --prefix=./wkhtmltopdf/ -a -f || exit 1
+	exportHere
 	cd wkhtmltopdf
 	wine ../qt/bin/qmake.exe wkhtmltopdf.pro -o Makefile -spec win32-g++ || exit 1
 	wine mingw32-make -j5 || exit 1
