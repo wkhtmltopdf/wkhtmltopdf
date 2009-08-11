@@ -293,6 +293,7 @@ void WKHtmlToPdf::run(int argc, const char ** argv) {
 			page->settings()->setDefaultTextEncoding(default_encoding);
 #endif
 		//Disable stuff we don't need
+		page->mainFrame()->setZoomFactor(zoom_factor);
 		page->settings()->setAttribute(QWebSettings::JavaEnabled, enable_plugins);
 		page->settings()->setAttribute(QWebSettings::JavascriptEnabled, !disable_javascript);
 		page->settings()->setAttribute(QWebSettings::JavascriptCanOpenWindows, false);

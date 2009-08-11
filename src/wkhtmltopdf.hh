@@ -81,6 +81,7 @@ public:
 	QPrinter::PrinterMode resolution; //resolution
 	int dpi; //The printing dpi
 	int page_offset;
+	float zoom_factor;
 	//Specify page margins
 	QPair<qreal, QPrinter::Unit> margin_top;
 	QPair<qreal, QPrinter::Unit> margin_right;

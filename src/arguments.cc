@@ -49,8 +49,7 @@ struct AHSomeSetter: public ArgHandler {
 //Argument handler setting an int variable
 struct AHIntSetter: public AHSomeSetter<int> {
 	AHIntSetter(int & a, QString an, int def): AHSomeSetter<int>(a,an,def) {};
-	bool operator() (const char ** vals, WKHtmlToPdf * w) {
-		Q_UNUSED(w);
+	bool operator() (const char ** vals, WKHtmlToPdf *) {
 		val = atoi(vals[0]);
 		return true;
 	}
@@ -59,11 +58,24 @@ struct AHIntSetter: public AHSomeSetter<int> {
 		return desc + " (default " + QString::number(def) + ")";
 	}
 };
+
+//Argument handler setting an float variable
+struct AHFloatSetter: public AHSomeSetter<float> {
+	AHFloatSetter(float & a, QString an, float def): AHSomeSetter<float>(a,an,def) {};
+	bool operator() (const char ** vals, WKHtmlToPdf *) {
+		val = atof(vals[0]);
+		return true;
+	}
+	virtual QString getDesc() const {
+		if (def == -1) return desc;
+		return desc + " (default " + QString::number(def) + ")";
+	}
+};
+
 //Argument handler setting a string variable
 struct AHStrSetter: public AHSomeSetter<const char*> {
 	AHStrSetter(const char * & a, QString an, const char * def): AHSomeSetter<const char *>(a,an,def) {};
-	bool operator() (const char ** vals, WKHtmlToPdf * w) {
-		Q_UNUSED(w);
+	bool operator() (const char ** vals, WKHtmlToPdf *) {
 		val = vals[0];
 		return true;
 	}
@@ -471,6 +483,7 @@ void WKHtmlToPdf::initArgs() {
 	addarg("redirect-delay",0,"Wait some miliseconds for js-redirects", new AHIntSetter(jsredirectwait,"msec",200));
 	addarg("version",'V',"Output version information an exit", new AHCaller<VersionFunc>());
 	addarg("enable-plugins",0,"Enable installed plugins (such as flash", new AHConstSetter<bool>(enable_plugins,true,false));
+	addarg("zoom",0,"Use this zoom factor", new AHFloatSetter(zoom_factor,"float",1.0));
 #ifdef Q_WS_X11
 	addarg("use-xserver",0,"Use the X server (some plugins and other stuff might not work without X11)", new AHConstSetter<bool>(use_x11,true,false));
 #endif
