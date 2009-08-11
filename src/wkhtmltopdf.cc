@@ -209,7 +209,9 @@ void WKHtmlToPdf::newPage(QPrinter *, int, int, int) {
 		fflush(stdout);
 	}
 
+#ifdef  __EXTENSIVE_WKHTMLTOPDF_QT_HACK__
 	if (currentPage == 0 && cover[0]) return;
+#endif
 	//Get the painter assosiated with the printer
 	QPainter & painter = *printer->paintEngine()->painter();
 
@@ -247,7 +249,7 @@ void WKHtmlToPdf::newPage(QPrinter *, int, int, int) {
 }
 
 /*!
- * Parse arguments, load page and print igt
+ * Parse arguments, load page and print it
  * \param argc the number of arguments
  * \param argv NULL terminated array of arguments
  */
@@ -388,6 +390,7 @@ void WKHtmlToPdf::printPage() {
 		exit(1);
 	}
 	pageNum = 0;
+	pageStart.push_back(0);
 
 #ifdef __EXTENSIVE_WKHTMLTOPDF_QT_HACK__
 	QPainter painter;
