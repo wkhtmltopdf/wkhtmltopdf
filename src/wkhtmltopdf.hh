@@ -50,6 +50,8 @@ struct ArgHandler {
 class WKHtmlToPdf : public QObject {
 	Q_OBJECT
 public:
+	QPrinter * printer;
+
 	//The webpages is used to fetch and render the webpages using webkit
 	QVector<QWebPage *> pages;
 	QVector<uint> pageStart;

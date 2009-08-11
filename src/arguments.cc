@@ -421,7 +421,6 @@ void WKHtmlToPdf::addarg(QString l, char s, QString d, ArgHandler * h, bool disp
 void WKHtmlToPdf::initArgs() {
 	addarg("disable-javascript",'n',"Do not allow webpages to run javascript", new AHConstSetter<bool>(disable_javascript,true,false));
 	addarg("dpi",'d',"Change the dpi explicitly", new AHIntSetter(dpi,"dpi",-1));
-#ifdef __EXTENSIVE_WKHTMLTOPDF_QT_HACK__
 	addarg("default-header",'H',"Add a default header, with the name of the page to the left, and the page number to the right, this is short for: --header-left='[webpage]' --header-right='[page]/[toPage]' --top 2cm --header-line", new AHCaller<DefaultHeaderFunc>());
 	addarg("footer-center",0,"Centered footer text", new AHStrSetter(footer_center,"text",""));
 	addarg("footer-font-name",0,"Set footer font name", new AHStrSetter(footer_font_name,"name","Arial"));;
@@ -436,6 +435,7 @@ void WKHtmlToPdf::initArgs() {
 	addarg("header-line",0,"Display line below the header", new AHConstSetter<bool>(header_line,true,false));
 	addarg("header-right",0,"Right aligned header text", new AHStrSetter(header_right,"text",""));
 	addarg("page-offset",0,"Set the starting page number", new AHIntSetter(page_offset,"offset",1));
+#ifdef __EXTENSIVE_WKHTMLTOPDF_QT_HACK__
 	addarg("toc",'t',"Insert a table of content in the beginning of the document", new AHConstSetter<bool>(print_toc,true,false));
 	addarg("toc-font-name",0,"Set the font used for the toc", new AHStrSetter(tocPrinter.font_name,"name","Arial"));
 	addarg("toc-no-dots",0,"Do not use dots, in the toc", new AHConstSetter<bool>(tocPrinter.useDots,false,true));
@@ -550,7 +550,7 @@ void WKHtmlToPdf::usage(FILE * fd) {
 	        "these features please use the staic edition\n"
 	        "\n"
 #endif
-	        "Mail bug reports and suggestions to <antialze@gmail.com>.\n"
+	        "Mail bug reports and suggestions to <antialize@gmail.com>.\n"
 	       );
 }
 
