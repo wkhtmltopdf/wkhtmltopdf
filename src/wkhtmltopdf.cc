@@ -229,9 +229,9 @@ void WKHtmlToPdf::newPage(QPrinter *, int, int, int) {
 	int dy = painter.boundingRect(0,0,w,h,Qt::AlignTop,"M").height();
 	//Draw the header text
 	QRect r=QRect(0,0-dy,w,h);
-	painter.drawText(r, Qt::AlignTop | Qt::AlignLeft, hfreplace(header_left));
-	painter.drawText(r, Qt::AlignTop | Qt::AlignHCenter, hfreplace(header_center));
-	painter.drawText(r, Qt::AlignTop | Qt::AlignRight, hfreplace(header_right));
+	painter.drawText(r, Qt::AlignTop | Qt::AlignLeft, hfreplace(QString::fromUtf8(header_left)));
+	painter.drawText(r, Qt::AlignTop | Qt::AlignHCenter, hfreplace(QString::fromUtf8(header_center)));
+	painter.drawText(r, Qt::AlignTop | Qt::AlignRight, hfreplace(QString::fromUtf8(header_right)));
 
 	//IF needed draw the footer line
 	if (footer_line) painter.drawLine(0,h,w,h);
@@ -240,9 +240,9 @@ void WKHtmlToPdf::newPage(QPrinter *, int, int, int) {
 	dy = painter.boundingRect(0,0,w,h,Qt::AlignTop,"M").height();
 	//Draw the fooder text
 	r=QRect(0,0,w,h+dy);
-	painter.drawText(r, Qt::AlignBottom | Qt::AlignLeft, hfreplace(footer_left));
-	painter.drawText(r, Qt::AlignBottom | Qt::AlignHCenter, hfreplace(footer_center));
-	painter.drawText(r, Qt::AlignBottom | Qt::AlignRight, hfreplace(footer_right));
+	painter.drawText(r, Qt::AlignBottom | Qt::AlignLeft, hfreplace(QString::fromUtf8(footer_left)));
+	painter.drawText(r, Qt::AlignBottom | Qt::AlignHCenter, hfreplace(QString::fromUtf8(footer_center)));
+	painter.drawText(r, Qt::AlignBottom | Qt::AlignRight, hfreplace(QString::fromUtf8(footer_right)));
 
 	//Restore wkebkits crasy scaling and font settings
 	painter.restore();
