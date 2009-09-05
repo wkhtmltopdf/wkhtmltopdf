@@ -74,6 +74,7 @@ public:
 	bool enable_plugins;
 	bool use_x11;
 	bool disable_javascript; //Should we disable javascript
+	bool disable_intelligent_shrinking;
 	int jsredirectwait; //How meny milliseconds should we wait for a javascrit redirect
 	QPrinter::PageSize pageSize; //What size paper should we use
 	QPrinter::Orientation orientation; //What orientation

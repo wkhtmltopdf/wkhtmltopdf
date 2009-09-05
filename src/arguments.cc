@@ -463,8 +463,13 @@ void WKHtmlToPdf::initArgs() {
 	addarg("outline-depth",0,"Set the depth of the outline", new AHIntSetter(tocPrinter.outline_depth,"level",4));
 	addarg("book",'b',"Set the options one would usualy set when printing a book", new AHCaller<BookFunc>());
 	addarg("cover",0,"Use html document as cover. It will be inserted before the toc with no headers and footers",new AHStrSetter(cover,"url",""));
+	addarg("disable-smart-shrinking", 0, "Disable the intelligent shrinking strategy used by webkit that makes the pixel/dpi ratio none constant",new AHConstSetter<bool>(disable_intelligent_shrinking, true, false));
+#endif
+
+#if defined(__EXTENSIVE_WKHTMLTOPDF_QT_HACK__) || QT_VERSION >= 0x040600 
 	addarg("encoding",0,"Set the default text encoding, for input", new AHStrSetter(default_encoding,"encoding",""));
 #endif
+
 	addarg("grayscale",'g',"PDF will be generated in grayscale", new AHConstSetter<QPrinter::ColorMode>(colorMode,QPrinter::GrayScale,QPrinter::Color));
 	addarg("help",'h',"Display help",new AHCaller<HelpFunc>());
 	addarg("lowquality",'l',"Generates lower quality pdf/ps. Useful to shrink the result document space", new AHConstSetter<QPrinter::PrinterMode>(resolution,QPrinter::ScreenResolution,QPrinter::HighResolution));

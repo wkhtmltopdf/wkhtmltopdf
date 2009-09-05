@@ -291,6 +291,10 @@ void WKHtmlToPdf::run(int argc, const char ** argv) {
 		        this, SLOT(newPage(QPrinter*,int,int,int)));
 		if (strcmp(default_encoding,""))
 			page->settings()->setDefaultTextEncoding(default_encoding);
+		if(disable_intelligent_shrinking) {
+			page->settings()->setPrintingMaximumShrinkFactor(1.0);
+			page->settings()->setPrintingMinimumShrinkFactor(1.0);
+		}
 #endif
 		//Disable stuff we don't need
 		page->mainFrame()->setZoomFactor(zoom_factor);
