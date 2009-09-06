@@ -63,6 +63,14 @@ public:
 };
 #endif
 
+void copyFile(QFile & src, QFile & dst) {
+	QByteArray buf(1024*1024*5,0);
+	while(qint64 r=src.read(buf.data(),buf.size()))
+		dst.write(buf.data(),r);
+	src.close();
+	dst.close();
+}
+
 /*!
  * Guess a url, by looking at a string
  * (shamelessly copied from Arora Project)
@@ -327,12 +335,12 @@ void WKHtmlToPdf::run(int argc, const char ** argv) {
 		QString u= in[i];
 		if (u == "-") {
 			QFile in;
-			in.open(0,QIODevice::ReadOnly);
+			in.open(stdin,QIODevice::ReadOnly);
 			u = QDir::tempPath()+"/wktemp"+QUuid::createUuid().toString()+".html";
 			temp.push_back(u);
 			QFile tmp(u);
 			tmp.open(QIODevice::WriteOnly);
-			tmp.write(in.readAll());
+			copyFile(in,tmp);
 		}
 		loginTry=0;
 		page->mainFrame()->load(guessUrlFromString(u));
@@ -521,8 +529,8 @@ void WKHtmlToPdf::printPage() {
 		QFile i(lout);
 		QFile o;
 		i.open(QIODevice::ReadOnly);
-		o.open(1,QIODevice::WriteOnly);
-		o.write(i.readAll());
+		o.open(stdout,QIODevice::WriteOnly);
+		copyFile(i,o);
 	}
 	for (int i=0; i < temp.size(); ++i) QFile::remove(temp[i]);
 
