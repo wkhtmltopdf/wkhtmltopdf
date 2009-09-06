@@ -108,6 +108,8 @@ public:
 	int currentPage;
 	int pageNum;
 	int loginTry;
+
+	int networkError;
 #ifdef  __EXTENSIVE_WKHTMLTOPDF_QT_HACK__
 	TocPrinter tocPrinter;
 #endif
@@ -131,6 +133,7 @@ public:
 	void initArgs();
 public slots:
 	void newPage(QPrinter * p, int fromPage, int toPage, int page);
+	void amfinished( QNetworkReply * r );
 	void loadFinished(bool ok);
 	void loadProgress(int progress);
 	void sslErrors(QNetworkReply *reply, const QList<QSslError> &error);

@@ -138,6 +138,11 @@ void WKHtmlToPdf::resetPages() {
 	in.clear();
 }
 
+void WKHtmlToPdf::amfinished( QNetworkReply * r ) {
+	int e = r->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
+	if(e > 399 && networkError == 0) networkError = e;
+}
+
 /*!
  * Connect page signals, to our methods. And do other page
  * configurations.
@@ -147,6 +152,9 @@ void WKHtmlToPdf::init() {
 	//If some ssl error occures we want sslErrors to be called, so the we can ignore it
 	connect(am, SIGNAL(sslErrors(QNetworkReply*, const QList<QSslError>&)),this,
 	        SLOT(sslErrors(QNetworkReply*, const QList<QSslError>&)));
+
+	connect(am, SIGNAL(finished (QNetworkReply *)),
+			this, SLOT(amfinished (QNetworkReply *) ) );
 
 	connect(am, SIGNAL(authenticationRequired(QNetworkReply*, QAuthenticator *)),this,
 	        SLOT(authenticationRequired(QNetworkReply *, QAuthenticator *)));
@@ -255,6 +263,7 @@ void WKHtmlToPdf::newPage(QPrinter *, int, int, int) {
  */
 void WKHtmlToPdf::run(int argc, const char ** argv) {
 	loading=0;
+	networkError=0;
 	//Parse the arguments
 	parseArgs(argc,argv);
 
@@ -516,7 +525,21 @@ void WKHtmlToPdf::printPage() {
 		o.write(i.readAll());
 	}
 	for (int i=0; i < temp.size(); ++i) QFile::remove(temp[i]);
-	qApp->quit();
+
+   
+	switch(networkError) {
+	case 401: 
+		qApp->exit(3);
+		break;
+	case 404: 
+		qApp->exit(2);
+		break;
+	case 0:
+		qApp->quit();
+		break;
+	default:
+		qApp->exit(1);
+	}
 }
 
 /*!
