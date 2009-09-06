@@ -257,6 +257,12 @@ void WKHtmlToPdf::run(int argc, const char ** argv) {
 	loading=0;
 	//Parse the arguments
 	parseArgs(argc,argv);
+
+	if(strcmp(out,"-") != 0 && !QFileInfo(out).isWritable()) {
+		fprintf(stderr, "Write access to '%s' is not allowed\n", out);
+		exit(1);
+	}
+	
 	//If we must use a proxy, create a host of objects
 	if (proxyHost) {
 		QNetworkProxy proxy;
