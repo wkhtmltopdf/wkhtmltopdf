@@ -201,8 +201,28 @@ void WKHtmlToPdf::run(int argc, const char ** argv) {
 		am->setProxy(proxy);
 	}
 #ifdef  __EXTENSIVE_WKHTMLTOPDF_QT_HACK__
-	if (cover[0]) in.push_front(cover);
+ 	if (cover[0]) in.push_front(cover);
+	if (strcmp(default_encoding,""))
+		QWebSettings::globalSettings()->setDefaultTextEncoding(default_encoding);
+	if(disable_intelligent_shrinking) {
+		QWebSettings::globalSettings()->setPrintingMaximumShrinkFactor(1.0);
+		QWebSettings::globalSettings()->setPrintingMinimumShrinkFactor(1.0);
+	}
 #endif
+
+	QWebSettings::globalSettings()->setAttribute(QWebSettings::JavaEnabled, enable_plugins);
+	QWebSettings::globalSettings()->setAttribute(QWebSettings::JavascriptEnabled, !disable_javascript);
+	QWebSettings::globalSettings()->setAttribute(QWebSettings::JavascriptCanOpenWindows, false);
+	QWebSettings::globalSettings()->setAttribute(QWebSettings::JavascriptCanAccessClipboard, false);
+#if QT_VERSION >= 0x040500
+	//Newer vertions of QT have even more settings to change
+	QWebSettings::globalSettings()->setAttribute(QWebSettings::PrintElementBackgrounds, background);
+	QWebSettings::globalSettings()->setAttribute(QWebSettings::PluginsEnabled, enable_plugins);
+	if (strcmp(user_style_sheet,""))
+		QWebSettings::globalSettings()->setUserStyleSheetUrl(guessUrlFromString(user_style_sheet));
+#endif
+
+
 	for (int i=0; i < in.size(); ++i) {
 		QWebPage * page = new QWebPage();
 		//Allow for network control fine touning.
@@ -212,27 +232,8 @@ void WKHtmlToPdf::run(int argc, const char ** argv) {
 		//Once the loading is done we want loadFinished to be called
 		connect(page, SIGNAL(loadFinished(bool)), this, SLOT(loadFinished(bool)));
 		connect(page, SIGNAL(loadStarted()), this, SLOT(loadStarted()));
-#ifdef  __EXTENSIVE_WKHTMLTOPDF_QT_HACK__
-		if (strcmp(default_encoding,""))
-			page->settings()->setDefaultTextEncoding(default_encoding);
-		if(disable_intelligent_shrinking) {
-			page->settings()->setPrintingMaximumShrinkFactor(1.0);
-			page->settings()->setPrintingMinimumShrinkFactor(1.0);
-		}
-#endif
 		//Disable stuff we don't need
 		page->mainFrame()->setZoomFactor(zoom_factor);
-		page->settings()->setAttribute(QWebSettings::JavaEnabled, enable_plugins);
-		page->settings()->setAttribute(QWebSettings::JavascriptEnabled, !disable_javascript);
-		page->settings()->setAttribute(QWebSettings::JavascriptCanOpenWindows, false);
-		page->settings()->setAttribute(QWebSettings::JavascriptCanAccessClipboard, false);
-#if QT_VERSION >= 0x040500
-		//Newer vertions of QT have even more settings to change
-		page->settings()->setAttribute(QWebSettings::PrintElementBackgrounds, background);
-		page->settings()->setAttribute(QWebSettings::PluginsEnabled, enable_plugins);
-		if (strcmp(user_style_sheet,""))
-			page->settings()->setUserStyleSheetUrl(guessUrlFromString(user_style_sheet));
-#endif
 		QString u= in[i];
 		if (u == "-") {
 			QFile in;
@@ -323,22 +324,88 @@ void WKHtmlToPdf::printPage() {
 #else
 	QPainter painter;
 	painter.begin(&printer);
+
+	int cc=collate?copies:1;
+	int pc=collate?1:copies;
+		
+
+	QHash<QString, int> urlToDoc;
+	for(int d=0; d < pages.size(); ++d) 
+		urlToDoc[ pages[d]->mainFrame()->url().toString(QUrl::RemoveFragment) ]  = d;
 	
-//	QVector<QWebPrinter*> wp;
-//	for(int i=0; i < pages.size(); ++i) 
-//		wp.push_back( new QWebPrinter(pages[i]->mainFrame(), &printer, painter) );
+	QHash<int, QHash<QString, QWebElement> > anchors;
+	QHash<int, QVector< QPair<QWebElement,QString> > > localLinks;
+	QHash<int, QVector< QPair<QWebElement,QString> > > externalLinks;
+	
+	//Find and resolve all local links
+	for(int d=0; d < pages.size(); ++d) {
+		QList<QWebElement> links = pages[d]->mainFrame()->findAllElements("a");
+		for(QList<QWebElement>::iterator i=links.begin(); i != links.end(); ++i) {
+			QUrl href=QUrl(i->attribute("href"));
+			if(href.isEmpty()) continue;
+			href=pages[d]->mainFrame()->url().resolved(href);
+			if(urlToDoc.contains(href.toString(QUrl::RemoveFragment))) {
+				int t = urlToDoc[href.toString(QUrl::RemoveFragment)];
+				QWebElement e;
+				if(!href.hasFragment()) 
+					e = pages[t]->mainFrame()->findFirstElement("body");
+				else {
+					e = pages[t]->mainFrame()->findFirstElement("a[name=\""+href.fragment()+"\"]");
+					if(e.isNull()) 
+						e = pages[t]->mainFrame()->findFirstElement("*[id=\""+href.fragment()+"\"]");
+				}
+				if(e.isNull()) {
+					qDebug() << "Unable to find target for local link " << href; 
+				} else {
+					anchors[t][href.toString()] = e;
+					localLinks[d].push_back( qMakePair(*i, href.toString()) );
+				}
+				//qDebug() << href.toString();
+			} else {
+				//qDebug() << href.toString();
+				externalLinks[d].push_back( qMakePair(*i, href.toString() ) );
+			}
+		}
+	}
+			
+
+	//Find the header elements, we need them now to figure out the number of pages of
+	//TOC
+// 	if(print_toc || outline) {
+// 		for(int d=0; d < pages.size(); ++d) {
+// 			QList<QWebElement> l = pages[d]->mainFrame()->findAllElements("h1,h2,h3,h4,h5,h6,h7,h8,h9");
+//if (!quiet) {
+// 				fprintf(stderr, "Finding headings %d of %d      \r",i,in.size());
+// 				fflush(stdout);
+// 			}
+// 			for(QList<QWebElement>::iterator i=l.begin(); i != l.end(); ++l) {
+// 			}
+// 		}
+// 	}
+
+	int logicalPages = 0;
+	int actualPages = 0;;
+	//Count the number of pages
+	for(int d=0; d < pages.size(); ++d) {
+		painter.save();
+		QWebPrinter wp(pages[d]->mainFrame(), &printer, painter);
+		painter.restore();
+		actualPages += wp.pageCount();
+		if (cover[0] && d == 0) {
+			continue;
+		}
+		logicalPages += wp.pageCount();
+	}
+	actualPages *= copies;
 	
 	// 	QVector< QVector<QWebFrame::Heading> > headings;
-//	if(print_toc || outline) {
+//	
 // 		for (int i=0; i < in.size(); ++i) {
 // 			if (cover[0] && i == 0) {
 // 				headings.push_back( QVector<QWebFrame::Heading>() );
 // 				continue;
 // 			}
-// 			if (!quiet) {
-// 				fprintf(stderr, "Finding headings %d of %d      \r",i,in.size());
-// 				fflush(stdout);
-// 			}
+// 			
 // 			headings.push_back(pages[i]->mainFrame()->headings(&printer, printMediaType));
 // 		}
 
@@ -350,11 +417,6 @@ void WKHtmlToPdf::printPage() {
 // 		pageStart.back() += tocPrinter.countPages(root, &printer, &painter);
 // 		delete root;
 // 	}
-
-	int cc=collate?copies:1;
-	int pc=collate?1:copies;
-	
-	
 // 	for (int i=0; i < in.size(); ++i) {
 // 		if (cover[0] && i == 0) {
 // 			pageStart.push_front(0);
@@ -393,28 +455,68 @@ void WKHtmlToPdf::printPage() {
 // 	}
 
 	bool first=true;
+	int actualPage=1;
+	int anchorID=0;
+   
 	for(int cc_=0; cc_ < cc; ++cc_) {
-		int page=0;
 		//TODO print front here
 		//TODO print TOC here
 		for(int d=0; d < pages.size(); ++d) {
 			painter.save();
 			QWebPrinter wp(pages[d]->mainFrame(), &printer, painter);
+			QString l1=pages[d]->mainFrame()->url().path().split("/").back()+"#";
+			QString l2=pages[d]->mainFrame()->url().toString() + "#";
+
+			//Sort anchors and links by page
+			QHash<int, QHash<QString, QWebElement> > myAnchors;
+			QHash<int, QVector< QPair<QWebElement,QString> > > myLocalLinks;
+			QHash<int, QVector< QPair<QWebElement,QString> > > myExternalLinks;
+			for(QHash<QString, QWebElement>::iterator i=anchors[d].begin();
+				i != anchors[d].end(); ++i)
+				myAnchors[ wp.elementLocation(i.value()).first][i.key()] = i.value();
+
+			for(QVector< QPair<QWebElement,QString> >::iterator i=localLinks[d].begin();
+				i != localLinks[d].end(); ++i)
+				myLocalLinks[wp.elementLocation(i->first).first].push_back(*i);
+
+			for(QVector< QPair<QWebElement,QString> >::iterator i=externalLinks[d].begin();
+				i != externalLinks[d].end(); ++i)
+				myExternalLinks[wp.elementLocation(i->first).first].push_back(*i);
+								
 			for(int p=0; p < wp.pageCount(); ++p) {
 				for(int pc_=0; pc_ < pc; ++pc_) {
  					if (!quiet) {
- 						// if (pageStart.back())
-//  							fprintf(stderr,"Printing page: %d of %d\r",pageNum, pageStart.back());
-//  						else
-						fprintf(stderr,"Printing page: %d\r",page);
+						fprintf(stderr,"Printing page: %d of %d\r",actualPage, actualPages);
  						fflush(stdout);
  					}
 					if(first)
 						first=false;
 					else
 						printer.newPage();
+
 					wp.spoolPage(p+1);
-					++page;
+					
+					for(QHash<QString, QWebElement>::iterator i=myAnchors[p+1].begin();
+						i != myAnchors[p+1].end(); ++i) {
+						QRectF r = wp.elementLocation(i.value()).second;
+						r = painter.worldTransform().mapRect(r);
+						painter.addAnchor(r, i.key());
+					}
+					for(QVector< QPair<QWebElement,QString> >::iterator i=myLocalLinks[p+1].begin();
+						i != myLocalLinks[p+1].end(); ++i)  {
+						QRectF r = wp.elementLocation(i->first).second;
+						r = painter.worldTransform().mapRect(r);
+						painter.addLink(r, i->second);
+					}
+					for(QVector< QPair<QWebElement,QString> >::iterator i=myExternalLinks[p+1].begin();
+						i != myExternalLinks[p+1].end(); ++i)  {
+						QRectF r = wp.elementLocation(i->first).second;
+						r = painter.worldTransform().mapRect(r);
+						painter.addHyperlink(r, QUrl(i->second));
+					}
+		
+
+					++actualPage;
  				}
 			}
 			painter.restore();
@@ -430,7 +532,7 @@ void WKHtmlToPdf::printPage() {
 // 	//Webkit used all kinds of crasy cordinate transformation, and font setup
 // 	//We save it here and restore some sane defaults
 // 	painter.save();
-// 	painter.resetMatrix();
+// 	
 // 	int h=printer->pageRect().height();
 // 	int w=printer->pageRect().width();
 
