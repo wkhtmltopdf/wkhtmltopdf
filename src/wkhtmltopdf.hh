@@ -82,6 +82,9 @@ public:
 	QPrinter::PrinterMode resolution; //resolution
 	int dpi; //The printing dpi
 	int page_offset;
+	int copies;
+	bool collate;
+
 	float zoom_factor;
 	//Specify page margins
 	QPair<qreal, QPrinter::Unit> margin_top;
@@ -132,7 +135,7 @@ public:
 	void loadDefaults();
 	void initArgs();
 public slots:
-	void newPage(QPrinter * p, int fromPage, int toPage, int page);
+//	void newPage(QPrinter * p, int fromPage, int toPage, int page);
 	void amfinished( QNetworkReply * r );
 	void loadFinished(bool ok);
 	void loadProgress(int progress);

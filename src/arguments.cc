@@ -433,6 +433,10 @@ void WKHtmlToPdf::addarg(QString l, char s, QString d, ArgHandler * h, bool disp
 void WKHtmlToPdf::initArgs() {
 	addarg("disable-javascript",'n',"Do not allow webpages to run javascript", new AHConstSetter<bool>(disable_javascript,true,false));
 	addarg("dpi",'d',"Change the dpi explicitly", new AHIntSetter(dpi,"dpi",-1));
+
+	addarg("collate", 0, "Collate when printing multiple copies", new AHConstSetter<bool>(collate,true,false));
+	addarg("copies", 0, "Number of copies to print into the pdf file", new AHIntSetter(copies, "number", 1));
+#ifdef __EXTENSIVE_WKHTMLTOPDF_QT_HACK__
 	addarg("default-header",'H',"Add a default header, with the name of the page to the left, and the page number to the right, this is short for: --header-left='[webpage]' --header-right='[page]/[toPage]' --top 2cm --header-line", new AHCaller<DefaultHeaderFunc>());
 	addarg("footer-center",0,"Centered footer text", new AHStrSetter(footer_center,"text",""));
 	addarg("footer-font-name",0,"Set footer font name", new AHStrSetter(footer_font_name,"name","Arial"));;
@@ -447,13 +451,16 @@ void WKHtmlToPdf::initArgs() {
 	addarg("header-line",0,"Display line below the header", new AHConstSetter<bool>(header_line,true,false));
 	addarg("header-right",0,"Right aligned header text", new AHStrSetter(header_right,"text",""));
 	addarg("page-offset",0,"Set the starting page number", new AHIntSetter(page_offset,"offset",1));
-#ifdef __EXTENSIVE_WKHTMLTOPDF_QT_HACK__
+
 	addarg("toc",'t',"Insert a table of content in the beginning of the document", new AHConstSetter<bool>(print_toc,true,false));
 	addarg("toc-font-name",0,"Set the font used for the toc", new AHStrSetter(tocPrinter.font_name,"name","Arial"));
 	addarg("toc-no-dots",0,"Do not use dots, in the toc", new AHConstSetter<bool>(tocPrinter.useDots,false,true));
 	addarg("toc-depth",0,"Set the depth of the toc", new AHIntSetter(tocPrinter.depth,"level",3));
 	addarg("toc-header-text",0,"The header text of the toc", new AHStrSetter(tocPrinter.header_text,"text","Table Of Contents"));
 	addarg("toc-header-fs",0,"The font size of the toc header", new AHIntSetter(tocPrinter.header_font_size,"size",15));
+	addarg("toc-disable-links",0,"Do not link from toc to sections", new AHConstSetter<bool>(tocPrinter.forward_links,false, true));
+	addarg("toc-disable-back-links",0,"Do not link from section header to toc", new AHConstSetter<bool>(tocPrinter.back_links,false,true));
+	   
 	addarg("print-media-type",0,"Use print media-type instead of screen", new AHConstSetter<bool>(printMediaType,true,false));
 	for (uint i=0; i < TocPrinter::levels; ++i) {
 		addarg(QString("toc-l")+QString::number(i+1)+"-font-size",0,QString("Set the font size on level ")+QString::number(i+1)+" of the toc",new AHIntSetter(tocPrinter.font_size[i],"size",12-2*i), i < 3);
@@ -463,13 +470,13 @@ void WKHtmlToPdf::initArgs() {
 	addarg("outline-depth",0,"Set the depth of the outline", new AHIntSetter(tocPrinter.outline_depth,"level",4));
 	addarg("book",'b',"Set the options one would usualy set when printing a book", new AHCaller<BookFunc>());
 	addarg("cover",0,"Use html document as cover. It will be inserted before the toc with no headers and footers",new AHStrSetter(cover,"url",""));
+
 	addarg("disable-smart-shrinking", 0, "Disable the intelligent shrinking strategy used by webkit that makes the pixel/dpi ratio none constant",new AHConstSetter<bool>(disable_intelligent_shrinking, true, false));
 #endif
 
 #if defined(__EXTENSIVE_WKHTMLTOPDF_QT_HACK__) || QT_VERSION >= 0x040600 
 	addarg("encoding",0,"Set the default text encoding, for input", new AHStrSetter(default_encoding,"encoding",""));
 #endif
-
 	addarg("grayscale",'g',"PDF will be generated in grayscale", new AHConstSetter<QPrinter::ColorMode>(colorMode,QPrinter::GrayScale,QPrinter::Color));
 	addarg("help",'h',"Display help",new AHCaller<HelpFunc>());
 	addarg("lowquality",'l',"Generates lower quality pdf/ps. Useful to shrink the result document space", new AHConstSetter<QPrinter::PrinterMode>(resolution,QPrinter::ScreenResolution,QPrinter::HighResolution));

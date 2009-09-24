@@ -34,8 +34,9 @@ public:
 	}
 };
 
+/*
 void buildToc(TocItem * root, const QVector<QWebFrame::Heading> & headings, uint firstPage);
-
+*/
 class TocPrinter: public QObject {
 	Q_OBJECT
 public:
@@ -47,6 +48,8 @@ public:
 	int indentation[levels];
 	int font_size[levels];
 	int header_font_size;
+	bool back_links;
+	bool forward_links;
 	const char * header_text;
 
 	QMap<int,TocItem *> page2sectionslow[levels];
