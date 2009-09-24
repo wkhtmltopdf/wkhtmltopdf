@@ -73,6 +73,8 @@ public:
 	bool print_toc;
 	bool enable_plugins;
 	bool use_x11;
+	bool useExternalLinks;
+	bool useLocalLinks;
 	bool disable_javascript; //Should we disable javascript
 	bool disable_intelligent_shrinking;
 	int jsredirectwait; //How meny milliseconds should we wait for a javascrit redirect

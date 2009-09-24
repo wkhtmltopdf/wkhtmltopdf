@@ -461,6 +461,9 @@ void WKHtmlToPdf::initArgs() {
 	addarg("toc-disable-links",0,"Do not link from toc to sections", new AHConstSetter<bool>(tocPrinter.forward_links,false, true));
 	addarg("toc-disable-back-links",0,"Do not link from section header to toc", new AHConstSetter<bool>(tocPrinter.back_links,false,true));
 	   
+	addarg("disable-internal-links",0,"Do no make local links", new AHConstSetter<bool>(useLocalLinks,false,true));
+	addarg("disable-external-links",0,"Do no make links to remote webpages", new AHConstSetter<bool>(useExternalLinks,false,true));
+
 	addarg("print-media-type",0,"Use print media-type instead of screen", new AHConstSetter<bool>(printMediaType,true,false));
 	for (uint i=0; i < TocPrinter::levels; ++i) {
 		addarg(QString("toc-l")+QString::number(i+1)+"-font-size",0,QString("Set the font size on level ")+QString::number(i+1)+" of the toc",new AHIntSetter(tocPrinter.font_size[i],"size",12-2*i), i < 3);
