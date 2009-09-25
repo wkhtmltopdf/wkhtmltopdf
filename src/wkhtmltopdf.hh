@@ -56,6 +56,10 @@ public:
 	QVector<QWebPage *> pages;
 	QVector<uint> pageStart;
 
+	QVector<QWebPage *> headers;
+	QVector<QWebPage *> footers;
+
+
 	//Configuration variabels
 	QVector<const char *> in; //Names of the input files
 	const char * out; //Name of the output file
@@ -110,14 +114,36 @@ public:
 	QVector<QString> temp;
 	QMap<QString, ArgHandler *> longToHandler; //Map from the long name of an argument, to its handler
 	QMap<char, ArgHandler *> shortToHandler; //Map form the short switch of an argument, to its handlr
+
+	QString html_header;
+	QString html_footer;
+
 	int currentPage;
 	int pageNum;
 	int loginTry;
 
+	QAtomicInt headerFooterLoading;
+	QPainter * painter;
+
+	QHash<int, QHash<QString, QWebElement> > anchors;
+	QHash<int, QVector< QPair<QWebElement,QString> > > localLinks;
+	QHash<int, QVector< QPair<QWebElement,QString> > > externalLinks;
+	int logicalPages;
+	int actualPages;
+	QList<int> pageCount;
+	QHash<int, QMap< QPair<int, QPair<qreal,qreal> >, QWebElement> > headings;
+	int tocPages;
+
+	
 	int networkError;
 #ifdef  __EXTENSIVE_WKHTMLTOPDF_QT_HACK__
 	TocPrinter tocPrinter;
 #endif
+
+	
+	QHash<QString, QString> calculateHeaderFooterParams(int document, int page);
+	QWebPage * loadHeaderFooter(QString url, int document, int page);
+
 
 	//Add a new argument to the list of handled arguments
 	void addarg(QString l, char s, QString desc, ArgHandler * h, bool display=true);
@@ -144,6 +170,12 @@ public slots:
 	void sslErrors(QNetworkReply *reply, const QList<QSslError> &error);
 	void authenticationRequired(QNetworkReply *     , QAuthenticator *);
 	void printPage();
+	void preparePrint();
+
+
+	void headerFooterLoadStarted();
+	void headerFooterLoadFinished(bool ok);
+
 	void loadStarted();
 	void resetPages();
 };

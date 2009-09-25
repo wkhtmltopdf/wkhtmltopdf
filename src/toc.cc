@@ -18,13 +18,17 @@
 #include <QtGui>
 #ifdef  __EXTENSIVE_WKHTMLTOPDF_QT_HACK__
 
-// /*!
-//  * Build a toc structure out of headings elements
-//  * \param root The root node of the Toc tree
-//  * \param headings The headings extracted from the html document
-//  * \paran firstPage Offset numbering of the pages
-//  */
-// void buildToc(TocItem * root, const QVector<QWebFrame::Heading> & headings, uint firstPage) {
+/*!
+ * Build a toc structure out of headings elements
+ * \param root The root node of the Toc tree
+ * \param headings The headings extracted from the html document
+ * \paran firstPage Offset numbering of the pages
+ */
+// void buildToc(TocItem * root, 
+// 			  const QList<QWebElement> & headings, 
+// 			  QHash<QString, QWebElement> & anchors,
+// 			  QVector< QPair<QWebElement, QString> >  & links,
+// 			  uint firstPage) {
 // 	//This huristic is a little strange, it tries to create a real tree,
 // 	//even though someone puts a h5 below a h1 or stuff like that
 // 	//The way this is handled is having a level stack, indicating what h-tags
@@ -32,12 +36,14 @@
 // 	QVector<uint> levelStack;
 // 	levelStack.push_back(0);
 // 	TocItem * old = root;
-// 	for (int i=0; i < headings.size(); ++i) {
-// 		const QWebFrame::Heading & h = headings[i];
+// 	for (QList<QWebElement>::const_iterator i=headings.begin(); i != headings.end(); ++i) {
+// 		const QWebElement & h = *i;
+		
+// 		//Todo extract text;
 // 		TocItem * item = new TocItem();
-// 		item->page = firstPage + h.page;
-// 		item->value = h.text;
-// 		item->location = h.locationOnPage;
+// 		//item->page = firstPage + h.page;
+// 		//item->value = h.text;
+// 		//item->location = h.locationOnPage;
 // 		while (levelStack.back() >= h.level) {
 // 			old = old->parent;
 // 			levelStack.pop_back();

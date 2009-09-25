@@ -263,7 +263,7 @@ void WKHtmlToPdf::sslErrors(QNetworkReply *reply, const QList<QSslError> &error)
 /*!
  * Print out the document to the pdf file
  */
-void WKHtmlToPdf::printPage() {
+void WKHtmlToPdf::preparePrint() {
 	//If there are still pages loading wait til they are done
 	if (loading != 0) return;
 	//Give some user feed back
@@ -272,10 +272,10 @@ void WKHtmlToPdf::printPage() {
 		fflush(stdout);
 	}
 
-	QPrinter printer(resolution);
+	printer = new QPrinter(resolution);
 	
 	QString lout = out;
-	if (dpi != -1) printer.setResolution(dpi);
+	if (dpi != -1) printer->setResolution(dpi);
 	if (!strcmp(out,"-")) {
 		if (QFile::exists("/dev/stdout"))
 			lout = "/dev/stdout";
@@ -285,13 +285,11 @@ void WKHtmlToPdf::printPage() {
 		}
 	}
 	//Tell the printer object to print the file <out>
-	printer.setOutputFormat(
+	printer->setOutputFormat(
 	    strcmp(out + (strlen(out)-3),".ps")==0?
 	    QPrinter::PostScriptFormat : QPrinter::PdfFormat
 	);
-	printer.setOutputFileName(lout);
-
-	this->printer = &printer;
+	printer->setOutputFileName(lout);
 
 	//We currently only support margins with the same unit
 	if (margin_left.second != margin_right.second ||
@@ -302,14 +300,14 @@ void WKHtmlToPdf::printPage() {
 	}
 
 	//Setup margins and papersize
-	printer.setPageMargins(margin_left.first, margin_top.first,
+	printer->setPageMargins(margin_left.first, margin_top.first,
 	                       margin_right.first, margin_bottom.first,
 	                       margin_left.second);
-	printer.setPageSize(pageSize);
-	printer.setOrientation(orientation);
-	printer.setColorMode(colorMode);
+	printer->setPageSize(pageSize);
+	printer->setOrientation(orientation);
+	printer->setColorMode(colorMode);
 
-	if (!printer.isValid()) {
+	if (!printer->isValid()) {
 		fprintf(stderr,"Unable to write to output file\n");
 		exit(1);
 	}
@@ -322,16 +320,17 @@ void WKHtmlToPdf::printPage() {
 	printer.setCollateCopies(collate);
 	pages[0]->mainFrame()->print(&printer);
 #else
-	QPainter painter;
-	painter.begin(&printer);
-
-	int cc=collate?copies:1;
-	int pc=collate?1:copies;
-			
-	QHash<int, QHash<QString, QWebElement> > anchors;
-	QHash<int, QVector< QPair<QWebElement,QString> > > localLinks;
-	QHash<int, QVector< QPair<QWebElement,QString> > > externalLinks;
+	painter = new QPainter();
+	painter->begin(printer);
 	
+	logicalPages = 0;
+	actualPages = 0;
+	pageCount.clear();
+	tocPages = 0;
+	anchors.clear();
+	localLinks.clear();
+	externalLinks.clear();
+
 	//Find and resolve all local links
 	if(useLocalLinks || useExternalLinks) {
 		QHash<QString, int> urlToDoc;
@@ -372,86 +371,129 @@ void WKHtmlToPdf::printPage() {
 			}
 		}
 	}
-			
-
-	//Find the header elements, we need them now to figure out the number of pages of
-	//TOC
-// 	if(print_toc || outline) {
-// 		for(int d=0; d < pages.size(); ++d) {
-// 			QList<QWebElement> l = pages[d]->mainFrame()->findAllElements("h1,h2,h3,h4,h5,h6,h7,h8,h9");
-//if (!quiet) {
-// 				fprintf(stderr, "Finding headings %d of %d      \r",i,in.size());
-// 				fflush(stdout);
-// 			}
-// 			for(QList<QWebElement>::iterator i=l.begin(); i != l.end(); ++l) {
-// 			}
-// 		}
-// 	}
-
-	int logicalPages = 0;
-	int actualPages = 0;;
-	//Count the number of pages
+	
+	//This is the first render face, it is done to calculate:
+	// * The number of pages of each document
+	// * A visual ordering of the header elemnt
+	// * The location and page number of each header
 	for(int d=0; d < pages.size(); ++d) {
 		if (!quiet) {
-			fprintf(stderr, "Counting pages %d of %d      \r",d+1,pages.size());
+			fprintf(stderr, "Counting pages %d of %d      \r",d+1,pages.size()+(print_toc?1:0));
 			fflush(stdout);
 		}
 
-		painter.save();
-		QWebPrinter wp(pages[d]->mainFrame(), &printer, painter);
-		painter.restore();
-		actualPages += wp.pageCount();
-		if (cover[0] && d == 0) {
-			continue;
-		}
-		logicalPages += wp.pageCount();
+		painter->save();
+		QWebPrinter wp(pages[d]->mainFrame(), printer, *painter);
+		int count = wp.pageCount();
+		pageCount.push_back(count);
+		actualPages += count;
+		if (!cover[0] || d != 0) {
+			logicalPages += count;
+			QList<QWebElement> l = pages[d]->mainFrame()->findAllElements("h1,h2,h3,h4,h5,h6,h7,h8,h9");
+			for(QList<QWebElement>::const_iterator i = l.begin(); i != l.end(); ++i) {
+				QPair<int, QRectF> location = wp.elementLocation(*i);
+				headings[d][ qMakePair(location.first, qMakePair(location.second.y(), location.second.x()) ) ] = *i;
+			}
+		} 
+		painter->restore();
 	}
+
+	//Now that we know the ordering of the headers in each document we
+	//can calculate the number of pages in the table of content
+	if (print_toc) {
+		if (!quiet) {
+			fprintf(stderr, "Counting pages %d of %d      \r",pages.size()+1,pages.size()+1);
+ 			fflush(stdout);
+ 		}									   
+ 		TocItem * root = new TocItem();
+		for(int d=0; d < pages.size(); ++d) {
+			if (cover[0] && d == 0) continue;
+			// buildToc(root,pages[d]->mainFrame(),
+// 					 anchors[d], externalLinks[d]
+// 					 ,-1);
+		}
+// 		int p = tocPrinter.countPages(root, &printer, painter);;
+		actualPages += tocPages;
+		logicalPages += tocPages;
+ 		delete root;
+   	}
 	actualPages *= copies;
+	int page=1;
+	headerFooterLoading = 0;
+
+	html_header="header.html";
+
+	if(!html_header.isEmpty() || !html_header.isEmpty()) {
+		for(int d=0; d < pages.size(); ++d) {
+			if (cover[0] && d == 0) continue;
+			for(int p=0; p < pageCount[d]; ++p) {
+				if(!html_header.isEmpty())
+					headers.push_back(loadHeaderFooter(html_header, d, page) );
+				if(!html_footer.isEmpty())
+					footers.push_back(loadHeaderFooter(html_footer, d, page) );
+				++page;
+			}
+		}
+	} else 
+		printPage();
+#endif
+}
+
+QHash<QString, QString> WKHtmlToPdf::calculateHeaderFooterParams(int d, int page) {
+	return QHash<QString, QString>();
+}
+
+QWebPage * WKHtmlToPdf::loadHeaderFooter(QString url, int d, int page) {
+	QUrl u = guessUrlFromString(url);
+
+	QHash<QString, QString> values = calculateHeaderFooterParams(d, page);
+	for(QHash<QString, QString>::iterator i=values.begin(); i != values.end(); ++i)
+		u.addQueryItem(i.key(), i.value());
 	
-	// 	QVector< QVector<QWebFrame::Heading> > headings;
-//	
-// 		for (int i=0; i < in.size(); ++i) {
-// 			if (cover[0] && i == 0) {
-// 				headings.push_back( QVector<QWebFrame::Heading>() );
-// 				continue;
-// 			}
-// 			
-// 			headings.push_back(pages[i]->mainFrame()->headings(&printer, printMediaType));
-// 		}
+	QWebPage * p = new QWebPage();
+	p->setNetworkAccessManager(am);
+	connect(p, SIGNAL(loadFinished(bool)), this, SLOT(headerFooterLoadFinished(bool)));
+	connect(p, SIGNAL(loadStarted()), this, SLOT(headerFooterLoadStarted()));
+	p->mainFrame()->setZoomFactor(zoom_factor);
 
-//	}
+	p->mainFrame()->load(u);
+	return p;
+}
 
-// 	if (print_toc) {
-// 		TocItem * root = new TocItem();
-// 		for (int i=0; i < in.size(); ++i)buildToc(root,headings[i],0);
-// 		pageStart.back() += tocPrinter.countPages(root, &printer, &painter);
-// 		delete root;
-// 	}
-// 	for (int i=0; i < in.size(); ++i) {
-// 		if (cover[0] && i == 0) {
-// 			pageStart.push_front(0);
-// 			pageStart.back() +=  pages[i]->mainFrame()->countPages(&printer, printMediaType);
-// 			continue;
-// 		}
-// 		int count = pages[i]->mainFrame()->countPages(&printer, printMediaType);
-// 		pageStart.push_back( pageStart.back() + count );
-// 	}
+void WKHtmlToPdf::headerFooterLoadStarted() {
+	headerFooterLoading.ref();
+}
 
+void WKHtmlToPdf::headerFooterLoadFinished(bool) {
+	headerFooterLoading.deref();
+	//qDebug() << "hat";
+	if (headerFooterLoading == 0) {
+		//Wait a little while for js-redirects, and then print
+		QTimer::singleShot(100, this, SLOT(printPage()));
+	}
+}
 
-// 	TocItem * root = NULL;
-// 	if (print_toc || outline) {
-// 		root = new TocItem();
-// 		//for (int i=0; i < in.size(); ++i) buildToc(root,headings[i],pageStart[i]+1);
-// 		//tocPrinter.populateSections(root);
-// 	}
-// 	TocItem toc;
-// 	if (print_toc) {
-// 		tocPrinter.page2sectionshigh[0][0] = &toc;
-// 		tocPrinter.page2sectionslow[0][0] = &toc;
-// 		toc.value = QString(tocPrinter.header_text);
+void WKHtmlToPdf::printPage() {
+	if (headerFooterLoading != 0 || loading != 0) return;
 
-// 	}
-
+	QPrinter p2(resolution);
+	if (dpi != -1) p2.setResolution(dpi);
+	p2.setOutputFormat(
+		strcmp(out + (strlen(out)-3),".ps")==0?
+		QPrinter::PostScriptFormat : QPrinter::PdfFormat
+		);
+	p2.setOutputFileName("foo.pdf");
+	
+	//Setup margins and papersize
+	p2.setPageMargins(margin_left.first, margin_top.first,
+					  margin_right.first, margin_bottom.first,
+					  margin_left.second);
+	p2.setPageSize(pageSize);
+	p2.setOrientation(orientation);
+	p2.setColorMode(colorMode);
+	QPainter pa2;
+	pa2.begin(&p2);
+	
 // 	for (int i=0; i < in.size(); ++i) {
 // 		currentPage = i;
 // 		if (i != 0) printer.newPage();
@@ -463,17 +505,17 @@ void WKHtmlToPdf::printPage() {
 // 		}
 // 		pages[i]->mainFrame()->print(&printer,&painter, printMediaType);
 // 	}
-
-	bool first=true;
-	int actualPage=1;
-	int anchorID=0;
+ 	bool first=true;
+ 	int actualPage=1;
+ 	int cc=collate?copies:1;
+ 	int pc=collate?1:copies;
    
 	for(int cc_=0; cc_ < cc; ++cc_) {
 		//TODO print front here
 		//TODO print TOC here
 		for(int d=0; d < pages.size(); ++d) {
-			painter.save();
-			QWebPrinter wp(pages[d]->mainFrame(), &printer, painter);
+			painter->save();
+			QWebPrinter wp(pages[d]->mainFrame(), printer, *painter);
 			QString l1=pages[d]->mainFrame()->url().path().split("/").back()+"#";
 			QString l2=pages[d]->mainFrame()->url().toString() + "#";
 
@@ -502,34 +544,54 @@ void WKHtmlToPdf::printPage() {
 					if(first)
 						first=false;
 					else
-						printer.newPage();
+						printer->newPage();
 
 					wp.spoolPage(p+1);
 					
 					for(QHash<QString, QWebElement>::iterator i=myAnchors[p+1].begin();
 						i != myAnchors[p+1].end(); ++i) {
 						QRectF r = wp.elementLocation(i.value()).second;
-						painter.addAnchor(r, i.key());
+						painter->addAnchor(r, i.key());
 					}
 					for(QVector< QPair<QWebElement,QString> >::iterator i=myLocalLinks[p+1].begin();
 						i != myLocalLinks[p+1].end(); ++i)  {
 						QRectF r = wp.elementLocation(i->first).second;
-						painter.addLink(r, i->second);
+						painter->addLink(r, i->second);
 					}
 					for(QVector< QPair<QWebElement,QString> >::iterator i=myExternalLinks[p+1].begin();
 						i != myExternalLinks[p+1].end(); ++i)  {
 						QRectF r = wp.elementLocation(i->first).second;
-						painter.addHyperlink(r, QUrl(i->second));
+						painter->addHyperlink(r, QUrl(i->second));
 					}
-		
-
 					++actualPage;
- 				}
-			}
-			painter.restore();
-		}
-	}
 
+
+// 					QTransform t;
+// 					{
+// 						pa2.save();
+// 						QWebPrinter whp2(headers[0]->mainFrame(), &p2, pa2);
+// 						whp2.spoolPage(1);
+// 						t = pa2.transform();
+// 						pa2.restore();
+// 					}
+					{
+						painter->save();
+						painter->resetTransform();
+						QWebPrinter whp(headers[0]->mainFrame(), printer, *painter);		
+						qreal off=t.mapRect(
+							whp.elementLocation(headers[0]->mainFrame()->findFirstElement("body")).second).height();
+						qDebug() << off;
+						painter->translate(0,-off);
+						whp.spoolPage(1);
+						painter->restore();
+					}
+ 				}
+
+			}
+			painter->restore();
+		}
+ 	}
+	
 // #ifdef  __EXTENSIVE_WKHTMLTOPDF_QT_HACK__
 // 	if (currentPage == 0 && cover[0]) return;
 // #endif
@@ -574,23 +636,29 @@ void WKHtmlToPdf::printPage() {
 // 	if (outline) tocPrinter.outline(root, &printer);
 // 	if (root) delete root;
 
-	painter.end();
-#endif
-	if (loading != 0) return;
+ 	painter->end();
+
+	if (headerFooterLoading != 0 || loading != 0) return;
 
 	if (!quiet) {
 		fprintf(stderr,"Done                 \n");
 		fflush(stderr);
 	}
-	for (int i=0; i < pages.size(); ++i) delete pages[i];
-	if (!strcmp(out,"-") && lout != "/dev/stdout") {
-		QFile i(lout);
-		QFile o;
-		i.open(QIODevice::ReadOnly);
-		o.open(stdout,QIODevice::WriteOnly);
-		copyFile(i,o);
-	}
-	for (int i=0; i < temp.size(); ++i) QFile::remove(temp[i]);
+ 	for (int i=0; i < pages.size(); ++i) delete pages[i];
+	pages.clear();
+// 	for (int i=0; i < headers.size(); ++i) delete headers[i];
+// 	headers.clear();
+// 	for (int i=0; i < footers.size(); ++i) delete footers[i];
+// 	footers.clear();		
+
+// 	if (!strcmp(out,"-") && lout != "/dev/stdout") {
+// 		QFile i(lout);
+// 		QFile o;
+// 		i.open(QIODevice::ReadOnly);
+// 		o.open(stdout,QIODevice::WriteOnly);
+// 		copyFile(i,o);
+// 	}
+// 	for (int i=0; i < temp.size(); ++i) QFile::remove(temp[i]);
    
 	switch(networkError) {
 	case 401: 
@@ -627,7 +695,7 @@ void WKHtmlToPdf::loadFinished(bool ok) {
 
 	if (loading == 0) {
 		//Wait a little while for js-redirects, and then print
-		QTimer::singleShot(jsredirectwait, this, SLOT(printPage()));
+		QTimer::singleShot(jsredirectwait, this, SLOT(preparePrint()));
 	}
 }
 
