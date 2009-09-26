@@ -106,9 +106,9 @@ public:
 	//Header / footer settings
 	int header_font_size, footer_font_size;
 	const char * header_font_name, * footer_font_name;
-	const char * header_left, * header_center, * header_right;
+	QString header_left, header_center, header_right;
 	bool header_line, footer_line;
-	const char * footer_left, * footer_center, * footer_right;
+	QString footer_left, footer_center, footer_right;
 
 	QAtomicInt loading; //Keep track of the numer of pages loading
 	QVector<QString> temp;
@@ -173,7 +173,7 @@ public slots:
 	void preparePrint();
 
 
-	void headerFooterLoadStarted();
+//	void headerFooterLoadStarted();
 	void headerFooterLoadFinished(bool ok);
 
 	void loadStarted();

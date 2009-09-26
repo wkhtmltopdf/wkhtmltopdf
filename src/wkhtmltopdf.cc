@@ -232,7 +232,7 @@ void WKHtmlToPdf::run(int argc, const char ** argv) {
 		//Once the loading is done we want loadFinished to be called
 		connect(page, SIGNAL(loadFinished(bool)), this, SLOT(loadFinished(bool)));
 		connect(page, SIGNAL(loadStarted()), this, SLOT(loadStarted()));
-		//Disable stuff we don't need
+
 		page->mainFrame()->setZoomFactor(zoom_factor);
 		QString u= in[i];
 		if (u == "-") {
@@ -419,10 +419,10 @@ void WKHtmlToPdf::preparePrint() {
    	}
 	actualPages *= copies;
 	int page=1;
-	headerFooterLoading = 0;
 
-	html_header="header.html";
-
+	headerFooterLoading =
+		(html_header.isEmpty()?0:actualPages) +
+		(html_footer.isEmpty()?0:actualPages);
 	if(!html_header.isEmpty() || !html_header.isEmpty()) {
 		for(int d=0; d < pages.size(); ++d) {
 			if (cover[0] && d == 0) continue;
@@ -453,68 +453,72 @@ QWebPage * WKHtmlToPdf::loadHeaderFooter(QString url, int d, int page) {
 	QWebPage * p = new QWebPage();
 	p->setNetworkAccessManager(am);
 	connect(p, SIGNAL(loadFinished(bool)), this, SLOT(headerFooterLoadFinished(bool)));
-	connect(p, SIGNAL(loadStarted()), this, SLOT(headerFooterLoadStarted()));
-	p->mainFrame()->setZoomFactor(zoom_factor);
-
+	p->mainFrame()->setZoomFactor(1);
 	p->mainFrame()->load(u);
 	return p;
 }
 
-void WKHtmlToPdf::headerFooterLoadStarted() {
-	headerFooterLoading.ref();
-}
+//void WKHtmlToPdf::headerFooterLoadStarted() {
+//	headerFooterLoading.ref();
+//}
 
 void WKHtmlToPdf::headerFooterLoadFinished(bool) {
 	headerFooterLoading.deref();
-	//qDebug() << "hat";
+	qDebug() << "hat";
 	if (headerFooterLoading == 0) {
+		
 		//Wait a little while for js-redirects, and then print
 		QTimer::singleShot(100, this, SLOT(printPage()));
 	}
 }
 
+struct MThread: public QThread {
+	static void msleep(unsigned long l) {
+		QThread::msleep(l);
+	}
+};
+
+
 void WKHtmlToPdf::printPage() {
 	if (headerFooterLoading != 0 || loading != 0) return;
 
-	QPrinter p2(resolution);
-	if (dpi != -1) p2.setResolution(dpi);
-	p2.setOutputFormat(
-		strcmp(out + (strlen(out)-3),".ps")==0?
-		QPrinter::PostScriptFormat : QPrinter::PdfFormat
-		);
-	p2.setOutputFileName("foo.pdf");
-	
-	//Setup margins and papersize
-	p2.setPageMargins(margin_left.first, margin_top.first,
-					  margin_right.first, margin_bottom.first,
-					  margin_left.second);
-	p2.setPageSize(pageSize);
-	p2.setOrientation(orientation);
-	p2.setColorMode(colorMode);
-	QPainter pa2;
-	pa2.begin(&p2);
-	
-// 	for (int i=0; i < in.size(); ++i) {
-// 		currentPage = i;
-// 		if (i != 0) printer.newPage();
-// 		if (print_toc && i == (cover[0] == '\0'?0:1)) {
-// 			currentPage = -1;
-// 			tocPrinter.print(root, &printer, &painter);
-// 			printer.newPage();
-// 			currentPage = i;
-// 		}
-// 		pages[i]->mainFrame()->print(&printer,&painter, printMediaType);
-// 	}
  	bool first=true;
  	int actualPage=1;
  	int cc=collate?copies:1;
  	int pc=collate?1:copies;
-   
+	
+	bool hasHeaderFooter = header_line || footer_line
+		|| !header_left.isEmpty() || !header_center.isEmpty() || !header_right.isEmpty()
+		|| !footer_left.isEmpty() || !footer_center.isEmpty() || !footer_right.isEmpty();
+
 	for(int cc_=0; cc_ < cc; ++cc_) {
 		//TODO print front here
 		//TODO print TOC here
+		
+// 		QPicture picture;
+
+// 		while(true) {
+// 			picture.setBoundingRect(
+// 				QRect(0,0,
+// 					  printer->pageRect().width() * picture.logicalDpiX()/printer->logicalDpiX(),
+// 					  printer->pageRect().height() * picture.logicalDpiY()/printer->logicalDpiY()));
+			
+// 			QPainter p;
+// 			p.begin(&picture);
+// 			qDebug() << picture.boundingRect();
+// 			QWebPrinter wp(headers[0]->mainFrame(), &picture, p);
+// 			wp.spoolPage(1);
+// 			float h = wp.elementLocation(headers[0]->mainFrame()->findFirstElement("body")).second.height() * printer->logicalDpiY() /picture.logicalDpiY();
+// 			p.end();
+// 			if(h < 100000) break;
+// 			qDebug() << h;
+// 			picture = QPicture();
+// 		}
+
+		int logicalPage=1;
 		for(int d=0; d < pages.size(); ++d) {
 			painter->save();
+			
 			QWebPrinter wp(pages[d]->mainFrame(), printer, *painter);
 			QString l1=pages[d]->mainFrame()->url().path().split("/").back()+"#";
 			QString l2=pages[d]->mainFrame()->url().toString() + "#";
@@ -534,7 +538,8 @@ void WKHtmlToPdf::printPage() {
 			for(QVector< QPair<QWebElement,QString> >::iterator i=externalLinks[d].begin();
 				i != externalLinks[d].end(); ++i)
 				myExternalLinks[wp.elementLocation(i->first).first].push_back(*i);
-								
+						
+			MThread::msleep(100);
 			for(int p=0; p < wp.pageCount(); ++p) {
 				for(int pc_=0; pc_ < pc; ++pc_) {
  					if (!quiet) {
@@ -545,6 +550,7 @@ void WKHtmlToPdf::printPage() {
 						first=false;
 					else
 						printer->newPage();
+
 
 					wp.spoolPage(p+1);
 					
@@ -565,28 +571,57 @@ void WKHtmlToPdf::printPage() {
 					}
 					++actualPage;
 
-
-// 					QTransform t;
-// 					{
-// 						pa2.save();
-// 						QWebPrinter whp2(headers[0]->mainFrame(), &p2, pa2);
-// 						whp2.spoolPage(1);
-// 						t = pa2.transform();
-// 						pa2.restore();
-// 					}
-					{
+					if(hasHeaderFooter && (!cover[0] || d != 0)) {
+						//Webkit used all kinds of crasy cordinate transformation, and font setup
+						//We save it here and restore some sane defaults
 						painter->save();
 						painter->resetTransform();
-						QWebPrinter whp(headers[0]->mainFrame(), printer, *painter);		
-						qreal off=t.mapRect(
-							whp.elementLocation(headers[0]->mainFrame()->findFirstElement("body")).second).height();
-						qDebug() << off;
-						painter->translate(0,-off);
-						whp.spoolPage(1);
+						
+						int h=printer->height();
+						int w=printer->width();
+						
+						//If needed draw the header line
+						if (header_line) painter->drawLine(0,0,w,0);
+						//Guess the height of the header text
+						painter->setFont(QFont(header_font_name, header_font_size));
+						int dy = painter->boundingRect(0,0,w,h,Qt::AlignTop,"M").height();
+						//Draw the header text
+						QRect r=QRect(0,0-dy,w,h);
+						painter->drawText(r, Qt::AlignTop | Qt::AlignLeft, hfreplace(header_left));
+						painter->drawText(r, Qt::AlignTop | Qt::AlignHCenter, hfreplace(header_center));
+						painter->drawText(r, Qt::AlignTop | Qt::AlignRight, hfreplace(header_right));
+						
+						//IF needed draw the footer line
+						if (footer_line) painter->drawLine(0,h,w,h);
+						//Guess the height of the footer text
+						painter->setFont(QFont(footer_font_name, footer_font_size));
+						dy = painter->boundingRect(0,0,w,h,Qt::AlignTop,"M").height();
+						//Draw the fooder text
+						r=QRect(0,0,w,h+dy);
+						painter->drawText(r, Qt::AlignBottom | Qt::AlignLeft, hfreplace(footer_left));
+						painter->drawText(r, Qt::AlignBottom | Qt::AlignHCenter, hfreplace(footer_center));
+						painter->drawText(r, Qt::AlignBottom | Qt::AlignRight, hfreplace(footer_right));
+						
+						//Restore webkits crasy scaling and font settings
 						painter->restore();
 					}
- 				}
 
+
+// 					painter->save();
+// 					painter->resetTransform();
+// 					painter->drawPicture(0,-208 - 4, picture);
+// 					painter->restore();
+// 					{
+// 						painter->save();
+// 						
+// 						//MThread::msleep(100);
+// 						painter->translate(0,-222);
+// 						QWebPrinter whp(headers[0]->mainFrame(), printer, *painter);
+// 						//painter->translate(0,-whp.elementLocation(headers[0]->mainFrame()->findFirstElement("body")).second.height());
+// 						whp.spoolPage(1);
+// 					}
+				}
+				if (!cover[0] || d != 0) ++logicalPage;
 			}
 			painter->restore();
 		}
@@ -595,40 +630,6 @@ void WKHtmlToPdf::printPage() {
 // #ifdef  __EXTENSIVE_WKHTMLTOPDF_QT_HACK__
 // 	if (currentPage == 0 && cover[0]) return;
 // #endif
-// 	//Get the painter assosiated with the printer
-// 	QPainter & painter = *printer->paintEngine()->painter();
-
-// 	//Webkit used all kinds of crasy cordinate transformation, and font setup
-// 	//We save it here and restore some sane defaults
-// 	painter.save();
-// 	
-// 	int h=printer->pageRect().height();
-// 	int w=printer->pageRect().width();
-
-// 	//If needed draw the header line
-// 	if (header_line) painter.drawLine(0,0,w,0);
-// 	//Guess the height of the header text
-// 	painter.setFont(QFont(header_font_name, header_font_size));
-// 	int dy = painter.boundingRect(0,0,w,h,Qt::AlignTop,"M").height();
-// 	//Draw the header text
-// 	QRect r=QRect(0,0-dy,w,h);
-// 	painter.drawText(r, Qt::AlignTop | Qt::AlignLeft, hfreplace(QString::fromUtf8(header_left)));
-// 	painter.drawText(r, Qt::AlignTop | Qt::AlignHCenter, hfreplace(QString::fromUtf8(header_center)));
-// 	painter.drawText(r, Qt::AlignTop | Qt::AlignRight, hfreplace(QString::fromUtf8(header_right)));
-
-// 	//IF needed draw the footer line
-// 	if (footer_line) painter.drawLine(0,h,w,h);
-// 	//Guess the height of the footer text
-// 	painter.setFont(QFont(footer_font_name, footer_font_size));
-// 	dy = painter.boundingRect(0,0,w,h,Qt::AlignTop,"M").height();
-// 	//Draw the fooder text
-// 	r=QRect(0,0,w,h+dy);
-// 	painter.drawText(r, Qt::AlignBottom | Qt::AlignLeft, hfreplace(QString::fromUtf8(footer_left)));
-// 	painter.drawText(r, Qt::AlignBottom | Qt::AlignHCenter, hfreplace(QString::fromUtf8(footer_center)));
-// 	painter.drawText(r, Qt::AlignBottom | Qt::AlignRight, hfreplace(QString::fromUtf8(footer_right)));
-
-// 	//Restore wkebkits crasy scaling and font settings
-// 	painter.restore();
 // }
 
 // 	}

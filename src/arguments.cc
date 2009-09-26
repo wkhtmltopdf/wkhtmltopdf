@@ -84,6 +84,21 @@ struct AHStrSetter: public AHSomeSetter<const char*> {
 		return desc + " (default " + def + ")";
 	}
 };
+
+//Argument handler setting a string variable
+struct AHQStrSetter: public AHSomeSetter<QString> {
+	AHQStrSetter(QString & a, QString an, QString def): AHSomeSetter<QString>(a,an,def) {};
+	bool operator() (const char ** vals, WKHtmlToPdf *) {
+		val = QString::fromUtf8(vals[0]);
+		return true;
+	}
+	virtual QString getDesc() const {
+		if (def[0] == '\0') return desc;
+		return desc + " (default " + def + ")";
+	}
+};
+
+
 //Argument handler setting a real-number/unit combo variable
 struct AHUnitRealSetter: public AHSomeSetter<QPair<qreal, QPrinter::Unit> > {
 	AHUnitRealSetter(QPair<qreal, QPrinter::Unit> & a, QString an, QPair<qreal, QPrinter::Unit> def): AHSomeSetter<QPair<qreal, QPrinter::Unit> >(a,an,def) {};
@@ -438,18 +453,18 @@ void WKHtmlToPdf::initArgs() {
 	addarg("copies", 0, "Number of copies to print into the pdf file", new AHIntSetter(copies, "number", 1));
 #ifdef __EXTENSIVE_WKHTMLTOPDF_QT_HACK__
 	addarg("default-header",'H',"Add a default header, with the name of the page to the left, and the page number to the right, this is short for: --header-left='[webpage]' --header-right='[page]/[toPage]' --top 2cm --header-line", new AHCaller<DefaultHeaderFunc>());
-	addarg("footer-center",0,"Centered footer text", new AHStrSetter(footer_center,"text",""));
+	addarg("footer-center",0,"Centered footer text", new AHQStrSetter(footer_center,"text",""));
 	addarg("footer-font-name",0,"Set footer font name", new AHStrSetter(footer_font_name,"name","Arial"));;
 	addarg("footer-font-size",0,"Set footer font size", new AHIntSetter(footer_font_size,"size",11));
-	addarg("footer-left",0,"Left aligned footer text", new AHStrSetter(footer_left,"text",""));
+	addarg("footer-left",0,"Left aligned footer text", new AHQStrSetter(footer_left,"text",""));
 	addarg("footer-line",0,"Display line above the footer", new AHConstSetter<bool>(footer_line,true,false));
-	addarg("footer-right",0,"Right aligned footer text", new AHStrSetter(footer_right,"text",""));
-	addarg("header-center",0,"Centered header text", new AHStrSetter(header_center,"text",""));
+	addarg("footer-right",0,"Right aligned footer text", new AHQStrSetter(footer_right,"text",""));
+	addarg("header-center",0,"Centered header text", new AHQStrSetter(header_center,"text",""));
 	addarg("header-font-name",0,"Set header font name", new AHStrSetter(header_font_name,"name","Arial"));
 	addarg("header-font-size",0,"Set header font size", new AHIntSetter(header_font_size,"size",11));
-	addarg("header-left",0,"Left aligned header text", new AHStrSetter(header_left,"text",""));
+	addarg("header-left",0,"Left aligned header text", new AHQStrSetter(header_left,"text",""));
 	addarg("header-line",0,"Display line below the header", new AHConstSetter<bool>(header_line,true,false));
-	addarg("header-right",0,"Right aligned header text", new AHStrSetter(header_right,"text",""));
+	addarg("header-right",0,"Right aligned header text", new AHQStrSetter(header_right,"text",""));
 	addarg("page-offset",0,"Set the starting page number", new AHIntSetter(page_offset,"offset",1));
 
 	addarg("toc",'t',"Insert a table of content in the beginning of the document", new AHConstSetter<bool>(print_toc,true,false));
