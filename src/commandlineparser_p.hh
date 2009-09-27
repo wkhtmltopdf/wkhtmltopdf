@@ -21,6 +21,8 @@
 #include "commandlineparser.hh"
 #include "settings.hh"
 
+class CommandLineParserPrivate;
+
 class ArgHandler {
 public:
 	QString longName;
@@ -28,8 +30,8 @@ public:
 	char shortSwitch;
 	QVector<QString> argn;
 	bool display;
-	virtual bool operator() (const char ** args, Settings & settings) = 0;
-	virtual void useDefault(Settings & settings);
+	virtual bool operator() (const char ** args, CommandLineParserPrivate & parser) = 0;
+	virtual void useDefault(CommandLineParserPrivate & parser);
 	virtual QString getDesc() const;
 	virtual ~ArgHandler();
 };
@@ -59,6 +61,7 @@ public:
 
 class CommandLineParserPrivate {
 public:
+	Settings & settings;
 
 	void section(QString s);
 	void qthack(bool);
@@ -74,6 +77,11 @@ public:
 	void outputNotPatched(Outputter * o, bool sure) const;
 	void outputPageBreakDoc(Outputter * o) const;
 	void outputContact(Outputter * o) const;
+
+	void version(FILE * fd) const;
+	void usage(FILE * fd, bool extended) const;
+	void manpage(FILE * fd) const;
+	void readme(FILE * fd, bool html) const;
 };
 
 #endif //__COMMMAND_LINE_PARSER_P_HH__

@@ -18,7 +18,7 @@
 
 /*!
   \class ArgHandler
-  Class responcible for handling an argument
+  \brief Class responcible for handling an argument
 */
 
 /*!
@@ -57,10 +57,10 @@
   Set give settings its default value
 
   This is a NOOP for ArgHandler
-  \param settings The settings to change
+  \param parser The parser giving the request
 */
-void ArgHandler::useDefault(Settings & settings) {
-	Q_UNUSED(settings);
+void ArgHandler::useDefault(CommandLineParserPrivate & parser) {
+	Q_UNUSED(parser);
 } 
   
 /*!
@@ -91,11 +91,11 @@ public:
 	const T src;
 	const T def;
 	ConstSetter(T & arg, const T s, const T d): dst(arg), src(s), def(d) {};
-	bool operator() (const char **, Settings &) {
+	bool operator() (const char **, CommandLineParserPrivate &) {
 		dst=src;
 		return true;
 	}
-	virtual void useDefault(Settings &) {
+	virtual void useDefault(CommandLineParserPrivate &) {
 		dst=def;
 	}
 };
@@ -110,7 +110,7 @@ struct SomeSetter: public ArgHandler {
 	SomeSetter(T & a, QString an, T d): val(a), def(d) {
 		argn.push_back(an);
 	}
-	virtual void useDefault(Settings &) {
+	virtual void useDefault(CommandLineParserPrivate &) {
 		val=def;
 	}
 };
@@ -120,7 +120,7 @@ struct SomeSetter: public ArgHandler {
 */
 struct IntSetter: public SomeSetter<int> {
 	IntSetter(int & a, QString an, int def): SomeSetter<int>(a,an,def) {};
-	bool operator() (const char ** vals, Settings &) {
+	bool operator() (const char ** vals, CommandLineParserPrivate &) {
 		val = atoi(vals[0]);
 		return true;
 	}
@@ -135,7 +135,7 @@ struct IntSetter: public SomeSetter<int> {
 */
 struct FloatSetter: public SomeSetter<float> {
 	FloatSetter(float & a, QString an, float def): SomeSetter<float>(a,an,def) {};
-	bool operator() (const char ** vals, Settings &) {
+	bool operator() (const char ** vals, CommandLineParserPrivate &) {
 		val = atof(vals[0]);
 		return true;
 	}
@@ -150,7 +150,7 @@ struct FloatSetter: public SomeSetter<float> {
 */
 struct StrSetter: public SomeSetter<const char*> {
 	StrSetter(const char * & a, QString an, const char * def): SomeSetter<const char *>(a,an,def) {};
-	bool operator() (const char ** vals, Settings &) {
+	bool operator() (const char ** vals, CommandLineParserPrivate &) {
 		val = vals[0];
 		return true;
 	}
@@ -165,7 +165,7 @@ struct StrSetter: public SomeSetter<const char*> {
 */
 struct QStrSetter: public SomeSetter<QString> {
 	QStrSetter(QString & a, QString an, QString def): SomeSetter<QString>(a,an,def) {};
-	bool operator() (const char ** vals, Settings &) {
+	bool operator() (const char ** vals, CommandLineParserPrivate &) {
 		val = QString::fromUtf8(vals[0]);
 		return true;
 	}
@@ -180,7 +180,7 @@ struct QStrSetter: public SomeSetter<QString> {
  */
 struct UnitRealSetter: public SomeSetter<QPair<qreal, QPrinter::Unit> > {
 	UnitRealSetter(QPair<qreal, QPrinter::Unit> & a, QString an, QPair<qreal, QPrinter::Unit> def): SomeSetter<QPair<qreal, QPrinter::Unit> >(a,an,def) {};
-	bool operator() (const char ** vals, Settings &) {
+	bool operator() (const char ** vals, CommandLineParserPrivate &) {
 		//val=w->parseUnitReal(vals[0]);
 		return true;
 	}
@@ -194,80 +194,123 @@ template <typename T> struct Caller: public ArgHandler {
 	Caller(QString a1) {
 		argn.push_back(a1);
 	}
-	bool operator() (const char **vals, Settings & s) {
+	bool operator() (const char **vals, CommandLineParserPrivate & s) {
 		return T()(vals,s);
 	}
 };
 
 //All these function would have been lambda function, had C++ supported them, now we are forced to write them here
 
-//Call the help method
+/*!
+  Lamba: Call the usage method
+*/
+template <bool v>
 struct HelpFunc {
-	bool operator()(const char **vals, Settings & s) {
-		Q_UNUSED(vals);
-		//w->usage(stdout);
+	bool operator()(const char **, CommandLineParserPrivate & p) {
+		p.usage(stdout,v);
 		exit(0);
 	}
 };
-//Call the version method
+
+/*!
+  Lambda: Call the man method
+*/
+struct ManPageFunc {
+	bool operator()(const char **vals, CommandLineParserPrivate & p) {
+		p.manpage(stdout);
+		exit(0);
+	}
+};
+
+
+
+/*!
+  Lambda: Call the man method
+*/
+template <bool T>
+struct ReadmeFunc {
+	bool operator()(const char **vals, CommandLineParserPrivate & p) {
+		p.readme(stdout, T);
+		exit(0);
+	}
+};
+
+
+/*!
+  Lambda: Call the version method
+*/
 struct VersionFunc {
-	bool operator()(const char **vals, Settings & s) {
-		Q_UNUSED(vals);
-		//w->version(stdout);
+	bool operator()(const char **vals, CommandLineParserPrivate & p) {
+		p.version(stdout);
 		exit(0);
 	}
 };
-//Call the sotProxy method
+
+/*!
+  Lambda: Call the setProxy method
+*/
 struct ProxyFunc {
-	bool operator()(const char **vals, Settings & s) {
+	bool operator()(const char **vals, CommandLineParserPrivate & p) {
 		//return w->setProxy(vals[0]);
 	}
 };
-//Call the setOrientation method
+
+/*!
+  Lambda: Call the setOrientation method
+*/
 struct OrientationFunc {
-	bool operator()(const char ** vals, Settings & s) {
+	bool operator()(const char ** vals, CommandLineParserPrivate & p) {
 		//return w->setOrientation(vals[0]);
 	}
 };
-//Call the stePageSize method
+
+/*!
+  Lambda: Call the stePageSize method
+*/
 struct PageSizeFunc {
-	bool operator()(const char ** vals, Settings & w) {
+	bool operator()(const char ** vals, CommandLineParserPrivate & w) {
 		//return w->setPageSize(vals[0]);
 	}
 };
 
-//Setup default header values
+/*!
+  Set the default header
+*/
 struct DefaultHeaderFunc {
-	bool operator()(const char **, Settings & s) {
-		s.header.left="[webpage]";
-		s.header.right="[page]/[toPage]";
-		s.header.line=true;
+	bool operator()(const char **, CommandLineParserPrivate & p) {
+		p.settings.header.left="[webpage]";
+		p.settings.header.right="[page]/[toPage]";
+		p.settings.header.line=true;
 		//w->margin_top=w->parseUnitReal("2cm");
 		return true;
 	}
 };
 
-//Setup default book mode
+/*!
+  Setup default book mode
+*/
 struct BookFunc {
-	bool operator()(const char **, Settings & s) {
-		s.header.left="[section]";
-		s.header.right="[page]/[toPage]";
-		s.header.line=true;
-		s.outline = true;
-		s.printToc = true;
+	bool operator()(const char **, CommandLineParserPrivate & p) {
+		p.settings.header.left="[section]";
+		p.settings.header.right="[page]/[toPage]";
+		p.settings.header.line=true;
+		p.settings.outline = true;
+		p.settings.printToc = true;
 			//w->margin_top=w->parseUnitReal("2cm");
 		return true;
 	}
 };
 
 
-CommandLineParserPrivate::CommandLineParserPrivate(Settings & s) {
+CommandLineParserPrivate::CommandLineParserPrivate(Settings & s):
+	settings(s)
+{
 	section("General Settings");
 
-	addarg("help",'h',"Display help",new Caller<HelpFunc>());
+	addarg("help",'h',"Display help",new Caller<HelpFunc<false> >());
 	addarg("quiet",'q',"Be less verbose",new ConstSetter<bool>(s.quiet,true,false));
 	addarg("version",'V',"Output version information an exit", new Caller<VersionFunc>());
-	//addarg("extended-help",0,"Display more extensive help", new Caller<ExtHelpFunct>());
+	addarg("extended-help",0,"Display more extensive help", new Caller<HelpFunc<true> >());
 	addarg("collate", 0, "Collate when printing multiple copies", new ConstSetter<bool>(s.collate,true,false));
 	addarg("copies", 0, "Number of copies to print into the pdf file", new IntSetter(s.copies, "number", 1));
 	addarg("orientation",'O',"Set orientation to Landscape or Portrait", new Caller<OrientationFunc>("orientation"));
@@ -284,9 +327,9 @@ CommandLineParserPrivate::CommandLineParserPrivate(Settings & s) {
 	qthack(false);
 	
 	extended(true);
-	//addarg("manpage", 0, "Output program man page", new Caller<ManPageFunc>());
-	//addarg("htmldoc", 0, "Output program html help", new Caller<HtmlDocFunc>());
-	//addarg("readme", 0, "Output program readme", new Caller<ReadmeFunc>());
+	addarg("manpage", 0, "Output program man page", new Caller<ManPageFunc>());
+	addarg("htmldoc", 0, "Output program html help", new Caller<ReadmeFunc<true> >());
+	addarg("readme", 0, "Output program readme", new Caller<ReadmeFunc<false> >());
 	addarg("dpi",'d',"Change the dpi explicitly", new IntSetter(s.dpi,"dpi",-1));
 	addarg("disable-javascript",'n',"Do not allow webpages to run javascript", new ConstSetter<bool>(s.enableJavascript,false,true));
 	addarg("grayscale",'g',"PDF will be generated in grayscale", new ConstSetter<QPrinter::ColorMode>(s.colorMode,QPrinter::GrayScale,QPrinter::Color));
@@ -367,11 +410,42 @@ CommandLineParserPrivate::CommandLineParserPrivate(Settings & s) {
 #endif
 }
 
+void CommandLineParserPrivate::manpage(FILE * fd) const {
+	Outputter * o = Outputter::man(fd);
+ 	outputName(o);
+ 	outputSynopsis(o);
+ 	outputDescripton(o);
+ 	//d->outputSwitches(o, true, false);
+#ifdef __EXTENSIVE_WKHTMLTOPDF_QT_HACK__
+ 	outputProxyDoc(o);
+ 	outputHeaderFooterDoc(o);
+ 	outputOutlineDoc(o);
+#else
+	outputNotPatched(o,true);
+#endif
+ 	outputPageBreakDoc(o);
+ 	outputContact(o);
+ 	outputAuthors(o);
+	delete o;
+}
+
+void CommandLineParserPrivate::usage(FILE * fd, bool extended) const {
+	
+}
+
+
 
 void CommandLineParser::parse(int argc, const char ** argv) const {
 }
 
+
+void CommandLineParser::usage(FILE * fd, bool extended) const {
+	d->usage(fd, extended);
+}
+	
+
 void CommandLineParser::version(FILE * fd) const {
+	d->version(fd);
  	// TextOutputter o(fd);
 //  	d->outputName(o);
 //  	d->outputLicense(o);
@@ -379,23 +453,9 @@ void CommandLineParser::version(FILE * fd) const {
 }
 
 void CommandLineParser::manpage(FILE * fd) const {
-	Outputter * o = Outputter::man(fd);
- 	d->outputName(o);
- 	d->outputSynopsis(o);
- 	d->outputDescripton(o);
- 	//d->outputSwitches(o, true, false);
-#ifdef __EXTENSIVE_WKHTMLTOPDF_QT_HACK__
- 	d->outputProxyDoc(o);
- 	d->outputHeaderFooterDoc(o);
- 	d->outputOutlineDoc(o);
-#else
-	d->outputNotPatched(o,true);
-#endif
- 	d->outputPageBreakDoc(o);
- 	d->outputContact(o);
- 	d->outputAuthors(o);
-	delete o;
+	d->manpage(fd);
 }
+
 
 void CommandLineParser::readme(FILE * fd, bool html) const {
 // 	if(html) {
