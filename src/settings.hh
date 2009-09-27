@@ -1,0 +1,158 @@
+//-*- mode: c++; tab-width: 4; indent-tabs-mode: t; c-file-style: "stroustrup"; -*-
+// This file is part of wkhtmltopdf.
+//
+// wkhtmltopdf is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// wkhtmltopdf is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with wkhtmltopdf.  If not, see <http://www.gnu.org/licenses/>.
+#ifndef __SETTINGS_HH__
+#define __SETTINGS_HH__
+#include <QString>
+#include <QNetworkProxy>
+#include <QPrinter>
+/*! \brief Class holding all user setting.
+
+    This class holds all the user settings, settings can be filled in by hand,
+    or with other methods. 
+    \sa CommandLineParser::parse()
+*/
+struct Settings {
+	/*! \brief Settings considdirng the table of content */
+	struct TOCSettings {
+		static const uint levels = 7;
+		//! Should we print dots between the name and the page number?
+		bool useDots;
+		//! Maximal depth used in the table of content
+		int depth;
+		//! Font used for printing the TOC
+		QString fontName;
+		//! Indentation used on a given level
+		int indentation[levels];
+		//! Font size used on a given level
+		int fontSize[levels];
+		//! Font size used for print the TOC caption
+		int captionFontSize;
+		//! Name af the TOC
+		QString captionText;
+	};
+
+	/*! \brief Settings considering headers and footers */
+	struct HeaderFooterSettings {
+		//! Size of the font used to render the text
+		int fontSize;
+		//! Name of font used to render text
+		QString fontName;
+		//! Text to render at the left
+		QString left;
+		//! Text to render at the right
+		QString right;
+		//! Text to render at the center
+		QString center;
+		//! Should a line seperate the header/footer and the document
+		bool line;
+		//! Url of the document the html document that should be used as a header/footer
+		QString htmlUrl;
+	};
+
+	/*! \brief Settings consdering proxy */
+	struct ProxySettings {
+		//! Type of proxy to use
+		QNetworkProxy::ProxyType type; 
+		//! The port of the proxy to use
+		int port; 
+		//! The host name of the proxy to use or NULL
+		const char * host; 
+		//! Username for the said proxy or NULL
+		const char * user; 
+		//! Password for the said proxy or NULL
+		const char * password; 
+	};
+	
+	/*! \brief Settings consdering margins */
+	struct MarginSettings {
+		//!Margin applied to the top of the page
+		QPair<qreal, QPrinter::Unit> top;
+		//!Margin applied to the right of the page
+		QPair<qreal, QPrinter::Unit> right;
+		//!Margin applied to the bottom of the page
+		QPair<qreal, QPrinter::Unit> bottom;
+		//!Margin applied to the leftp of the page
+		QPair<qreal, QPrinter::Unit> left;
+	};
+		
+	//! Proxy related settings
+	ProxySettings proxy;
+	//! Header related settings
+	HeaderFooterSettings header;
+	//! Header related settings
+	HeaderFooterSettings footer;
+	//! Margin related settings
+	MarginSettings margin;
+	//! Settings regarding the TOC
+	TOCSettings toc;
+
+	//! Username used for http auth login
+	QString username;
+	//! Password used for http auth login
+	QString password;
+	//! Be less verbose
+	bool quiet; 
+	//! Should we print background images
+	bool background;
+	//! Should we print a table of content
+	bool printToc;
+	//! Should plugins be allowed
+	bool enablePlugins;
+	//! Should we use the graphics system
+	bool useGraphics;
+	//! Should external links be links in the PDF
+	bool useExternalLinks;
+	//! Should internal links be links in the PDF
+	bool useLocalLinks;
+	//! Should we enable Java Script
+	bool enableJavascript; 
+	//! Should the horrible intelligent shrking feature be enabled?
+	bool enableIntelligentShrinking;
+	//! How many milliseconds should we wait for a javascrit redirect
+	int jsredirectwait;
+	//! What size paper should we use
+	QPrinter::PageSize pageSize; 
+	//! Should we orientate in landscape or portrate
+	QPrinter::Orientation orientation; 
+	//! Color or grayscale
+	QPrinter::ColorMode colorMode; 
+	//! What overall resolution should we use
+	QPrinter::PrinterMode resolution; 
+	//! What dpi should be used when printing
+	int dpi;
+	//! When pagenumbers are printed, apply this offset to them all
+	int pageOffset;
+	//! How many copies do we wan to print
+	int copies;
+	//! Should be print a whole copy before beginnig the next
+	bool collate;
+	//! What zoom fator should we apply when printing
+	float zoomFactor;
+	//! Should we used the print or the screen mediatype
+	bool printMediaType;
+	//! Encoding used to enterpit a document with do supplied encoding
+	QString defaultEncoding;
+	//! Stylesheet supplied by the user
+	QString userStyleSheet;
+	//! Url of document to use as cover
+	const char * cover;
+	//! Should we generate an outline and put it into the pdf file
+	bool outline;
+	//! Maximal depth of the generated outline
+	int outlineDepth;
+};
+
+#endif //__SETTINGS_HH__
