@@ -15,7 +15,7 @@
 // along with wkhtmltopdf.  If not, see <http://www.gnu.org/licenses/>.
 #include "commandlineparser_p.hh"
 
-#define S(x) x.toLocal8Bit().constData()
+#define S(x) ((x).toLocal8Bit().constData())
 
 class ManOutputter: public Outputter {
 private:
@@ -37,7 +37,7 @@ public:
 	}
 
 	void endParagraph() {
-		fprintf("\n\n");
+		fprintf(fd, "\n\n");
 	}
 	
 	void text(const QString & t) {
@@ -74,9 +74,9 @@ public:
 		fprintf(fd,"\\-\\-%s\\fR", S(h->longName));
 		
 		for(QVector<QString>::const_iterator i = h->argn.constBegin(); i != h->argn.constEnd(); ++i)
-			fprintf(fd" \\fI<%s>\\fR", S(*i));
+			fprintf(fd," \\fI<%s>\\fR", S(*i));
 		
-		fprintf("\n%s\n",S(h->desc));
+		fprintf(fd, "\n%s\n",S(h->desc));
 	}
 	
 	void endSwitch() {

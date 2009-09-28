@@ -42,6 +42,10 @@ struct Settings {
 		int captionFontSize;
 		//! Name af the TOC
 		QString captionText;
+		//! Link from TOC to section headers
+		bool forwardLinks;
+		//! Link from section headers to TOC
+		bool backLinks;
 	};
 
 	/*! \brief Settings considering headers and footers */

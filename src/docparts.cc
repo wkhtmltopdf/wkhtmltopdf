@@ -58,8 +58,9 @@ void CommandLineParserPrivate::outputLicense(Outputter * o) const {
 void CommandLineParserPrivate::outputAuthors(Outputter * o) const {
 	o->beginSection("Authors");
 	o->beginParagraph();
-	o->text("Written by Jakob Truelsen. "
-			"Patches by Patches by Mário Silva and Emmanuel Bouthenot.");
+	o->text(QString::fromUtf8(
+				"Written by Jakob Truelsen. "
+				"Patches by Patches by Mário Silva and Emmanuel Bouthenot."));
 	o->endParagraph();
 	o->endSection();
 }
@@ -70,7 +71,7 @@ void CommandLineParserPrivate::outputAuthors(Outputter * o) const {
 */
 void CommandLineParserPrivate::outputSynopsis(Outputter * o) const {
 	o->beginSection("Synopsis");
-	o->verbatim("wkhtmltopdf [OPTIONS]... <input file> [More inputfiles] <output file>");
+	o->verbatim("wkhtmltopdf [OPTIONS]... <input file> [More inputfiles] <output file>\n");
 	o->endSection();
 }
 
@@ -97,6 +98,11 @@ void CommandLineParserPrivate::outputDescripton(Outputter * o) const {
 #warning "explain what and why"
 void CommandLineParserPrivate::outputNotPatched(Outputter * o, bool sure) const {
 	o->beginSection("Reduced Functionality");
+	o->beginParagraph();
+	o->text(
+ 	        "This version of wkhtmltopdf has been compiled against a version of qt"
+ 	        "without the wkhtmltopdf patches, so some features are missign, if you need"
+ 	        "these features please use the staic edition");
 	o->endSection();
 }
 
@@ -107,7 +113,61 @@ void CommandLineParserPrivate::outputNotPatched(Outputter * o, bool sure) const 
 */
 #warning "explain what and why"
 void CommandLineParserPrivate::outputPageBreakDoc(Outputter * o) const {
+	o->beginSection("Page Breaking");
+	o->endSection();
+}
 
+/*!
+  Output documentation about the proxy settings
+  \param o The outputter to output to
+  \todo Do a better explanation
+*/
+#warning "explain what and why"
+void CommandLineParserPrivate::outputProxyDoc(Outputter * o) const {
+	o->beginSection("Specifying A Proxy");
+	o->beginParagraph();
+	o->text("By default proxy information will be read from the environment"
+	        " variables: proxy, all_proxy and http_proxy, proxy options can"
+ 	        " also by specified with the -p switch");
+	o->endParagraph();
+	o->verbatim(
+ 	        "<type> := \"http://\" | \"socks5://\"\n"
+ 	        "<userinfo> := <username> (\":\" <password>)? \"@\"\n"
+ 	        "<proxy> := \"None\" | <type>? <userinfo>? <host> (\":\" <port>)?\n");
+	o->endSection();
+}
+
+/*!
+  Output documentation about headers and footers
+  \param o The outputter to output to
+  \todo Do a better explanation
+*/
+#warning "explain what and why"
+void CommandLineParserPrivate::outputHeaderFooterDoc(Outputter * o) const {
+	o->beginSection("Footers And Headers");
+	o->beginParagraph();
+	o->text("In a header or footer text the following variables can be used.");
+	o->endParagraph();
+	o->verbatim(
+ 	        " * [page]       Replaced by the number of the pages currently beeing printed\n"
+ 	        " * [fromPage]   Replaced by the number of the first page to be printed\n"
+ 	        " * [toPage]     Replaced by the number of the last page to be printed\n"
+ 	        " * [webpage]    Replaced by the url of the page beeing printed\n"
+ 	        " * [section]    Replaced by the name of the current section\n"
+ 	        " * [subsection] Replaced by the name of the current subsection\n"
+ 	        "\n");
+	o->endSection();
+}
+
+/*!
+  Output documentation about outlines
+  \param o The outputter to output to
+  \todo Do a better explanation
+*/
+#warning "explain what and why"
+void CommandLineParserPrivate::outputOutlineDoc(Outputter * o) const {
+	o->beginSection("Outlines");
+	o->endSection();
 }
 
 /*!
@@ -124,3 +184,50 @@ void CommandLineParserPrivate::outputContact(Outputter * o) const {
 	o->endParagraph();
 	o->endSection();
 }
+
+/*!
+  Output beginning of the readmee
+  \param o The outputter to output to
+  \todo Do a better explanation
+*/
+#warning "explain what and why"
+void CommandLineParserPrivate::outputDocStart(Outputter * o) const {
+	o->beginSection("WKHtmlToPdf Manual");
+	o->endSection();
+}
+
+/*!
+  Output information on how to compile
+  \param o The outputter to output to
+  \todo Do a better explanation
+*/
+#warning "explain what and why"
+void CommandLineParserPrivate::outputCompilation(Outputter * o) const {
+	o->beginSection("Compilation");
+	o->endSection();
+}
+
+/*!
+  Output information on how to install
+  \param o The outputter to output to
+  \todo Do a better explanation
+*/
+#warning "explain what and why"
+void CommandLineParserPrivate::outputInstallation(Outputter * o) const {
+	o->beginSection("Installation");
+	o->endSection();
+}
+
+/*!
+  Output exampels on how to use wkhtmltopdf
+  \param o The outputter to output to
+  \todo Do a better explanation
+*/
+#warning "explain what and why"
+void CommandLineParserPrivate::outputExampels(Outputter * o) const {
+	o->beginSection("Exampels");
+	o->endSection();
+}
+
+
+

@@ -41,6 +41,7 @@ public:
 
 class Outputter {
 public:
+	virtual ~Outputter() {}
 	virtual void beginSection(const QString & name) = 0;
 	virtual void endSection() = 0;
 	virtual void beginParagraph() = 0;
@@ -68,26 +69,38 @@ public:
 	bool currentExtended;
 	bool currentHack;
 
+	QList<QString> sections;
 	QHash<QString, ArgHandler *> longToHandler;
 	QHash<char, ArgHandler *> shortToHandler;
 	QHash<QString, QList<ArgHandler *> > sectionArgumentHandles;
 	QHash<QString, QString> sectionDesc;
 
+	//arguments.cc
+	CommandLineParserPrivate(Settings & s);
 	void section(QString s, QString desc="");
 	void qthack(bool);
 	void extended(bool);
 	void addarg(QString, char, QString, ArgHandler * h, bool display=true);
 
-	CommandLineParserPrivate(Settings & s);
+	//docparts.cc
 	void outputName(Outputter * o) const;
 	void outputLicense(Outputter * o) const;
 	void outputAuthors(Outputter * o) const;
 	void outputSynopsis(Outputter * o) const;
 	void outputDescripton(Outputter * o) const;
+	void outputProxyDoc(Outputter * o) const;
+	void outputHeaderFooterDoc(Outputter * o) const;
+	void outputOutlineDoc(Outputter * o) const;
 	void outputNotPatched(Outputter * o, bool sure) const;
 	void outputPageBreakDoc(Outputter * o) const;
 	void outputContact(Outputter * o) const;
+	void outputDocStart(Outputter * o) const;
+	void outputCompilation(Outputter * o) const;
+	void outputInstallation(Outputter * o) const;
+	void outputExampels(Outputter * o) const;
 
+	//commandlineparser.cc
+	void outputSwitches(Outputter * o, bool extended, bool doc) const;
 	void version(FILE * fd) const;
 	void usage(FILE * fd, bool extended) const;
 	void manpage(FILE * fd) const;

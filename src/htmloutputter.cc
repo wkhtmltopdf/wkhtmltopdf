@@ -14,25 +14,32 @@
 // You should have received a copy of the GNU General Public License
 // along with wkhtmltopdf.  If not, see <http://www.gnu.org/licenses/>.
 #include "commandlineparser_p.hh"
+#include <QTextDocument>
 
-#define S(x) x.toUtf8().constData()
+#define S(x) Qt::escape(x).toUtf8().constData()
 
 class HtmlOutputter: public Outputter {
 private:
 	FILE * fd;
 public:
 	HtmlOutputter(FILE * _): fd(_) {
-		fprintf(fd, 
+		fprintf(fd,
 				"<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd\">\n"
 				"<html xmlns=\"http://www.w3.org/1999/xhtml\" xml:lang=\"en\" lang=\"en\" dir=\"ltr\">\n"
 				"<head>\n"
 				"  <meta http-equiv=\"Content-Type\" content=\"text/html; charset=utf-8\" />\n"
 				"  <title>wkhtmltopdf - Manual</title>\n"
+				"  <style type=\"text/css\">\n"
+				"    body {width: 50em}\n"
+				"    .short {font-weight: bold; width:2em}\n"
+				"    .long {font-weight: bold; width: 15em}\n"
+				"    .arg {font-style: italic; width: 7em}\n"
+				"  </style>\n"
 				"</head><body>");
 	}
 
 	~HtmlOutputter() {
-		fprintf(fd,"</body></html>");
+		fprintf(fd,"</body></html>\n");
 	}
 
 	void beginSection(const QString & name) {
@@ -63,24 +70,37 @@ public:
 	}
 
 	void link(const QString & t) {
-		fprintf(fd, "<a href=\"%s\">%s</a>", S(t));
+		fprintf(fd, "<a href=\"%s\">%s</a>", S(t),S(t));
 	}
 	
 	void verbatim(const QString & t) {
 		fprintf(fd, "<pre>%s</pre>", S(t));
 	}
 	
-	void beginSwitch() {}
-	void cswitch(const ArgHandler * h) {}
-	void endSwitch() {
+	void beginSwitch() {
+		fprintf(fd, "<table>\n");
 	}
 
-}
+	void cswitch(const ArgHandler * h) {
+		fprintf(fd, "<tr><td class=\"short\">");
+		if(h->shortSwitch)
+			fprintf(fd, "-%c,",h->shortSwitch);
+		fprintf(fd, "</td><td class=\"long\">--%s</td><td class=\"arg\">",S(h->longName));
+		foreach(const QString & arg, h->argn)
+			fprintf(fd, "&lt;%s&gt;",S(arg));
+		fprintf(fd, "</td><td class=\"desc\">%s</td></tr>\n",S(h->getDesc()));
+	}
+
+	void endSwitch() {
+		fprintf(fd, "</table>\n");
+	}
+	
+};
 
 /*!
   Create a Html outputter
   \param fd A file description to output to
 */
-Outputter * Outputter::html(FILE * fd) {
+  Outputter * Outputter::html(FILE * fd) {
 	return new HtmlOutputter(fd);
 }
