@@ -37,6 +37,7 @@ public:
 	}
 
 	void endParagraph() {
+		fprintf("\n\n");
 	}
 	
 	void text(const QString & t) {
@@ -59,13 +60,30 @@ public:
 		fprintf(fd, "%s", S(t));
 	}
 	
-	void beginSwitch() {}
-	void cswitch(const ArgHandler * h) {}
+	void beginSwitch() {
+		fprintf(fd, ".PD 0\n");
+	}
+	
+	void cswitch(const ArgHandler * h) {
+		fprintf(fd, ".TP\n");
+		fprintf(fd, "\\fB");
+		if(h->shortSwitch != 0)
+			fprintf(fd, "\\-%c, ", h->shortSwitch);
+		else
+			fprintf(fd, "    ");
+		fprintf(fd,"\\-\\-%s\\fR", S(h->longName));
+		
+		for(QVector<QString>::const_iterator i = h->argn.constBegin(); i != h->argn.constEnd(); ++i)
+			fprintf(fd" \\fI<%s>\\fR", S(*i));
+		
+		fprintf("\n%s\n",S(h->desc));
+	}
+	
 	void endSwitch() {
+		fprintf(fd, ".PD\n");
 		fprintf(fd, "\n");
 	}
 };
-
 
 /*!
   Create a man page outputter
