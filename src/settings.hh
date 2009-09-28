@@ -69,11 +69,11 @@ struct Settings {
 		//! The port of the proxy to use
 		int port; 
 		//! The host name of the proxy to use or NULL
-		const char * host; 
+		QString host; 
 		//! Username for the said proxy or NULL
-		const char * user; 
+		QString user; 
 		//! Password for the said proxy or NULL
-		const char * password; 
+		QString password; 
 	};
 	
 	/*! \brief Settings consdering margins */
@@ -153,6 +153,11 @@ struct Settings {
 	bool outline;
 	//! Maximal depth of the generated outline
 	int outlineDepth;
+
+	static QPrinter::PageSize strToPageSize(const char * s, bool * ok=0);
+	static QPair<qreal, QPrinter::Unit> strToUnitReal(const char * s, bool * ok=0);
+	static ProxySettings strToProxy(const char * s, bool * ok=0);
+	static QPrinter::Orientation strToOrientation(const char * s, bool * ok=0);
 };
 
 #endif //__SETTINGS_HH__

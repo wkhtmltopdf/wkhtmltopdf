@@ -30,6 +30,8 @@ public:
 	char shortSwitch;
 	QVector<QString> argn;
 	bool display;
+	bool extended;
+	bool qthack;
 	virtual bool operator() (const char ** args, CommandLineParserPrivate & parser) = 0;
 	virtual void useDefault(CommandLineParserPrivate & parser);
 	virtual QString getDesc() const;
@@ -61,9 +63,17 @@ public:
 
 class CommandLineParserPrivate {
 public:
+	QString currentSection;
 	Settings & settings;
+	bool currentExtended;
+	bool currentHack;
 
-	void section(QString s);
+	QHash<QString, ArgHandler *> longToHandler;
+	QHash<char, ArgHandler *> shortToHandler;
+	QHash<QString, QList<ArgHandler *> > sectionArgumentHandles;
+	QHash<QString, QString> sectionDesc;
+
+	void section(QString s, QString desc="");
 	void qthack(bool);
 	void extended(bool);
 	void addarg(QString, char, QString, ArgHandler * h, bool display=true);
