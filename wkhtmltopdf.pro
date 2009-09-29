@@ -58,5 +58,9 @@ target.path=$$INSTALLBASE/bin
 QT += webkit network
 
 # Input
-HEADERS += src/wkhtmltopdf.hh src/toc.hh
-SOURCES += src/wkhtmltopdf.cc src/toc.cc src/arguments.cc
+HEADERS += src/wkhtmltopdf.hh src/toc.hh src/pageconverter_p.hh
+
+SOURCES += src/wkhtmltopdf.cc src/toc.cc src/arguments.cc src/commandlineparser.cc \
+           src/docparts.cc src/outputter.cc src/manoutputter.cc src/settings.cc \
+           src/htmloutputter.cc src/textoutputter.cc src/textualfeedback.cc \
+           src/pageconverter.cc
