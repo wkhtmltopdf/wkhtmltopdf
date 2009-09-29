@@ -42,6 +42,7 @@ private slots:
 	void loadFinished(bool ok);
 	void loadStarted();
 	void loadProgress(int progress);
+	void sslErrors(QNetworkReply *reply, const QList<QSslError> &);
 };
 
 #endif //__TEXTUALFEEDBACK_P_HH__

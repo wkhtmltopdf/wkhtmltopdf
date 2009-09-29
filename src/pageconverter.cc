@@ -181,6 +181,14 @@ void PageConverterPrivate::loadProgress(int progress) {
 	fflush(stdout);
 }
 
+/*!
+ * Handel any ssl error by ignoring
+ */
+void PageConverterPrivate::sslErrors(QNetworkReply *reply, const QList<QSslError> &) {
+	//We ignore any ssl error, as it is next to impossible to send or receive
+	//any private information with wkhtmltopdf anyhow, seeing as you cannot authenticate
+	reply->ignoreSslErrors();
+}
 
 void PageConverterPrivate::convert() {
 	networkError = 0;
