@@ -17,6 +17,7 @@
 #include <qfileinfo.h>
 #include <QAuthenticator>
 #include <QTimer>
+#include <QWebSettings>
 
 /*!
  * Copy a file from some place to another
@@ -105,6 +106,46 @@ PageConverterPrivate::PageConverterPrivate(Settings & s, Feedback & f) :
 	connect(&networkAccessManager, SIGNAL(authenticationRequired(QNetworkReply*, QAuthenticator *)),this,
 	        SLOT(authenticationRequired(QNetworkReply *, QAuthenticator *)));
 
+	//If we must use a proxy, create a host of objects
+	if (!settings.proxy.host.isEmpty()) {
+		QNetworkProxy proxy;
+		proxy.setHostName(settings.proxy.host);
+		proxy.setPort(settings.proxy.port);
+		proxy.setType(settings.proxy.type);
+		// to retrieve a web page, it's not needed to use a fully transparent
+		// http proxy. Moreover, the CONNECT() method is frequently disabled
+		// by proxies administrators.
+#if QT_VERSION >= 0x040500
+		if (settings.proxy.type == QNetworkProxy::HttpProxy)
+			proxy.setCapabilities(QNetworkProxy::CachingCapability);
+#endif
+		if (!settings.proxy.user.isEmpty())
+			proxy.setUser(settings.proxy.user);
+		if (!settings.proxy.password.isEmpty())
+			proxy.setPassword(settings.proxy.password);
+		networkAccessManager.setProxy(proxy);
+	}
+
+#ifdef  __EXTENSIVE_WKHTMLTOPDF_QT_HACK__
+	if (!settings.defaultEncoding.isEmpty())
+		QWebSettings::globalSettings()->setDefaultTextEncoding(settings.defaultEncoding);
+	if (!settings.enableIntelligentShrinking) {
+		QWebSettings::globalSettings()->setPrintingMaximumShrinkFactor(1.0);
+		QWebSettings::globalSettings()->setPrintingMinimumShrinkFactor(1.0);
+	}
+#endif
+	QWebSettings::globalSettings()->setAttribute(QWebSettings::JavaEnabled, settings.enablePlugins);
+	QWebSettings::globalSettings()->setAttribute(QWebSettings::JavascriptEnabled, settings.enableJavascript);
+	QWebSettings::globalSettings()->setAttribute(QWebSettings::JavascriptCanOpenWindows, false);
+	QWebSettings::globalSettings()->setAttribute(QWebSettings::JavascriptCanAccessClipboard, false);
+
+#if QT_VERSION >= 0x040500
+	//Newer vertions of QT have even more settings to change
+	QWebSettings::globalSettings()->setAttribute(QWebSettings::PrintElementBackgrounds, settings.background);
+	QWebSettings::globalSettings()->setAttribute(QWebSettings::PluginsEnabled, settings.enablePlugins);
+	if (!settings.userStyleSheet.isEmpty())
+		QWebSettings::globalSettings()->setUserStyleSheetUrl(guessUrlFromString(settings.userStyleSheet));
+#endif
 }
 
 
@@ -195,6 +236,12 @@ void PageConverterPrivate::convert() {
 	loginTry = 0;
 	// 	pages.clear();
 // 	pageStart.clear();
+	
+// 	if(strcmp(out,"-") != 0 && !QFileInfo(out).isWritable()) {
+// 		fprintf(stderr, "Write access to '%s' is not allowed\n", out);
+// 		exit(1);
+// 	}
+
 }
 
 

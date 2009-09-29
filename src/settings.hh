@@ -152,7 +152,7 @@ struct Settings {
 	//! Stylesheet supplied by the user
 	QString userStyleSheet;
 	//! Url of document to use as cover
-	const char * cover;
+	QString cover;
 	//! Should we generate an outline and put it into the pdf file
 	bool outline;
 	//! Maximal depth of the generated outline

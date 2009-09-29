@@ -87,7 +87,7 @@ CommandLineParserPrivate::CommandLineParserPrivate(Settings & s):
 
 	qthack(true);
 	addarg("book",'b',"Set the options one would usualy set when printing a book", new Caller<BookFunc>());
-	addarg("cover",0,"Use html document as cover. It will be inserted before the toc with no headers and footers",new StrSetter(s.cover,"url",""));
+	addarg("cover",0,"Use html document as cover. It will be inserted before the toc with no headers and footers",new QStrSetter(s.cover,"url",""));
 	addarg("default-header",'H',"Add a default header, with the name of the page to the left, and the page number to the right, this is short for: --header-left='[webpage]' --header-right='[page]/[toPage]' --top 2cm --header-line", new Caller<DefaultHeaderFunc>());
 	addarg("toc",'t',"Insert a table of content in the beginning of the document", new ConstSetter<bool>(s.printToc,true,false));
 	qthack(false);
