@@ -21,9 +21,9 @@ class Feedback {
 public:
 	virtual ~Feedback() {};
 	virtual void setQuiet(bool quiet) {};
-	virtual void error(const QString &) {};
-	virtual void nextState(const QString &) {};
-	virtual void progress(long cur, long max, const QString & unit, bool displayOff) {}
+	virtual void error(const QString & msg) {};
+	virtual void nextState(const QString & name) {};
+	virtual void progress(long cur, long max, const QString & unit, bool displayOf) {}
 };
 
 class PageConverterPrivate;

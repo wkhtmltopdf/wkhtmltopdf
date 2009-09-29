@@ -275,7 +275,9 @@ void PageConverterPrivate::convert() {
 	}
 }
 
-
+/*!
+  Convert all the pages supplied in the settings into a pdf document
+*/
 void PageConverter::convert() {
 	d->convert();
 }
@@ -287,3 +289,43 @@ PageConverter::PageConverter(Settings & settings, Feedback & feedback):
 PageConverter::~PageConverter() {
 	delete d;
 }
+
+
+/*!
+  \class Feedback
+  \brief Class responcible for providing feedback to the user about the convertion process
+*/
+
+/*!
+  \fn Feedback::~Feedback()
+  Dummy virtual destructor
+*/
+
+/*!
+  \fn Feedback::setQuiet(bool quiet)
+  Indicates whether the user has specified that they want quiet processing
+  \param quiet Show we be quiet
+*/
+
+/*!
+  \fn Feedback::error(const QString & msg)
+  Indicate to the user that some error has occured.
+  \param msg A message describing the error
+*/
+
+/*!
+  \fn Feedback::nextState(const Qstring & name)
+  Indicate that the processing has reached a new phace
+  \param name the name of the new phase
+*/
+
+/*!
+  \fn Feedback::progress(long cur, long max, const QString & unit, bool displayOf)
+  Indicate that there where some progress in the current phase
+  \param cur The current progress in the phase
+  \param max Indicating the end of the phase
+  \param unit The unit of the phase link "%" or " pages"
+  \param displayOff Indicate that we want an "of x" in the description, e.g 1 of 3 pages
+*/
+
+
