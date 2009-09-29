@@ -143,7 +143,7 @@ void CommandLineParserPrivate::outputProxyDoc(Outputter * o) const {
 #warning "explain what and why"
 void CommandLineParserPrivate::outputHeaderFooterDoc(Outputter * o) const {
 	o->beginSection("Footers And Headers");
-	o->paragaprh("In a header or footer text the following variables can be used.");
+	o->paragraph("In a header or footer text the following variables can be used.");
 	o->verbatim(
  	        " * [page]       Replaced by the number of the pages currently beeing printed\n"
  	        " * [fromPage]   Replaced by the number of the first page to be printed\n"
@@ -158,9 +158,7 @@ void CommandLineParserPrivate::outputHeaderFooterDoc(Outputter * o) const {
 /*!
   Output documentation about outlines
   \param o The outputter to output to
-  \todo Do a better explanation
 */
-#warning "explain what and why"
 void CommandLineParserPrivate::outputOutlineDoc(Outputter * o) const {
 	o->beginSection("Outlines");
 	o->paragraph(
