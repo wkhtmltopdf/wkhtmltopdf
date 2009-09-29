@@ -14,7 +14,7 @@
 // You should have received a copy of the GNU General Public License
 // along with wkhtmltopdf.  If not, see <http://www.gnu.org/licenses/>.
 #include "commandlineparser_p.hh"
-
+#include <QWebFrame>
 /*!
   Output the name and version of the program, and also wether we are using a patched qt
   \param o The outputter to output to
