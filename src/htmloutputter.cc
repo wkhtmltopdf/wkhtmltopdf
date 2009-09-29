@@ -81,7 +81,7 @@ public:
 		fprintf(fd, "<table>\n");
 	}
 
-	void cswitch(const ArgHandler * h) {
+	void cswitch(const ArgHandler * h, bool doc) {
 		fprintf(fd, "<tr><td class=\"short\">");
 		if(h->shortSwitch)
 			fprintf(fd, "-%c,",h->shortSwitch);

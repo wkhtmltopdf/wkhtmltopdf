@@ -30,7 +30,8 @@ public:
 	void usage(FILE * fd, bool extended) const;
 	void manpage(FILE * fd) const;
 	void readme(FILE * fd, bool html) const;
-	void parse(int argc, const char ** argv) const;
+	void loadDefaults();
+	void parseArguments(int argc, const char ** argv);
 private:
 	CommandLineParserPrivate * d;
 };

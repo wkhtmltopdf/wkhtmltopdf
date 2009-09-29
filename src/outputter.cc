@@ -95,9 +95,10 @@
 
 	
 /*!
-  \fn Outputter::cswitch(const ArgHandler * h)
+  \fn Outputter::cswitch(const ArgHandler * h, bool doc)
   Output a switch description
   \param h The switch to add
+  \param doc Are we outputting to documentation
 */
 
 /*!

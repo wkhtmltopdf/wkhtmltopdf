@@ -64,7 +64,7 @@ public:
 		fprintf(fd, ".PD 0\n");
 	}
 	
-	void cswitch(const ArgHandler * h) {
+	void cswitch(const ArgHandler * h, bool doc) {
 		fprintf(fd, ".TP\n");
 		fprintf(fd, "\\fB");
 		if(h->shortSwitch != 0)
