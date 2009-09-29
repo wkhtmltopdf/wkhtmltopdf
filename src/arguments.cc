@@ -72,10 +72,11 @@ CommandLineParserPrivate::CommandLineParserPrivate(Settings & s):
 	settings(s)
 {
 	section("General Options");
+	extended(false);
 	addarg("help",'h',"Display help",new Caller<HelpFunc<false> >());
 	addarg("quiet",'q',"Be less verbose",new ConstSetter<bool>(s.quiet,true,false));
 	addarg("version",'V',"Output version information an exit", new Caller<VersionFunc>());
-	addarg("extended-help",0,"Display more extensive help", new Caller<HelpFunc<true> >());
+	addarg("extended-help",0,"Display more extensive help, detailing less common command switches", new Caller<HelpFunc<true> >());
 	addarg("collate", 0, "Collate when printing multiple copies", new ConstSetter<bool>(s.collate,true,false));
 	addarg("copies", 0, "Number of copies to print into the pdf file", new IntSetter(s.copies, "number", 1));
 	addarg("orientation",'O',"Set orientation to Landscape or Portrait", new OrientationSetter(s.orientation, "orientation"));
