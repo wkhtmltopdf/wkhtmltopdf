@@ -57,11 +57,10 @@ void CommandLineParserPrivate::outputLicense(Outputter * o) const {
 */
 void CommandLineParserPrivate::outputAuthors(Outputter * o) const {
 	o->beginSection("Authors");
-	o->beginParagraph();
-	o->text(QString::fromUtf8(
-				"Written by Jakob Truelsen. "
-				"Patches by Patches by Mário Silva and Emmanuel Bouthenot."));
-	o->endParagraph();
+	o->paragraph(
+		QString::fromUtf8(
+			"Written by Jakob Truelsen. "
+			"Patches by Patches by Mário Silva and Emmanuel Bouthenot."));
 	o->endSection();
 }
 
@@ -83,9 +82,8 @@ void CommandLineParserPrivate::outputSynopsis(Outputter * o) const {
 #warning "add a better explanation"
 void CommandLineParserPrivate::outputDescripton(Outputter * o) const {
 	o->beginSection("Description");
-	o->beginParagraph();
-	o->text("Converts one or more htmlpage to a pdf document.");
-	o->endParagraph();
+	o->paragraph(
+		"Converts one or more htmlpage to a pdf document.");
 	o->endSection();
 }
 
@@ -125,15 +123,15 @@ void CommandLineParserPrivate::outputPageBreakDoc(Outputter * o) const {
 #warning "explain what and why"
 void CommandLineParserPrivate::outputProxyDoc(Outputter * o) const {
 	o->beginSection("Specifying A Proxy");
-	o->beginParagraph();
-	o->text("By default proxy information will be read from the environment"
-	        " variables: proxy, all_proxy and http_proxy, proxy options can"
- 	        " also by specified with the -p switch");
+	o->paragraph(
+		"By default proxy information will be read from the environment"
+		" variables: proxy, all_proxy and http_proxy, proxy options can"
+		" also by specified with the -p switch");
 	o->endParagraph();
 	o->verbatim(
- 	        "<type> := \"http://\" | \"socks5://\"\n"
- 	        "<userinfo> := <username> (\":\" <password>)? \"@\"\n"
- 	        "<proxy> := \"None\" | <type>? <userinfo>? <host> (\":\" <port>)?\n");
+		"<type> := \"http://\" | \"socks5://\"\n"
+		"<userinfo> := <username> (\":\" <password>)? \"@\"\n"
+		"<proxy> := \"None\" | <type>? <userinfo>? <host> (\":\" <port>)?\n");
 	o->endSection();
 }
 
@@ -145,9 +143,7 @@ void CommandLineParserPrivate::outputProxyDoc(Outputter * o) const {
 #warning "explain what and why"
 void CommandLineParserPrivate::outputHeaderFooterDoc(Outputter * o) const {
 	o->beginSection("Footers And Headers");
-	o->beginParagraph();
-	o->text("In a header or footer text the following variables can be used.");
-	o->endParagraph();
+	o->paragaprh("In a header or footer text the following variables can be used.");
 	o->verbatim(
  	        " * [page]       Replaced by the number of the pages currently beeing printed\n"
  	        " * [fromPage]   Replaced by the number of the first page to be printed\n"
@@ -167,6 +163,15 @@ void CommandLineParserPrivate::outputHeaderFooterDoc(Outputter * o) const {
 #warning "explain what and why"
 void CommandLineParserPrivate::outputOutlineDoc(Outputter * o) const {
 	o->beginSection("Outlines");
+	o->paragraph(
+		"Wkhtmltodpf with patched qt has support for pdf outlines also known as "
+		"book marks, this can be enabeled by specifying the --outline switch. "
+		"The outlines are generated based on the <h?> tags, for a indepth "
+		"description of how this is done see the \"Table Of Contest\" section. ");
+	o->paragraph(
+		"The outline tree can sometimes be very deep, if the <h?> tags where "
+		"spred to generous in the HTML document.  The --outline-depth switch can "
+		"be used to bound this.");
 	o->endSection();
 }
 

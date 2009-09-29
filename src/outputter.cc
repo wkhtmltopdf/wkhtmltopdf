@@ -106,4 +106,13 @@
   End a switch section
 */
 
+
+/*!
+  Output a paragraph of simple text
+*/
+void Outputter::paragraph(const QString & t) {
+	beginParagraph();
+	text(t);
+	endParagraph();
+}
 	
