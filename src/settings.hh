@@ -157,6 +157,10 @@ struct Settings {
 	bool outline;
 	//! Maximal depth of the generated outline
 	int outlineDepth;
+	//! List of input files
+	QList<QString> in;
+	//! The file where in to store the output
+	QString out;
 
 	static QPrinter::PageSize strToPageSize(const char * s, bool * ok=0);
 	static QPair<qreal, QPrinter::Unit> strToUnitReal(const char * s, bool * ok=0);
