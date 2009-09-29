@@ -60,7 +60,7 @@ public:
 		QStringList list = t.split(" ");
 		foreach(const QString & s, list) {
 			if( w + s.size() + (first?0:1) > lw) {
-				printf("\n");
+				fprintf(fd, "\n");
 				if(doc) {
 					w=0;
 				} else {
@@ -71,11 +71,11 @@ public:
 			}
 			if(first) first=false;
 			else {
-				printf(" ");
+				fprintf(fd, " ");
 				++w;
 			}
 			w += s.size();
-			printf("%s", S(s));
+			fprintf(fd, "%s", S(s));
 		}
 	}
 	
