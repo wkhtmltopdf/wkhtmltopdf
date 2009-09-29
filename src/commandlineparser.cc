@@ -175,6 +175,7 @@ CommandLineParser::~CommandLineParser() {
  * Load default arguments and put them in the settings structure
  */
 void CommandLineParser::loadDefaults() {
+	d->settings.in.clear();
 	d->settings.proxy.host = "";
 	foreach(ArgHandler * h, d->longToHandler) 
 		h->useDefault(*d);
