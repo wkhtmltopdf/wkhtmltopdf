@@ -37,41 +37,6 @@ Q_IMPORT_PLUGIN(qmng)
 #endif
 
 
-// void WKHtmlToPdf::run(int argc, const char ** argv) {
-	
-// #ifdef  __EXTENSIVE_WKHTMLTOPDF_QT_HACK__
-//  	if (cover[0]) in.push_front(cover);
-// 	}
-// #endif
-
-
-// 	for (int i=0; i < in.size(); ++i) {
-// 		QWebPage * page = new QWebPage();
-// 		//Allow for network control fine touning.
-// 		page->setNetworkAccessManager(am);
-// 		//When loading is progressing we want loadProgress to be called
-// 		connect(page, SIGNAL(loadProgress(int)), this, SLOT(loadProgress(int)));
-// 		//Once the loading is done we want loadFinished to be called
-// 		connect(page, SIGNAL(loadFinished(bool)), this, SLOT(loadFinished(bool)));
-// 		connect(page, SIGNAL(loadStarted()), this, SLOT(loadStarted()));
-
-// 		page->mainFrame()->setZoomFactor(zoom_factor);
-// 		QString u= in[i];
-// 		if (u == "-") {
-// 			QFile in;
-// 			in.open(stdin,QIODevice::ReadOnly);
-// 			u = QDir::tempPath()+"/wktemp"+QUuid::createUuid().toString()+".html";
-// 			temp.push_back(u);
-// 			QFile tmp(u);
-// 			tmp.open(QIODevice::WriteOnly);
-// 			copyFile(in,tmp);
-// 		}
-// 		loginTry=0;
-// 		page->mainFrame()->load(guessUrlFromString(u));
-// 		pages.push_back(page);
-// 	}
-// }
-
 // /*!
 //  * Print out the document to the pdf file
 //  */

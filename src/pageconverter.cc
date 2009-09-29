@@ -18,6 +18,10 @@
 #include <QAuthenticator>
 #include <QTimer>
 #include <QWebSettings>
+#include <QWebPage>
+#include <QWebFrame>
+#include <QDir>
+#include <QUuid>
 
 /*!
  * Copy a file from some place to another
@@ -93,6 +97,7 @@ QUrl PageConverterPrivate::guessUrlFromString(const QString &string) {
 		url = QUrl(QLatin1String("http://") + string, QUrl::TolerantMode);
 	return url;
 }
+
 PageConverterPrivate::PageConverterPrivate(Settings & s, Feedback & f) :
 	settings(s), feedback(f) {
 	
@@ -237,11 +242,37 @@ void PageConverterPrivate::convert() {
 	// 	pages.clear();
 // 	pageStart.clear();
 	
+  	if (!settings.cover.isEmpty())
+		settings.in.push_front(settings.cover);
+
 // 	if(strcmp(out,"-") != 0 && !QFileInfo(out).isWritable()) {
 // 		fprintf(stderr, "Write access to '%s' is not allowed\n", out);
 // 		exit(1);
 // 	}
+	foreach(QString url, settings.in) {
+		QWebPage * page = new QWebPage();
+		//Allow for network control fine touning.
+		page->setNetworkAccessManager(&networkAccessManager);
+		//When loading is progressing we want loadProgress to be called
+		connect(page, SIGNAL(loadProgress(int)), this, SLOT(loadProgress(int)));
+		//Once the loading is done we want loadFinished to be called
+		connect(page, SIGNAL(loadFinished(bool)), this, SLOT(loadFinished(bool)));
+		connect(page, SIGNAL(loadStarted()), this, SLOT(loadStarted()));
 
+		page->mainFrame()->setZoomFactor(settings.zoomFactor);
+		if (url == "-") {
+			QFile in;
+			in.open(stdin,QIODevice::ReadOnly);
+			url = QDir::tempPath()+"/wktemp"+QUuid::createUuid().toString()+".html";
+			temporaryFiles.push_back(url);
+			QFile tmp(url);
+			tmp.open(QIODevice::WriteOnly);
+			copyFile(in,tmp);
+		}
+
+		page->mainFrame()->load(guessUrlFromString(url));
+		pages.push_back(page);
+	}
 }
 
 

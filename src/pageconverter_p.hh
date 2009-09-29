@@ -20,6 +20,7 @@
 #include <QRegExp>
 #include <qnetworkreply.h>
 #include <QAtomicInt>
+#include <QWebPage>
 
 class PageConverterPrivate: public QObject {
 	Q_OBJECT
@@ -36,6 +37,8 @@ private:
 	QNetworkAccessManager networkAccessManager;
 	//!Keep track of the numer of pages loading
  	QAtomicInt loading; 
+	QList<QString> temporaryFiles;
+	QList<QWebPage *> pages;
 private slots:
 	void amfinished(QNetworkReply * r);
 	void authenticationRequired(QNetworkReply *reply, QAuthenticator *authenticator);
