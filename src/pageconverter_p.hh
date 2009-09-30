@@ -24,17 +24,16 @@
 #include <QPainter>
 #include <QPrinter>
 #include <QWebElement>
-
 class PageConverterPrivate: public QObject {
 	Q_OBJECT
 public:
-	PageConverterPrivate(Settings & s, Feedback & f);
+	PageConverterPrivate(Settings & s, PageConverter & o);
 	void copyFile(QFile & src, QFile & dst);
 	QUrl guessUrlFromString(const QString &string);
 	void convert();
 private:
+	PageConverter & outer;
 	Settings & settings;
-	Feedback & feedback;
 	int networkError;
 	int loginTry;
 	QNetworkAccessManager networkAccessManager;
@@ -45,6 +44,7 @@ private:
 	QPrinter * printer;
 	QPainter * painter;
 	int logicalPages;
+	int logicalPage;
 	int actualPages;
 	QList<int> pageCount;
 	int tocPages;

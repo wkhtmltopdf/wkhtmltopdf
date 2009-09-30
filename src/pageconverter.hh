@@ -16,24 +16,34 @@
 #ifndef __PAGECONVERTER_HH__
 #define __PAGECONVERTER_HH__
 #include "settings.hh"
-
-class Feedback {
-public:
-	virtual ~Feedback() {};
-	virtual void setQuiet(bool quiet) {};
-	virtual void error(const QString & msg) {};
-	virtual void nextState(const QString & name) {};
-	virtual void progress(long cur, long max, const QString & unit, bool displayOf) {}
-};
+#include <QObject>
 
 class PageConverterPrivate;
-class PageConverter {
+class PageConverter: public QObject {
+	Q_OBJECT
 public:
-	PageConverter(Settings & settings, Feedback & feedback);
+	PageConverter(Settings & settings);
 	~PageConverter();
+	int stageCount();
+	int currentStage();
+	QString stageDescription(int stage=-1);
+	double progress();
+	QString progressString();
+	int httpErrorCode();
+	void addResource(const QString & url);
+signals:
+	void warning(const QString & message);
+	void error(const QString & message);
+	void stageChanged();
+	void progressChanged();
+	void convertionFinised();
+public slots:
+	void beginConvertion();
 	void convert();
+	void cancel();
 private:
 	PageConverterPrivate * d;
+	friend class PageConverterPrivate;
 };
 
 #endif //__PAGECONVERTER_HH__
