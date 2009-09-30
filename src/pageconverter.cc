@@ -738,58 +738,126 @@ QString PageConverterPrivate::hfreplace(const QString & q) {
 // }
 
 
+/*!
+  \class PageConverter
+  \brief Class responsible for converting html pages to pdf
+  \todo explain something about the convertion process here, and mention stages
+*/
 
 /*!
-  Convert all the pages supplied in the settings into a pdf document
+  \brief Create a page converter object based on the supplied settings
+  \param settings Settings for the conversion
+*/
+PageConverter::PageConverter(Settings & settings):
+	d(new PageConverterPrivate(settings, *this)) {
+}
+
+/*!
+  \brief The destructor for the page converter object
+*/
+PageConverter::~PageConverter() {
+	delete d;
+}
+
+/*!
+  \brief Count the number of phases that the convertion proccess goes though
+*/
+int PageConverter::phaseCount() {
+	return d->phaseDescriptions.size();
+}
+
+/*!
+  \brief return the current phase of conversion
+*/
+int PageConverter::currentPhase() {
+	return d->currentPhase;
+}
+
+/*!
+  \brief return a textual description of some phase
+  \param phase the phase to get a description of, -1 for current phase
+*/
+QString PageConverter::phaseDescription(int phase=-1) {
+	return d->d->phaseDescriptions[(phase < 0 || d->phaseDescriptions.size() >= phase)?phase:d->currentPhase];
+}
+
+/*!
+  \brief return the progress in the current phase in percent, or -1 for current phase
+*/
+double PageConverter::progress() {
+	return d->progress;
+}
+
+/*!
+  \brief return a textual description of progress in the current phase
+*/
+QString PageConverter::progressString() {
+	return d->progressString;
+}
+
+/*!
+  \brief return the http return code, of the converted page
+*/
+int PageConverter::httpErrorCode() {
+	return d->httpErrorCode;
+}
+
+/*!
+  \brief add a resource we want to convert
+  \param url The url of the object we want to convert
+*/
+void PageConverter::addResource(const QString & url) {
+	d->settings.in.push_back(url);
+}
+
+/*!
+  \brief Start a asynchronious convertion of html pages to a pdf document.
+  Once convertion is done an finished signal will be emitted
+*/
+void PageConverter::beginConvertion() {
+}
+
+/*!
+  \brief Synchronios convert html pages to a pdf document.
 */
 void PageConverter::convert() {
 	d->convert();
 }
 
-PageConverter::PageConverter(Settings & settings):
-	d(new PageConverterPrivate(settings, *this)) {
+/*!
+  \brief Cancel a running conversion
+*/
+void PageConverter::cancel() {
+	d->cancel();
 }
 
-PageConverter::~PageConverter() {
-	delete d;
-}
-
-
 /*!
-  \class Feedback
-  \brief Class responcible for providing feedback to the user about the convertion process
+  \fn PageConverter::warning(const QString & message)
+  \brief Signal emmited when some non fatal waring occures during conversion
+  \param message The warning message
 */
 
 /*!
-  \fn Feedback::~Feedback()
-  Dummy virtual destructor
+  \fn PageConverter::error(const QString & message)
+  \brief Signal emmitted when a fatal error has occured during conversion
+  \param message A message describing the fatal error
 */
 
 /*!
-  \fn Feedback::setQuiet(bool quiet)
-  Indicates whether the user has specified that they want quiet processing
-  \param quiet Show we be quiet
+  \fn PageConverter::phaseChanged()
+  \brief Signal emitted when the converter has reached a new phase
 */
 
 /*!
-  \fn Feedback::error(const QString & msg)
-  Indicate to the user that some error has occured.
-  \param msg A message describing the error
+  \fn PageConverter::progressChanged()
+  \brief Signal emitted when some progress has been done in the convertion phase
 */
 
 /*!
-  \fn Feedback::nextState(const Qstring & name)
-  Indicate that the processing has reached a new phace
-  \param name the name of the new phase
+  \fn PageConverter::finised()
+  \brief Signal emitted when convertion has finished.
 */
 
-/*!
-  \fn Feedback::progress(long cur, long max, const QString & unit, bool displayOf)
-  Indicate that there where some progress in the current phase
-  \param cur The current progress in the phase
-  \param max Indicating the end of the phase
-  \param unit The unit of the phase link "%" or " pages"
-  \param displayOff Indicate that we want an "of x" in the description, e.g 1 of 3 pages
-*/
+
 
 

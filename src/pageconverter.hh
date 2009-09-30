@@ -24,9 +24,9 @@ class PageConverter: public QObject {
 public:
 	PageConverter(Settings & settings);
 	~PageConverter();
-	int stageCount();
-	int currentStage();
-	QString stageDescription(int stage=-1);
+	int phaseCount();
+	int currentPhase();
+	QString phaseDescription(int phase=-1);
 	double progress();
 	QString progressString();
 	int httpErrorCode();
@@ -34,9 +34,9 @@ public:
 signals:
 	void warning(const QString & message);
 	void error(const QString & message);
-	void stageChanged();
+	void phaseChanged();
 	void progressChanged();
-	void convertionFinised();
+	void finised();
 public slots:
 	void beginConvertion();
 	void convert();
