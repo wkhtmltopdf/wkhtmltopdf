@@ -22,6 +22,7 @@
 #include <QWebFrame>
 #include <QDir>
 #include <QUuid>
+#include <QPair>
 
 /*!
  * Copy a file from some place to another
@@ -274,6 +275,238 @@ void PageConverterPrivate::convert() {
 		pages.push_back(page);
 	}
 }
+
+
+/*!
+ * Prepares printing out the document to the pdf file
+ */
+void PageConverterPrivate::preparePrint() {
+	//If there are still pages loading wait til they are done
+	if (loading != 0) return;
+	//Give some user feed back
+// 	if (!quiet) {
+// 		fprintf(stderr, "Outputting pages       \r");
+// 		fflush(stdout);
+// 	}
+
+	printer = new QPrinter(settings.resolution);
+	
+	QString lout = settings.out;
+	if (settings.dpi != -1) printer->setResolution(settings.dpi);
+	if (settings.out == "-") {
+		if (QFile::exists("/dev/stdout"))
+			lout = "/dev/stdout";
+		else {
+			#warning "Sometimes we should add .ps instead here"
+			lout = QDir::tempPath()+"/wktemp"+QUuid::createUuid().toString()+".pdf";
+			temporaryFiles.push_back(lout);
+		}
+	}
+	//Tell the printer object to print the file <out>
+	printer->setOutputFormat(
+		settings.out.endsWith(".ps", Qt::CaseInsensitive)?
+	    QPrinter::PostScriptFormat : QPrinter::PdfFormat
+		);
+	printer->setOutputFileName(lout);
+
+	//We currently only support margins with the same unit
+	if (settings.margin.left.second != settings.margin.right.second ||
+		settings.margin.left.second != settings.margin.top.second ||
+		settings.margin.left.second != settings.margin.bottom.second) {
+		#warning "FIX ME"
+		// fprintf(stderr, "Currently all margin units must be the same!\n");
+// 		exit(1);
+	}
+
+	//Setup margins and papersize
+	printer->setPageMargins(settings.margin.left.first, settings.margin.top.first,
+							settings.margin.right.first, settings.margin.bottom.first,
+							settings.margin.left.second);
+	printer->setPageSize(settings.pageSize);
+	printer->setOrientation(settings.orientation);
+	printer->setColorMode(settings.colorMode);
+
+	if (!printer->isValid()) {
+		#warning "FIX ME"
+// 		fprintf(stderr,"Unable to write to output file\n");
+// 		exit(1);
+	}
+	//pageStart.push_back(0);
+
+#ifndef __EXTENSIVE_WKHTMLTOPDF_QT_HACK__
+	//If you do not have the hacks you get this crappy solution
+	printer.setCollateCopies(settings.copies);
+	printer.setCollateCopies(settings.collate);
+	printPage();
+	//pages[0]->mainFrame()->print(&printer);
+#else
+	painter = new QPainter();
+	painter->begin(printer);
+	
+	logicalPages = 0;
+	actualPages = 0;
+	pageCount.clear();
+	tocPages = 0;
+	anchors.clear();
+	localLinks.clear();
+	externalLinks.clear();
+
+	//Find and resolve all local links
+	if(settings.useLocalLinks || settings.useExternalLinks) {
+		QHash<QString, int> urlToDoc;
+		for(int d=0; d < pages.size(); ++d) 
+			urlToDoc[ pages[d]->mainFrame()->url().toString(QUrl::RemoveFragment) ]  = d;
+		
+		for(int d=0; d < pages.size(); ++d) {
+			#warning "FIX ME"
+			// if (!quiet) {
+// 				fprintf(stderr, "Resolving Links %d of %d      \r",d+1,pages.size());
+// 				fflush(stdout);
+// 			}
+			
+			foreach(const QWebElement & elm,pages[d]->mainFrame()->findAllElements("a")) {
+				QUrl href=QUrl(elm.attribute("href"));
+				if(href.isEmpty()) continue;
+				href=pages[d]->mainFrame()->url().resolved(href);
+				if(urlToDoc.contains(href.toString(QUrl::RemoveFragment))) {
+					if(settings.useLocalLinks) {
+						int t = urlToDoc[href.toString(QUrl::RemoveFragment)];
+						QWebElement e;
+						if(!href.hasFragment()) 
+							e = pages[t]->mainFrame()->findFirstElement("body");
+						else {
+							e = pages[t]->mainFrame()->findFirstElement("a[name=\""+href.fragment()+"\"]");
+							if(e.isNull()) 
+								e = pages[t]->mainFrame()->findFirstElement("*[id=\""+href.fragment()+"\"]");
+						}
+						if(e.isNull())
+							qDebug() << "Unable to find target for local link " << href; 
+						else {
+							anchors[t][href.toString()] = e;
+							localLinks[d].push_back( qMakePair(elm, href.toString()) );
+						}
+					}
+				} else if(settings.useExternalLinks)
+					externalLinks[d].push_back( qMakePair(elm, href.toString() ) );
+			}
+		}
+	}
+
+	headings.clear();
+	
+	//This is the first render face, it is done to calculate:
+	// * The number of pages of each document
+	// * A visual ordering of the header elemnt
+	// * The location and page number of each header
+	for(int d=0; d < pages.size(); ++d) {
+		#warning "fix me"
+// 		if (!quiet) {
+// 			fprintf(stderr, "Counting pages %d of %d      \r",d+1,pages.size()+(print_toc?1:0));
+// 			fflush(stdout);
+// 		}
+
+		painter->save();
+		QWebPrinter wp(pages[d]->mainFrame(), printer, *painter);
+		int count = wp.pageCount();
+		pageCount.push_back(count);
+		actualPages += count;
+		if (settings.cover.isEmpty() || d != 0) {
+			logicalPages += count;
+			foreach(const QWebElement & e, pages[d]->mainFrame()->findAllElements("h1,h2,h3,h4,h5,h6,h7,h8,h9")) {
+				QPair<int, QRectF> location = wp.elementLocation(e);
+				headings[d][ qMakePair(location.first, qMakePair(location.second.y(), location.second.x()) ) ] = e;
+			}
+		} 
+		painter->restore();
+	}
+
+	//Now that we know the ordering of the headers in each document we
+	//can calculate the number of pages in the table of content
+	if (settings.printToc) {
+		#warning "fixme"
+// 		if (!quiet) {
+// 			fprintf(stderr, "Counting pages %d of %d      \r",pages.size()+1,pages.size()+1);
+//  			fflush(stdout);
+//  		}									   
+//  		TocItem * root = new TocItem();
+// 		for(int d=0; d < pages.size(); ++d) {
+// 			if (cover[0] && d == 0) continue;
+// 			// buildToc(root,pages[d]->mainFrame(),
+//  					 anchors[d], externalLinks[d]
+//  					 ,-1);
+// 		}
+		//tocPages = tocPrinter.countPages(root, &printer, painter);
+		tocPages = 0;
+		actualPages += tocPages;
+		logicalPages += tocPages;
+ 		//delete root;
+   	}
+	actualPages *= settings.copies;
+	int page=1;
+
+	headers.clear();
+	footers.clear();
+// 	headerFooterLoading =
+// 		(settings.header.htmlUrl.isEmpty()?0:actualPages) +
+// 		(settings.fooher.htmlURl.isEmpty()?0:actualPages);
+	if(!settings.header.htmlUrl.isEmpty() || !settings.footer.htmlUrl.isEmpty()) {
+		for(int d=0; d < pages.size(); ++d) {
+			if (!settings.cover.isEmpty() && d == 0) continue;
+			for(int p=0; p < pageCount[d]; ++p) {
+				if(!settings.header.htmlUrl.isEmpty())
+					headers.push_back(loadHeaderFooter(settings.header.htmlUrl, d, page) );
+				if(!settings.footer.htmlUrl.isEmpty())
+					footers.push_back(loadHeaderFooter(settings.footer.htmlUrl, d, page) );
+				++page;
+			}
+		}
+	} else 
+		printPage();
+#endif
+}
+
+
+QWebPage * PageConverterPrivate::loadHeaderFooter(QString url, int d, int page) {
+	QUrl u = guessUrlFromString(url);
+
+	#warning "Fix me"
+// 	QHash<QString, QString> values = calculateHeaderFooterParams(d, page);
+// 	for(QHash<QString, QString>::iterator i=values.begin(); i != values.end(); ++i)
+// 		u.addQueryItem(i.key(), i.value());
+	
+	QWebPage * p = new QWebPage();
+	p->setNetworkAccessManager(&networkAccessManager);
+	//connect(p, SIGNAL(loadFinished(bool)), this, SLOT(headerFooterLoadFinished(bool)));
+	p->mainFrame()->load(u);
+	return p;
+}
+
+// #ifdef  __EXTENSIVE_WKHTMLTOPDF_QT_HACK__
+// QHash<QString, QString> WKHtmlToPdf::calculateHeaderFooterParams(int d, int page) {
+// 	QHash<QString, QString> res;
+	
+// 	res["frompage"] = QString::number(page_offset);
+// 	res["topage"] = QString::number(page_offset+logicalPages-1);
+// 	res["page"] = QString::number(logicalPage);
+// 	res["webpage"] = "foobar";
+	
+//  	QString sec[TocPrinter::levels];
+// 	for (uint i=0; i < TocPrinter::levels; ++i) {
+// 		QMap<int, TocItem*>::const_iterator j = tocPrinter.page2sectionslow[i].find(pageNum);
+// 		if (j == tocPrinter.page2sectionslow[i].end()) {
+// 			j = tocPrinter.page2sectionshigh[i].upperBound(pageNum);
+// 			--j;
+// 			if (j == tocPrinter.page2sectionshigh[i].end()) continue;
+// 		}
+// 		sec[i] = j.value()->value;
+// 	}
+// 	res["section"] = sec[0];
+// 	res["subsection"] = sec[1];
+// 	res["subsubsection"] = sec[2];
+// 	return res;
+// }
+
+
 
 /*!
   Convert all the pages supplied in the settings into a pdf document

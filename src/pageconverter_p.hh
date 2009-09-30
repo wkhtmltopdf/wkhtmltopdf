@@ -21,6 +21,9 @@
 #include <qnetworkreply.h>
 #include <QAtomicInt>
 #include <QWebPage>
+#include <QPainter>
+#include <QPrinter>
+#include <QWebElement>
 
 class PageConverterPrivate: public QObject {
 	Q_OBJECT
@@ -39,6 +42,21 @@ private:
  	QAtomicInt loading; 
 	QList<QString> temporaryFiles;
 	QList<QWebPage *> pages;
+	QPrinter * printer;
+	QPainter * painter;
+	int logicalPages;
+	int actualPages;
+	QList<int> pageCount;
+	int tocPages;
+	
+	QHash<int, QHash<QString, QWebElement> > anchors;
+	QHash<int, QVector< QPair<QWebElement,QString> > > localLinks;
+	QHash<int, QVector< QPair<QWebElement,QString> > > externalLinks;
+	QHash<int, QMap< QPair<int, QPair<qreal,qreal> >, QWebElement> > headings;
+	QList<QWebPage *> headers;
+	QList<QWebPage *> footers;
+
+	QWebPage * loadHeaderFooter(QString url, int d, int page);
 private slots:
 	void amfinished(QNetworkReply * r);
 	void authenticationRequired(QNetworkReply *reply, QAuthenticator *authenticator);
@@ -46,6 +64,8 @@ private slots:
 	void loadStarted();
 	void loadProgress(int progress);
 	void sslErrors(QNetworkReply *reply, const QList<QSslError> &);
+	void preparePrint();
+	void printPage();
 };
 
 #endif //__TEXTUALFEEDBACK_P_HH__
