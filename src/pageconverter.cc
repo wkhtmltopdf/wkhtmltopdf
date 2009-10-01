@@ -24,112 +24,9 @@
 #include <QUuid>
 #include <QPair>
 
-/*!
- * Copy a file from some place to another
- * \param src The source to copy from
- * \param dst The destination to copy to
- */
-void PageConverterPrivate::copyFile(QFile & src, QFile & dst) {
-	QByteArray buf(1024*1024*5,0);
-	while(qint64 r=src.read(buf.data(),buf.size()))
-		dst.write(buf.data(),r);
-	src.close();
-	dst.close();
-}
-
-/*!
- * Guess a url, by looking at a string
- * (shamelessly copied from Arora Project)
- * \param string The string the is suppose to be some kind of url
- */
-QUrl PageConverterPrivate::guessUrlFromString(const QString &string) {
-	QString urlStr = string.trimmed();
-
-	// check if the string is just a host with a port
-	QRegExp hostWithPort(QLatin1String("^[a-zA-Z\\.]+\\:[0-9]*$"));
-	if (hostWithPort.exactMatch(urlStr))
-		urlStr = QLatin1String("http://") + urlStr;
-
-	// Check if it looks like a qualified URL. Try parsing it and see.
-	QRegExp test(QLatin1String("^[a-zA-Z]+\\:.*"));
-	bool hasSchema = test.exactMatch(urlStr);
-	if (hasSchema) {
-		bool isAscii = true;
-		foreach (const QChar &c, urlStr) {
-			if (c >= 0x80) {
-				isAscii = false;
-				break;
-			}
-		}
-
-		QUrl url;
-		if (isAscii) {
-			url = QUrl::fromEncoded(urlStr.toAscii(), QUrl::TolerantMode);
-		} else {
-			url = QUrl(urlStr, QUrl::TolerantMode);
-		}
-		if (url.isValid())
-			return url;
-	}
-
-	// Might be a file.
-	if (QFile::exists(urlStr)) {
-		QFileInfo info(urlStr);
-		return QUrl::fromLocalFile(info.absoluteFilePath());
-	}
-
-	// Might be a shorturl - try to detect the schema.
-	if (!hasSchema) {
-		int dotIndex = urlStr.indexOf(QLatin1Char('.'));
-		if (dotIndex != -1) {
-			QString prefix = urlStr.left(dotIndex).toLower();
-			QString schema = (prefix == QLatin1String("ftp")) ? prefix : QLatin1String("http");
-			QUrl url(schema + QLatin1String("://") + urlStr, QUrl::TolerantMode);
-			if (url.isValid())
-				return url;
-		}
-	}
-
-	// Fall back to QUrl's own tolerant parser.
-	QUrl url = QUrl(string, QUrl::TolerantMode);
-
-	// finally for cases where the user just types in a hostname add http
-	if (url.scheme().isEmpty())
-		url = QUrl(QLatin1String("http://") + string, QUrl::TolerantMode);
-	return url;
-}
 
 PageConverterPrivate::PageConverterPrivate(Settings & s, PageConverter & o) :
 	outer(o), settings(s) {
-	//If some ssl error occures we want sslErrors to be called, so the we can ignore it
-	connect(&networkAccessManager, SIGNAL(sslErrors(QNetworkReply*, const QList<QSslError>&)),this,
-	        SLOT(sslErrors(QNetworkReply*, const QList<QSslError>&)));
-
-	connect(&networkAccessManager, SIGNAL(finished (QNetworkReply *)),
-			this, SLOT(amfinished (QNetworkReply *) ) );
-
-	connect(&networkAccessManager, SIGNAL(authenticationRequired(QNetworkReply*, QAuthenticator *)),this,
-	        SLOT(authenticationRequired(QNetworkReply *, QAuthenticator *)));
-
-	//If we must use a proxy, create a host of objects
-	if (!settings.proxy.host.isEmpty()) {
-		QNetworkProxy proxy;
-		proxy.setHostName(settings.proxy.host);
-		proxy.setPort(settings.proxy.port);
-		proxy.setType(settings.proxy.type);
-		// to retrieve a web page, it's not needed to use a fully transparent
-		// http proxy. Moreover, the CONNECT() method is frequently disabled
-		// by proxies administrators.
-#if QT_VERSION >= 0x040500
-		if (settings.proxy.type == QNetworkProxy::HttpProxy)
-			proxy.setCapabilities(QNetworkProxy::CachingCapability);
-#endif
-		if (!settings.proxy.user.isEmpty())
-			proxy.setUser(settings.proxy.user);
-		if (!settings.proxy.password.isEmpty())
-			proxy.setPassword(settings.proxy.password);
-		networkAccessManager.setProxy(proxy);
-	}
 
 #ifdef  __EXTENSIVE_WKHTMLTOPDF_QT_HACK__
 	if (!settings.defaultEncoding.isEmpty())
@@ -154,35 +51,6 @@ PageConverterPrivate::PageConverterPrivate(Settings & s, PageConverter & o) :
 }
 
 
-/*!
- * Track and handle network errors
- * \param reply The networkreply that has finished
- */
-void PageConverterPrivate::amfinished(QNetworkReply * reply) {
-	int error = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
-	if(error > 399 && networkError == 0) networkError = error;
-}
-
-/*!
- * Called when the page requires authentication, filles in the username
- * and password supplied on the command line
- */
-void PageConverterPrivate::authenticationRequired(QNetworkReply *reply, QAuthenticator *authenticator) {
-	if (settings.username.isEmpty()) {
-		//If no username is given, complain the such is required
-		emit outer.error("Authentication Required");
-		reply->abort();
-	} else if (loginTry >= 2) {
-		//If the login has failed a sufficient number of times,
-		//the username or password must be wrong
-		emit outer.error("Invalid username or password");
-		reply->abort();
-	} else {
-		authenticator->setUser(settings.username);
-		authenticator->setPassword(settings.password);
-		++loginTry;
-	}
-}
 
 
 /*!
@@ -228,20 +96,8 @@ void PageConverterPrivate::loadProgress(int progress) {
 	//feedback.progress(progress, 100, "%", false);
 }
 
-/*!
- * Handel any ssl error by ignoring
- */
-void PageConverterPrivate::sslErrors(QNetworkReply *reply, const QList<QSslError> &) {
-	//We ignore any ssl error, as it is next to impossible to send or receive
-	//any private information with wkhtmltopdf anyhow, seeing as you cannot authenticate
-	reply->ignoreSslErrors();
-}
 
 void PageConverterPrivate::convert() {
-	networkError = 0;
-	loginTry = 0;
-	// 	pages.clear();
-// 	pageStart.clear();
 	
   	if (!settings.cover.isEmpty())
 		settings.in.push_front(settings.cover);

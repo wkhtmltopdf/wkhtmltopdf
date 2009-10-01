@@ -15,16 +15,23 @@
 // along with wkhtmltopdf.  If not, see <http://www.gnu.org/licenses/>.
 #ifndef __MULTIPAGELOADER_HH__
 #define __MULTIPAGELOADER_HH__
+#include "settings.hh"
+#include <QUrl>
+#include <QWebPage>
 
 class MultiPageLoaderPrivate;
 class MultiPageLoader {
 public:
 	MultiPageLoader(Settings & s);
-	void addResource(const QString & string);
-	void addResource(const QUrl & url);
+	~MultiPageLoader();
+	QWebPage * addResource(const QString & string);
+	QWebPage * addResource(const QUrl & url);
 	static QUrl guessUrlFromString(const QString &string);
+	int httpErrorCode();
 public slots:
 	void load();
+	void clearResources();
+	void cancel();
 signals:
 	void loadFinished(bool ok);
 	void loadProgress(int progress);
@@ -32,7 +39,8 @@ signals:
 	void warning(QString text);
 	void error(QString text);
 private:
-	MultiPageLoaderPrivate * p;
+	MultiPageLoaderPrivate * d;
+	friend class MultiPageLoaderPrivate;
 };
 
 #endif //__MULTIPAGELOADER_HH__
