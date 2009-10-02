@@ -15,6 +15,8 @@
 // along with wkhtmltopdf.  If not, see <http://www.gnu.org/licenses/>.
 #include "tempfile.hh"
 #include <QUuid>
+#include <QFile>
+#include <QDir>
 /*!
   \file tempfile.hh
   \brief Defines the TempFile class

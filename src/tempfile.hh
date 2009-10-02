@@ -15,6 +15,7 @@
 // along with wkhtmltopdf.  If not, see <http://www.gnu.org/licenses/>.
 #ifndef __TEMPFILE_HH__
 #define __TEMPFILE_HH__
+#include <QString>
 
 class TempFile {
 private:

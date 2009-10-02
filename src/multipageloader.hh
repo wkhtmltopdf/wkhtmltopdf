@@ -18,9 +18,11 @@
 #include "settings.hh"
 #include <QUrl>
 #include <QWebPage>
+#include <QObject>
 
 class MultiPageLoaderPrivate;
-class MultiPageLoader {
+class MultiPageLoader: public QObject {
+	Q_OBJECT
 public:
 	MultiPageLoader(Settings & s);
 	~MultiPageLoader();
