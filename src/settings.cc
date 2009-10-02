@@ -16,10 +16,15 @@
 #include <settings.hh>
 
 /*!
+  \file settings.hh
+  \brief Defines the Settings class
+*/
+
+/*!
   Convert a string to a paper size, basicly all thinkable values are allowed.
   if a unknown value is given A4 is returned
   \param s The string to convert
-  \parem ok If supplied indicates if the conversion was successfull
+  \param ok If supplied indicates if the conversion was successfull
 */
 QPrinter::PageSize Settings::strToPageSize(const char * s, bool * ok) {
 	if (ok) *ok=true;

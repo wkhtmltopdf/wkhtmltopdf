@@ -17,6 +17,17 @@
 #include <qwebframe.h>
 
 /*!
+  \file commandlineparser.hh
+  \brief Defines the CommandLineParser class
+*/
+
+/*!
+  \file commandlineparser_p.hh
+  \brief Defines the CommandLineParserPrivate, ArgHandler and Outputter class
+*/
+
+
+/*!
   Output description of switches to an outputter
   \param o The outputter to output to
   \param extended Should we also output extended arguments

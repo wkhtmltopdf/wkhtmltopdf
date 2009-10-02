@@ -18,6 +18,15 @@
 #include <QFileInfo>
 
 /*!
+  \file multipageloader.hh
+  \brief Defines the MultiPageLoader class
+*/
+
+/*!
+  \file multipageloader_p.hh
+  \brief Defines the MultiPageLoaderPrivate class
+
+/*!
  * Track and handle network errors
  * \param reply The networkreply that has finished
  */

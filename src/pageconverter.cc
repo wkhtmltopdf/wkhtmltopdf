@@ -24,6 +24,15 @@
 #include <qapplication.h>
 #include <QPair>
 
+/*!
+  \file pageconverter.hh
+  \brief Defines the PageConverter class
+*/
+
+/*!
+  \file pageconverter_p.hh
+  \brief Defines the PageConverterPrivate class
+*/
 
 PageConverterPrivate::PageConverterPrivate(Settings & s, PageConverter & o) :
 	settings(s), pageLoader(s), hfLoader(s), outer(o) {
