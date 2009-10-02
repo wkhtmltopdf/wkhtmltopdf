@@ -323,6 +323,9 @@ void PageConverterPrivate::printPage(bool ok) {
 
 	currentPhase = 4;
 	emit outer.phaseChanged();
+
+	progressString = "Preparing";
+	emit outer.progressChanged(0);
 	
 	for(int cc_=0; cc_ < cc; ++cc_) {
 		//TODO print front here
