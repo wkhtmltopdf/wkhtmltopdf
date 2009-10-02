@@ -63,4 +63,4 @@ HEADERS += src/wkhtmltopdf.hh src/toc.hh src/pageconverter_p.hh src/pageconverte
 SOURCES += src/wkhtmltopdf.cc src/toc.cc src/arguments.cc src/commandlineparser.cc \
            src/docparts.cc src/outputter.cc src/manoutputter.cc src/settings.cc \
            src/htmloutputter.cc src/textoutputter.cc \
-           src/pageconverter.cc
+           src/multipageloader.cc src/pageconverter.cc
