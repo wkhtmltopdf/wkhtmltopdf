@@ -1,68 +1,9 @@
-//-*- mode: c++; tab-width: 4; indent-tabs-mode: t; c-file-style: "stroustrup"; -*-
-// This file is part of wkhtmltopdf.
-//
-// wkhtmltopdf is free software: you can redistribute it and/or modify
-// it under the terms of the GNU General Public License as published by
-// the Free Software Foundation, either version 3 of the License, or
-// (at your option) any later version.
-//
-// wkhtmltopdf is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU General Public License for more details.
-//
-// You should have received a copy of the GNU General Public License
-// along with wkhtmltopdf.  If not, see <http://www.gnu.org/licenses/>.
-#include "multipageloader.hh"
+#include "multipageloader_p.hh"
 #include <QFile>
 #include <QFileInfo>
-#include <QNetworkAccessManager>
-#include <QWebFrame>
-#include <QNetworkReply>
-#include <QAuthenticator>
-#include <QSignalMapper>
-#include <QAtomicInt>
-
-class MultiPageLoaderPrivate: public QObject {
-	Q_OBJECT
-public:
-	MultiPageLoader & outer;
-	Settings & settings;
-	int httpErrorCode;
-	QList<QWebPage *> pages;
-	QList<QUrl> urls;
-	QList<QString> temporaryFiles;
-
-	int loginTry;
-
-	QNetworkAccessManager networkAccessManager;
-	QHash<QObject *, int> pageToIndex;
-	
-
-	QList<int> progressList;
-	QList<bool> finishedList;
-	int progressSum;
-	int finishedSum;
-	bool loadStartedEmitted;
-	bool error;
-
-	void sslErrors(QNetworkReply *reply, const QList<QSslError> &);
-	MultiPageLoaderPrivate(Settings & s, MultiPageLoader & o);
-	~MultiPageLoaderPrivate(); 
-	QWebPage * addResource(const QUrl & url);
-	void load();
-	void clearResources();
-	void cancel();
-	void copyFile(QFile & src, QFile & dst);
-	void amfinished(QNetworkReply * reply);
-	void authenticationRequired(QNetworkReply *reply, QAuthenticator *authenticator);
-public slots:
-	void loadStarted();
-	void loadProgress(int progress);
-	void loadFinished(bool ok);
 
 
-};
+
 
 /*!
  * Track and handle network errors
@@ -179,6 +120,20 @@ void MultiPageLoaderPrivate::load() {
 	finishedSum=0;
 	loadStartedEmitted=false;
 	error=false;
+
+	
+// 		if (url == "-") {
+// 			QFile in;
+// 			in.open(stdin,QIODevice::ReadOnly);
+// 			url = QDir::tempPath()+"/wktemp"+QUuid::createUuid().toString()+".html";
+// 			temporaryFiles.push_back(url);
+// 			QFile tmp(url);
+// 			tmp.open(QIODevice::WriteOnly);
+// 			copyFile(in,tmp);
+// 		}
+
+// 		page->mainFrame()->load(guessUrlFromString(url));
+	
 }
 
 void MultiPageLoaderPrivate::clearResources() {

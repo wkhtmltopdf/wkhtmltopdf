@@ -27,7 +27,6 @@ public:
 	int phaseCount();
 	int currentPhase();
 	QString phaseDescription(int phase=-1);
-	double progress();
 	QString progressString();
 	int httpErrorCode();
 	void addResource(const QString & url);
@@ -35,7 +34,7 @@ signals:
 	void warning(const QString & message);
 	void error(const QString & message);
 	void phaseChanged();
-	void progressChanged();
+	void progressChanged(int progress);
 	void finised();
 public slots:
 	void beginConvertion();

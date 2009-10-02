@@ -24,19 +24,43 @@
 #include <QPainter>
 #include <QPrinter>
 #include <QWebElement>
+#include "multipageloader.hh"
+#include "tempfile.hh"
+
 class PageConverterPrivate: public QObject {
 	Q_OBJECT
 public:
 	PageConverterPrivate(Settings & s, PageConverter & o);
 	void copyFile(QFile & src, QFile & dst);
-	QUrl guessUrlFromString(const QString &string);
+	void beginConvert();
 	void convert();
+	void cancel();
+
+	QList<QString> phaseDescriptions;
+	int currentPhase;
+	Settings & settings;
+
+	MultiPageLoader pageLoader;
+	MultiPageLoader hfLoader;
+	QString progressString;
 private:
 	PageConverter & outer;
+<<<<<<< HEAD:src/pageconverter_p.hh
 	Settings & settings;
 
 	//!Keep track of the numer of pages loading
  	QAtomicInt loading; 
+=======
+
+	TempFile tempOut;
+	
+// 	int networkError;
+// 	int loginTry;
+//	QNetworkAccessManager networkAccessManager;
+	//!Keep track of the numer of pages loading
+//	QAtomicInt loading; 
+//	QList<QString> temporaryFiles;
+>>>>>>> 5d5c6411499bee0145fb165c8b31d600dada6a80:src/pageconverter_p.hh
 	QList<QWebPage *> pages;
 	QPrinter * printer;
 	QPainter * painter;
@@ -45,7 +69,9 @@ private:
 	int actualPages;
 	QList<int> pageCount;
 	int tocPages;
-	
+
+
+	QHash<QString, QString> calculateHeaderFooterParams(int d, int page);
 	QHash<int, QHash<QString, QWebElement> > anchors;
 	QHash<int, QVector< QPair<QWebElement,QString> > > localLinks;
 	QHash<int, QVector< QPair<QWebElement,QString> > > externalLinks;
@@ -53,16 +79,20 @@ private:
 	QList<QWebPage *> headers;
 	QList<QWebPage *> footers;
 
+	QString hfreplace(const QString & q);
 	QWebPage * loadHeaderFooter(QString url, int d, int page);
 private slots:
-	void amfinished(QNetworkReply * r);
-	void authenticationRequired(QNetworkReply *reply, QAuthenticator *authenticator);
-	void loadFinished(bool ok);
-	void loadStarted();
 	void loadProgress(int progress);
-	void sslErrors(QNetworkReply *reply, const QList<QSslError> &);
-	void preparePrint();
-	void printPage();
+	
+	// void amfinished(QNetworkReply * r);
+// 	void authenticationRequired(QNetworkReply *reply, QAuthenticator *authenticator);
+// 	void loadFinished(bool ok);
+// 	void loadStarted();
+// 	void loadProgress(int progress);
+// 	void sslErrors(QNetworkReply *reply, const QList<QSslError> &);
+	void preparePrint(bool ok);
+	void printPage(bool ok);
+	
 };
 
 #endif //__TEXTUALFEEDBACK_P_HH__

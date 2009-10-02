@@ -13,36 +13,18 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with wkhtmltopdf.  If not, see <http://www.gnu.org/licenses/>.
-#ifndef __MULTIPAGELOADER_HH__
-#define __MULTIPAGELOADER_HH__
-#include "settings.hh"
-#include <QUrl>
-#include <QWebPage>
-#include <QObject>
+#ifndef __TEMPFILE_HH__
+#define __TEMPFILE_HH__
+#include <QString>
 
-class MultiPageLoaderPrivate;
-class MultiPageLoader: public QObject {
-	Q_OBJECT
-public:
-	MultiPageLoader(Settings & s);
-	~MultiPageLoader();
-	QWebPage * addResource(const QString & string);
-	QWebPage * addResource(const QUrl & url);
-	static QUrl guessUrlFromString(const QString &string);
-	int httpErrorCode();
-public slots:
-	void load();
-	void clearResources();
-	void cancel();
-signals:
-	void loadFinished(bool ok);
-	void loadProgress(int progress);
-	void loadStarted();
-	void warning(QString text);
-	void error(QString text);
+class TempFile {
 private:
-	MultiPageLoaderPrivate * d;
-	friend class MultiPageLoaderPrivate;
+	QString path;
+public:
+	TempFile();
+	~TempFile();
+	QString create(const QString & ext);
+	void remove();
 };
 
-#endif //__MULTIPAGELOADER_HH__
+#endif //__TEMPFILE_HH__

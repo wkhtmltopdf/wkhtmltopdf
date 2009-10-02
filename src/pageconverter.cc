@@ -21,12 +21,12 @@
 #include <QWebPage>
 #include <QWebFrame>
 #include <QDir>
-#include <QUuid>
+
 #include <QPair>
 
 
 PageConverterPrivate::PageConverterPrivate(Settings & s, PageConverter & o) :
-	outer(o), settings(s) {
+	settings(s), pageLoader(s), hfLoader(s), outer(o) {
 
 #ifdef  __EXTENSIVE_WKHTMLTOPDF_QT_HACK__
 	if (!settings.defaultEncoding.isEmpty())
@@ -46,99 +46,72 @@ PageConverterPrivate::PageConverterPrivate(Settings & s, PageConverter & o) :
 	QWebSettings::globalSettings()->setAttribute(QWebSettings::PrintElementBackgrounds, settings.background);
 	QWebSettings::globalSettings()->setAttribute(QWebSettings::PluginsEnabled, settings.enablePlugins);
 	if (!settings.userStyleSheet.isEmpty())
-		QWebSettings::globalSettings()->setUserStyleSheetUrl(guessUrlFromString(settings.userStyleSheet));
+		QWebSettings::globalSettings()->setUserStyleSheetUrl(MultiPageLoader::guessUrlFromString(settings.userStyleSheet));
 #endif
+
+	connect(&pageLoader, SIGNAL(loadProgress(int)), this, SLOT(loadProgress(int)));
+	connect(&hfLoader, SIGNAL(loadProgress(int)), this, SLOT(loadProgress(int)));
+	connect(&pageLoader, SIGNAL(loadFinished(bool)), this, SLOT(preparePrint(bool)));
+	connect(&hfLoader, SIGNAL(loadFinished(bool)), this, SLOT(printPage(bool)));
 }
 
 
+// /*!
+//  * Once loading is finished, we start the printing
+//  * \param ok did the loading finish correctly?
+//  */
+// void PageConverterPrivate::loadFinished(bool ok) {
+// 	//Keep track of the number of pages currently loading
+// 	#warning "This is a race condition"
+// 	loading.deref();
+// 	if (!ok) {
+// 		//It went bad, return with 1
+// 		emit outer.error("Failed loading page");
+//         #warning "FIX ME"
+// 		exit(1);
+// 		return;
+// 	}
 
-
-/*!
- * Once loading is finished, we start the printing
- * \param ok did the loading finish correctly?
- */
-void PageConverterPrivate::loadFinished(bool ok) {
-	//Keep track of the number of pages currently loading
-	#warning "This is a race condition"
-	loading.deref();
-	if (!ok) {
-		//It went bad, return with 1
-		emit outer.error("Failed loading page");
-        #warning "FIX ME"
-		exit(1);
-		return;
-	}
-
-	  #warning "FIX ME"
-	//feedback.nextState("Waiting for redirect");
-	if (loading == 0) {
-		//Wait a little while for js-redirects, and then print
-		QTimer::singleShot(settings.jsredirectwait, this, SLOT(preparePrint()));
-	}
-}
-
-/*!
- * Once loading starting, this is called
- */
-void PageConverterPrivate::loadStarted() {
-	//Keep track of the number of pages currently loading
-	#warning "This is a race condition"
-	loading.ref();
-}
+// 	  #warning "FIX ME"
+// 	//feedback.nextState("Waiting for redirect");
+// 	if (loading == 0) {
+// 		//Wait a little while for js-redirects, and then print
+// 		QTimer::singleShot(settings.jsredirectwait, this, SLOT(preparePrint()));
+// 	}
+// }
 
 /*!
  * Called when the page is loading, display some progress to the using
  * \param progress the loading progress in percent
  */
 void PageConverterPrivate::loadProgress(int progress) {
-	//Print out the load status
-	#warning "fix me"
-	//feedback.progress(progress, 100, "%", false);
+	progressString = QString::number(progress) + "%";
+	emit outer.progressChanged(progress);
 }
 
 
-void PageConverterPrivate::convert() {
-	
+void PageConverterPrivate::beginConvert() {
   	if (!settings.cover.isEmpty())
 		settings.in.push_front(settings.cover);
-
 // 	if(strcmp(out,"-") != 0 && !QFileInfo(out).isWritable()) {
 // 		fprintf(stderr, "Write access to '%s' is not allowed\n", out);
 // 		exit(1);
 // 	}
+	pageLoader.clearResources();
 	foreach(QString url, settings.in) {
-		QWebPage * page = new QWebPage();
-		//Allow for network control fine touning.
-		page->setNetworkAccessManager(&networkAccessManager);
-		//When loading is progressing we want loadProgress to be called
-		connect(page, SIGNAL(loadProgress(int)), this, SLOT(loadProgress(int)));
-		//Once the loading is done we want loadFinished to be called
-		connect(page, SIGNAL(loadFinished(bool)), this, SLOT(loadFinished(bool)));
-		connect(page, SIGNAL(loadStarted()), this, SLOT(loadStarted()));
-
-		page->mainFrame()->setZoomFactor(settings.zoomFactor);
-		if (url == "-") {
-			QFile in;
-			in.open(stdin,QIODevice::ReadOnly);
-			url = QDir::tempPath()+"/wktemp"+QUuid::createUuid().toString()+".html";
-			temporaryFiles.push_back(url);
-			QFile tmp(url);
-			tmp.open(QIODevice::WriteOnly);
-			copyFile(in,tmp);
-		}
-
-		page->mainFrame()->load(guessUrlFromString(url));
+		QWebPage * page = pageLoader.addResource(url);
 		pages.push_back(page);
 	}
+	pageLoader.load();
 }
 
 
 /*!
  * Prepares printing out the document to the pdf file
  */
-void PageConverterPrivate::preparePrint() {
+void PageConverterPrivate::preparePrint(bool ok) {
 	//If there are still pages loading wait til they are done
-	if (loading != 0) return;
+	//if (loading != 0) return;
 	//Give some user feed back
 // 	if (!quiet) {
 // 		fprintf(stderr, "Outputting pages       \r");
@@ -154,8 +127,7 @@ void PageConverterPrivate::preparePrint() {
 			lout = "/dev/stdout";
 		else {
 			#warning "Sometimes we should add .ps instead here"
-			lout = QDir::tempPath()+"/wktemp"+QUuid::createUuid().toString()+".pdf";
-			temporaryFiles.push_back(lout);
+			lout = tempOut.create(".pdf");
 		}
 	}
 	//Tell the printer object to print the file <out>
@@ -317,12 +289,12 @@ void PageConverterPrivate::preparePrint() {
 			}
 		}
 	} else 
-		printPage();
+		printPage(true);
 #endif
 }
 
 
-void PageConverterPrivate::printPage() {
+void PageConverterPrivate::printPage(bool ok) {
 	//if (headerFooterLoading != 0 || loading != 0) return;
 
  	bool first=true;
@@ -524,18 +496,13 @@ void PageConverterPrivate::printPage() {
 
 
 QWebPage * PageConverterPrivate::loadHeaderFooter(QString url, int d, int page) {
-	QUrl u = guessUrlFromString(url);
+	QUrl u = MultiPageLoader::guessUrlFromString(url);
 
-	#warning "Fix me"
-// 	QHash<QString, QString> values = calculateHeaderFooterParams(d, page);
-// 	for(QHash<QString, QString>::iterator i=values.begin(); i != values.end(); ++i)
-// 		u.addQueryItem(i.key(), i.value());
+	QHash<QString, QString> values = calculateHeaderFooterParams(d, page);
+	for(QHash<QString, QString>::iterator i=values.begin(); i != values.end(); ++i)
+		u.addQueryItem(i.key(), i.value());
 	
-	QWebPage * p = new QWebPage();
-	p->setNetworkAccessManager(&networkAccessManager);
-	//connect(p, SIGNAL(loadFinished(bool)), this, SLOT(headerFooterLoadFinished(bool)));
-	p->mainFrame()->load(u);
-	return p;
+	return hfLoader.addResource(u);
 }
 
 /*!
@@ -551,26 +518,8 @@ QString PageConverterPrivate::hfreplace(const QString & q) {
 }
 
 
-
-// //void WKHtmlToPdf::headerFooterLoadStarted() {
-// //	headerFooterLoading.ref();
-// //}
-
-// void WKHtmlToPdf::headerFooterLoadFinished(bool) {
-// 	headerFooterLoading.deref();
-// 	qDebug() << "hat";
-// 	if (headerFooterLoading == 0) {
-		
-// 		//Wait a little while for js-redirects, and then print
-// 		QTimer::singleShot(100, this, SLOT(printPage()));
-// 	}
-// }
-// #endif
-
-
-// #ifdef  __EXTENSIVE_WKHTMLTOPDF_QT_HACK__
-// QHash<QString, QString> WKHtmlToPdf::calculateHeaderFooterParams(int d, int page) {
-// 	QHash<QString, QString> res;
+QHash<QString, QString> PageConverterPrivate::calculateHeaderFooterParams(int d, int page) {
+	QHash<QString, QString> res;
 	
 // 	res["frompage"] = QString::number(page_offset);
 // 	res["topage"] = QString::number(page_offset+logicalPages-1);
@@ -590,8 +539,8 @@ QString PageConverterPrivate::hfreplace(const QString & q) {
 // 	res["section"] = sec[0];
 // 	res["subsection"] = sec[1];
 // 	res["subsubsection"] = sec[2];
-// 	return res;
-// }
+	return res;
+}
 
 
 /*!
@@ -633,15 +582,8 @@ int PageConverter::currentPhase() {
   \brief return a textual description of some phase
   \param phase the phase to get a description of, -1 for current phase
 */
-QString PageConverter::phaseDescription(int phase=-1) {
-	return d->d->phaseDescriptions[(phase < 0 || d->phaseDescriptions.size() >= phase)?phase:d->currentPhase];
-}
-
-/*!
-  \brief return the progress in the current phase in percent, or -1 for current phase
-*/
-double PageConverter::progress() {
-	return d->progress;
+QString PageConverter::phaseDescription(int phase) {
+	return d->phaseDescriptions[(phase < 0 || d->phaseDescriptions.size() >= phase)?phase:d->currentPhase];
 }
 
 /*!
@@ -655,7 +597,7 @@ QString PageConverter::progressString() {
   \brief return the http return code, of the converted page
 */
 int PageConverter::httpErrorCode() {
-	return d->httpErrorCode;
+	return d->pageLoader.httpErrorCode();
 }
 
 /*!
@@ -671,6 +613,7 @@ void PageConverter::addResource(const QString & url) {
   Once convertion is done an finished signal will be emitted
 */
 void PageConverter::beginConvertion() {
+	d->beginConvert();
 }
 
 /*!
