@@ -34,12 +34,9 @@ public:
 private:
 	PageConverter & outer;
 	Settings & settings;
-	int networkError;
-	int loginTry;
-	QNetworkAccessManager networkAccessManager;
+
 	//!Keep track of the numer of pages loading
  	QAtomicInt loading; 
-	QList<QString> temporaryFiles;
 	QList<QWebPage *> pages;
 	QPrinter * printer;
 	QPainter * painter;
