@@ -15,17 +15,16 @@
 // along with wkhtmltopdf.  If not, see <http://www.gnu.org/licenses/>.
 // #include "toc.hh"
 // #include "wkhtmltopdf.hh"
-#include <QUuid>
 #include <QtPlugin>
 #include <iostream>
-
-#include <string.h>
+#include "commandlineparser.hh"
+#include "pageconverter.hh"
+#include "progressfeedback.hh"
+#include "settings.hh"
+#include <QCommonStyle>
 #include <cstdlib>
 #include <qapplication.h>
-#include <QCommonStyle>
-#include "settings.hh"
-
-#include "pageconverter.hh"
+#include <string.h>
 
 #ifdef QT_STATIC
 //When doing a static build, we need to load the plugins to make images work
@@ -34,6 +33,7 @@ Q_IMPORT_PLUGIN(qgif)
 Q_IMPORT_PLUGIN(qtiff)
 Q_IMPORT_PLUGIN(qmng)
 #endif
+
 
 /*!
  * State mashine driven, shell like parser. This is used for
@@ -110,13 +110,9 @@ void parseString(char * buff, int &nargc, char **nargv) {
 	nargv[nargc]=NULL;
 }
 
-
-#include "commandlineparser.hh"
-
 int main(int argc, char * argv[]) {
 	//This will store all our settings
 	Settings settings;
-	
 	//Create a command line parser to parse commandline arguments
 	CommandLineParser parser(settings);
 	//Setup default values in settings
@@ -137,24 +133,25 @@ int main(int argc, char * argv[]) {
 
 	//Create the actual page converter to convert the pages
 	PageConverter converter(settings);
-
-	for (int i=1; i < argc; ++i)
-		if (!strcmp(argv[i],"--read-args-from-stdin")) {
-			char buff[20400];
-			char *nargv[1000];
-			nargv[0] = argv[0];
-			while (fgets(buff,20398,stdin)) {
-				//x.resetPages();
-				int nargc=1;
-				parseString(buff,nargc,nargv);
-				parser.loadDefaults();
-				parser.parseArguments(nargc, (const char**)nargv);
-				converter.convert();
-				//x.run(nargc,(const char**)nargv);
-				//qApp->exec(); //Wait for application to terminate
-			}
-			exit(0);
-		}
+	ProgressFeedback feedback(converter);
+//  for (int i=1; i < argc; ++i)
+// 		if (!strcmp(argv[i],"--read-args-from-stdin")) {
+// 			char buff[20400];
+// 			char *nargv[1000];
+// 			nargv[0] = argv[0];
+// 			while (fgets(buff,20398,stdin)) {
+// 				//x.resetPages();
+// 				int nargc=1;
+// 				parseString(buff,nargc,nargv);
+// 				parser.loadDefaults();
+// 				parser.parseArguments(nargc, (const char**)nargv);
+// 				converter.convert();
+// 				//x.run(nargc,(const char**)nargv);
+// 				//qApp->exec(); //Wait for application to terminate
+// 			}
+// 			exit(0);
+// 		}
 	converter.convert();
+	//qApp->exec();
 	//qApp->exit();
 }

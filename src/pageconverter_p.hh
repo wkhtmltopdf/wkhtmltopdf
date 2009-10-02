@@ -26,15 +26,14 @@
 #include <QWebElement>
 #include "multipageloader.hh"
 #include "tempfile.hh"
+#include <QWaitCondition>
+#include <QMutex>
 
 class PageConverterPrivate: public QObject {
 	Q_OBJECT
 public:
 	PageConverterPrivate(Settings & s, PageConverter & o);
 	void copyFile(QFile & src, QFile & dst);
-	void beginConvert();
-	void convert();
-	void cancel();
 
 	QList<QString> phaseDescriptions;
 	int currentPhase;
@@ -45,12 +44,7 @@ public:
 	QString progressString;
 private:
 	PageConverter & outer;
-<<<<<<< HEAD:src/pageconverter_p.hh
-	Settings & settings;
 
-	//!Keep track of the numer of pages loading
- 	QAtomicInt loading; 
-=======
 
 	TempFile tempOut;
 	
@@ -60,7 +54,6 @@ private:
 	//!Keep track of the numer of pages loading
 //	QAtomicInt loading; 
 //	QList<QString> temporaryFiles;
->>>>>>> 5d5c6411499bee0145fb165c8b31d600dada6a80:src/pageconverter_p.hh
 	QList<QWebPage *> pages;
 	QPrinter * printer;
 	QPainter * painter;
@@ -70,6 +63,7 @@ private:
 	QList<int> pageCount;
 	int tocPages;
 
+	bool convertionDone;
 
 	QHash<QString, QString> calculateHeaderFooterParams(int d, int page);
 	QHash<int, QHash<QString, QWebElement> > anchors;
@@ -81,7 +75,7 @@ private:
 
 	QString hfreplace(const QString & q);
 	QWebPage * loadHeaderFooter(QString url, int d, int page);
-private slots:
+public slots:
 	void loadProgress(int progress);
 	
 	// void amfinished(QNetworkReply * r);
@@ -92,6 +86,9 @@ private slots:
 // 	void sslErrors(QNetworkReply *reply, const QList<QSslError> &);
 	void preparePrint(bool ok);
 	void printPage(bool ok);
+	void beginConvert();
+	void cancel();
+	void convert();
 	
 };
 

@@ -35,7 +35,7 @@ signals:
 	void error(const QString & message);
 	void phaseChanged();
 	void progressChanged(int progress);
-	void finised();
+	void finished(bool ok);
 public slots:
 	void beginConvertion();
 	void convert();

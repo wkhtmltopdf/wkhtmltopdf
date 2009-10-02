@@ -21,13 +21,20 @@
 #include <QWebPage>
 #include <QWebFrame>
 #include <QDir>
-
+#include <qapplication.h>
 #include <QPair>
 
 
 PageConverterPrivate::PageConverterPrivate(Settings & s, PageConverter & o) :
 	settings(s), pageLoader(s), hfLoader(s), outer(o) {
 
+	phaseDescriptions.push_back("Loading pages");
+	phaseDescriptions.push_back("Resolving links");
+	phaseDescriptions.push_back("Counting pages");
+	phaseDescriptions.push_back("Loading headers and footers");
+	phaseDescriptions.push_back("Printing pages");
+	phaseDescriptions.push_back("Done");
+		
 #ifdef  __EXTENSIVE_WKHTMLTOPDF_QT_HACK__
 	if (!settings.defaultEncoding.isEmpty())
 		QWebSettings::globalSettings()->setDefaultTextEncoding(settings.defaultEncoding);
@@ -98,10 +105,14 @@ void PageConverterPrivate::beginConvert() {
 // 		exit(1);
 // 	}
 	pageLoader.clearResources();
-	foreach(QString url, settings.in) {
-		QWebPage * page = pageLoader.addResource(url);
-		pages.push_back(page);
-	}
+	foreach(QString url, settings.in)
+		pages.push_back(pageLoader.addResource(url));
+	
+	progressString = "0%";
+	currentPhase=0;
+	emit outer.phaseChanged();
+	loadProgress(0);
+
 	pageLoader.load();
 }
 
@@ -117,6 +128,7 @@ void PageConverterPrivate::preparePrint(bool ok) {
 // 		fprintf(stderr, "Outputting pages       \r");
 // 		fflush(stdout);
 // 	}
+	
 
 	printer = new QPrinter(settings.resolution);
 	
@@ -181,16 +193,17 @@ void PageConverterPrivate::preparePrint(bool ok) {
 
 	//Find and resolve all local links
 	if(settings.useLocalLinks || settings.useExternalLinks) {
+		currentPhase = 1;
+		emit outer.phaseChanged();
+		
 		QHash<QString, int> urlToDoc;
 		for(int d=0; d < pages.size(); ++d) 
 			urlToDoc[ pages[d]->mainFrame()->url().toString(QUrl::RemoveFragment) ]  = d;
 		
 		for(int d=0; d < pages.size(); ++d) {
-			#warning "FIX ME"
-			// if (!quiet) {
-// 				fprintf(stderr, "Resolving Links %d of %d      \r",d+1,pages.size());
-// 				fflush(stdout);
-// 			}
+
+			progressString = QString("Page ")+QString::number(d+1)+QString(" of ")+QString::number(pages.size());
+			emit outer.progressChanged((d+1)*100 / pages.size());
 			
 			foreach(const QWebElement & elm,pages[d]->mainFrame()->findAllElements("a")) {
 				QUrl href=QUrl(elm.attribute("href"));
@@ -221,17 +234,18 @@ void PageConverterPrivate::preparePrint(bool ok) {
 	}
 
 	headings.clear();
-	
+
+	currentPhase = 2;
+	emit outer.phaseChanged();
+
 	//This is the first render face, it is done to calculate:
 	// * The number of pages of each document
 	// * A visual ordering of the header elemnt
 	// * The location and page number of each header
 	for(int d=0; d < pages.size(); ++d) {
-		#warning "fix me"
-// 		if (!quiet) {
-// 			fprintf(stderr, "Counting pages %d of %d      \r",d+1,pages.size()+(print_toc?1:0));
-// 			fflush(stdout);
-// 		}
+		int tot = pages.size()+(settings.printToc?1:0);
+		progressString = QString("Page ")+QString::number(d+1)+QString(" of ")+QString::number(tot);
+		emit outer.progressChanged((d+1)*100 / tot);
 
 		painter->save();
 		QWebPrinter wp(pages[d]->mainFrame(), printer, *painter);
@@ -251,11 +265,10 @@ void PageConverterPrivate::preparePrint(bool ok) {
 	//Now that we know the ordering of the headers in each document we
 	//can calculate the number of pages in the table of content
 	if (settings.printToc) {
-		#warning "fixme"
-// 		if (!quiet) {
-// 			fprintf(stderr, "Counting pages %d of %d      \r",pages.size()+1,pages.size()+1);
-//  			fflush(stdout);
-//  		}									   
+		int k=pages.size()+1;
+		progressString = QString("Page ")+QString::number(k)+QString(" of ")+QString::number(k);
+		emit outer.progressChanged(100);
+
 //  		TocItem * root = new TocItem();
 // 		for(int d=0; d < pages.size(); ++d) {
 // 			if (cover[0] && d == 0) continue;
@@ -308,6 +321,9 @@ void PageConverterPrivate::printPage(bool ok) {
 		!settings.header.center.isEmpty() || !settings.footer.center.isEmpty() ||
 		!settings.header.right.isEmpty() || !settings.footer.right.isEmpty();
 
+	currentPhase = 4;
+	emit outer.phaseChanged();
+	
 	for(int cc_=0; cc_ < cc; ++cc_) {
 		//TODO print front here
 		//TODO print TOC here
@@ -358,11 +374,10 @@ void PageConverterPrivate::printPage(bool ok) {
 						
 			for(int p=0; p < wp.pageCount(); ++p) {
 				for(int pc_=0; pc_ < pc; ++pc_) {
-#warning "FIX ME"
-//  					if (!quiet) {
-// 						fprintf(stderr,"Printing page: %d of %d\r",actualPage, actualPages);
-//  						fflush(stdout);
-//  					}
+
+					progressString = QString("Page ") + QString::number(actualPage) + QString(" of ") + QString::number(actualPages);
+					emit outer.progressChanged(actualPage * 100 / actualPages);
+
 					if(first)
 						first=false;
 					else
@@ -457,8 +472,13 @@ void PageConverterPrivate::printPage(bool ok) {
  	painter->end();
 	
 	//if (headerFooterLoading != 0 || loading != 0) return;
+
+	currentPhase = 5;
+	emit outer.phaseChanged();
+	convertionDone = true;
+	emit outer.finished(true);
+
 	
-	#warning "FIX ME"
 // 	if (!quiet) {
 // 		fprintf(stderr,"Done                 \n");
 // 		fflush(stderr);
@@ -515,6 +535,19 @@ QString PageConverterPrivate::hfreplace(const QString & q) {
 	for(QHash<QString, QString>::iterator i=values.begin(); i != values.end(); ++i)
 		r=r.replace("["+i.key()+"]", i.value(), Qt::CaseInsensitive);
 	return r;
+}
+
+
+void PageConverterPrivate::convert() {
+	convertionDone=false;
+	beginConvert();
+	while(!convertionDone)
+		qApp->processEvents(QEventLoop::WaitForMoreEvents | QEventLoop::AllEvents);
+	//return true;
+}
+
+void PageConverterPrivate::cancel() {
+
 }
 
 
@@ -583,7 +616,9 @@ int PageConverter::currentPhase() {
   \param phase the phase to get a description of, -1 for current phase
 */
 QString PageConverter::phaseDescription(int phase) {
-	return d->phaseDescriptions[(phase < 0 || d->phaseDescriptions.size() >= phase)?phase:d->currentPhase];
+	if (phase < 0 || d->phaseDescriptions.size() <= phase) phase=d->currentPhase;
+	if (phase < 0 || d->phaseDescriptions.size() <= phase) return "Invalid";
+	return d->phaseDescriptions[phase];
 }
 
 /*!

@@ -44,7 +44,7 @@ public:
 	bool loadStartedEmitted;
 	bool error;
 
-	void sslErrors(QNetworkReply *reply, const QList<QSslError> &);
+
 	MultiPageLoaderPrivate(Settings & s, MultiPageLoader & o);
 	~MultiPageLoaderPrivate(); 
 	QWebPage * addResource(const QUrl & url);
@@ -52,10 +52,12 @@ public:
 	void clearResources();
 	void cancel();
 	static void copyFile(QFile & src, QFile & dst);
-	void amfinished(QNetworkReply * reply);
-	void authenticationRequired(QNetworkReply *reply, QAuthenticator *authenticator);
+
 public slots:
 	void loadStarted();
 	void loadProgress(int progress);
 	void loadFinished(bool ok);
+	void sslErrors(QNetworkReply *reply, const QList<QSslError> &);
+	void amfinished(QNetworkReply * reply);
+	void authenticationRequired(QNetworkReply *reply, QAuthenticator *authenticator);
 };
