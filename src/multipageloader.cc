@@ -16,6 +16,7 @@
 #include "multipageloader_p.hh"
 #include <QFile>
 #include <QFileInfo>
+#include <QTimer>
 
 /*!
   \file multipageloader.hh
@@ -25,6 +26,7 @@
 /*!
   \file multipageloader_p.hh
   \brief Defines the MultiPageLoaderPrivate class
+*/
 
 /*!
  * Track and handle network errors
@@ -141,7 +143,7 @@ void MultiPageLoaderPrivate::load() {
 	finishedSum=0;
 	loadStartedEmitted=false;
 	error=false;
-
+	loadingPages=0;
 	for(int i=0; i < pages.size(); ++i) 
 		pages[i]->mainFrame()->load(urls[i]);
 
@@ -179,6 +181,7 @@ void MultiPageLoaderPrivate::cancel() {
  * Once loading starting, this is called
  */
 void MultiPageLoaderPrivate::loadStarted() {
+	loadingPages++;
 	if (loadStartedEmitted) return;
 	loadStartedEmitted=true;
 	emit outer.loadStarted();
@@ -201,19 +204,24 @@ void MultiPageLoaderPrivate::loadProgress(int progress) {
 }
 
 void MultiPageLoaderPrivate::loadFinished(bool ok) {
+	loadingPages--;
 	error = error && ok;
 	if (!pageToIndex.count(QObject::sender())) return;
 	
 	int idx=pageToIndex[QObject::sender()];
-	if (finishedList[idx]) return;
-	finishedList[idx] = true;
+	if (!finishedList[idx]) {
+		finishedList[idx] = true;
+		finishedSum += 1;
+	}
 
-	finishedSum += 1;
-	
 	if (finishedSum == finishedList.size())
-		emit outer.loadFinished(error);
+		QTimer::singleShot(settings.jsredirectwait, this, SLOT(timedFinished()));
 }
 
+void MultiPageLoaderPrivate::timedFinished() {
+	if(loadingPages == 0) 
+		emit outer.loadFinished(error);
+}
 
 /*!
   \brief Construct a multipage loader object, load settings read from the supplied settings

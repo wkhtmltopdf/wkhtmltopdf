@@ -35,7 +35,6 @@ public:
 
 	QNetworkAccessManager networkAccessManager;
 	QHash<QObject *, int> pageToIndex;
-	
 
 	QList<int> progressList;
 	QList<bool> finishedList;
@@ -43,7 +42,7 @@ public:
 	int finishedSum;
 	bool loadStartedEmitted;
 	bool error;
-
+	int loadingPages;
 
 	MultiPageLoaderPrivate(Settings & s, MultiPageLoader & o);
 	~MultiPageLoaderPrivate(); 
@@ -57,6 +56,7 @@ public slots:
 	void loadStarted();
 	void loadProgress(int progress);
 	void loadFinished(bool ok);
+	void timedFinished();
 	void sslErrors(QNetworkReply *reply, const QList<QSslError> &);
 	void amfinished(QNetworkReply * reply);
 	void authenticationRequired(QNetworkReply *reply, QAuthenticator *authenticator);
