@@ -27,11 +27,10 @@ public:
 	Outline(const Settings & settings);
 	~Outline();
 	void addWebPage(const QString & name, QWebPrinter & wp, QWebFrame * frame);
-	void fillHeaderFooterParms(int d, int page, QHash<QString, QString> & parms);
+	void fillHeaderFooterParms(int page, QHash<QString, QString> & parms);
 	void fillAnchors(int d, QHash<QString, QWebElement> & anchors);
 	int pageCount();
 	void printOutline(QPrinter * printer);
-	void addOffset(int d);
 private:
 	OutlinePrivate * d;
 };
