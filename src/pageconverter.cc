@@ -71,31 +71,6 @@ PageConverterPrivate::PageConverterPrivate(Settings & s, PageConverter & o) :
 	connect(&hfLoader, SIGNAL(loadFinished(bool)), this, SLOT(printPage(bool)));
 }
 
-
-// /*!
-//  * Once loading is finished, we start the printing
-//  * \param ok did the loading finish correctly?
-//  */
-// void PageConverterPrivate::loadFinished(bool ok) {
-// 	//Keep track of the number of pages currently loading
-// 	#warning "This is a race condition"
-// 	loading.deref();
-// 	if (!ok) {
-// 		//It went bad, return with 1
-// 		emit outer.error("Failed loading page");
-//         #warning "FIX ME"
-// 		exit(1);
-// 		return;
-// 	}
-
-// 	  #warning "FIX ME"
-// 	//feedback.nextState("Waiting for redirect");
-// 	if (loading == 0) {
-// 		//Wait a little while for js-redirects, and then print
-// 		QTimer::singleShot(settings.jsredirectwait, this, SLOT(preparePrint()));
-// 	}
-// }
-
 /*!
  * Called when the page is loading, display some progress to the using
  * \param progress the loading progress in percent
@@ -130,14 +105,6 @@ void PageConverterPrivate::beginConvert() {
  * Prepares printing out the document to the pdf file
  */
 void PageConverterPrivate::preparePrint(bool ok) {
-	//If there are still pages loading wait til they are done
-	//if (loading != 0) return;
-	//Give some user feed back
-// 	if (!quiet) {
-// 		fprintf(stderr, "Outputting pages       \r");
-// 		fflush(stdout);
-// 	}
-	
 
 	printer = new QPrinter(settings.resolution);
 	
@@ -242,11 +209,9 @@ void PageConverterPrivate::preparePrint(bool ok) {
 		}
 	}
 
-	headings.clear();
-
 	currentPhase = 2;
 	emit outer.phaseChanged();
-
+	outline = new Outline(settings);
 	//This is the first render face, it is done to calculate:
 	// * The number of pages of each document
 	// * A visual ordering of the header elemnt
@@ -259,17 +224,15 @@ void PageConverterPrivate::preparePrint(bool ok) {
 		painter->save();
 		QWebPrinter wp(pages[d]->mainFrame(), printer, *painter);
 		int count = wp.pageCount();
-		pageCount.push_back(count);
+		//pageCount.push_back(count);
 		actualPages += count;
 		if (settings.cover.isEmpty() || d != 0) {
+			outline->addWebPage("", wp, pages[d]->mainFrame());
 			logicalPages += count;
-			foreach(const QWebElement & e, pages[d]->mainFrame()->findAllElements("h1,h2,h3,h4,h5,h6,h7,h8,h9")) {
-				QPair<int, QRectF> location = wp.elementLocation(e);
-				headings[d][ qMakePair(location.first, qMakePair(location.second.y(), location.second.x()) ) ] = e;
-			}
 		} 
 		painter->restore();
 	}
+
 
 	//Now that we know the ordering of the headers in each document we
 	//can calculate the number of pages in the table of content
@@ -277,28 +240,16 @@ void PageConverterPrivate::preparePrint(bool ok) {
 		int k=pages.size()+1;
 		progressString = QString("Page ")+QString::number(k)+QString(" of ")+QString::number(k);
 		emit outer.progressChanged(100);
-
-//  		TocItem * root = new TocItem();
-// 		for(int d=0; d < pages.size(); ++d) {
-// 			if (cover[0] && d == 0) continue;
-// 			// buildToc(root,pages[d]->mainFrame(),
-//  					 anchors[d], externalLinks[d]
-//  					 ,-1);
-// 		}
-		//tocPages = tocPrinter.countPages(root, &printer, painter);
-		tocPages = 0;
-		actualPages += tocPages;
-		logicalPages += tocPages;
- 		//delete root;
+		
+		tocPrinter = new TocPrinter(outline, printer, *painter);
+		actualPages += tocPrinter->pageCount();
+		logicalPages += tocPrinter->pageCount();
    	}
 	actualPages *= settings.copies;
 	int page=1;
 
 	headers.clear();
 	footers.clear();
-// 	headerFooterLoading =
-// 		(settings.header.htmlUrl.isEmpty()?0:actualPages) +
-// 		(settings.fooher.htmlURl.isEmpty()?0:actualPages);
 	if(!settings.header.htmlUrl.isEmpty() || !settings.footer.htmlUrl.isEmpty()) {
 		for(int d=0; d < pages.size(); ++d) {
 			if (!settings.cover.isEmpty() && d == 0) continue;
@@ -310,11 +261,72 @@ void PageConverterPrivate::preparePrint(bool ok) {
 				++page;
 			}
 		}
+		hfLoader.load();
 	} else 
 		printPage(true);
 #endif
 }
 
+void PageConverterPrivate::beginPage(int & actualPage, bool & first) {
+	progressString = QString("Page ") + QString::number(actualPage) + QString(" of ") + QString::number(actualPages);
+	emit outer.progressChanged(actualPage * 100 / actualPages);
+	if(first)
+		first=false;
+	else
+		printer->newPage();
+	actualPages++;
+}
+
+void PageConverterPrivate::endPage(bool actual, bool hasHeaderFooter) {
+	if(hasHeaderFooter && actual) {
+		//Webkit used all kinds of crasy cordinate transformation, and font setup
+		//We save it here and restore some sane defaults
+		painter->save();
+		painter->resetTransform();
+						
+		int h=printer->height();
+		int w=printer->width();
+						
+		//If needed draw the header line
+		if (settings.header.line) painter->drawLine(0, 0, w, 0);
+		//Guess the height of the header text
+		painter->setFont(QFont(settings.header.fontName, settings.header.fontSize));
+		int dy = painter->boundingRect(0, 0, w, h, Qt::AlignTop, "M").height();
+		//Draw the header text
+		QRect r=QRect(0, 0-dy, w, h);
+		painter->drawText(r, Qt::AlignTop | Qt::AlignLeft, hfreplace(settings.header.left));
+		painter->drawText(r, Qt::AlignTop | Qt::AlignHCenter, hfreplace(settings.header.center));
+		painter->drawText(r, Qt::AlignTop | Qt::AlignRight, hfreplace(settings.header.right));
+		
+		//IF needed draw the footer line
+		if (settings.footer.line) painter->drawLine(0, h, w, h);
+		//Guess the height of the footer text
+		painter->setFont(QFont(settings.footer.fontName, settings.footer.fontSize));
+		dy = painter->boundingRect(0, 0, w, h, Qt::AlignTop, "M").height();
+		//Draw the fooder text
+		r=QRect(0,0,w,h+dy);
+		painter->drawText(r, Qt::AlignBottom | Qt::AlignLeft, hfreplace(settings.footer.left));
+		painter->drawText(r, Qt::AlignBottom | Qt::AlignHCenter, hfreplace(settings.footer.center));
+		painter->drawText(r, Qt::AlignBottom | Qt::AlignRight, hfreplace(settings.footer.right));
+		
+		//Restore webkits crasy scaling and font settings
+		painter->restore();
+	}
+// 					painter->save();
+// 					painter->resetTransform();
+// 					painter->drawPicture(0,-208 - 4, picture);
+// 					painter->restore();
+// 					{
+// 						painter->save();
+// 						
+// 						//MThread::msleep(100);
+// 						painter->translate(0,-222);
+// 						QWebPrinter whp(headers[0]->mainFrame(), printer, *painter);
+// 						//painter->translate(0,-whp.elementLocation(headers[0]->mainFrame()->findFirstElement("body")).second.height());
+// 						whp.spoolPage(1);
+// 					}
+
+}
 
 void PageConverterPrivate::printPage(bool ok) {
 	//if (headerFooterLoading != 0 || loading != 0) return;
@@ -362,11 +374,31 @@ void PageConverterPrivate::printPage(bool ok) {
 
 		logicalPage=1;
 		for(int d=0; d < pages.size(); ++d) {
+			//Output the table of content now
+			if(tocPrinter && d == (settings.cover.isEmpty()?0:1)) {
+				painter->save();
+				for(int p=0; p < tocPrinter->pageCount(); ++p) {
+					for(int pc_=0; pc_ < pc; ++pc_) {
+						beginPage(actualPage,first);
+						tocPrinter->spoolPage(p);
+						endPage(true, hasHeaderFooter);
+					}
+					++logicalPage;
+				}
+				painter->restore();
+			}
 			painter->save();
-			
+
+			//output 
 			QWebPrinter wp(pages[d]->mainFrame(), printer, *painter);
 			QString l1=pages[d]->mainFrame()->url().path().split("/").back()+"#";
 			QString l2=pages[d]->mainFrame()->url().toString() + "#";
+
+			if (settings.cover.isEmpty() || d != 0) {
+				int md = d - settings.cover.isEmpty()?0:1;
+				if(tocPrinter) tocPrinter->fillLinks(md, localLinks[md]);
+				outline->fillAnchors(md, anchors[md]);				
+			}
 
 			//Sort anchors and links by page
 			QHash<int, QHash<QString, QWebElement> > myAnchors;
@@ -383,21 +415,11 @@ void PageConverterPrivate::printPage(bool ok) {
 			for(QVector< QPair<QWebElement,QString> >::iterator i=externalLinks[d].begin();
 				i != externalLinks[d].end(); ++i)
 				myExternalLinks[wp.elementLocation(i->first).first].push_back(*i);
-						
+				
 			for(int p=0; p < wp.pageCount(); ++p) {
 				for(int pc_=0; pc_ < pc; ++pc_) {
-
-					progressString = QString("Page ") + QString::number(actualPage) + QString(" of ") + QString::number(actualPages);
-					emit outer.progressChanged(actualPage * 100 / actualPages);
-
-					if(first)
-						first=false;
-					else
-						printer->newPage();
-
-
+					beginPage(actualPage,first);
 					wp.spoolPage(p+1);
-					
 					for(QHash<QString, QWebElement>::iterator i=myAnchors[p+1].begin();
 						i != myAnchors[p+1].end(); ++i) {
 						QRectF r = wp.elementLocation(i.value()).second;
@@ -413,57 +435,7 @@ void PageConverterPrivate::printPage(bool ok) {
 						QRectF r = wp.elementLocation(i->first).second;
 						painter->addHyperlink(r, QUrl(i->second));
 					}
-					++actualPage;
-
-					if(hasHeaderFooter && (settings.cover.isEmpty() || d != 0)) {
-						//Webkit used all kinds of crasy cordinate transformation, and font setup
-						//We save it here and restore some sane defaults
-						painter->save();
-						painter->resetTransform();
-						
-						int h=printer->height();
-						int w=printer->width();
-						
-						//If needed draw the header line
-						if (settings.header.line) painter->drawLine(0, 0, w, 0);
-						//Guess the height of the header text
-						painter->setFont(QFont(settings.header.fontName, settings.header.fontSize));
-						int dy = painter->boundingRect(0, 0, w, h, Qt::AlignTop, "M").height();
-						//Draw the header text
-						QRect r=QRect(0, 0-dy, w, h);
-						painter->drawText(r, Qt::AlignTop | Qt::AlignLeft, hfreplace(settings.header.left));
-						painter->drawText(r, Qt::AlignTop | Qt::AlignHCenter, hfreplace(settings.header.center));
-						painter->drawText(r, Qt::AlignTop | Qt::AlignRight, hfreplace(settings.header.right));
-						
-						//IF needed draw the footer line
-						if (settings.footer.line) painter->drawLine(0, h, w, h);
-						//Guess the height of the footer text
-						painter->setFont(QFont(settings.footer.fontName, settings.footer.fontSize));
-						dy = painter->boundingRect(0, 0, w, h, Qt::AlignTop, "M").height();
-						//Draw the fooder text
-						r=QRect(0,0,w,h+dy);
-						painter->drawText(r, Qt::AlignBottom | Qt::AlignLeft, hfreplace(settings.footer.left));
-						painter->drawText(r, Qt::AlignBottom | Qt::AlignHCenter, hfreplace(settings.footer.center));
-						painter->drawText(r, Qt::AlignBottom | Qt::AlignRight, hfreplace(settings.footer.right));
-						
-						//Restore webkits crasy scaling and font settings
-						painter->restore();
-					}
-
-
-// 					painter->save();
-// 					painter->resetTransform();
-// 					painter->drawPicture(0,-208 - 4, picture);
-// 					painter->restore();
-// 					{
-// 						painter->save();
-// 						
-// 						//MThread::msleep(100);
-// 						painter->translate(0,-222);
-// 						QWebPrinter whp(headers[0]->mainFrame(), printer, *painter);
-// 						//painter->translate(0,-whp.elementLocation(headers[0]->mainFrame()->findFirstElement("body")).second.height());
-// 						whp.spoolPage(1);
-// 					}
+					endPage(settings.cover.isEmpty() || d != 0, hasHeaderFooter);
 				}
 				if (settings.cover.isEmpty() || d != 0) ++logicalPage;
 			}

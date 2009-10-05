@@ -28,6 +28,8 @@
 #include "tempfile.hh"
 #include <QWaitCondition>
 #include <QMutex>
+#include "outline.hh"
+#include "tocprinter.hh"
 
 class PageConverterPrivate: public QObject {
 	Q_OBJECT
@@ -57,6 +59,9 @@ private:
 	QList<QWebPage *> pages;
 	QPrinter * printer;
 	QPainter * painter;
+	Outline * outline;
+	TocPrinter * tocPrinter;
+
 	int logicalPages;
 	int logicalPage;
 	int actualPages;
@@ -69,10 +74,12 @@ private:
 	QHash<int, QHash<QString, QWebElement> > anchors;
 	QHash<int, QVector< QPair<QWebElement,QString> > > localLinks;
 	QHash<int, QVector< QPair<QWebElement,QString> > > externalLinks;
-	QHash<int, QMap< QPair<int, QPair<qreal,qreal> >, QWebElement> > headings;
+
 	QList<QWebPage *> headers;
 	QList<QWebPage *> footers;
 
+	void beginPage(int & actualPage, bool & first);
+	void endPage(bool actual, bool hasHeaderFooter);
 	QString hfreplace(const QString & q);
 	QWebPage * loadHeaderFooter(QString url, int d, int page);
 public slots:
