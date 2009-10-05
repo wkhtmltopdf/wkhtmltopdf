@@ -112,9 +112,9 @@ QPair<qreal, QPrinter::Unit> Settings::strToUnitReal(const char * o, bool * ok) 
 		u=QPrinter::Point;
 	else {
 		if(ok) ok=false;
-		return qMakePair((qreal)QString(o).left(i).toDouble(), u);
+		return qMakePair((qreal)QString(o).left(i).toDouble()*s, u);
 	}
-	return qMakePair((qreal)QString(o).left(i).toDouble(ok), u);
+	return qMakePair((qreal)QString(o).left(i).toDouble(ok)*s, u);
 }
 
 /*!
