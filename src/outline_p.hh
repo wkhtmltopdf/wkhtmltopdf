@@ -31,11 +31,12 @@ public:
 
 class OutlinePrivate {
 public:
-	Settings & settings;
+	const Settings & settings;
 	QList<OutlineItem *> documentOutlines;
 	int pageCount;
 	int anchorCounter;
 	OutlinePrivate(const Settings & settings);
+	~OutlinePrivate();
 	void fillChildAnchors(OutlineItem * item, QHash<QString, QWebElement> & anchors);
 	void outlineChildren(OutlineItem * item, QPrinter * printer, int level);
 };

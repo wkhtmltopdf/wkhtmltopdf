@@ -13,8 +13,53 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with wkhtmltopdf.  If not, see <http://www.gnu.org/licenses/>.
-
 #include "outline_p.hh"
+#ifdef __EXTENSIVE_WKHTMLTOPDF_QT_HACK__
+
+/*!
+  \file outline_p.hh
+  \brief Defines the classes OutlinePrivate and OutlineItem
+*/
+
+/*!
+  \class OutlineItem
+  \brief Class describing an item in the outline
+*/
+OutlineItem::~OutlineItem() {
+	foreach (OutlineItem * i, children)
+		delete i;
+}
+
+/*!
+  \class OutlinePrivate
+  \brief Class providing implemenation details of Outline
+*/
+
+OutlinePrivate::OutlinePrivate(const Settings & s):
+	settings(s) {
+}
+
+OutlinePrivate::~OutlinePrivate() {
+	foreach (OutlineItem * i, documentOutlines) 
+		delete i;
+}
+
+void OutlinePrivate::fillChildAnchors(OutlineItem * item, QHash<QString, QWebElement> & anchors) {
+	foreach (OutlineItem * i, item->children) {
+		if (i->anchor.isEmpty()) continue;
+		anchors[i->anchor] = i->element;
+		fillChildAnchors(item, anchors);
+	}	
+}
+
+void OutlinePrivate::outlineChildren(OutlineItem * item, QPrinter * printer, int level) {
+	if (level + 1 > settings.outlineDepth) return;
+	foreach (OutlineItem * i, item->children) {
+		printer->beginSectionOutline(i->value, i->anchor);
+		outlineChildren(i, printer, level+1);
+		printer->endSectionOutline();
+	}	
+}
 
 
 /*!
@@ -83,6 +128,7 @@ void Outline::addWebPage(const QString & name, QWebPrinter & wp, QWebFrame * fra
   \param parms The structure to fill
  */
 void Outline::fillHeaderFooterParms(int page, QHash<QString, QString> & parms) {
+	#warning "IMPLEMENT ME"
 }
 
 /*!
@@ -107,6 +153,8 @@ int Outline::pageCount() {
   \param printer The printer to print to
 */
 void Outline::printOutline(QPrinter * printer) {
+	if (!d->settings.outline) return;
 	foreach(OutlineItem * i, d->documentOutlines)
 		d->outlineChildren(i, printer, 0);
 }
+#endif //__EXTENSIVE_WKHTMLTOPDF_QT_HACK__
