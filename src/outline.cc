@@ -126,31 +126,50 @@ void Outline::addWebPage(const QString & name, QWebPrinter & wp, QWebFrame * fra
 	d->pageCount += wp.pageCount();
 }
 
+
+void OutlinePrivate::buildHFCache(OutlineItem * i, int level) {
+	if (level >= hfCache.size()) return;
+	foreach (OutlineItem * j, i->children) {
+		while (hfCache[level].size() < j->page)
+			hfCache[level].push_back(hfCache[level].back());
+		
+		if (hfCache[level].size() == j->page) 
+			hfCache[level].push_back(j);
+		buildHFCache(j, level+1);
+	}
+}
+
+
+
 /*!
   \brief Fill in header footer parameters for a given page
   \param page The page to fill in for
   \param parms The structure to fill
  */
 void Outline::fillHeaderFooterParms(int page, QHash<QString, QString> & parms) {
+	//Build hfcache
+	if (d->hfCache.size() == 0) {
+		for(int i=0; i < 3; ++i) {
+			QList< OutlineItem *> x;
+			x.push_back(NULL);
+			d->hfCache.push_back(x);
+		}
+		foreach (OutlineItem * i, d->documentOutlines) 
+			d->buildHFCache(i, 0);
+	}
+	for(int i=0; i < 3; ++i)
+		while(d->hfCache[i].size() <= page) 
+			d->hfCache[i].push_back(d->hfCache[i].back());
+
 	int off = d->settings.pageOffset;
 	parms["frompage"] = QString::number(off);
 	parms["topage"] = QString::number(off+d->pageCount-1);
 	parms["page" ] = QString::number(page+off);
 	parms["webpage"] = "foobar";
 
-//  	QString sec[TocPrinter::levels];
-// 	for (uint i=0; i < TocPrinter::levels; ++i) {
-// 		QMap<int, TocItem*>::const_iterator j = tocPrinter.page2sectionslow[i].find(pageNum);
-// 		if (j == tocPrinter.page2sectionslow[i].end()) {
-// 			j = tocPrinter.page2sectionshigh[i].upperBound(pageNum);
-// 			--j;
-// 			if (j == tocPrinter.page2sectionshigh[i].end()) continue;
-// 		}
-// 		sec[i] = j.value()->value;
-// 	}
-// 	res["section"] = sec[0];
-// 	res["subsection"] = sec[1];
-// 	res["subsubsection"] = sec[2];
+	parms["section" ] = d->hfCache[0][page]?d->hfCache[0][page]->value:QString("");
+	parms["subsection" ] = d->hfCache[1][page]?d->hfCache[1][page]->value:QString("");
+	parms["subsubsection" ] = d->hfCache[2][page]?d->hfCache[2][page]->value:QString("");
 }
 
 /*!

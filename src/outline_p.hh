@@ -35,10 +35,14 @@ public:
 	QList<OutlineItem *> documentOutlines;
 	int pageCount;
 	int anchorCounter;
+
+	QList< QList< OutlineItem *> > hfCache;
+
 	OutlinePrivate(const Settings & settings);
 	~OutlinePrivate();
 	void fillChildAnchors(OutlineItem * item, QHash<QString, QWebElement> & anchors);
 	void outlineChildren(OutlineItem * item, QPrinter * printer, int level);
+	void buildHFCache(OutlineItem * i, int level);
 };
 
 #endif //__EXTENSIVE_WKHTMLTOPDF_QT_HACK__
