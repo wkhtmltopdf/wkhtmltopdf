@@ -33,6 +33,8 @@ public:
 	void printOutline(QPrinter * printer);
 private:
 	OutlinePrivate * d;
+	friend class TocPrinter;
+	friend class TocPrinterPrivate;
 };
 
 #endif //__EXTENSIVE_WKHTMLTOPDF_QT_HACK__

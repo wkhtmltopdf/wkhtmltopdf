@@ -26,11 +26,12 @@ class TocPrinterPrivate;
 class TocPrinter {
 public:
 	TocPrinter(Outline * outline, QPrinter * printer, QPainter & painter);
+	~TocPrinter();
 	int pageCount();
 	void spoolPage(int page);
-	void fillLinks(int d, QVector<QPair<QWebElement, QString> > & links);
+	void fillLinks(int doc, QVector<QPair<QWebElement, QString> > & links);
 private:
-	TocPrinterPrivate * tocPrinter;
+	TocPrinterPrivate * d;
 };
 
 #endif //__EXTENSIVE_WKHTMLTOPDF_QT_HACK__

@@ -31,6 +31,7 @@ public:
 
 class OutlinePrivate {
 public:
+	Settings & settings;
 	QList<OutlineItem *> documentOutlines;
 	int pageCount;
 	int anchorCounter;
