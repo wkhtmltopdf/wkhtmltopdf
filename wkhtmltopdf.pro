@@ -65,5 +65,4 @@ SOURCES += src/wkhtmltopdf.cc src/arguments.cc src/commandlineparser.cc \
            src/docparts.cc src/outputter.cc src/manoutputter.cc src/settings.cc \
            src/htmloutputter.cc src/textoutputter.cc src/tempfile.cc \
            src/multipageloader.cc src/pageconverter.cc src/progressfeedback.cc \
-           src/outline.cc 
-
+           src/outline.cc src/tocprinter.cc
