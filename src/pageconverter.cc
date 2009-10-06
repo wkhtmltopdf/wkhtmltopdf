@@ -254,10 +254,14 @@ void PageConverterPrivate::preparePrint(bool ok) {
 		for(int d=0; d < pages.size(); ++d) {
 			if (!settings.cover.isEmpty() && d == 0) continue;
 			for(int p=0; p < pageCount[d]; ++p) {
+
+				QHash<QString, QString> parms;
+				outline->fillHeaderFooterParms(page, parms);
+
 				if(!settings.header.htmlUrl.isEmpty())
-					headers.push_back(loadHeaderFooter(settings.header.htmlUrl, d, page) );
+					headers.push_back(loadHeaderFooter(settings.header.htmlUrl, parms) );
 				if(!settings.footer.htmlUrl.isEmpty())
-					footers.push_back(loadHeaderFooter(settings.footer.htmlUrl, d, page) );
+					footers.push_back(loadHeaderFooter(settings.footer.htmlUrl, parms) );
 				++page;
 			}
 		}
@@ -279,6 +283,10 @@ void PageConverterPrivate::beginPage(int & actualPage, bool & first) {
 
 void PageConverterPrivate::endPage(bool actual, bool hasHeaderFooter) {
 	if(hasHeaderFooter && actual) {
+
+		QHash<QString, QString> parms;
+		outline->fillHeaderFooterParms(logicalPage, parms);
+
 		//Webkit used all kinds of crasy cordinate transformation, and font setup
 		//We save it here and restore some sane defaults
 		painter->save();
@@ -294,9 +302,9 @@ void PageConverterPrivate::endPage(bool actual, bool hasHeaderFooter) {
 		int dy = painter->boundingRect(0, 0, w, h, Qt::AlignTop, "M").height();
 		//Draw the header text
 		QRect r=QRect(0, 0-dy, w, h);
-		painter->drawText(r, Qt::AlignTop | Qt::AlignLeft, hfreplace(settings.header.left));
-		painter->drawText(r, Qt::AlignTop | Qt::AlignHCenter, hfreplace(settings.header.center));
-		painter->drawText(r, Qt::AlignTop | Qt::AlignRight, hfreplace(settings.header.right));
+		painter->drawText(r, Qt::AlignTop | Qt::AlignLeft, hfreplace(settings.header.left, parms));
+		painter->drawText(r, Qt::AlignTop | Qt::AlignHCenter, hfreplace(settings.header.center, parms));
+		painter->drawText(r, Qt::AlignTop | Qt::AlignRight, hfreplace(settings.header.right, parms));
 		
 		//IF needed draw the footer line
 		if (settings.footer.line) painter->drawLine(0, h, w, h);
@@ -305,9 +313,9 @@ void PageConverterPrivate::endPage(bool actual, bool hasHeaderFooter) {
 		dy = painter->boundingRect(0, 0, w, h, Qt::AlignTop, "M").height();
 		//Draw the fooder text
 		r=QRect(0,0,w,h+dy);
-		painter->drawText(r, Qt::AlignBottom | Qt::AlignLeft, hfreplace(settings.footer.left));
-		painter->drawText(r, Qt::AlignBottom | Qt::AlignHCenter, hfreplace(settings.footer.center));
-		painter->drawText(r, Qt::AlignBottom | Qt::AlignRight, hfreplace(settings.footer.right));
+		painter->drawText(r, Qt::AlignBottom | Qt::AlignLeft, hfreplace(settings.footer.left, parms));
+		painter->drawText(r, Qt::AlignBottom | Qt::AlignHCenter, hfreplace(settings.footer.center, parms));
+		painter->drawText(r, Qt::AlignBottom | Qt::AlignRight, hfreplace(settings.footer.right, parms));
 		
 		//Restore webkits crasy scaling and font settings
 		painter->restore();
@@ -499,11 +507,10 @@ void PageConverterPrivate::printPage(bool ok) {
 }
 
 
-QWebPage * PageConverterPrivate::loadHeaderFooter(QString url, int d, int page) {
+QWebPage * PageConverterPrivate::loadHeaderFooter(QString url, const QHash<QString, QString> & parms) {
 	QUrl u = MultiPageLoader::guessUrlFromString(url);
 
-	QHash<QString, QString> values = calculateHeaderFooterParams(d, page);
-	for(QHash<QString, QString>::iterator i=values.begin(); i != values.end(); ++i)
+	for(QHash<QString, QString>::const_iterator i=parms.begin(); i != parms.end(); ++i)
 		u.addQueryItem(i.key(), i.value());
 	
 	return hfLoader.addResource(u);
@@ -513,10 +520,9 @@ QWebPage * PageConverterPrivate::loadHeaderFooter(QString url, int d, int page) 
  * Replace some variabels in a string used in a header or fooder
  * \param q the string to substitute in
  */
-QString PageConverterPrivate::hfreplace(const QString & q) {
-	QHash<QString, QString> values = calculateHeaderFooterParams(1,1);
+QString PageConverterPrivate::hfreplace(const QString & q, const QHash<QString, QString> & parms) {
 	QString r=q;
-	for(QHash<QString, QString>::iterator i=values.begin(); i != values.end(); ++i)
+	for(QHash<QString, QString>::const_iterator i=parms.begin(); i != parms.end(); ++i)
 		r=r.replace("["+i.key()+"]", i.value(), Qt::CaseInsensitive);
 	return r;
 }
@@ -533,32 +539,6 @@ void PageConverterPrivate::convert() {
 void PageConverterPrivate::cancel() {
 
 }
-
-
-QHash<QString, QString> PageConverterPrivate::calculateHeaderFooterParams(int d, int page) {
-	QHash<QString, QString> res;
-	
-// 	res["frompage"] = QString::number(page_offset);
-// 	res["topage"] = QString::number(page_offset+logicalPages-1);
-// 	res["page"] = QString::number(logicalPage);
-// 	res["webpage"] = "foobar";
-	
-//  	QString sec[TocPrinter::levels];
-// 	for (uint i=0; i < TocPrinter::levels; ++i) {
-// 		QMap<int, TocItem*>::const_iterator j = tocPrinter.page2sectionslow[i].find(pageNum);
-// 		if (j == tocPrinter.page2sectionslow[i].end()) {
-// 			j = tocPrinter.page2sectionshigh[i].upperBound(pageNum);
-// 			--j;
-// 			if (j == tocPrinter.page2sectionshigh[i].end()) continue;
-// 		}
-// 		sec[i] = j.value()->value;
-// 	}
-// 	res["section"] = sec[0];
-// 	res["subsection"] = sec[1];
-// 	res["subsubsection"] = sec[2];
-	return res;
-}
-
 
 /*!
   \class PageConverter

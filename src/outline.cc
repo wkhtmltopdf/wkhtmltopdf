@@ -25,6 +25,10 @@
   \class OutlineItem
   \brief Class describing an item in the outline
 */
+
+/*!
+  \brief Recursivily delete the subtree
+*/
 OutlineItem::~OutlineItem() {
 	foreach (OutlineItem * i, children)
 		delete i;
@@ -128,7 +132,25 @@ void Outline::addWebPage(const QString & name, QWebPrinter & wp, QWebFrame * fra
   \param parms The structure to fill
  */
 void Outline::fillHeaderFooterParms(int page, QHash<QString, QString> & parms) {
-	#warning "IMPLEMENT ME"
+	int off = d->settings.pageOffset;
+	parms["frompage"] = QString::number(off);
+	parms["topage"] = QString::number(off+d->pageCount-1);
+	parms["page" ] = QString::number(page+off);
+	parms["webpage"] = "foobar";
+
+//  	QString sec[TocPrinter::levels];
+// 	for (uint i=0; i < TocPrinter::levels; ++i) {
+// 		QMap<int, TocItem*>::const_iterator j = tocPrinter.page2sectionslow[i].find(pageNum);
+// 		if (j == tocPrinter.page2sectionslow[i].end()) {
+// 			j = tocPrinter.page2sectionshigh[i].upperBound(pageNum);
+// 			--j;
+// 			if (j == tocPrinter.page2sectionshigh[i].end()) continue;
+// 		}
+// 		sec[i] = j.value()->value;
+// 	}
+// 	res["section"] = sec[0];
+// 	res["subsection"] = sec[1];
+// 	res["subsubsection"] = sec[2];
 }
 
 /*!

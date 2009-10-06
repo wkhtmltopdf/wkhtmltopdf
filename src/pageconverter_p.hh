@@ -50,12 +50,6 @@ private:
 
 	TempFile tempOut;
 	
-// 	int networkError;
-// 	int loginTry;
-//	QNetworkAccessManager networkAccessManager;
-	//!Keep track of the numer of pages loading
-//	QAtomicInt loading; 
-//	QList<QString> temporaryFiles;
 	QList<QWebPage *> pages;
 	QPrinter * printer;
 	QPainter * painter;
@@ -70,7 +64,6 @@ private:
 
 	bool convertionDone;
 
-	QHash<QString, QString> calculateHeaderFooterParams(int d, int page);
 	QHash<int, QHash<QString, QWebElement> > anchors;
 	QHash<int, QVector< QPair<QWebElement,QString> > > localLinks;
 	QHash<int, QVector< QPair<QWebElement,QString> > > externalLinks;
@@ -80,17 +73,12 @@ private:
 
 	void beginPage(int & actualPage, bool & first);
 	void endPage(bool actual, bool hasHeaderFooter);
-	QString hfreplace(const QString & q);
-	QWebPage * loadHeaderFooter(QString url, int d, int page);
+	QString hfreplace(const QString & q, const QHash<QString, QString> & parms);
+	QWebPage * loadHeaderFooter(QString url, const QHash<QString, QString> & parms);
 public slots:
 	void loadProgress(int progress);
 	
-	// void amfinished(QNetworkReply * r);
-// 	void authenticationRequired(QNetworkReply *reply, QAuthenticator *authenticator);
-// 	void loadFinished(bool ok);
-// 	void loadStarted();
-// 	void loadProgress(int progress);
-// 	void sslErrors(QNetworkReply *reply, const QList<QSslError> &);
+
 	void preparePrint(bool ok);
 	void printPage(bool ok);
 	void beginConvert();
