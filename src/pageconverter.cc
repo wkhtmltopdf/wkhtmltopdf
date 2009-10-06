@@ -490,20 +490,6 @@ void PageConverterPrivate::printPage(bool ok) {
 // 		copyFile(i,o);
 // 	}
 // 	for (int i=0; i < temp.size(); ++i) QFile::remove(temp[i]);
-   
-// 	switch(networkError) {
-// 	case 401: 
-// 		qApp->exit(3);
-// 		break;
-// 	case 404: 
-// 		qApp->exit(2);
-// 		break;
-// 	case 0:
-// 		qApp->quit();
-// 		break;
-// 	default:
-// 		qApp->exit(1);
-// 	}
 }
 
 
@@ -528,12 +514,12 @@ QString PageConverterPrivate::hfreplace(const QString & q, const QHash<QString, 
 }
 
 
-void PageConverterPrivate::convert() {
+bool PageConverterPrivate::convert() {
 	convertionDone=false;
 	beginConvert();
 	while(!convertionDone)
 		qApp->processEvents(QEventLoop::WaitForMoreEvents | QEventLoop::AllEvents);
-	//return true;
+	return true;
 }
 
 void PageConverterPrivate::cancel() {
@@ -618,8 +604,8 @@ void PageConverter::beginConvertion() {
 /*!
   \brief Synchronios convert html pages to a pdf document.
 */
-void PageConverter::convert() {
-	d->convert();
+bool PageConverter::convert() {
+	return d->convert();
 }
 
 /*!

@@ -38,7 +38,7 @@ signals:
 	void finished(bool ok);
 public slots:
 	void beginConvertion();
-	void convert();
+	bool convert();
 	void cancel();
 private:
 	PageConverterPrivate * d;

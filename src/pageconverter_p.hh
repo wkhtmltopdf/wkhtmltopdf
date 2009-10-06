@@ -83,8 +83,7 @@ public slots:
 	void printPage(bool ok);
 	void beginConvert();
 	void cancel();
-	void convert();
-	
+	bool convert();
 };
 
 #endif //__TEXTUALFEEDBACK_P_HH__

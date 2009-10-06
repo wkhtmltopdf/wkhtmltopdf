@@ -151,7 +151,19 @@ int main(int argc, char * argv[]) {
 // 			}
 // 			exit(0);
 // 		}
-	converter.convert();
-	//qApp->exec();
-	//qApp->exit();
+	if (!converter.convert())
+		qApp->exit(1);
+	switch(converter.httpErrorCode()) {
+	case 401: 
+		qApp->exit(3);
+		break;
+	case 404: 
+		qApp->exit(2);
+		break;
+	case 0:
+		qApp->quit();
+		break;
+	default:
+		qApp->exit(1);		
+	}
 }
