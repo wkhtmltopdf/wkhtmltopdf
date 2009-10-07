@@ -171,24 +171,26 @@ void TocPrinter::spoolPage(int page) {
 		}
 
 		double startX = pr.width()*s.indentation[lvl]/1000.0;
+		
 		QRectF lineRect(startX,y,pr.width()-startX, d->step[lvl]);
 		
 		QRectF br;
-		d->painter.drawText(lineRect,Qt::AlignBottom | Qt::AlignRight, QString::number(line.second->page),&br);
+		d->painter.drawText(lineRect,Qt::AlignBottom | Qt::AlignRight, QString(" ") + QString::number(line.second->page),&br);
 		QString v = line.second->value;
+		lineRect.setRight(br.left());
 		if (s.useDots) {
-			v += " ";
-			double dw = d->painter.boundingRect(lineRect, Qt::AlignRight | Qt::AlignTop, ".").width();
+			v.append(' ');
 			//Calculate the number of dots needed to fill the line
-			int ndots = (br.left() - startX - d->painter.boundingRect(lineRect, Qt::AlignLeft, v+" ").width())/dw;
-			for (int i=0; i < ndots; i+=2) v += ".";
+			int ndots = (lineRect.right() - d->painter.boundingRect(lineRect, Qt::AlignLeft, v).right())/d->dw[lvl];
+			for (int i=0; i < ndots; ++i) v.append(".");
 		}
 		d->painter.drawText(lineRect,Qt::AlignBottom | Qt::AlignLeft, v);
 		
+		QRectF r(0,y, pr.width(), d->step[lvl]);
 		if (s.forwardLinks)
-			d->painter.addLink(lineRect, line.second->anchor);
+			d->painter.addLink(r, line.second->anchor);
 		if (s.backLinks)
-			d->painter.addAnchor(lineRect, line.second->anchor+"_R");
+			d->painter.addAnchor(r, line.second->anchor+"_R");
 		y += d->step[lvl];
 	}
 	d->painter.restore();
