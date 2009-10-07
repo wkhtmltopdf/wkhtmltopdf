@@ -25,7 +25,11 @@ MINGWFILES="binutils-2.19.1-mingw32-bin.tar.gz mingw32-make-3.81-20080326-3.tar.
 gcc-g++-3.4.5-20060117-3.tar.gz gcc-core-3.4.5-20060117-3.tar.gz w32api-3.13-mingw32-dev.tar.gz \
 mingwrt-3.15.2-mingw32-dev.tar.gz mingwrt-3.15.2-mingw32-dll.tar.gz"
 OPENSSL=openssl-0.9.8h-1-lib.zip
-UPX=upx-3.03-i386_linux
+if file /bin/true | grep -q 64-bit; then
+    UPX=upx-3.03-amd64_linux
+else
+    UPX=upx-3.03-i386_linux
+fi
 
 #Helper functions
 function get() {
