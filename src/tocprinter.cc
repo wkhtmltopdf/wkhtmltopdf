@@ -19,6 +19,7 @@
 #ifdef __EXTENSIVE_WKHTMLTOPDF_QT_HACK__
 
 
+typedef QPair<int, OutlineItem *> line_t;
 /*!
   We imploy a cheep strategy of not using a render tree, 
   insted we just store the state render state for every page start,
@@ -26,21 +27,84 @@
  */
 class TocPrinterPrivate {
 public:
+	static const uint levels = Settings::TOCSettings::levels;
+
 	Outline * outline;
 	QPrinter * printer;
 	QPainter & painter;
-		
+	double dw[levels];
+	double step[levels];
 	QVector<OutlineItem *> pageItems;
+
+	QList< QList< line_t > > pages;
 	
 	TocPrinterPrivate(Outline * o, QPrinter * pr, QPainter & pa);
 	void revLinkChildren(OutlineItem * i, QVector<QPair<QWebElement, QString> > & links);
-
 	void renderPage(OutlineItem * & cur, bool first, bool dry);
+	void layoutChildren(OutlineItem * item, double & y, int level);
+	void incChildren(OutlineItem * item);
 };
 
 
+void TocPrinterPrivate::incChildren(OutlineItem * item) {
+	foreach (OutlineItem * i, item->children) {
+		i->page += pages.size();
+		incChildren(i);
+	}
+}
+
+void TocPrinterPrivate::layoutChildren(OutlineItem * item, double & y, int level) {
+	const Settings::TOCSettings & s = outline->d->settings.toc;
+	if (level >= s.depth) return;
+	QRect pr = printer->pageRect();
+	foreach (OutlineItem * i, item->children) {
+		y += step[level];
+		if(y > pr.height()) {
+			pages.push_back( QList< QPair<int, OutlineItem *> >() );
+			y = step[level];
+		}
+		pages.back().push_back( qMakePair(level, i) );
+		layoutChildren(i, y, level+1);
+	}
+}
+
 TocPrinterPrivate::TocPrinterPrivate(Outline * o, QPrinter * pr, QPainter & pa):
 	outline(o), printer(pr), painter(pa) {
+	const Settings::TOCSettings & s = outline->d->settings.toc;
+	painter.save();
+	painter.resetTransform();
+	QRectF pageRect = printer->pageRect();
+	for(uint level=0; level < levels; ++level) {
+		painter.setFont(QFont(s.fontName, s.fontSize[level]));
+		step[level] = painter.fontMetrics().height();
+		dw[level] = painter.boundingRect(pageRect, Qt::AlignRight | Qt::AlignTop, ".").width();
+	}
+	painter.setFont(QFont(s.fontName, s.captionFontSize));
+	//The height of the caption	
+	double y = painter.boundingRect(pageRect, Qt::AlignTop | Qt::AlignHCenter, s.captionText).height() * 3;
+	painter.restore();
+	pages.push_back( QList< QPair<int, OutlineItem *> >() );
+
+	OutlineItem * root = new OutlineItem();
+	OutlineItem * toc = new OutlineItem();
+	root->children.push_back(toc);
+	toc->value = s.captionText;
+	toc->anchor = "_WK_TOC";
+	toc->parent = root;
+	toc->page = 1;
+
+	y += step[0];
+	pages.back().push_back( qMakePair(0, toc) );
+
+	foreach (OutlineItem * i, o->d->documentOutlines)
+		layoutChildren(i, y, 0); 	
+
+	outline->d->pageCount += pages.size();
+
+	foreach (OutlineItem * i, outline->d->documentOutlines) 
+		incChildren(i);
+
+	outline->d->documentOutlines.push_front(root);
 }
 
 
@@ -50,65 +114,6 @@ void TocPrinterPrivate::revLinkChildren(OutlineItem * i, QVector<QPair<QWebEleme
 		revLinkChildren(j, links);
 	}
 }
-
-void TocPrinterPrivate::renderPage(OutlineItem * & cur, bool first, bool dry) {
-	double y=0;
-	const Settings::TOCSettings & s = outline->d->settings.toc;
-	QRect pr = printer->pageRect();
-
-	int lvl = 0;
-	for(OutlineItem * x=cur; x; x = x->parent) ++lvl;
-
-	if(first) {
-		double h = painter.boundingRect(pr,Qt::AlignTop | Qt::AlignHCenter, s.captionText).height();
-		QRect r((int)h,0,pr.width(),(int)h*3);
-		if(!dry) 
-			painter.drawText(r, Qt::AlignVCenter | Qt::AlignHCenter, s.captionText);
-		y += r.height();
-	}
-
-	while(true) {
-		painter.setFont(QFont(s.fontName, s.fontSize[lvl]));		
-		double step=painter.fontMetrics().height();
-		if (y+step > pr.height()) return;
-		if (!dry) {
-			double startX = pr.width()*s.indentation[lvl]/1000.0;
-			QRectF lineRect(startX,y,pr.width()-startX,step);
-			QRectF br;
-			painter.drawText(lineRect,Qt::AlignBottom | Qt::AlignRight, QString::number(cur->page),&br);
-			QString v = cur->value;
-			if (s.useDots) {
-				v += " ";
-				//Calculate the number of dots needed to fill the line
-				double dw = painter.boundingRect(pr, Qt::AlignRight | Qt::AlignTop, ".").width();
-				int ndots = (br.left() - startX - painter.boundingRect(lineRect, Qt::AlignLeft, v+" ").width())/dw;
-				for (int i=0; i < ndots; ++i) v += ".";
-			}
-			painter.drawText(lineRect,Qt::AlignBottom | Qt::AlignLeft, v);
-		}
-		y += step;
-		
-		++lvl;
-		if (cur->children.size() != 0 && lvl+1 < s.depth) //TODO check for max depth here
-			cur = cur->children[0];
-		else {
-			while(true) {
-				--lvl;
-				OutlineItem * i = cur->parent;
-				if (i == NULL) {
-					cur = NULL;
-					return;
-				}
-				int j = i->children.indexOf(cur);
-				if (j+1 < i->children.size()) {
-					cur = i->children[j+1];
-					break;
-				}
-			}
-		}
-	}
-}
-
 
 /*!
   \file tocprinter.hh
@@ -123,10 +128,6 @@ void TocPrinterPrivate::renderPage(OutlineItem * & cur, bool first, bool dry) {
 
 TocPrinter::TocPrinter(Outline * outline, QPrinter * printer, QPainter & painter):
   d(new TocPrinterPrivate(outline, printer, painter)) {
-	
-
-	
-	QVector<OutlineItem *> pageItems;
 }
 
 TocPrinter::~TocPrinter() {
@@ -137,7 +138,7 @@ TocPrinter::~TocPrinter() {
   \brief Return the number of pages in the table of content
 */
 int TocPrinter::pageCount() {
-	return 0;
+	return d->pages.size();
 }
 
 /*!
@@ -145,7 +146,52 @@ int TocPrinter::pageCount() {
   \param The page to output, between 1 and pageCount()
 */
 void TocPrinter::spoolPage(int page) {
+	d->painter.save();
+	d->painter.resetTransform();
+	d->painter.setBackgroundMode(Qt::TransparentMode);
+	d->painter.setBrush(QBrush(Qt::black));
+
+	double y = 0;
+	const Settings::TOCSettings & s = d->outline->d->settings.toc;
+	QRect pr = d->printer->pageRect();
 	
+	if(page == 0) {
+		double h = d->painter.boundingRect(pr,Qt::AlignTop | Qt::AlignHCenter, s.captionText).height();
+		QRect r((int)h,0,pr.width(),(int)h*3);
+		d->painter.drawText(r, Qt::AlignVCenter | Qt::AlignHCenter, s.captionText);
+		d->painter.addAnchor(r, "_WK_TOC");
+		y += r.height();
+	}
+
+	int lvl=-1;
+	foreach (const line_t & line, d->pages[page]) {
+		if (line.first != lvl) {
+			lvl = line.first;
+			d->painter.setFont(QFont(s.fontName, s.fontSize[lvl]));
+		}
+
+		double startX = pr.width()*s.indentation[lvl]/1000.0;
+		QRectF lineRect(startX,y,pr.width()-startX, d->step[lvl]);
+		
+		QRectF br;
+		d->painter.drawText(lineRect,Qt::AlignBottom | Qt::AlignRight, QString::number(line.second->page),&br);
+		QString v = line.second->value;
+		if (s.useDots) {
+			v += " ";
+			double dw = d->painter.boundingRect(lineRect, Qt::AlignRight | Qt::AlignTop, ".").width();
+			//Calculate the number of dots needed to fill the line
+			int ndots = (br.left() - startX - d->painter.boundingRect(lineRect, Qt::AlignLeft, v+" ").width())/dw;
+			for (int i=0; i < ndots; i+=2) v += ".";
+		}
+		d->painter.drawText(lineRect,Qt::AlignBottom | Qt::AlignLeft, v);
+		
+		if (s.forwardLinks)
+			d->painter.addLink(lineRect, line.second->anchor);
+		if (s.backLinks)
+			d->painter.addAnchor(lineRect, line.second->anchor+"_R");
+		y += d->step[lvl];
+	}
+	d->painter.restore();
 }
 
 /*!

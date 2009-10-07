@@ -236,6 +236,7 @@ void PageConverterPrivate::preparePrint(bool ok) {
 
 	//Now that we know the ordering of the headers in each document we
 	//can calculate the number of pages in the table of content
+	tocPrinter = NULL;
 	if (settings.printToc) {
 		int k=pages.size()+1;
 		progressString = QString("Page ")+QString::number(k)+QString(" of ")+QString::number(k);
@@ -278,7 +279,7 @@ void PageConverterPrivate::beginPage(int & actualPage, bool & first) {
 		first=false;
 	else
 		printer->newPage();
-	actualPages++;
+	actualPage++;
 }
 
 void PageConverterPrivate::endPage(bool actual, bool hasHeaderFooter) {
@@ -403,9 +404,11 @@ void PageConverterPrivate::printPage(bool ok) {
 			QString l2=pages[d]->mainFrame()->url().toString() + "#";
 
 			if (settings.cover.isEmpty() || d != 0) {
-				int md = d - settings.cover.isEmpty()?0:1;
-				if(tocPrinter) tocPrinter->fillLinks(md, localLinks[md]);
-				outline->fillAnchors(md, anchors[md]);				
+				//The toc printer adds an extra TOC document to the beginning of the outline
+				//Using a cover does not add anything to cover
+				int delta = (tocPrinter?1:0) - (settings.cover.isEmpty()?0:1);
+				if(tocPrinter) tocPrinter->fillLinks(d+delta, localLinks[d]);
+				outline->fillAnchors(d+delta, anchors[d]);				
 			}
 
 			//Sort anchors and links by page
@@ -450,6 +453,7 @@ void PageConverterPrivate::printPage(bool ok) {
 			painter->restore();
 		}
  	}
+	outline->printOutline(printer);
 	
 // #ifdef  __EXTENSIVE_WKHTMLTOPDF_QT_HACK__
 // 	if (currentPage == 0 && cover[0]) return;
