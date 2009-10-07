@@ -26,6 +26,10 @@
   \brief Class describing an item in the outline
 */
 
+OutlineItem::OutlineItem():
+	parent(NULL), page(-1)
+{}
+
 /*!
   \brief Recursivily delete the subtree
 */
@@ -52,10 +56,12 @@ void OutlinePrivate::fillChildAnchors(OutlineItem * item, QHash<QString, QWebEle
 	foreach (OutlineItem * i, item->children) {
 		if (i->anchor.isEmpty()) continue;
 		anchors[i->anchor] = i->element;
-		fillChildAnchors(item, anchors);
+		fillChildAnchors(i, anchors);
 	}	
 }
 
+#include <iostream>
+using namespace std;
 void OutlinePrivate::outlineChildren(OutlineItem * item, QPrinter * printer, int level) {
 	if (level + 1 > settings.outlineDepth) return;
 	foreach (OutlineItem * i, item->children) {
@@ -111,7 +117,7 @@ void Outline::addWebPage(const QString & name, QWebPrinter & wp, QWebFrame * fra
 		uint level = element.tagName().mid(1).toInt();
 		OutlineItem * item = new OutlineItem();
 		item->page = d->pageCount + i.key().first;
-		item->value = element.toPlainText();
+		item->value = element.toPlainText().replace("\n", " ");
 		item->element = element;
 		item->anchor = QString("__WKANCHOR_")+QString::number(d->anchorCounter++,36);
 		while(levelStack.back() >= level) {
@@ -123,6 +129,7 @@ void Outline::addWebPage(const QString & name, QWebPrinter & wp, QWebFrame * fra
 		old = item;
 		levelStack.push_back(level);
 	}
+	d->documentOutlines.push_back(root);
 	d->pageCount += wp.pageCount();
 }
 
@@ -164,7 +171,7 @@ void Outline::fillHeaderFooterParms(int page, QHash<QString, QString> & parms) {
 	int off = d->settings.pageOffset;
 	parms["frompage"] = QString::number(off);
 	parms["topage"] = QString::number(off+d->pageCount-1);
-	parms["page" ] = QString::number(page+off);
+	parms["page" ] = QString::number(page+off-1);
 	parms["webpage"] = "foobar";
 
 	parms["section" ] = d->hfCache[0][page]?d->hfCache[0][page]->value:QString("");

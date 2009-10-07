@@ -26,6 +26,7 @@ public:
 	QString value;
 	QWebElement element;
 	QString anchor;
+	OutlineItem();
 	~OutlineItem();
 };
 
