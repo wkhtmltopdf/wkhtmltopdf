@@ -485,12 +485,14 @@ CommandLineParserPrivate::CommandLineParserPrivate(Settings & s):
 	addarg("footer-left",0,"Left aligned footer text", new QStrSetter(s.footer.left,"text",""));
 	addarg("footer-line",0,"Display line above the footer", new ConstSetter<bool>(s.footer.line,true,false));
 	addarg("footer-right",0,"Right aligned footer text", new QStrSetter(s.footer.right,"text",""));
+	addarg("footer-spacing",0,"Spacing between footer and content in mm", new FloatSetter(s.footer.spacing,"real",0.0));
 	addarg("header-center",0,"Centered header text", new QStrSetter(s.header.center,"text",""));
 	addarg("header-font-name",0,"Set header font name", new QStrSetter(s.header.fontName,"name","Arial"));
 	addarg("header-font-size",0,"Set header font size", new IntSetter(s.header.fontSize,"size",11));
 	addarg("header-left",0,"Left aligned header text", new QStrSetter(s.header.left,"text",""));
 	addarg("header-line",0,"Display line below the header", new ConstSetter<bool>(s.header.line,true,false));
 	addarg("header-right",0,"Right aligned header text", new QStrSetter(s.header.right,"text",""));
+	addarg("header-spacing",0,"Spacing between header and content in mm", new FloatSetter(s.header.spacing,"real",0.0));
 	extended(false);
 	qthack(false);
 	

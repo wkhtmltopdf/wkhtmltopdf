@@ -64,6 +64,8 @@ struct Settings {
 		bool line;
 		//! Url of the document the html document that should be used as a header/footer
 		QString htmlUrl;
+		//! Spacing
+		float spacing;
 	};
 
 	/*! \brief Settings consdering proxy */

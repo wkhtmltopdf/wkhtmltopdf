@@ -296,24 +296,26 @@ void PageConverterPrivate::endPage(bool actual, bool hasHeaderFooter) {
 		int h=printer->height();
 		int w=printer->width();
 						
+		double spacing = settings.header.spacing * printer->height() / printer->heightMM();
 		//If needed draw the header line
-		if (settings.header.line) painter->drawLine(0, 0, w, 0);
+		if (settings.header.line) painter->drawLine(0, -spacing, w, -spacing);
 		//Guess the height of the header text
 		painter->setFont(QFont(settings.header.fontName, settings.header.fontSize));
 		int dy = painter->boundingRect(0, 0, w, h, Qt::AlignTop, "M").height();
 		//Draw the header text
-		QRect r=QRect(0, 0-dy, w, h);
+		QRect r=QRect(0, 0-dy-spacing, w, h);
 		painter->drawText(r, Qt::AlignTop | Qt::AlignLeft, hfreplace(settings.header.left, parms));
 		painter->drawText(r, Qt::AlignTop | Qt::AlignHCenter, hfreplace(settings.header.center, parms));
 		painter->drawText(r, Qt::AlignTop | Qt::AlignRight, hfreplace(settings.header.right, parms));
 		
+		spacing = settings.footer.spacing * printer->height() / printer->heightMM();
 		//IF needed draw the footer line
-		if (settings.footer.line) painter->drawLine(0, h, w, h);
+		if (settings.footer.line) painter->drawLine(0, h + spacing, w, h);
 		//Guess the height of the footer text
 		painter->setFont(QFont(settings.footer.fontName, settings.footer.fontSize));
 		dy = painter->boundingRect(0, 0, w, h, Qt::AlignTop, "M").height();
 		//Draw the fooder text
-		r=QRect(0,0,w,h+dy);
+		r=QRect(0,0,w,h+dy+ spacing);
 		painter->drawText(r, Qt::AlignBottom | Qt::AlignLeft, hfreplace(settings.footer.left, parms));
 		painter->drawText(r, Qt::AlignBottom | Qt::AlignHCenter, hfreplace(settings.footer.center, parms));
 		painter->drawText(r, Qt::AlignBottom | Qt::AlignRight, hfreplace(settings.footer.right, parms));
