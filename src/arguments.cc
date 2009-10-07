@@ -111,6 +111,25 @@ public:
 	}
 };
 
+
+/*!
+  Putting values into a map
+*/
+struct AHMapSetter: public ArgHandler {
+	QHash<QString, QString> & dst;
+	AHMapSetter(QHash<QString, QString> & a, QString keyName, QString valueName) : dst(a) {
+		argn.push_back(keyName);
+		argn.push_back(valueName);
+	}
+	virtual bool operator() (const char ** args, CommandLineParserPrivate &) {
+		dst[QString(args[0])] = QString(args[1]);
+		return true;
+	}
+	virtual void useDefault() {
+		dst.clear();
+	}
+};
+
 /*!
   SomeSetter template method base
 */
@@ -411,7 +430,7 @@ CommandLineParserPrivate::CommandLineParserPrivate(Settings & s):
 	addarg("proxy",'p',"Use a proxy", new ProxySetter(s.proxy, "proxy"));
 	addarg("username",0,"HTTP Authentication username", new QStrSetter(s.username, "username",""));
 	addarg("password",0,"HTTP Authentication password", new QStrSetter(s.password, "password",""));
-
+	addarg("custom-header",0,"Set an additional HTTP header (repeatable)", new AHMapSetter(s.customHeaders, "name", "value"));
 	qthack(true);
 	addarg("book",'b',"Set the options one would usualy set when printing a book", new Caller<BookFunc>());
 	addarg("cover",0,"Use html document as cover. It will be inserted before the toc with no headers and footers",new QStrSetter(s.cover,"url",""));

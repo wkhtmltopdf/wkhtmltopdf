@@ -161,6 +161,8 @@ struct Settings {
 	QList<QString> in;
 	//! The file where in to store the output
 	QString out;
+	//! Map of custum header valiabels
+	QHash<QString, QString> customHeaders;
 
 	static QPrinter::PageSize strToPageSize(const char * s, bool * ok=0);
 	static QPair<qreal, QPrinter::Unit> strToUnitReal(const char * s, bool * ok=0);

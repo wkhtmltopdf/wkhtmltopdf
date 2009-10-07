@@ -137,7 +137,7 @@ public:
 			fprintf(fd," <%s>",S(arg));
 			w+=3+arg.size();
 		}
-		while(w < 34) {
+		while(w < 37) {
 			fprintf(fd," ");
 			++w;
 		}
@@ -145,7 +145,7 @@ public:
 			if(w+1+s.size() > lw) {
 				printf("\n");
 				w=0;
-				while(w < 34) {
+				while(w < 37) {
 					fprintf(fd," ");
 					++w;
 				}

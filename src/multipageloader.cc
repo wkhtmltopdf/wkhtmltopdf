@@ -144,9 +144,12 @@ void MultiPageLoaderPrivate::load() {
 	loadStartedEmitted=false;
 	error=false;
 	loadingPages=0;
-	for(int i=0; i < pages.size(); ++i) 
-		pages[i]->mainFrame()->load(urls[i]);
-
+	for(int i=0; i < pages.size(); ++i) {
+		QNetworkRequest r = QNetworkRequest(urls[i]);
+		for(QHash<QString, QString>::const_iterator j = settings.customHeaders.constBegin(); j != settings.customHeaders.constEnd(); ++j)
+			r.setRawHeader(j.key().toAscii(), j.value().toAscii());
+		pages[i]->mainFrame()->load(r);
+	}
 
 // 		if (url == "-") {
 // 			QFile in;
