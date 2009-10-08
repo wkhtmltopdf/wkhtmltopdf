@@ -252,19 +252,17 @@ void PageConverterPrivate::preparePrint(bool ok) {
 	headers.clear();
 	footers.clear();
 	if(!settings.header.htmlUrl.isEmpty() || !settings.footer.htmlUrl.isEmpty()) {
-		for(int d=0; d < pages.size(); ++d) {
-			if (!settings.cover.isEmpty() && d == 0) continue;
-			for(int p=0; p < pageCount[d]; ++p) {
+		currentPhase = 3;
+		emit outer.phaseChanged();
+		for(int p=0; p < outline->pageCount(); ++p) {
+			QHash<QString, QString> parms;
+			outline->fillHeaderFooterParms(page, parms);
 
-				QHash<QString, QString> parms;
-				outline->fillHeaderFooterParms(page, parms);
-
-				if(!settings.header.htmlUrl.isEmpty())
-					headers.push_back(loadHeaderFooter(settings.header.htmlUrl, parms) );
-				if(!settings.footer.htmlUrl.isEmpty())
-					footers.push_back(loadHeaderFooter(settings.footer.htmlUrl, parms) );
-				++page;
-			}
+			if(!settings.header.htmlUrl.isEmpty())
+				headers.push_back(loadHeaderFooter(settings.header.htmlUrl, parms) );
+			if(!settings.footer.htmlUrl.isEmpty())
+				footers.push_back(loadHeaderFooter(settings.footer.htmlUrl, parms) );
+			++page;
 		}
 		hfLoader.load();
 	} else 
@@ -323,19 +321,27 @@ void PageConverterPrivate::endPage(bool actual, bool hasHeaderFooter) {
 		//Restore webkits crasy scaling and font settings
 		painter->restore();
 	}
-// 					painter->save();
-// 					painter->resetTransform();
-// 					painter->drawPicture(0,-208 - 4, picture);
-// 					painter->restore();
-// 					{
-// 						painter->save();
-// 						
-// 						//MThread::msleep(100);
-// 						painter->translate(0,-222);
-// 						QWebPrinter whp(headers[0]->mainFrame(), printer, *painter);
-// 						//painter->translate(0,-whp.elementLocation(headers[0]->mainFrame()->findFirstElement("body")).second.height());
-// 						whp.spoolPage(1);
-// 					}
+
+	if(actual && logicalPage <= headers.size()) {
+		painter->save();
+		painter->resetTransform();
+		double spacing = settings.header.spacing * printer->height() / printer->heightMM();
+		painter->translate(0, -spacing);
+		QWebPrinter wp(headers[logicalPage-1]->mainFrame(), printer, *painter);
+		painter->translate(0,-wp.elementLocation(headers[logicalPage-1]->mainFrame()->findFirstElement("body")).second.height());
+		wp.spoolPage(1);
+		painter->restore();
+	}
+
+	if(actual && logicalPage <= footers.size()) {
+		painter->save();
+		painter->resetTransform();
+		double spacing = settings.footer.spacing * printer->height() / printer->heightMM();
+		painter->translate(0, printer->height()+ spacing);
+		QWebPrinter wp(footers[logicalPage-1]->mainFrame(), printer, *painter);
+		wp.spoolPage(1);
+		painter->restore();
+	}
 
 }
 
