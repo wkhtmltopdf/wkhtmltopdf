@@ -366,29 +366,6 @@ void PageConverterPrivate::printPage(bool ok) {
 	emit outer.progressChanged(0);
 	
 	for(int cc_=0; cc_ < cc; ++cc_) {
-		//TODO print front here
-		//TODO print TOC here
-		
-// 		QPicture picture;
-
-// 		while(true) {
-// 			picture.setBoundingRect(
-// 				QRect(0,0,
-// 					  printer->pageRect().width() * picture.logicalDpiX()/printer->logicalDpiX(),
-// 					  printer->pageRect().height() * picture.logicalDpiY()/printer->logicalDpiY()));
-			
-// 			QPainter p;
-// 			p.begin(&picture);
-// 			qDebug() << picture.boundingRect();
-// 			QWebPrinter wp(headers[0]->mainFrame(), &picture, p);
-// 			wp.spoolPage(1);
-// 			float h = wp.elementLocation(headers[0]->mainFrame()->findFirstElement("body")).second.height() * printer->logicalDpiY() /picture.logicalDpiY();
-// 			p.end();
-// 			if(h < 100000) break;
-// 			qDebug() << h;
-// 			picture = QPicture();
-// 		}
-
 		logicalPage=1;
 		for(int d=0; d < pages.size(); ++d) {
 			//Output the table of content now
