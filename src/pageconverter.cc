@@ -605,6 +605,13 @@ void PageConverter::cancel() {
 }
 
 /*!
+  \biref Returns the settings object associated with the page converter
+*/
+const Settings & PageConverter::settings() const {
+	return d->settings;
+}
+
+/*!
   \fn PageConverter::warning(const QString & message)
   \brief Signal emmited when some non fatal waring occures during conversion
   \param message The warning message

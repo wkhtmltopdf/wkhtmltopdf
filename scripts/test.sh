@@ -24,14 +24,14 @@ cd test
 [ -f img.jpg ] || wget $img -O img.jpg
 
 
-export WK=../wkhtmltopdf
+export WK=../wkhtmltopdf 
 failed=0
 
 function result() { printf "%-30s [%-4s]\n" "$1" "$2";}
 function good() { result "$1" " OK ";}
 function bad() { result "$1" "Fail"; export failed=$(($failed+1));}
 function fs() { du -b "$1" | sed -re 's/([0-9]*).*/\1/';}
-function wk() { $WK --redirect-delay 0 -q $*;}
+function wk() { $WK -q $*;}
 
 #Test if we can convert a html file containing
 #An image of some format
@@ -92,23 +92,31 @@ function testHeaderFooter() {
 }
 
 function testToc() {
-	echo "<html><head></head><body><h1 style=\"visibility: hidden\">foo</h1><h2 style=\"visibility: hidden\">bar</h2><h3 style=\"visibility: hidden\">baz</h3></body>" > tmp.html
+	echo "<html><head></head><body><h1>foo</h1><h2>bar</h2><h3>baz</h3></body>" > tmp.html
 	wk tmp.html tmp.pdf --toc --toc-depth 2
 	([ -f tmp.pdf ] && 
-		pdftotext tmp.pdf /dev/stdout | grep -q foo &&
-		pdftotext tmp.pdf /dev/stdout | grep -q bar &&
-		! pdftotext tmp.pdf /dev/stdout | grep -q baz) && good Toc || bad Toc 
+		[ "$(pdftotext tmp.pdf /dev/stdout | grep -c foo)" == 2 ] &&
+		[ "$(pdftotext tmp.pdf /dev/stdout | grep -c bar)" == 2 ] &&
+		[ "$(pdftotext tmp.pdf /dev/stdout | grep -c baz)" == 1 ]) && good Toc || bad Toc 
 }
 
 
 function testOutline() {
-	echo "<html><head></head><body><h1 style=\"visibility: hidden\">foo</h1><h2 style=\"visibility: hidden\">bar</h2><h3 style=\"visibility: hidden\">baz</h3></body>" > tmp.html
+	echo "<html><head></head><body><h1>foo</h1><h2>bar</h2><h3>baz</h3></body>" > tmp.html
 	wk tmp.html tmp.pdf --outline --outline-depth 2
 	([ -f tmp.pdf ] && 
 		cat tmp.pdf | grep -q ".f.o.o" &&
 		cat tmp.pdf | grep -q ".b.a.r" &&
 		! cat tmp.pdf | grep -q ".b.a.z") && good Outline || bad Outline
 }
+
+function testJSRedirect() {
+    wk http://madalgo.au.dk/~jakobt/jsredirect.html tmp.pdf
+    ([ -f tmp.pdf ] && 
+	pdftotext tmp.pdf /dev/stdout | grep -q Right) && good JSRedicet || bad JSRedirect
+}
+
+
 
 function testBuild() {
 	rm -rf wkhtmltopdf
@@ -133,6 +141,7 @@ testOutline
 testImgSupport jpg
 testImgSupport gif
 testImgSupport png
+testJSRedirect
 #testImgSupport mng
 #testImgSupport tiff
 testRemote 

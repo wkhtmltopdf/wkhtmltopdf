@@ -30,6 +30,7 @@ public:
 	QString progressString();
 	int httpErrorCode();
 	void addResource(const QString & url);
+	const Settings & settings() const;
 signals:
 	void warning(const QString & message);
 	void error(const QString & message);

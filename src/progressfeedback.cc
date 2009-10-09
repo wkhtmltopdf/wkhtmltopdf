@@ -32,6 +32,7 @@
   \param message The warning message
 */
 void ProgressFeedback::warning(const QString &message) {
+	if (pageConverter.settings().quiet) return;
 	fprintf(stderr, "Warning: %s",S(message));
 	for(int l = 9 + message.size(); l < lw; ++l) 
 		fprintf(stderr, " ");
@@ -55,6 +56,7 @@ void ProgressFeedback::error(const QString &message) {
   \brief Write out the name of the next phase
 */
 void ProgressFeedback::phaseChanged() {
+	if (pageConverter.settings().quiet) return;
 	QString desc=pageConverter.phaseDescription();
 	fprintf(stderr, "%s", S(desc));
 	
@@ -71,6 +73,7 @@ void ProgressFeedback::phaseChanged() {
   \brief Update progress bar
 */
 void ProgressFeedback::progressChanged(int progress) {
+	if (pageConverter.settings().quiet) return;
 	fprintf(stderr, "[");
 	int w=60;
 	progress *= w;
@@ -86,7 +89,6 @@ void ProgressFeedback::progressChanged(int progress) {
 	for(int i=l; i < lw; ++i) fprintf(stderr, " ");
 	lw = l;
 	fprintf(stderr, "\r");
-    //rintf(stderr, "Progress: %d%%\n",progress);
 }
 
 ProgressFeedback::ProgressFeedback(PageConverter & _):
