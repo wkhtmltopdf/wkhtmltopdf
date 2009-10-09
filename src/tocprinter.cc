@@ -39,7 +39,7 @@ public:
 	QList< QList< line_t > > pages;
 	
 	TocPrinterPrivate(Outline * o, QPrinter * pr, QPainter & pa);
-	void revLinkChildren(OutlineItem * i, QVector<QPair<QWebElement, QString> > & links);
+	void revLinkChildren(OutlineItem * i, QVector<QPair<QWebElement, QString> > & links, int level);
 	void renderPage(OutlineItem * & cur, bool first, bool dry);
 	void layoutChildren(OutlineItem * item, double & y, int level);
 	void incChildren(OutlineItem * item);
@@ -108,10 +108,12 @@ TocPrinterPrivate::TocPrinterPrivate(Outline * o, QPrinter * pr, QPainter & pa):
 }
 
 
-void TocPrinterPrivate::revLinkChildren(OutlineItem * i, QVector<QPair<QWebElement, QString> > & links) {
+void TocPrinterPrivate::revLinkChildren(OutlineItem * i, QVector<QPair<QWebElement, QString> > & links, int level) {
+	const Settings::TOCSettings & s = outline->d->settings.toc;
+	if (level >= s.depth) return;
 	foreach (OutlineItem * j,i->children) {
 		links.push_back( qMakePair(j->element, j->anchor+QString("_R") ) );
-		revLinkChildren(j, links);
+		revLinkChildren(j, links, level+1);
 	}
 }
 
@@ -203,7 +205,7 @@ void TocPrinter::spoolPage(int page) {
 */
 void TocPrinter::fillLinks(int doc, QVector<QPair<QWebElement, QString> > & links) {
 	if (doc < 0 || doc >= d->outline->d->documentOutlines.size()) return;
-	d->revLinkChildren(d->outline->d->documentOutlines[doc], links);
+	d->revLinkChildren(d->outline->d->documentOutlines[doc], links, 0);
 }
 
 
