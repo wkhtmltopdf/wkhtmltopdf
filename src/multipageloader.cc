@@ -208,7 +208,7 @@ void MultiPageLoaderPrivate::loadProgress(int progress) {
 
 void MultiPageLoaderPrivate::loadFinished(bool ok) {
 	loadingPages--;
-	error = error && ok;
+	error = error || !ok;
 	if (!pageToIndex.count(QObject::sender())) return;
 	
 	int idx=pageToIndex[QObject::sender()];
@@ -223,7 +223,7 @@ void MultiPageLoaderPrivate::loadFinished(bool ok) {
 
 void MultiPageLoaderPrivate::timedFinished() {
 	if(loadingPages == 0) 
-		emit outer.loadFinished(error);
+		emit outer.loadFinished(!error);
 }
 
 /*!

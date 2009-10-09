@@ -35,6 +35,7 @@ class PageConverterPrivate: public QObject {
 	Q_OBJECT
 public:
 	PageConverterPrivate(Settings & s, PageConverter & o);
+	~PageConverterPrivate();
 	void copyFile(QFile & src, QFile & dst);
 
 	QList<QString> phaseDescriptions;
@@ -46,10 +47,9 @@ public:
 	QString progressString;
 private:
 	PageConverter & outer;
-
-
+	void clearResources();
 	TempFile tempOut;
-	
+	bool error;
 	QList<QWebPage *> pages;
 	QPrinter * printer;
 	QPainter * painter;
@@ -59,7 +59,7 @@ private:
 	int logicalPages;
 	int logicalPage;
 	int actualPages;
-	QList<int> pageCount;
+	
 	int tocPages;
 
 	bool convertionDone;
@@ -71,14 +71,13 @@ private:
 	QList<QWebPage *> headers;
 	QList<QWebPage *> footers;
 
+	void fail();
 	void beginPage(int & actualPage, bool & first);
 	void endPage(bool actual, bool hasHeaderFooter);
 	QString hfreplace(const QString & q, const QHash<QString, QString> & parms);
 	QWebPage * loadHeaderFooter(QString url, const QHash<QString, QString> & parms);
 public slots:
 	void loadProgress(int progress);
-	
-
 	void preparePrint(bool ok);
 	void printPage(bool ok);
 	void beginConvert();

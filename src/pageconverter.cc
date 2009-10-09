@@ -35,7 +35,7 @@
 */
 
 PageConverterPrivate::PageConverterPrivate(Settings & s, PageConverter & o) :
-	settings(s), pageLoader(s), hfLoader(s), outer(o) {
+	settings(s), pageLoader(s), hfLoader(s), outer(o), printer(0), painter(0), outline(0), tocPrinter(0) {
 
 	phaseDescriptions.push_back("Loading pages");
 	phaseDescriptions.push_back("Resolving links");
@@ -71,6 +71,10 @@ PageConverterPrivate::PageConverterPrivate(Settings & s, PageConverter & o) :
 	connect(&hfLoader, SIGNAL(loadFinished(bool)), this, SLOT(printPage(bool)));
 }
 
+PageConverterPrivate::~PageConverterPrivate() {
+	clearResources();
+}
+
 /*!
  * Called when the page is loading, display some progress to the using
  * \param progress the loading progress in percent
@@ -82,22 +86,32 @@ void PageConverterPrivate::loadProgress(int progress) {
 
 
 void PageConverterPrivate::beginConvert() {
+	clearResources();
+	error=false;
+	progressString = "0%";
+	currentPhase=0;
+
+
   	if (!settings.cover.isEmpty())
 		settings.in.push_front(settings.cover);
 // 	if(strcmp(out,"-") != 0 && !QFileInfo(out).isWritable()) {
 // 		fprintf(stderr, "Write access to '%s' is not allowed\n", out);
 // 		exit(1);
 // 	}
-	pageLoader.clearResources();
 	foreach(QString url, settings.in)
 		pages.push_back(pageLoader.addResource(url));
 	
-	progressString = "0%";
-	currentPhase=0;
 	emit outer.phaseChanged();
 	loadProgress(0);
 
 	pageLoader.load();
+}
+
+void PageConverterPrivate::fail() {
+	error = true;
+	convertionDone = true;
+	clearResources();
+	emit outer.finished(false);
 }
 
 
@@ -105,6 +119,10 @@ void PageConverterPrivate::beginConvert() {
  * Prepares printing out the document to the pdf file
  */
 void PageConverterPrivate::preparePrint(bool ok) {
+	if (!ok) {
+		fail(); 
+		return;
+	}
 
 	printer = new QPrinter(settings.resolution);
 	
@@ -113,10 +131,8 @@ void PageConverterPrivate::preparePrint(bool ok) {
 	if (settings.out == "-") {
 		if (QFile::exists("/dev/stdout"))
 			lout = "/dev/stdout";
-		else {
-			#warning "Sometimes we should add .ps instead here"
+		else
 			lout = tempOut.create(".pdf");
-		}
 	}
 	//Tell the printer object to print the file <out>
 	printer->setOutputFormat(
@@ -161,12 +177,8 @@ void PageConverterPrivate::preparePrint(bool ok) {
 	
 	logicalPages = 0;
 	actualPages = 0;
-	pageCount.clear();
 	tocPages = 0;
-	anchors.clear();
-	localLinks.clear();
-	externalLinks.clear();
-
+	
 	//Find and resolve all local links
 	if(settings.useLocalLinks || settings.useExternalLinks) {
 		currentPhase = 1;
@@ -346,7 +358,10 @@ void PageConverterPrivate::endPage(bool actual, bool hasHeaderFooter) {
 }
 
 void PageConverterPrivate::printPage(bool ok) {
-	//if (headerFooterLoading != 0 || loading != 0) return;
+	if (!ok) {
+		fail();
+		return;
+	}
 
  	bool first=true;
  	int actualPage=1;
@@ -439,37 +454,12 @@ void PageConverterPrivate::printPage(bool ok) {
 		}
  	}
 	outline->printOutline(printer);
-	
-// #ifdef  __EXTENSIVE_WKHTMLTOPDF_QT_HACK__
-// 	if (currentPage == 0 && cover[0]) return;
-// #endif
-// }
-
-// 	}
-
-// 	if (outline) tocPrinter.outline(root, &printer);
-// 	if (root) delete root;
 
  	painter->end();
-	
-	//if (headerFooterLoading != 0 || loading != 0) return;
-
 	currentPhase = 5;
 	emit outer.phaseChanged();
 	convertionDone = true;
 	emit outer.finished(true);
-
-	
-// 	if (!quiet) {
-// 		fprintf(stderr,"Done                 \n");
-// 		fflush(stderr);
-// 	}
-//  	for (int i=0; i < pages.size(); ++i) delete pages[i];
-// 	pages.clear();
-// 	for (int i=0; i < headers.size(); ++i) delete headers[i];
-// 	headers.clear();
-// 	for (int i=0; i < footers.size(); ++i) delete footers[i];
-// 	footers.clear();		
 
 // 	if (!strcmp(out,"-") && lout != "/dev/stdout") {
 // 		QFile i(lout);
@@ -508,11 +498,47 @@ bool PageConverterPrivate::convert() {
 	beginConvert();
 	while(!convertionDone)
 		qApp->processEvents(QEventLoop::WaitForMoreEvents | QEventLoop::AllEvents);
-	return true;
+	return error;
+}
+
+void PageConverterPrivate::clearResources() {
+	pageLoader.clearResources();
+	hfLoader.clearResources();
+	error = 0;
+	foreach(QWebPage * page, pages)
+		delete page;
+	pages.clear();
+	if (printer) 
+		delete printer;
+	printer = NULL;
+	
+	if (painter)
+		delete painter;
+	painter = NULL;
+
+	if (outline)
+		delete outline;
+	outline = NULL;
+
+	if (tocPrinter)
+		delete tocPrinter;
+	tocPrinter = NULL;
+	anchors.clear();
+	localLinks.clear();
+	externalLinks.clear();
+
+	foreach (QWebPage * page, headers)
+		delete page;
+	headers.clear();
+
+	foreach (QWebPage * page, footers)
+		delete page;
+	footers.clear();
+	
 }
 
 void PageConverterPrivate::cancel() {
-
+	error=true;
 }
 
 /*!
