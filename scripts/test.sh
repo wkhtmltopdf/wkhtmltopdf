@@ -83,31 +83,32 @@ function testSSL() {
 #Test if the header footer stuff works
 function testHeaderFooter() {
     rm -rf tmp.pdf
-	echo "<html><head><title>Local Test</title></head><body><h1>monster</h1></body></html>" > tmp.html
-	wk tmp.html tmp.pdf --footer-left hat --header-right emacs
+    echo "<html><head><title>Local Test</title></head><body><h1>monster</h1></body></html>" > tmp.html
+    wk tmp.html tmp.pdf --footer-left hat --header-right emacs
     ([ -f tmp.pdf ] && 
-		pdftotext tmp.pdf /dev/stdout | grep -q monster &&
-		pdftotext tmp.pdf /dev/stdout | grep -q emacs &&
-		pdftotext tmp.pdf /dev/stdout | grep -q hat) && good HeaderFooter || bad HeaderFooter
+	pdftotext tmp.pdf /dev/stdout | grep -q monster &&
+	pdftotext tmp.pdf /dev/stdout | grep -q emacs &&
+	pdftotext tmp.pdf /dev/stdout | grep -q hat) && good HeaderFooter || bad HeaderFooter
 }
 
 function testToc() {
-	echo "<html><head></head><body><h1>foo</h1><h2>bar</h2><h3>baz</h3></body>" > tmp.html
-	wk tmp.html tmp.pdf --toc --toc-depth 2
-	([ -f tmp.pdf ] && 
-		[ "$(pdftotext tmp.pdf /dev/stdout | grep -c foo)" == 2 ] &&
-		[ "$(pdftotext tmp.pdf /dev/stdout | grep -c bar)" == 2 ] &&
-		[ "$(pdftotext tmp.pdf /dev/stdout | grep -c baz)" == 1 ]) && good Toc || bad Toc 
+    echo "<html><head></head><body><h1>foo</h1><h2>bar</h2><h3>baz</h3></body>" > tmp.html
+    wk tmp.html tmp.pdf --toc --toc-depth 2
+    ([ -f tmp.pdf ] && 
+	[ "$(pdftotext tmp.pdf /dev/stdout | grep -c foo)" == 2 ] &&
+	[ "$(pdftotext tmp.pdf /dev/stdout | grep -c bar)" == 2 ] &&
+	[ "$(pdftotext tmp.pdf /dev/stdout | grep -c baz)" == 1 ]) && good Toc || bad Toc 
 }
 
 
 function testOutline() {
-	echo "<html><head></head><body><h1>foo</h1><h2>bar</h2><h3>baz</h3></body>" > tmp.html
-	wk tmp.html tmp.pdf --outline --outline-depth 2
-	([ -f tmp.pdf ] && 
-		cat tmp.pdf | grep -q ".f.o.o" &&
-		cat tmp.pdf | grep -q ".b.a.r" &&
-		! cat tmp.pdf | grep -q ".b.a.z") && good Outline || bad Outline
+    rm -rf tmp.df
+    echo "<html><head></head><body><h1>foo</h1><h2>bar</h2><h3>baz</h3></body>" > tmp.html
+    wk tmp.html tmp.pdf --outline --outline-depth 2
+    ([ -f tmp.pdf ] && 
+	cat tmp.pdf | grep -q ".f.o.o" &&
+	cat tmp.pdf | grep -q ".b.a.r" &&
+	! cat tmp.pdf | grep -q ".b.a.z") && good Outline || bad Outline
 }
 
 function testJSRedirect() {
@@ -116,19 +117,51 @@ function testJSRedirect() {
 	pdftotext tmp.pdf /dev/stdout | grep -q Right) && good JSRedicet || bad JSRedirect
 }
 
+function test404() {
+    wk http://madalgo.au.dk/~jakobt/nosuchfile.nsf tmp.pdf && bad 404 || good 404
+}
 
+function testBadDest() {
+    echo "<html><head></head><body><h1>foo</h1><h2>bar</h2><h3>baz</h3></body>" > tmp.html
+    wk tmp.html /proc/cpuinfo 2| grep -q "not writable" && good BadDest || bad BadDest
+}
+
+function testMultidoc() {
+    rm -rf tmp.pdf
+    echo "<html><head><title>Local Test</title></head><body><h1>Hello</h1></body></html>" > tmp.html
+    echo "<html><head><title>Local Test</title></head><body><h1>world</h1></body></html>" > tmp2.html
+    wk tmp.html tmp2.html tmp.pdf
+    ([ -f tmp.pdf ] && 
+	pdftotext tmp.pdf /dev/stdout | grep -q Hello &&
+	pdftotext tmp.pdf /dev/stdout | grep -q world) && good MultiDoc || bad MultiDoc
+}
+
+function testHtmlHeader() {
+    echo "<html><body>Header</body></html>" > tmp.html
+    echo "<html><head><title>Local Test</title></head><body><h1>world</h1></body></html>" > tmp2.html
+    wk --header-html tmp.html tmp2.html tmp.pdf
+    ([ -f tmp.pdf ] && 
+	pdftotext tmp.pdf /dev/stdout | grep -q Header &&
+	pdftotext tmp.pdf /dev/stdout | grep -q world) && good HtmlHeader || bad HtmlHeader
+}
+
+function testCustomHeader() {
+    wk http://madalgo.au.dk/~jakobt/cookiewrite.php --custom-header "Cookie" "cookie=hello" tmp.pdf
+    ([ -f tmp.pdf ] && 
+	pdftotext tmp.pdf /dev/stdout | grep -q hello) && good CustomHeader || bad CustomHeader
+}
 
 function testBuild() {
-	rm -rf wkhtmltopdf
-	git checkout-index --prefix=./wkhtmltopdf/ -a || (bad "Build $1 (1)" && return 1)
-	cd wkhtmltopdf
-	if [[ "$1" == "qmake" ]]; then
-		qmake 2>/dev/null >/dev/null || (bad "Build $1 (2)" && return 1)
-	else
-		cmake . 2>/dev/null >/dev/null || (bad "Build $1 (2)" && return 1)
-	fi
-	make -j5 >/dev/null 2>/dev/null && good "Build $1" || bad "Build $1 (3)"
-	cd ..
+    rm -rf wkhtmltopdf
+    git checkout-index --prefix=./wkhtmltopdf/ -a || (bad "Build $1 (1)" && return 1)
+    cd wkhtmltopdf
+    if [[ "$1" == "qmake" ]]; then
+	qmake 2>/dev/null >/dev/null || (bad "Build $1 (2)" && return 1)
+    else
+	cmake . 2>/dev/null >/dev/null || (bad "Build $1 (2)" && return 1)
+    fi
+    make -j5 >/dev/null 2>/dev/null && good "Build $1" || bad "Build $1 (3)"
+    cd ..
 	rm -rf wkhtmltopdf
 }
 
@@ -142,6 +175,11 @@ testImgSupport jpg
 testImgSupport gif
 testImgSupport png
 testJSRedirect
+test404
+testBadDest
+testMultidoc
+testHtmlHeader
+testCustomHeader
 #testImgSupport mng
 #testImgSupport tiff
 testRemote 
