@@ -123,8 +123,11 @@ function test404() {
 
 function testBadDest() {
     echo "<html><head></head><body><h1>foo</h1><h2>bar</h2><h3>baz</h3></body>" > tmp.html
-    wk tmp.html /proc/cpuinfo 2> tmp.out
-    grep -q "write" tmp.out && good BadDest || bad BadDest
+    (! wk tmp.html /proc/cpuinfo 2> tmp.out && grep -q "Error" tmp.out) && good BadDest || bad BadDest
+}
+
+function testBadSource() {
+    (! wk http://nosuchdomain.nosuchtld tmp.pdf 2> tmp.out && grep -q "Error" tmp.out) && good BadSource || bad BadSource
 }
 
 function testMultidoc() {
@@ -154,16 +157,16 @@ function testCustomHeader() {
 
 function testBuild() {
     rm -rf wkhtmltopdf
-    git checkout-index --prefix=./wkhtmltopdf/ -a || (bad "Build $1 (1)" && return 1)
+    (cd .. && git checkout-index --prefix=./test/wkhtmltopdf/ -a) || (bad "Build $1 (1)" && return 1)
     cd wkhtmltopdf
     if [[ "$1" == "qmake" ]]; then
 	qmake 2>/dev/null >/dev/null || (bad "Build $1 (2)" && return 1)
     else
 	cmake . 2>/dev/null >/dev/null || (bad "Build $1 (2)" && return 1)
     fi
-    make -j5 >/dev/null 2>/dev/null && good "Build $1" || bad "Build $1 (3)"
+    make -j2 >/dev/null 2>/dev/null && good "Build $1" || bad "Build $1 (3)"
     cd ..
-	rm -rf wkhtmltopdf
+    rm -rf wkhtmltopdf
 }
 
 good TestTest
@@ -175,19 +178,20 @@ testOutline
 testImgSupport jpg
 testImgSupport gif
 testImgSupport png
+testImgSupport mng
+#testImgSupport tiff
 testJSRedirect
 test404
 testBadDest
+testBadSource
 testMultidoc
 testHtmlHeader
 testCustomHeader
-#testImgSupport mng
-#testImgSupport tiff
 testRemote 
 testSSL
 testHeaderFooter
-#testBuild qmake
+testBuild qmake
 #testBuild cmake
 #Lets clean up
-rm tmp.html tmp.pdf
+rm -rf *.pdf *.html
 exit $failed 
