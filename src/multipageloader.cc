@@ -64,12 +64,13 @@ void MultiPageLoaderPrivate::authenticationRequired(QNetworkReply *reply, QAuthe
  * \param src The source to copy from
  * \param dst The destination to copy to
  */
-void MultiPageLoaderPrivate::copyFile(QFile & src, QFile & dst) {
+bool MultiPageLoader::copyFile(QFile & src, QFile & dst) {
 	QByteArray buf(1024*1024*5,0);
-	while(qint64 r=src.read(buf.data(),buf.size()))
-		dst.write(buf.data(),r);
+	while (qint64 r=src.read(buf.data(),buf.size()))
+		if (dst.write(buf.data(),r) != r) return false;
 	src.close();
 	dst.close();
+	return true;
 }
 
 /*!
@@ -151,20 +152,7 @@ void MultiPageLoaderPrivate::load() {
 		for(QHash<QString, QString>::const_iterator j = settings.customHeaders.constBegin(); j != settings.customHeaders.constEnd(); ++j)
 			r.setRawHeader(j.key().toAscii(), j.value().toAscii());
 		pages[i]->mainFrame()->load(r);
-	}
-
-// 		if (url == "-") {
-// 			QFile in;
-// 			in.open(stdin,QIODevice::ReadOnly);
-// 			url = QDir::tempPath()+"/wktemp"+QUuid::createUuid().toString()+".html";
-// 			temporaryFiles.push_back(url);
-// 			QFile tmp(url);
-// 			tmp.open(QIODevice::WriteOnly);
-// 			copyFile(in,tmp);
-// 		}
-
-// 		page->mainFrame()->load(guessUrlFromString(url));
-	
+	}	
 }
 
 void MultiPageLoaderPrivate::clearResources() {
@@ -172,6 +160,7 @@ void MultiPageLoaderPrivate::clearResources() {
 	urls.clear();
 	progressList.clear();
 	finishedList.clear();
+	tempIn.remove();
 }
 
 void MultiPageLoaderPrivate::cancel() {
@@ -243,7 +232,18 @@ MultiPageLoader::~MultiPageLoader() {
   @param string Url describing the resource to load
 */
 QWebPage * MultiPageLoader::addResource(const QString & string) {
-	return addResource(guessUrlFromString(string));
+	QString url=string;
+	if (url == "-") {
+		QFile in;
+		in.open(stdin,QIODevice::ReadOnly);
+		url = d->tempIn.create(".html");
+		QFile tmp(url);
+		if(!tmp.open(QIODevice::WriteOnly) || !copyFile(in, tmp)) {
+			emit error("Unable to create temporery file");
+			return NULL;
+		}
+	}
+	return addResource(guessUrlFromString(url));
 }
 
 /*!

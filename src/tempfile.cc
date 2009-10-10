@@ -41,7 +41,7 @@ TempFile::~TempFile() {
 */
 QString TempFile::create(const QString & ext) {
 	remove();
-	path = QDir::tempPath()+"/wktemp"+QUuid::createUuid().toString()+ext;
+	path = QDir::tempPath()+"/wktemp-"+QUuid::createUuid().toString().mid(1,36)+ext;
 	return path;
 }
 

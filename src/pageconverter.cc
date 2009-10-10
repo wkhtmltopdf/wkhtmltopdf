@@ -14,16 +14,17 @@
 // You should have received a copy of the GNU General Public License
 // along with wkhtmltopdf.  If not, see <http://www.gnu.org/licenses/>.
 #include "pageconverter_p.hh"
-#include <qfileinfo.h>
 #include <QAuthenticator>
-#include <QTimer>
-#include <QWebSettings>
-#include <QWebPage>
-#include <QWebFrame>
 #include <QDir>
-#include <qapplication.h>
+#include <QFile>
 #include <QPair>
-
+#include <QTimer>
+#include <QWebFrame>
+#include <QWebPage>
+#include <QWebSettings>
+#include <qapplication.h>
+#include <qfileinfo.h>
+ 
 /*!
   \file pageconverter.hh
   \brief Defines the PageConverter class
@@ -110,7 +111,6 @@ void PageConverterPrivate::fail() {
 	emit outer.finished(false);
 }
 
-
 /*!
  * Prepares printing out the document to the pdf file
  */
@@ -120,16 +120,16 @@ void PageConverterPrivate::preparePrint(bool ok) {
 		return;
 	}
 
-	printer = new QPrinter(settings.resolution);
-	
-	QString lout = settings.out;
-	if (settings.dpi != -1) printer->setResolution(settings.dpi);
+	lout = settings.out;
 	if (settings.out == "-") {
-		if (QFile::exists("/dev/stdout"))
-			lout = "/dev/stdout";
-		else
-			lout = tempOut.create(".pdf");
+		 if (QFile::exists("/dev/stdout"))
+ 			lout = "/dev/stdout";
+		 else
+			 lout = tempOut.create(".pdf");
 	}
+
+	printer = new QPrinter(settings.resolution);
+	if (settings.dpi != -1) printer->setResolution(settings.dpi);
 	//Tell the printer object to print the file <out>
 	printer->setOutputFormat(
 		settings.out.endsWith(".ps", Qt::CaseInsensitive)?
@@ -453,21 +453,24 @@ void PageConverterPrivate::printPage(bool ok) {
 		}
  	}
 	outline->printOutline(printer);
-	
  	painter->end();
+
+	if (settings.out == "-" && lout != "/dev/stdout") {
+		QFile i(lout);
+		QFile o;
+		if( !i.open(QIODevice::ReadOnly) || 
+			!o.open(stdout,QIODevice::WriteOnly) ||
+			!MultiPageLoader::copyFile(i,o) ) {
+			emit outer.error("Count not write to stdout");
+			fail();
+			return;
+		}
+	}
+	clearResources();
 	currentPhase = 5;
 	emit outer.phaseChanged();
 	convertionDone = true;
 	emit outer.finished(true);
-
-// 	if (!strcmp(out,"-") && lout != "/dev/stdout") {
-// 		QFile i(lout);
-// 		QFile o;
-// 		i.open(QIODevice::ReadOnly);
-// 		o.open(stdout,QIODevice::WriteOnly);
-// 		copyFile(i,o);
-// 	}
-// 	for (int i=0; i < temp.size(); ++i) QFile::remove(temp[i]);
 }
 
 

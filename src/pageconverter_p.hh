@@ -55,7 +55,7 @@ private:
 	QPainter * painter;
 	Outline * outline;
 	TocPrinter * tocPrinter;
-
+	QString lout;
 	int logicalPages;
 	int logicalPage;
 	int actualPages;

@@ -16,9 +16,10 @@
 #ifndef __MULTIPAGELOADER_HH__
 #define __MULTIPAGELOADER_HH__
 #include "settings.hh"
+#include <QFile>
+#include <QObject>
 #include <QUrl>
 #include <QWebPage>
-#include <QObject>
 
 class MultiPageLoaderPrivate;
 class MultiPageLoader: public QObject {
@@ -30,6 +31,7 @@ public:
 	QWebPage * addResource(const QUrl & url);
 	static QUrl guessUrlFromString(const QString &string);
 	int httpErrorCode();
+	static bool copyFile(QFile & src, QFile & dst);
 public slots:
 	void load();
 	void clearResources();

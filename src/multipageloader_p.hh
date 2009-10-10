@@ -14,12 +14,13 @@
 // You should have received a copy of the GNU General Public License
 // along with wkhtmltopdf.  If not, see <http://www.gnu.org/licenses/>.
 #include "multipageloader.hh"
-#include <QNetworkAccessManager>
-#include <QWebFrame>
+#include "tempfile.hh"
 #include <QAtomicInt>
-#include <QNetworkReply>
 #include <QAuthenticator>
 #include <QFile>
+#include <QNetworkAccessManager>
+#include <QNetworkReply>
+#include <QWebFrame>
 
 class MultiPageLoaderPrivate: public QObject {
 	Q_OBJECT
@@ -43,6 +44,7 @@ public:
 	bool loadStartedEmitted;
 	bool error;
 	int loadingPages;
+	TempFile tempIn;
 
 	MultiPageLoaderPrivate(Settings & s, MultiPageLoader & o);
 	~MultiPageLoaderPrivate(); 
@@ -50,7 +52,6 @@ public:
 	void load();
 	void clearResources();
 	void cancel();
-	static void copyFile(QFile & src, QFile & dst);
 
 public slots:
 	void loadStarted();
