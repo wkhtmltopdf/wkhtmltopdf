@@ -52,7 +52,7 @@ public:
 	void load();
 	void clearResources();
 	void cancel();
-
+	void fail();
 public slots:
 	void loadStarted();
 	void loadProgress(int progress);

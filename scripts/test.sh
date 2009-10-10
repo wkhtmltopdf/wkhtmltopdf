@@ -166,7 +166,20 @@ function testBuild() {
     fi
     make -j2 >/dev/null 2>/dev/null && good "Build $1" || bad "Build $1 (3)"
     cd ..
-    rm -rf wkhtmltopdf
+}
+
+function testNoneStatic() {
+    ([ -f wkhtmltopdf/wkhtmltopdf ] && echo "<html><body>Foo</body></html>" | wkhtmltopdf/wkhtmltopdf - - | pdftotext /dev/stdin /dev/stdout | grep -q Foo) && good "None Static" || bad "None Static"
+}
+
+function testAgsFrmStdin() {
+    echo "<html><body>XFooZ</body></html>" > tmp.html
+    wk --read-args-from-stdin <<EOF
+-q tmp.html tmp1.pdf
+-q tmp.html tmp2.pdf
+EOF
+    (   [ -f tmp1.pdf ] && pdftotext tmp1.pdf /dev/stdout | grep -q XFooZ &&
+	[ -f tmp2.pdf ] && pdftotext tmp2.pdf /dev/stdout | grep -q XFooZ) && good "Args from stdin" || bad "Arg from stdin"
 }
 
 good TestTest
@@ -191,7 +204,9 @@ testRemote
 testSSL
 testHeaderFooter
 testBuild qmake
+testNoneStatic
+testAgsFrmStdin
 #testBuild cmake
 #Lets clean up
-rm -rf *.pdf *.html
+rm -rf *.pdf *.html wkhtmltopdf
 exit $failed 

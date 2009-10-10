@@ -83,6 +83,8 @@ public slots:
 	void beginConvert();
 	void cancel();
 	bool convert();
+	void forwardError(QString error);
+	void forwardWarning(QString warning);
 };
 
 #endif //__TEXTUALFEEDBACK_P_HH__

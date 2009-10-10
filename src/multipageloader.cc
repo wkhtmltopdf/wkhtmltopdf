@@ -46,11 +46,13 @@ void MultiPageLoaderPrivate::authenticationRequired(QNetworkReply *reply, QAuthe
 		//If no username is given, complain the such is required
 		emit outer.error("Authentication Required");
 		reply->abort();
+		fail();
 	} else if (loginTry >= 2) {
 		//If the login has failed a sufficient number of times,
 		//the username or password must be wrong
 		emit outer.error("Invalid username or password");
 		reply->abort();
+		fail();
 	} else {
 		authenticator->setUser(settings.username);
 		authenticator->setPassword(settings.password);
@@ -80,6 +82,7 @@ void MultiPageLoaderPrivate::sslErrors(QNetworkReply *reply, const QList<QSslErr
 	//We ignore any ssl error, as it is next to impossible to send or receive
 	//any private information with wkhtmltopdf anyhow, seeing as you cannot authenticate
 	reply->ignoreSslErrors();
+	emit outer.warning("SSL error ignored");
 }
 
 MultiPageLoaderPrivate::MultiPageLoaderPrivate(Settings & s, MultiPageLoader & o): 
@@ -125,7 +128,7 @@ QWebPage * MultiPageLoaderPrivate::addResource(const QUrl & url) {
 	pages.push_back(page);
 	urls.push_back(url);
 	page->setNetworkAccessManager(&networkAccessManager);
-	//Todo multipage loader foobar
+
 	page->mainFrame()->setZoomFactor(settings.zoomFactor);
 
 	pageToIndex[page] = pages.size()-1;
@@ -168,6 +171,12 @@ void MultiPageLoaderPrivate::cancel() {
 		page->triggerAction(QWebPage::Stop);
 }
 
+void MultiPageLoaderPrivate::fail() {
+	error = true;
+	cancel();
+	clearResources();
+}
+
 
 /*!
  * Once loading starting, this is called
@@ -196,11 +205,16 @@ void MultiPageLoaderPrivate::loadProgress(int progress) {
 }
 
 void MultiPageLoaderPrivate::loadFinished(bool ok) {
+
 	loadingPages--;
 	error = error || !ok;
 	if (!pageToIndex.count(QObject::sender())) return;
 	
 	int idx=pageToIndex[QObject::sender()];
+
+	if (!ok)
+		emit outer.error(QString("Failed loading page ") + urls[idx].toString());
+
 	if (!finishedList[idx]) {
 		finishedList[idx] = true;
 		finishedSum += 1;

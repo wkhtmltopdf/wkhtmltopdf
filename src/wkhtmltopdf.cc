@@ -151,10 +151,8 @@ int main(int argc, char * argv[]) {
 // 			}
 // 			exit(0);
 // 		}
-	if (!converter.convert()) {
-		qDebug() << "Here";
+	if (!converter.convert())
 		exit(EXIT_FAILURE);
-	}
 	switch(converter.httpErrorCode()) {
 	case 401:
 		exit(3);

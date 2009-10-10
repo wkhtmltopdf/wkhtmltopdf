@@ -67,14 +67,28 @@ PageConverterPrivate::PageConverterPrivate(Settings & s, PageConverter & o) :
 #endif
 
 	connect(&pageLoader, SIGNAL(loadProgress(int)), this, SLOT(loadProgress(int)));
-	connect(&hfLoader, SIGNAL(loadProgress(int)), this, SLOT(loadProgress(int)));
 	connect(&pageLoader, SIGNAL(loadFinished(bool)), this, SLOT(preparePrint(bool)));
+	connect(&pageLoader, SIGNAL(error(QString)), this, SLOT(forwardError(QString)));
+	connect(&pageLoader, SIGNAL(warning(QString)), this, SLOT(forwardWarning(QString)));
+
+	connect(&hfLoader, SIGNAL(loadProgress(int)), this, SLOT(loadProgress(int)));
 	connect(&hfLoader, SIGNAL(loadFinished(bool)), this, SLOT(printPage(bool)));
+	connect(&hfLoader, SIGNAL(error(QString)), this, SLOT(forwardError(QString)));
+	connect(&hfLoader, SIGNAL(warning(QString)), this, SLOT(forwardWarning(QString)));
 }
 
 PageConverterPrivate::~PageConverterPrivate() {
 	clearResources();
 }
+
+void PageConverterPrivate::forwardError(QString error) {
+	emit outer.error(error);
+}
+
+void PageConverterPrivate::forwardWarning(QString warning) {
+	emit outer.warning(warning);
+}
+
 
 /*!
  * Called when the page is loading, display some progress to the using
@@ -506,7 +520,6 @@ bool PageConverterPrivate::convert() {
 void PageConverterPrivate::clearResources() {
 	pageLoader.clearResources();
 	hfLoader.clearResources();
-	error = 0;
 	foreach(QWebPage * page, pages)
 		delete page;
 	pages.clear();
