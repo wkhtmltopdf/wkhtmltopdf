@@ -169,7 +169,7 @@ function testBuild() {
 }
 
 function testNoneStatic() {
-    ([ -f wkhtmltopdf/wkhtmltopdf ] && echo "<html><body>Foo</body></html>" | wkhtmltopdf/wkhtmltopdf - - | pdftotext /dev/stdin /dev/stdout | grep -q Foo) && good "None Static" || bad "None Static"
+    ([ -f wkhtmltopdf/wkhtmltopdf ] && echo "<html><body>Foo</body></html>" | wkhtmltopdf/wkhtmltopdf -q - tmp.pdf && pdftotext tmp.pdf /dev/stdout | grep -q Foo) && good "None Static" || bad "None Static"
 }
 
 function testAgsFrmStdin() {
