@@ -151,19 +151,18 @@ int main(int argc, char * argv[]) {
 // 			}
 // 			exit(0);
 // 		}
-	if (!converter.convert())
-		qApp->exit(1);
+	if (!converter.convert()) {
+		qDebug() << "Here";
+		exit(EXIT_FAILURE);
+	}
 	switch(converter.httpErrorCode()) {
-	case 401: 
-		qApp->exit(3);
-		break;
+	case 401:
+		exit(3);
 	case 404: 
-		qApp->exit(2);
-		break;
+		exit(2);
 	case 0:
-		qApp->quit();
-		break;
+		exit(EXIT_SUCCESS);
 	default:
-		qApp->exit(1);		
+		exit(EXIT_FAILURE);
 	}
 }

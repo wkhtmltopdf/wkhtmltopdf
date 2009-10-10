@@ -139,6 +139,8 @@ QWebPage * MultiPageLoaderPrivate::addResource(const QUrl & url) {
 }
 	
 void MultiPageLoaderPrivate::load() {
+	httpErrorCode = 0;
+	loginTry = 0;
 	progressSum=0;
 	finishedSum=0;
 	loadStartedEmitted=false;
@@ -166,8 +168,6 @@ void MultiPageLoaderPrivate::load() {
 }
 
 void MultiPageLoaderPrivate::clearResources() {
-	httpErrorCode = 0;
-	loginTry = 0;
 	pages.clear();
 	urls.clear();
 	progressList.clear();

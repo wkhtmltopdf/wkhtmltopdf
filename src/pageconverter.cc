@@ -454,7 +454,7 @@ void PageConverterPrivate::printPage(bool ok) {
 		}
  	}
 	outline->printOutline(printer);
-
+	
  	painter->end();
 	currentPhase = 5;
 	emit outer.phaseChanged();
@@ -498,7 +498,7 @@ bool PageConverterPrivate::convert() {
 	beginConvert();
 	while(!convertionDone)
 		qApp->processEvents(QEventLoop::WaitForMoreEvents | QEventLoop::AllEvents);
-	return error;
+	return !error;
 }
 
 void PageConverterPrivate::clearResources() {
