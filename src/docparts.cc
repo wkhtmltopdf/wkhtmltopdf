@@ -234,6 +234,17 @@ void CommandLineParserPrivate::outputDocStart(Outputter * o) const {
 }
 
 /*!
+  Output information on how to use read-args-from-stdin
+  \param o The outputter to output to
+  \todo Do a better explanation
+*/
+#warning "explain what and why"
+void CommandLineParserPrivate::outputArgsFromStdin(Outputter * o) const {
+	o->beginSection("Reading arguments from stdin");
+	o->endSection();
+}
+
+/*!
   Output information on how to compile
   \param o The outputter to output to
   \todo Do a better explanation

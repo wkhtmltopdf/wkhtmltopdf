@@ -209,7 +209,7 @@ void CommandLineParser::loadDefaults() {
  * \param argc the number of command line arguments
  * \param argv a NULL terminated list with the arguments
  */
-void CommandLineParser::parseArguments(int argc, const char ** argv) {
+void CommandLineParser::parseArguments(int argc, const char ** argv, bool final) {
 	bool defaultMode = false;
 	for (int i=1; i < argc; ++i) {
 		if (argv[i][0] != '-' || argv[i][1] == '\0' || defaultMode ) {
@@ -271,14 +271,16 @@ void CommandLineParser::parseArguments(int argc, const char ** argv) {
 		}
 	}
 
-	if (d->settings.in.size() < 2) {
-		#warning "If we do not support more then one input file check for that here"
-		fprintf(stderr, "You need to specify atleast one input file, and exactly one output file\nUse - for stdin or stdout\n\n");
-		d->usage(stderr, false);
-		exit(1);
+	if(final || ! d->settings.readArgsFromStdin) {
+		if (d->settings.in.size() < 2) {
+            #warning "If we do not support more then one input file check for that here"
+			fprintf(stderr, "You need to specify atleast one input file, and exactly one output file\nUse - for stdin or stdout\n\n");
+			d->usage(stderr, false);
+			exit(1);
+		}
+		//The last default argument was realy the name of the output file
+		d->settings.out = d->settings.in.back();
+		d->settings.in.pop_back();
 	}
-	//The last default argument was realy the name of the output file
-	d->settings.out = d->settings.in.back();
-	d->settings.in.pop_back();
 }
 

@@ -131,26 +131,33 @@ int main(int argc, char * argv[]) {
 	QApplication a(argc, argv, use_graphics);
 	a.setStyle(new QCommonStyle());
 
+
+	if (settings.readArgsFromStdin) {
+		char buff[20400];
+		char *nargv[1000];
+		nargv[0] = argv[0];
+		while (fgets(buff,20398,stdin)) {
+			//x.resetPages();
+			int nargc=1;
+			parseString(buff,nargc,nargv);
+			CommandLineParser parser(settings);
+			//Setup default values in settings
+			parser.loadDefaults();
+			//Parse the arguments
+			parser.parseArguments(argc, (const char**)argv);
+			parser.parseArguments(nargc, (const char**)nargv, true);
+			
+			PageConverter converter(settings);
+			ProgressFeedback feedback(converter);
+			if (!converter.convert())
+				exit(EXIT_FAILURE);
+		}
+		exit(EXIT_SUCCESS);
+	}
 	//Create the actual page converter to convert the pages
 	PageConverter converter(settings);
 	ProgressFeedback feedback(converter);
-//  for (int i=1; i < argc; ++i)
-// 		if (!strcmp(argv[i],"--read-args-from-stdin")) {
-// 			char buff[20400];
-// 			char *nargv[1000];
-// 			nargv[0] = argv[0];
-// 			while (fgets(buff,20398,stdin)) {
-// 				//x.resetPages();
-// 				int nargc=1;
-// 				parseString(buff,nargc,nargv);
-// 				parser.loadDefaults();
-// 				parser.parseArguments(nargc, (const char**)nargv);
-// 				converter.convert();
-// 				//x.run(nargc,(const char**)nargv);
-// 				//qApp->exec(); //Wait for application to terminate
-// 			}
-// 			exit(0);
-// 		}
+	
 	if (!converter.convert())
 		exit(EXIT_FAILURE);
 	switch(converter.httpErrorCode()) {

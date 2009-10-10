@@ -31,7 +31,7 @@ public:
 	void manpage(FILE * fd) const;
 	void readme(FILE * fd, bool html) const;
 	void loadDefaults();
-	void parseArguments(int argc, const char ** argv);
+	void parseArguments(int argc, const char ** argv, bool final=false);
 private:
 	CommandLineParserPrivate * d;
 };

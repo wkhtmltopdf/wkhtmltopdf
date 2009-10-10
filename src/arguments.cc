@@ -453,6 +453,7 @@ CommandLineParserPrivate::CommandLineParserPrivate(Settings & s):
 	addarg("redirect-delay",0,"Wait some miliseconds for js-redirects", new IntSetter(s.jsredirectwait,"msec",200));
 	addarg("enable-plugins",0,"Enable installed plugins (such as flash", new ConstSetter<bool>(s.enablePlugins,true,false));
 	addarg("zoom",0,"Use this zoom factor", new FloatSetter(s.zoomFactor,"float",1.0));
+	addarg("read-args-from-stdin",0,"Read command line arguments from stdin", new ConstSetter<bool>(s.readArgsFromStdin,true,false));
 
 	qthack(true);
 	addarg("disable-internal-links",0,"Do no make local links", new ConstSetter<bool>(s.useLocalLinks,false,true));
