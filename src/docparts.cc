@@ -143,15 +143,49 @@ void CommandLineParserPrivate::outputProxyDoc(Outputter * o) const {
 #warning "explain what and why"
 void CommandLineParserPrivate::outputHeaderFooterDoc(Outputter * o) const {
 	o->beginSection("Footers And Headers");
-	o->paragraph("In a header or footer text the following variables can be used.");
+	o->paragraph("Headers and footers can be added to the document by the --header-* and --footer* "
+				 "arguments respecitfully.  In header and footer textstring supplied to e.g. --header-left, "
+				 "the following variabels will be substituded.");
 	o->verbatim(
- 	        " * [page]       Replaced by the number of the pages currently beeing printed\n"
- 	        " * [fromPage]   Replaced by the number of the first page to be printed\n"
- 	        " * [toPage]     Replaced by the number of the last page to be printed\n"
- 	        " * [webpage]    Replaced by the url of the page beeing printed\n"
- 	        " * [section]    Replaced by the name of the current section\n"
- 	        " * [subsection] Replaced by the name of the current subsection\n"
- 	        "\n");
+" * [page]       Replaced by the number of the pages currently beeing printed\n"
+" * [frompage]   Replaced by the number of the first page to be printed\n"
+" * [topage]     Replaced by the number of the last page to be printed\n"
+" * [webpage]    Replaced by the url of the page beeing printed\n"
+" * [section]    Replaced by the name of the current section\n"
+" * [subsection] Replaced by the name of the current subsection\n"
+"\n");
+	o->paragraph("As an example specifying --header-right \"Page [page] of [toPage]\", "
+				 "will result in the text \"Page x of y\" where x is the number of the "
+				 "current page and y is the number of the last page, to apper in the upper "
+				 "left corner in the document.");
+	o->paragraph("Headers and footers can also be supplied with html documents. As an example one "
+				 "could specify --header-html header.html, and use the following content in header.html:");
+	o->verbatim(
+"<html><head><script>\n"
+"function subst() {\n"
+"  var vars={};\n"
+"  var x=document.location.search.substring(1).split('&');\n"
+"  for(var i in x) {var z=x[i].split('=',2);vars[z[0]] = unescape(z[1]);}\n"
+"  var x=['frompage','topage','page','webpage','section','subsection','subsubsection'];\n"
+"  for(var i in x) {\n"
+"    var y = document.getElementsByClassName(x[i]);\n"
+"    for(var j=0; j<y.length; ++j) y[j].textContent = vars[x[i]];\n"
+"  }\n"
+"}\n"
+"</script></head><body style=\"border:0; margin: 0;\" onload=\"subst()\">\n"
+"<table style=\"border-bottom: 1px solid black; width: 100%\">\n"
+"  <tr>\n"
+"    <td class=\"section\"></td>\n"
+"    <td style=\"text-align:right\">\n"
+"      Page <span class=\"page\"></span> of <span class=\"topage\"></span>\n"
+"    </td>\n"
+"  </tr>\n"
+"</table>\n"
+"</body></html>\n"
+"\n"
+		);
+	o->paragraph("As can be seen from the exapmle the arguments are send to the header/footer html "
+				 "documents in get fashion.");
 	o->endSection();
 }
 
