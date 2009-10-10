@@ -91,13 +91,9 @@ void PageConverterPrivate::beginConvert() {
 	progressString = "0%";
 	currentPhase=0;
 
-
   	if (!settings.cover.isEmpty())
 		settings.in.push_front(settings.cover);
-// 	if(strcmp(out,"-") != 0 && !QFileInfo(out).isWritable()) {
-// 		fprintf(stderr, "Write access to '%s' is not allowed\n", out);
-// 		exit(1);
-// 	}
+	
 	foreach(QString url, settings.in)
 		pages.push_back(pageLoader.addResource(url));
 	
@@ -145,9 +141,9 @@ void PageConverterPrivate::preparePrint(bool ok) {
 	if (settings.margin.left.second != settings.margin.right.second ||
 		settings.margin.left.second != settings.margin.top.second ||
 		settings.margin.left.second != settings.margin.bottom.second) {
-		#warning "FIX ME"
-		// fprintf(stderr, "Currently all margin units must be the same!\n");
-// 		exit(1);
+		emit outer.error("Currently all margin units must be the same!");
+		fail();
+		return;
 	}
 
 	//Setup margins and papersize
@@ -159,11 +155,10 @@ void PageConverterPrivate::preparePrint(bool ok) {
 	printer->setColorMode(settings.colorMode);
 
 	if (!printer->isValid()) {
-		#warning "FIX ME"
-// 		fprintf(stderr,"Unable to write to output file\n");
-// 		exit(1);
+		emit outer.error("Unable to write to destination");
+		fail();
+		return;
 	}
-	//pageStart.push_back(0);
 
 #ifndef __EXTENSIVE_WKHTMLTOPDF_QT_HACK__
 	//If you do not have the hacks you get this crappy solution
@@ -173,7 +168,11 @@ void PageConverterPrivate::preparePrint(bool ok) {
 	//pages[0]->mainFrame()->print(&printer);
 #else
 	painter = new QPainter();
-	painter->begin(printer);
+	if (!painter->begin(printer)) {
+		emit outer.error("Unable to write to destination");
+		fail();
+		return;
+	}
 	
 	logicalPages = 0;
 	actualPages = 0;

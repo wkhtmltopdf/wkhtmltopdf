@@ -123,7 +123,8 @@ function test404() {
 
 function testBadDest() {
     echo "<html><head></head><body><h1>foo</h1><h2>bar</h2><h3>baz</h3></body>" > tmp.html
-    wk tmp.html /proc/cpuinfo 2| grep -q "not writable" && good BadDest || bad BadDest
+    wk tmp.html /proc/cpuinfo 2> tmp.out
+    grep -q "write" tmp.out && good BadDest || bad BadDest
 }
 
 function testMultidoc() {
