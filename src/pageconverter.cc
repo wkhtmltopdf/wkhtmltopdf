@@ -36,23 +36,33 @@
 */
 
 PageConverterPrivate::PageConverterPrivate(Settings & s, PageConverter & o) :
-	settings(s), pageLoader(s), hfLoader(s), outer(o), printer(0), painter(0), outline(0), tocPrinter(0) {
-
+	settings(s), pageLoader(s),
+#ifdef __EXTENSIVE_WKHTMLTOPDF_QT_HACK__
+	hfLoader(s),
+#endif
+	outer(o), printer(0), painter(0)
+#ifdef __EXTENSIVE_WKHTMLTOPDF_QT_HACK__
+	, outline(0), tocPrinter(0)
+#endif
+{
+		
+#ifdef  __EXTENSIVE_WKHTMLTOPDF_QT_HACK__
 	phaseDescriptions.push_back("Loading pages");
 	phaseDescriptions.push_back("Resolving links");
 	phaseDescriptions.push_back("Counting pages");
 	phaseDescriptions.push_back("Loading headers and footers");
-	phaseDescriptions.push_back("Printing pages");
-	phaseDescriptions.push_back("Done");
-		
-#ifdef  __EXTENSIVE_WKHTMLTOPDF_QT_HACK__
 	if (!settings.defaultEncoding.isEmpty())
 		QWebSettings::globalSettings()->setDefaultTextEncoding(settings.defaultEncoding);
 	if (!settings.enableIntelligentShrinking) {
 		QWebSettings::globalSettings()->setPrintingMaximumShrinkFactor(1.0);
 		QWebSettings::globalSettings()->setPrintingMinimumShrinkFactor(1.0);
 	}
+#else
+	phaseDescriptions.push_back("Loading page");
 #endif
+	phaseDescriptions.push_back("Printing pages");
+	phaseDescriptions.push_back("Done");
+
 	QWebSettings::globalSettings()->setAttribute(QWebSettings::JavaEnabled, settings.enablePlugins);
 	QWebSettings::globalSettings()->setAttribute(QWebSettings::JavascriptEnabled, settings.enableJavascript);
 	QWebSettings::globalSettings()->setAttribute(QWebSettings::JavascriptCanOpenWindows, false);
@@ -71,10 +81,12 @@ PageConverterPrivate::PageConverterPrivate(Settings & s, PageConverter & o) :
 	connect(&pageLoader, SIGNAL(error(QString)), this, SLOT(forwardError(QString)));
 	connect(&pageLoader, SIGNAL(warning(QString)), this, SLOT(forwardWarning(QString)));
 
+#ifdef __EXTENSIVE_WKHTMLTOPDF_QT_HACK__	
 	connect(&hfLoader, SIGNAL(loadProgress(int)), this, SLOT(loadProgress(int)));
 	connect(&hfLoader, SIGNAL(loadFinished(bool)), this, SLOT(printPage(bool)));
 	connect(&hfLoader, SIGNAL(error(QString)), this, SLOT(forwardError(QString)));
 	connect(&hfLoader, SIGNAL(warning(QString)), this, SLOT(forwardWarning(QString)));
+#endif
 }
 
 PageConverterPrivate::~PageConverterPrivate() {
@@ -176,10 +188,9 @@ void PageConverterPrivate::preparePrint(bool ok) {
 
 #ifndef __EXTENSIVE_WKHTMLTOPDF_QT_HACK__
 	//If you do not have the hacks you get this crappy solution
-	printer.setCollateCopies(settings.copies);
-	printer.setCollateCopies(settings.collate);
-	printPage();
-	//pages[0]->mainFrame()->print(&printer);
+	printer->setCollateCopies(settings.copies);
+	printer->setCollateCopies(settings.collate);
+	printPage(true);
 #else
 	painter = new QPainter();
 	if (!painter->begin(printer)) {
@@ -295,6 +306,7 @@ void PageConverterPrivate::preparePrint(bool ok) {
 #endif
 }
 
+#ifdef __EXTENSIVE_WKHTMLTOPDF_QT_HACK__
 void PageConverterPrivate::beginPage(int & actualPage, bool & first) {
 	progressString = QString("Page ") + QString::number(actualPage) + QString(" of ") + QString::number(actualPages);
 	emit outer.progressChanged(actualPage * 100 / actualPages);
@@ -369,6 +381,8 @@ void PageConverterPrivate::endPage(bool actual, bool hasHeaderFooter) {
 	}
 
 }
+#endif
+
 
 void PageConverterPrivate::printPage(bool ok) {
 	if (!ok) {
@@ -376,6 +390,13 @@ void PageConverterPrivate::printPage(bool ok) {
 		return;
 	}
 
+#ifndef __EXTENSIVE_WKHTMLTOPDF_QT_HACK__
+	currentPhase = 1;
+	emit outer.phaseChanged();
+	pages[0]->mainFrame()->print(printer);
+	progressString = "";
+	emit outer.progressChanged(-1);
+#else
  	bool first=true;
  	int actualPage=1;
  	int cc=settings.collate?settings.copies:1;
@@ -468,7 +489,7 @@ void PageConverterPrivate::printPage(bool ok) {
  	}
 	outline->printOutline(printer);
  	painter->end();
-
+#endif
 	if (settings.out == "-" && lout != "/dev/stdout") {
 		QFile i(lout);
 		QFile o;
@@ -481,13 +502,17 @@ void PageConverterPrivate::printPage(bool ok) {
 		}
 	}
 	clearResources();
+#ifdef __EXTENSIVE_WKHTMLTOPDF_QT_HACK__
 	currentPhase = 5;
+#else
+	currentPhase = 2;
+#endif
 	emit outer.phaseChanged();
 	convertionDone = true;
 	emit outer.finished(true);
 }
 
-
+#ifdef __EXTENSIVE_WKHTMLTOPDF_QT_HACK__
 QWebPage * PageConverterPrivate::loadHeaderFooter(QString url, const QHash<QString, QString> & parms) {
 	QUrl u = MultiPageLoader::guessUrlFromString(url);
 
@@ -507,7 +532,7 @@ QString PageConverterPrivate::hfreplace(const QString & q, const QHash<QString, 
 		r=r.replace("["+i.key()+"]", i.value(), Qt::CaseInsensitive);
 	return r;
 }
-
+#endif
 
 bool PageConverterPrivate::convert() {
 	convertionDone=false;
@@ -519,17 +544,8 @@ bool PageConverterPrivate::convert() {
 
 void PageConverterPrivate::clearResources() {
 	pageLoader.clearResources();
+#ifdef __EXTENSIVE_WKHTMLTOPDF_QT_HACK__
 	hfLoader.clearResources();
-	foreach(QWebPage * page, pages)
-		delete page;
-	pages.clear();
-	if (printer) 
-		delete printer;
-	printer = NULL;
-	
-	if (painter)
-		delete painter;
-	painter = NULL;
 
 	if (outline)
 		delete outline;
@@ -549,7 +565,17 @@ void PageConverterPrivate::clearResources() {
 	foreach (QWebPage * page, footers)
 		delete page;
 	footers.clear();
+#endif
+	foreach(QWebPage * page, pages)
+		delete page;
+	pages.clear();
+	if (printer) 
+		delete printer;
+	printer = NULL;
 	
+	if (painter)
+		delete painter;
+	painter = NULL;
 }
 
 void PageConverterPrivate::cancel() {

@@ -15,21 +15,23 @@
 // along with wkhtmltopdf.  If not, see <http://www.gnu.org/licenses/>.
 #ifndef __TEXTUALFEEDBACK_P_HH__
 #define __TEXTUALFEEDBACK_P_HH__
+#include "multipageloader.hh"
+#include "outline.hh"
 #include "pageconverter.hh"
-#include <QFile>
-#include <QRegExp>
-#include <qnetworkreply.h>
+#include "tempfile.hh"
+#include "tocprinter.hh"
 #include <QAtomicInt>
-#include <QWebPage>
+#include <QFile>
+#include <QMutex>
 #include <QPainter>
 #include <QPrinter>
-#include <QWebElement>
-#include "multipageloader.hh"
-#include "tempfile.hh"
+#include <QRegExp>
 #include <QWaitCondition>
-#include <QMutex>
-#include "outline.hh"
-#include "tocprinter.hh"
+#include <QWebPage>
+#include <qnetworkreply.h>
+#ifdef __EXTENSIVE_WKHTMLTOPDF_QT_HACK__
+#include <QWebElement>
+#endif
 
 class PageConverterPrivate: public QObject {
 	Q_OBJECT
@@ -43,7 +45,6 @@ public:
 	Settings & settings;
 
 	MultiPageLoader pageLoader;
-	MultiPageLoader hfLoader;
 	QString progressString;
 private:
 	PageConverter & outer;
@@ -53,8 +54,6 @@ private:
 	QList<QWebPage *> pages;
 	QPrinter * printer;
 	QPainter * painter;
-	Outline * outline;
-	TocPrinter * tocPrinter;
 	QString lout;
 	int logicalPages;
 	int logicalPage;
@@ -64,18 +63,23 @@ private:
 
 	bool convertionDone;
 
+#ifdef __EXTENSIVE_WKHTMLTOPDF_QT_HACK__
+	MultiPageLoader hfLoader;
 	QHash<int, QHash<QString, QWebElement> > anchors;
 	QHash<int, QVector< QPair<QWebElement,QString> > > localLinks;
 	QHash<int, QVector< QPair<QWebElement,QString> > > externalLinks;
 
 	QList<QWebPage *> headers;
 	QList<QWebPage *> footers;
-
-	void fail();
+	Outline * outline;
+	TocPrinter * tocPrinter;
 	void beginPage(int & actualPage, bool & first);
 	void endPage(bool actual, bool hasHeaderFooter);
 	QString hfreplace(const QString & q, const QHash<QString, QString> & parms);
 	QWebPage * loadHeaderFooter(QString url, const QHash<QString, QString> & parms);
+#endif
+
+	void fail();
 public slots:
 	void loadProgress(int progress);
 	void preparePrint(bool ok);

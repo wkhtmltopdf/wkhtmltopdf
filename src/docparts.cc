@@ -96,10 +96,9 @@ void CommandLineParserPrivate::outputDescripton(Outputter * o) const {
 #warning "explain what and why"
 void CommandLineParserPrivate::outputNotPatched(Outputter * o, bool sure) const {
 	o->beginSection("Reduced Functionality");
-	o->beginParagraph();
-	o->text(
- 	        "This version of wkhtmltopdf has been compiled against a version of qt"
- 	        "without the wkhtmltopdf patches, so some features are missign, if you need"
+	o->paragraph(
+ 	        "This version of wkhtmltopdf has been compiled against a version of qt "
+ 	        "without the wkhtmltopdf patches, so some features are missign, if you need "
  	        "these features please use the staic edition");
 	o->endSection();
 }

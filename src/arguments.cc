@@ -419,6 +419,7 @@ CommandLineParserPrivate::CommandLineParserPrivate(Settings & s):
 {
 	section("General Options");
 	extended(false);
+	qthack(false);
 	addarg("help",'h',"Display help",new Caller<HelpFunc<false> >());
 	addarg("quiet",'q',"Be less verbose",new ConstSetter<bool>(s.quiet,true,false));
 	addarg("version",'V',"Output version information an exit", new Caller<VersionFunc>());

@@ -242,6 +242,10 @@ void CommandLineParser::parseArguments(int argc, const char ** argv, bool final)
 				d->usage(stderr, false);
 				exit(1);
 			}
+#ifndef __EXTENSIVE_WKHTMLTOPDF_QT_HACK__
+			if (j.value()->qthack)
+				fprintf(stderr, "The switch %s, is not support using unpatched qt, and will be ignored.", argv[i]);
+#endif
 			//Skip allredy handled switch arguments
 			i += j.value()->argn.size();
 		} else {
@@ -265,6 +269,10 @@ void CommandLineParser::parseArguments(int argc, const char ** argv, bool final)
 					d->usage(stderr, false);
 					exit(1);
 				}
+#ifndef __EXTENSIVE_WKHTMLTOPDF_QT_HACK__
+			if (k.value()->qthack)
+				fprintf(stderr, "The switch -%c, is not support using unpatched qt, and will be ignored.", argv[c][j]);
+#endif
 				//Skip allredy handled switch arguments
 				i += k.value()->argn.size();
 			}
