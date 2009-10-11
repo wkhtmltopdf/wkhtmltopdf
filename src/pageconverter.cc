@@ -57,6 +57,7 @@ PageConverterPrivate::PageConverterPrivate(Settings & s, PageConverter & o) :
 		QWebSettings::globalSettings()->setPrintingMaximumShrinkFactor(1.0);
 		QWebSettings::globalSettings()->setPrintingMinimumShrinkFactor(1.0);
 	}
+	QWebSettings::globalSettings()->setPrintingMediaType(settings.printMediaType?"print":"screen");
 #else
 	phaseDescriptions.push_back("Loading page");
 #endif
