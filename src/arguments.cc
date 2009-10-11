@@ -444,7 +444,7 @@ CommandLineParserPrivate::CommandLineParserPrivate(Settings & s):
 	addarg("manpage", 0, "Output program man page", new Caller<ManPageFunc>());
 	addarg("htmldoc", 0, "Output program html help", new Caller<ReadmeFunc<true> >());
 	addarg("readme", 0, "Output program readme", new Caller<ReadmeFunc<false> >());
-	addarg("dpi",'d',"Change the dpi explicitly", new IntSetter(s.dpi,"dpi",-1));
+	addarg("dpi",'d',"Change the dpi explicitly (this has no effect on X11 based systems)", new IntSetter(s.dpi,"dpi",-1));
 	addarg("disable-javascript",'n',"Do not allow webpages to run javascript", new ConstSetter<bool>(s.enableJavascript,false,true));
 	addarg("grayscale",'g',"PDF will be generated in grayscale", new ConstSetter<QPrinter::ColorMode>(s.colorMode,QPrinter::GrayScale,QPrinter::Color));
 	addarg("lowquality",'l',"Generates lower quality pdf/ps. Useful to shrink the result document space", new ConstSetter<QPrinter::PrinterMode>(s.resolution,QPrinter::ScreenResolution,QPrinter::HighResolution));

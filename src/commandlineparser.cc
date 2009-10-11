@@ -281,7 +281,6 @@ void CommandLineParser::parseArguments(int argc, const char ** argv, bool final)
 
 	if(final || ! d->settings.readArgsFromStdin) {
 		if (d->settings.in.size() < 2) {
-            #warning "If we do not support more then one input file check for that here"
 			fprintf(stderr, "You need to specify atleast one input file, and exactly one output file\nUse - for stdin or stdout\n\n");
 			d->usage(stderr, false);
 			exit(1);

@@ -122,6 +122,14 @@ void PageConverterPrivate::beginConvert() {
   	if (!settings.cover.isEmpty())
 		settings.in.push_front(settings.cover);
 	
+#ifndef __EXTENSIVE_WKHTMLTOPDF_QT_HACK__	
+	if (settings.in.size() > 1) {
+		emit outer.error("This version of wkhtmltopdf is build against an unpatched version of QT, and does not support more then one input document.");
+		fail();
+		return;
+	}
+#endif
+	
 	foreach(QString url, settings.in)
 		pages.push_back(pageLoader.addResource(url));
 	
