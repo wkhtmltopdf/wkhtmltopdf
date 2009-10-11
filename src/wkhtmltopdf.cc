@@ -13,17 +13,18 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with wkhtmltopdf.  If not, see <http://www.gnu.org/licenses/>.
-// #include "toc.hh"
-// #include "wkhtmltopdf.hh"
-#include <QtPlugin>
-#include <iostream>
 #include "commandlineparser.hh"
 #include "pageconverter.hh"
 #include "progressfeedback.hh"
 #include "settings.hh"
+#include <QCleanlooksStyle>
 #include <QCommonStyle>
+#include <QWebFrame>
+#include <QtPlugin>
 #include <cstdlib>
+#include <iostream>
 #include <qapplication.h>
+#include <qglobal.h>
 #include <string.h>
 
 #ifdef QT_STATIC
@@ -123,14 +124,13 @@ int main(int argc, char * argv[]) {
 	//Construct QApplication required for printing
 	bool use_graphics=true;
 #ifdef Q_WS_X11
-#ifdef  __EXTENSIVE_WKHTMLTOPDF_QT_HACK__
+#ifdef __EXTENSIVE_WKHTMLTOPDF_QT_HACK__
 	use_graphics=settings.useGraphics;
 	if (!use_graphics) QApplication::setGraphicsSystem("raster");
 #endif
 #endif
 	QApplication a(argc, argv, use_graphics);
-	a.setStyle(new QCommonStyle());
-
+	a.setStyle(new QCleanlooksStyle());
 
 	if (settings.readArgsFromStdin) {
 		char buff[20400];

@@ -15,6 +15,7 @@
 // along with wkhtmltopdf.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "commandlineparser_p.hh"
+#include <qglobal.h>
 
 /*!
   \class ArgHandler
