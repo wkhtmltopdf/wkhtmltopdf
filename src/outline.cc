@@ -137,10 +137,10 @@ void Outline::addWebPage(const QString & name, QWebPrinter & wp, QWebFrame * fra
 void OutlinePrivate::buildHFCache(OutlineItem * i, int level) {
 	if (level >= hfCache.size()) return;
 	foreach (OutlineItem * j, i->children) {
-		while (hfCache[level].size() < j->page)
+		while (hfCache[level].size() < (int)j->page)
 			hfCache[level].push_back(hfCache[level].back());
 		
-		if (hfCache[level].size() == j->page) 
+		if (hfCache[level].size() == (int)j->page) 
 			hfCache[level].push_back(j);
 		buildHFCache(j, level+1);
 	}

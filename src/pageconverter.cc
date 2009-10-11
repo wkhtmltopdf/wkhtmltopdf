@@ -37,12 +37,9 @@
 
 PageConverterPrivate::PageConverterPrivate(Settings & s, PageConverter & o) :
 	settings(s), pageLoader(s),
-#ifdef __EXTENSIVE_WKHTMLTOPDF_QT_HACK__
-	hfLoader(s),
-#endif
 	outer(o), printer(0), painter(0)
 #ifdef __EXTENSIVE_WKHTMLTOPDF_QT_HACK__
-	, outline(0), tocPrinter(0)
+	, hfLoader(s), outline(0), tocPrinter(0)
 #endif
 {
 		
