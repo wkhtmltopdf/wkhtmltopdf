@@ -40,8 +40,7 @@ void CommandLineParserPrivate::outputName(Outputter * o) const {
 */
 void CommandLineParserPrivate::outputLicense(Outputter * o) const {
 	o->beginSection("License");
-	o->beginParagraph();
-	o->text("Copyright (C) 2008,2009 WKHtmlToPdf Authors.");
+	o->paragraph("Copyright (C) 2008,2009 WKHtmlToPdf Authors.");
 	o->endParagraph();
 	o->beginParagraph();
 	o->text("License GPLv3+: GNU GPL version 3 or later ");
@@ -126,7 +125,6 @@ void CommandLineParserPrivate::outputProxyDoc(Outputter * o) const {
 		"By default proxy information will be read from the environment"
 		" variables: proxy, all_proxy and http_proxy, proxy options can"
 		" also by specified with the -p switch");
-	o->endParagraph();
 	o->verbatim(
 		"<type> := \"http://\" | \"socks5://\"\n"
 		"<userinfo> := <username> (\":\" <password>)? \"@\"\n"
