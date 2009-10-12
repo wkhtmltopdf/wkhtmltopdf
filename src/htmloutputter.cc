@@ -30,7 +30,7 @@ public:
 				"  <meta http-equiv=\"Content-Type\" content=\"text/html; charset=utf-8\" />\n"
 				"  <title>wkhtmltopdf - Manual</title>\n"
 				"  <style type=\"text/css\">\n"
-				"    body {width: 50em}\n"
+				"    body {width: 70em}\n"
 				"    .short {font-weight: bold; width:2em}\n"
 				"    .long {font-weight: bold; width: 15em}\n"
 				"    .arg {font-style: italic; width: 7em}\n"
@@ -76,6 +76,18 @@ public:
 	void verbatim(const QString & t) {
 		fprintf(fd, "<pre>%s</pre>", S(t));
 	}
+
+	void beginList(bool o) {
+		fprintf(fd, "<ul>");
+	}
+	
+	void endList() {
+		fprintf(fd, "</ul>");
+	}
+	
+	void listItem(const QString & s) {
+		fprintf(fd, "<li>%s</li>\n", S(s));
+	}
 	
 	void beginSwitch() {
 		fprintf(fd, "<table>\n");
@@ -85,7 +97,8 @@ public:
 		fprintf(fd, "<tr><td class=\"short\">");
 		if(h->shortSwitch)
 			fprintf(fd, "-%c,",h->shortSwitch);
-		fprintf(fd, "</td><td class=\"long\">--%s</td><td class=\"arg\">",S(h->longName));
+		fprintf(fd, "</td><td class=\"long\">--%s%s</td><td class=\"arg\">",S(h->longName),
+				(h->qthack?"<span style=\"font-weight: normal; font-size: 80%; color:red;\">*</span>":""));
 		foreach(const QString & arg, h->argn)
 			fprintf(fd, "&lt;%s&gt;",S(arg));
 		fprintf(fd, "</td><td class=\"desc\">%s</td></tr>\n",S(h->getDesc()));
@@ -93,6 +106,7 @@ public:
 
 	void endSwitch() {
 		fprintf(fd, "</table>\n");
+		fprintf(fd, "<p>Items marked <span style=\"font-weight: normal; font-size: 80%%; color:red;\">*</span> are only avalible using patched QT.</p>");
 	}
 	
 };

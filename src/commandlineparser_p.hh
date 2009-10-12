@@ -51,9 +51,9 @@ public:
 	virtual void link(const QString & l) = 0;
 	virtual void endParagraph() = 0;
 	virtual void verbatim(const QString & t) = 0;
-// 	virtual void beginList(bool ordered=false) = 0;
-// 	virtual void endList() = 0;
-// 	virtual void listItem(QString & t) = 0;
+ 	virtual void beginList(bool ordered=false) = 0;
+ 	virtual void endList() = 0;
+ 	virtual void listItem(const QString & t) = 0;
 	virtual void beginSwitch() = 0;
 	virtual void cswitch(const ArgHandler * h, bool doc) = 0;
 	virtual void endSwitch() = 0;

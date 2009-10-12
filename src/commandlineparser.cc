@@ -93,8 +93,14 @@ void CommandLineParserPrivate::usage(FILE * fd, bool extended) const {
  	outputDescripton(o);
 	outputSwitches(o, extended, false);
 #ifndef __EXTENSIVE_WKHTMLTOPDF_QT_HACK__	
-	outputNotPatched(o,true);
+	outputNotPatched(o, true);
 #endif
+	if (extended) {
+		outputArgsFromStdin(o);
+		outputProxyDoc(o);
+		outputHeaderFooterDoc(o);
+		outputOutlineDoc(o);
+	}
  	outputContact(o);
 	delete o;
 }
@@ -117,10 +123,10 @@ void CommandLineParserPrivate::version(FILE * fd) const {
   \param html Do we want the html manaul, or the README
 */
 void CommandLineParserPrivate::readme(FILE * fd, bool html) const {
-	Outputter * o = html?Outputter::html(fd):Outputter::text(fd);
+	Outputter * o = html?Outputter::html(fd):Outputter::text(fd, true);
 	outputDocStart(o);
 	outputContact(o);
-	outputNotPatched(o,true);
+	outputNotPatched(o, false);
 	outputLicense(o);
 	outputAuthors(o);
 	outputSynopsis(o);
@@ -129,6 +135,7 @@ void CommandLineParserPrivate::readme(FILE * fd, bool html) const {
  	outputHeaderFooterDoc(o);
  	outputOutlineDoc(o);
  	outputPageBreakDoc(o);
+	outputArgsFromStdin(o);
 	outputCompilation(o);
 	outputInstallation(o);
 	outputExampels(o);

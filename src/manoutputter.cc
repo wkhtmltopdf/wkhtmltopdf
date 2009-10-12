@@ -63,6 +63,10 @@ public:
 	void beginSwitch() {
 		fprintf(fd, ".PD 0\n");
 	}
+
+	void beginList(bool ordered) {}
+	void endList() {}
+	void listItem(const QString & s) {}
 	
 	void cswitch(const ArgHandler * h, bool) {
 		fprintf(fd, ".TP\n");

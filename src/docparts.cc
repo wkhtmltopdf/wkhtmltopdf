@@ -76,13 +76,11 @@ void CommandLineParserPrivate::outputSynopsis(Outputter * o) const {
 /*!
   Explain what the program does
   \param o The outputter to output to
-  \todo Do a better explanation
 */
-#warning "add a better explanation"
 void CommandLineParserPrivate::outputDescripton(Outputter * o) const {
 	o->beginSection("Description");
 	o->paragraph(
-		"Converts one or more htmlpage to a pdf document.");
+		"Converts one or more html pages into a pdf document.");
 	o->endSection();
 }
 
@@ -95,10 +93,27 @@ void CommandLineParserPrivate::outputDescripton(Outputter * o) const {
 #warning "explain what and why"
 void CommandLineParserPrivate::outputNotPatched(Outputter * o, bool sure) const {
 	o->beginSection("Reduced Functionality");
-	o->paragraph(
- 	        "This version of wkhtmltopdf has been compiled against a version of qt "
- 	        "without the wkhtmltopdf patches, so some features are missign, if you need "
- 	        "these features please use the staic edition");
+	if (sure) 
+		o->paragraph("This version of wkhtmltopdf has been compiled against a vertion of "
+					 "QT without the wkhtmltopdf patches. Therefore some features are missing, "
+					 "if you need these features please use the static version.");
+	else
+		o->paragraph("Some versions of wkhtmltopdf are compiled against a version of QT "
+					 "without the wkhtmltopdf patches. These versions are missing some features, "
+					 "you can find out if your vertion of wkhtmltopdf is one of these by running wkhtmltopdf --version "
+					 "if your version is against an unpatched qt, you can use the static version to get all functionality.");
+
+	o->paragraph("Currently the list of features only supported with patch QT includes:");
+	o->beginList();
+	o->listItem("Printing more then one html document into a PDF file.");
+	o->listItem("Running without an X11 server running on linux.");
+	o->listItem("Adding a document outline to the PDF file.");
+	o->listItem("Adding headers and footers to the PDF file.");
+	o->listItem("Generating a table of content.");
+	o->listItem("Adding links in the generated PDF file.");
+	o->listItem("Printing using the screen media-type.");
+	o->listItem("Disabling the smart shrink feature of webkit.");
+	o->endList();
 	o->endSection();
 }
 
@@ -227,6 +242,8 @@ void CommandLineParserPrivate::outputContact(Outputter * o) const {
 #warning "explain what and why"
 void CommandLineParserPrivate::outputDocStart(Outputter * o) const {
 	o->beginSection("WKHtmlToPdf Manual");
+	o->paragraph("This file documents wkhtmltopdf, a program capable of converting html "
+				 "documents into pdf documents.");
 	o->endSection();
 }
 

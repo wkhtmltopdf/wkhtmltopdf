@@ -26,6 +26,7 @@ public:
 	bool doc;
 	bool extended;
 	bool first;
+	int order;
 	TextOutputter(FILE * _, bool d, bool e): fd(_), doc(d), extended(e) {}
 
 	void beginSection(const QString & name) {
@@ -103,6 +104,12 @@ public:
 				fprintf(fd,"  %s\n",S(s));
 		}
 	}
+
+	void beginList(bool ordered) {
+		order=ordered:1?-1;
+	}
+	void endList() {}
+	void listItem(const QString & s) {}
 	
 // 	void beginList(bool ordered) {
 // 		this->ordered = ordered;
