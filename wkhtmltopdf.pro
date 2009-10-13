@@ -33,12 +33,20 @@ DEPENDPATH += . src
 INCLUDEPATH += . src
 
 MOC_DIR = build
+OBJECTS_DIR = build
+UI_DIR = build
+
+readme.target=README
+readme.commands=./wkhtmltopdf --readme > README
+readme.depends=wkhtmltopdf
+
+QMAKE_EXTRA_UNIX_TARGETS += readme
 
 unix {
     man.target=wkhtmltopdf.1.gz
-    man.commands=m4 wkhtmltopdf.man.m4 | gzip > $@
-    man.depends=wkhtmltopdf wkhtmltopdf.man.m4 
-    
+    man.commands=./wkhtmltopdf --manpage | gzip > $@
+    man.depends=wkhtmltopdf
+
     manins.target=manins
     manins.depends=man
     manins.files=wkhtmltopdf.1.gz
@@ -47,6 +55,7 @@ unix {
     QMAKE_EXTRA_UNIX_TARGETS += manins man
     INSTALLS += manins
 }
+
 
 win32 {
     CONFIG += console

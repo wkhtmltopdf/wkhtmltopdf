@@ -75,6 +75,7 @@ void CommandLineParserPrivate::manpage(FILE * fd) const {
 #else
 	outputNotPatched(o,true);
 #endif
+	outputArgsFromStdin(o);
  	outputPageBreakDoc(o);
  	outputContact(o);
  	outputAuthors(o);

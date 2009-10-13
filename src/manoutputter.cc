@@ -14,12 +14,13 @@
 // You should have received a copy of the GNU General Public License
 // along with wkhtmltopdf.  If not, see <http://www.gnu.org/licenses/>.
 #include "commandlineparser_p.hh"
-
+#include <QStringList>
 #define S(x) ((x).toLocal8Bit().constData())
 
 class ManOutputter: public Outputter {
 private:
 	FILE * fd;
+	int order;
 public:
 	ManOutputter(FILE * _): fd(_) {
 		fprintf(fd,".TH WKHTMLTOPDF 1 \"2009 February 23\"\n\n");
@@ -57,16 +58,30 @@ public:
 	}
 
 	void verbatim(const QString & t) {
-		fprintf(fd, "%s", S(t));
+		QStringList l = t.split('\n');
+		while ( l.back() == "") l.pop_back();
+		foreach(const QString & line, l)
+			fprintf(fd, "  %s\n", S(line));
+		fprintf(fd, "\n");
 	}
 	
 	void beginSwitch() {
 		fprintf(fd, ".PD 0\n");
 	}
 
-	void beginList(bool ordered) {}
-	void endList() {}
-	void listItem(const QString & s) {}
+	void beginList(bool ordered) {
+		order=(ordered?1:-1);
+	}
+
+	void endList() {
+		fprintf(fd, "\n");
+	}
+	
+	void listItem(const QString & s) {
+		if (order < 0) fprintf(fd, " * ");
+		else fprintf(fd, "%3d ", order++);
+		fprintf(fd,"%s\n",S(s));
+	}
 	
 	void cswitch(const ArgHandler * h, bool) {
 		fprintf(fd, ".TP\n");

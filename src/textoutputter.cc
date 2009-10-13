@@ -106,29 +106,17 @@ public:
 	}
 
 	void beginList(bool ordered) {
-		order=ordered:1?-1;
+		order=ordered?1:-1;
 	}
-	void endList() {}
-	void listItem(const QString & s) {}
+	void endList() {
+		fprintf(fd,"\n");
+	}
+	void listItem(const QString & s) {
+		if (order < 0) fprintf(fd, " * ");
+		else fprintf(fd, "%3d ", order++);
+		fprintf(fd,"%s\n",S(s));
+	}
 	
-// 	void beginList(bool ordered) {
-// 		this->ordered = ordered;
-// 		order = 1;
-// 	}
-	
-// 	void endList() {
-// 		printf("\n");
-// 	}
-	
-// 	void listItem(QString & t) {
-// 		if(ordered) {
-// 			fprintf(fd, "%2d: ",order);
-// 			++order;
-// 		} else 
-// 			fprintf(fd, " * ");
-// 		fprintf(fd,"%s\N", doc?t.toUtf8().constData():t.toLocal8Bit().constData());
-// 	}
-
 	void beginSwitch() {}
 
 	void cswitch(const ArgHandler * h, bool doc) {
