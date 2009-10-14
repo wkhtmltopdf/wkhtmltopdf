@@ -38,11 +38,6 @@ function get() {
 function unpack() {
 	[ -f $1.unpack ] || (echo "unpacking $1"; (tar -xf $1 || unzip $1) && touch $1.unpack)
 }
-function applypatch() {
-	cmp $1 $2 && return 0;
-	[ -f $2 ] && patch -R -p1 < $2;
-	patch -p1 < $1 && cp $1 $2;
-}
 
 function exportHere() {
 	rm -rf wkhtmltopdf
@@ -55,7 +50,6 @@ function exportHere() {
 BUILD=/tmp/build
 #Create static build directory
 mkdir -p $BUILD
-cat ./src/qt-patches/qt-*.patch > $BUILD/qt.patch
 cat static_qt_conf_base static_qt_conf_win | sed -re 's/#.*//' | sed -re '/^[ \t]*$/d' | sort -u > $BUILD/conf_win
 cat static_qt_conf_base static_qt_conf_linux | sed -re 's/#.*//' | sed -re '/^[ \t]*$/d' | sort -u > $BUILD/conf_linux
 
@@ -63,33 +57,54 @@ BASE=${PWD}
 
 cd ${BUILD}
 #Fetch most recent version of qt
-get http://download.qtsoftware.com/qt/source/${QT}.tar.bz2 $QT.tar.bz2 || exit 1
+echo "Updating qt from remote"
+if [ ! -d qt ] ; then
+    git clone git://gitorious.org/+wkhtml2pdf/qt/wkhtmltopdf-qt.git qt || (rm -rf qt && exit 1)
+fi
+cd qt
+git checkout staging || exit 1
+git pull || exit 1
+cd ..
 
 #Fetch and unpack upx
 get http://upx.sourceforge.net/download/${UPX}.tar.bz2 ${UPX}.tar.bz2 || exit 1
 unpack ${UPX}.tar.bz2 || exit 1
 
 if [[ "$1" == "all" ]] || [[ "$1" == "linux" ]]; then
-
 	cd ${BUILD}
 	mkdir -p linux
 	cd linux
-	ln -s ${BUILD}/${QT}.tar.bz2 .
-	unpack ${QT}.tar.bz2 || exit 1
-	cd ${QT}
+	echo "Updating linux qt"
+	[ -d qt ] || git clone ../qt qt || (rm -rf qt && exit 1)
+	cd qt
+	git checkout staging || exit 1
+	git pull || exit 1
+	if ! [ -z "$2" ] ; then
+	    git checkout wkhtmltopdf-$2 || exit 1
+	fi
+
+	touch conf_linux
 	if ! cmp ${BUILD}/conf_linux conf_linux; then
  		(yes yes | ./configure `cat ${BUILD}/conf_linux` -prefix "${BUILD}/linux/qt" && cp ${BUILD}/conf_linux conf_linux) || exit 1
 	fi
-	applypatch ${BUILD}/qt.patch qt.patch || exit 1
-	if ! make -j5 -q; then
- 		make -j5 || exit 1
- 		make install || exit 1
+
+	if ! make -j3 -q; then
+ 	    make -j3 || exit 1
+ 	    make install || exit 1
 	fi
 	cd ..
-	exportHere
+
+	echo ${BASE}
+        [ -d wkhtmltopdf ] || git clone ${BASE} wkhtmltopdf || (rm -rf wkhtmltopdf && exit 1)
 	cd wkhtmltopdf
+	git checkout master || exit 1
+	git pull || exit 1
+	if ! [ -z "$2" ] ; then
+	    git checkout $2 || exit 1
+	fi
+	
 	../qt/bin/qmake || exit 1
-	make -j5 || exit 1
+	make -j3 || exit 1
 	strip wkhtmltopdf || exit 1
 	rm -rf ${BASE}/wkhtmltopdf
 	${BUILD}/${UPX}/upx --best wkhtmltopdf -o ${BASE}/wkhtmltopdf || exit 1
