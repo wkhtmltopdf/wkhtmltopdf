@@ -88,9 +88,7 @@ void CommandLineParserPrivate::outputDescripton(Outputter * o) const {
   Add explanation about reduced functionality without patched qt/webkit
   \param o The outputter to output to
   \param sure Is the functionality restricted in this wkhtmltopdf
-  \todo Do a better explanation
 */
-#warning "explain what and why"
 void CommandLineParserPrivate::outputNotPatched(Outputter * o, bool sure) const {
 	o->beginSection("Reduced Functionality");
 	if (sure) 
@@ -237,9 +235,7 @@ void CommandLineParserPrivate::outputContact(Outputter * o) const {
 /*!
   Output beginning of the readmee
   \param o The outputter to output to
-  \todo Do a better explanation
 */
-#warning "explain what and why"
 void CommandLineParserPrivate::outputDocStart(Outputter * o) const {
 	o->beginSection("WKHtmlToPdf Manual");
 	o->paragraph("This file documents wkhtmltopdf, a program capable of converting html "

@@ -55,7 +55,7 @@ public:
  	virtual void endList() = 0;
  	virtual void listItem(const QString & t) = 0;
 	virtual void beginSwitch() = 0;
-	virtual void cswitch(const ArgHandler * h, bool doc) = 0;
+	virtual void cswitch(const ArgHandler * h) = 0;
 	virtual void endSwitch() = 0;
 	void paragraph(const QString & t);
 	static Outputter * text(FILE * fd, bool doc=false, bool extended=false);

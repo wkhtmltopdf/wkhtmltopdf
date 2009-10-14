@@ -21,6 +21,7 @@
 class HtmlOutputter: public Outputter {
 private:
 	FILE * fd;
+	bool ordered;
 public:
 	HtmlOutputter(FILE * _): fd(_) {
 		fprintf(fd,
@@ -78,11 +79,12 @@ public:
 	}
 
 	void beginList(bool o) {
-		fprintf(fd, "<ul>");
+		ordered = o;
+		fprintf(fd, ordered?"<ol>":"<ul>");
 	}
 	
 	void endList() {
-		fprintf(fd, "</ul>");
+		fprintf(fd, ordered?"</ol>":"</ul>");
 	}
 	
 	void listItem(const QString & s) {
@@ -93,7 +95,7 @@ public:
 		fprintf(fd, "<table>\n");
 	}
 
-	void cswitch(const ArgHandler * h, bool doc) {
+	void cswitch(const ArgHandler * h) {
 		fprintf(fd, "<tr><td class=\"short\">");
 		if(h->shortSwitch)
 			fprintf(fd, "-%c,",h->shortSwitch);

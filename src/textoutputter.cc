@@ -119,7 +119,7 @@ public:
 	
 	void beginSwitch() {}
 
-	void cswitch(const ArgHandler * h, bool doc) {
+	void cswitch(const ArgHandler * h) {
 		w=0;
 		if(!doc) {fprintf(fd,"  "); w=2;}
 		if(h->shortSwitch != 0)
@@ -128,6 +128,11 @@ public:
 			fprintf(fd,"    ");
 		fprintf(fd,"--%s",S(h->longName));
 		w+=4 + 2 + h->longName.size();
+		if (doc && h->qthack) { 
+			fprintf(fd, " *");
+			w += 2;
+		}
+				
 		foreach(const QString & arg, h->argn) {
 			fprintf(fd," <%s>",S(arg));
 			w+=3+arg.size();
@@ -152,6 +157,8 @@ public:
 	}
 
 	void endSwitch() {
+		if (doc)
+			fprintf(fd, "\nItems marked * are only avalible using patched QT.\n");
 		printf("\n");
 	}		
 	

@@ -39,6 +39,8 @@ void CommandLineParserPrivate::outputSwitches(Outputter * o, bool extended, bool
 		foreach(const ArgHandler * handler, sectionArgumentHandles[section]) {
 #ifndef __EXTENSIVE_WKHTMLTOPDF_QT_HACK__
 			if(!doc && handler->qthack) continue;
+#else 
+			Q_UNUSED(doc);
 #endif
 			if(!extended && handler->extended) continue;
 			display.push_back(handler);
@@ -52,7 +54,7 @@ void CommandLineParserPrivate::outputSwitches(Outputter * o, bool extended, bool
 		}
 		o->beginSwitch();
 		foreach(const ArgHandler * handler, display)
-			o->cswitch(handler, doc);
+			o->cswitch(handler);
 		o->endSwitch();
 		o->endSection();
  	}
