@@ -237,7 +237,7 @@ void CommandLineParserPrivate::outputContact(Outputter * o) const {
   \param o The outputter to output to
 */
 void CommandLineParserPrivate::outputDocStart(Outputter * o) const {
-	o->beginSection("WKHtmlToPdf Manual");
+	o->beginSection("wkhtmltopdf Manual");
 	o->paragraph("This file documents wkhtmltopdf, a program capable of converting html "
 				 "documents into pdf documents.");
 	o->endSection();
@@ -246,11 +246,18 @@ void CommandLineParserPrivate::outputDocStart(Outputter * o) const {
 /*!
   Output information on how to use read-args-from-stdin
   \param o The outputter to output to
-  \todo Do a better explanation
 */
-#warning "explain what and why"
 void CommandLineParserPrivate::outputArgsFromStdin(Outputter * o) const {
 	o->beginSection("Reading arguments from stdin");
+	o->paragraph("If you need to convert a lot af pages in a batch, and you feel that wkhtmltopdf "
+				 "is a bit to slow to start up, then you should try --read-args-from-stdin,");
+	o->paragraph("When --read-args-from-stdin each line of input sendt to wkhtmltopdf on stdin "
+				 "will act as a seperate invocation of wkhtmltopdf, with the argumnts specified "
+				 "on the given line combined with the arguments given to wkhtmltopdf");
+	o->paragraph("For example one could do the following:");
+	o->verbatim("echo \"http://doc.trolltech.com/4.5/qapplication.html qapplication.pdf\" >> cmds\n"
+				"echo \"--cover google.com http://en.wikipedia.org/wiki/Qt_(toolkit) qt.pdf\" >> cmds\n"
+				"wkhtmltopdf --read-args-from-stdin --book < cmds\n");
 	o->endSection();
 }
 
