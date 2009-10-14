@@ -100,7 +100,7 @@ public:
 	void outputCompilation(Outputter * o) const;
 	void outputInstallation(Outputter * o) const;
 	void outputExampels(Outputter * o) const;
-
+	void outputStaticProblems(Outputter * o) const;
 	//commandlineparser.cc
 	void outputSwitches(Outputter * o, bool extended, bool doc) const;
 	void version(FILE * fd) const;

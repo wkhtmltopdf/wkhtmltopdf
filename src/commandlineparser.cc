@@ -139,6 +139,7 @@ void CommandLineParserPrivate::readme(FILE * fd, bool html) const {
  	outputOutlineDoc(o);
  	outputPageBreakDoc(o);
 	outputArgsFromStdin(o);
+	outputStaticProblems(o);
 	outputCompilation(o);
 	outputInstallation(o);
 	outputExampels(o);

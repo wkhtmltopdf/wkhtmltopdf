@@ -118,20 +118,36 @@ void CommandLineParserPrivate::outputNotPatched(Outputter * o, bool sure) const 
 /*!
   Explain the page breaking is somewhat broken
   \param o The outputter to output to
-  \todo Do a better explanation
 */
-#warning "explain what and why"
 void CommandLineParserPrivate::outputPageBreakDoc(Outputter * o) const {
 	o->beginSection("Page Breaking");
+	o->paragraph(
+		"The current page breaking algorithm of WebKit leaves much to be decired. "
+		"Basicly webkit will render everything into one long page, and the cut it up "
+		"into pages. This means that if you have two coloums of text where one is "
+		"vecticaly shifted by half a line. Then webkit will cut a line into to pices "
+		"display the top half on one page. And the bottom half on another page. "
+		"It will also break image in two and so on.  If you are using the patched version of "
+		"QT you can use the css page-break-inside property to remidy this somewhat. "
+		"There is no easy solution to this problem, until this is solved try organising "
+		"your html documents such that it contains many lines on which pages can be cut "
+		"cleanly.");
+	o->beginParagraph();
+	o->text("See also: ");
+	o->link("http://code.google.com/p/wkhtmltopdf/issues/detail?id=9");
+	o->text(", ");
+	o->link("http://code.google.com/p/wkhtmltopdf/issues/detail?id=33");
+	o->text(" and ");
+	o->link("http://code.google.com/p/wkhtmltopdf/issues/detail?id=57");
+	o->text(".");
+	o->endParagraph();
 	o->endSection();
 }
 
 /*!
   Output documentation about the proxy settings
   \param o The outputter to output to
-  \todo Do a better explanation
 */
-#warning "explain what and why"
 void CommandLineParserPrivate::outputProxyDoc(Outputter * o) const {
 	o->beginSection("Specifying A Proxy");
 	o->paragraph(
@@ -142,15 +158,17 @@ void CommandLineParserPrivate::outputProxyDoc(Outputter * o) const {
 		"<type> := \"http://\" | \"socks5://\"\n"
 		"<userinfo> := <username> (\":\" <password>)? \"@\"\n"
 		"<proxy> := \"None\" | <type>? <userinfo>? <host> (\":\" <port>)?\n");
+	o->paragraph("Here are some exampels (In case you are unfarmiliar with the BNF):");
+	o->verbatim("http://user:password@myproxyserver:8080\n"
+				"socks5://myproxyserver\n"
+				"None\n");
 	o->endSection();
 }
 
 /*!
   Output documentation about headers and footers
   \param o The outputter to output to
-  \todo Do a better explanation
 */
-#warning "explain what and why"
 void CommandLineParserPrivate::outputHeaderFooterDoc(Outputter * o) const {
 	o->beginSection("Footers And Headers");
 	o->paragraph("Headers and footers can be added to the document by the --header-* and --footer* "
@@ -269,6 +287,48 @@ void CommandLineParserPrivate::outputArgsFromStdin(Outputter * o) const {
 #warning "explain what and why"
 void CommandLineParserPrivate::outputCompilation(Outputter * o) const {
 	o->beginSection("Compilation");
+	o->paragraph("It can happen that the static binary does not work for your system "
+				 "for one reason or the other, in that case you might need to compile "
+				 "qtwkhtmltopdf yourself.");
+	o->beginParagraph();
+	o->bold("GNU/Linux:");
+	o->endParagraph();
+	o->paragraph("Before compilation you will need to install dependencies: X11, gcc, "
+				 "git and openssl. On Debian/Ubuntu this can be done as follows:");
+	o->verbatim("sudo apt-get build-dep libqt4-gui libqt4-network libqt4-wekbit\n"
+				"sudo apt-get install openssl build-essential xorg git-core git-doc\n");
+	o->paragraph("On other systems you must use your own package manager, the packages might be named differently.");
+	
+	o->paragraph("You now have 2 options either you can build the latest binary, or make a bleeding edge build");
+	
+	
+
+	Now you have two option either download the latest release source, or make a bleeding edge build from subversion
+
+    * Stable release build
+
+      Download and extract the code by running
+
+		wget http://wkhtmltopdf.googlecode.com/files/wkhtmltopdf-0.8.3.tar.bz2
+
+      tar -xvf wkhtmltopdf-0.8.3.tar.bz2
+
+      ls -s wkhtmltopdf-0.8.3 wkhtmltopdf
+
+      Be sure to change the version number to the latest
+    * Subsersion build
+
+		First you need to have subversion installed on Debian/Ubuntu:
+
+      sudo aptitude install subversion
+
+      Then download the source
+
+		svn checkout http://wkhtmltopdf.googlecode.com/svn/trunk/ wkhtmltopdf
+
+
+
+		
 	o->endSection();
 }
 
@@ -286,13 +346,40 @@ void CommandLineParserPrivate::outputInstallation(Outputter * o) const {
 /*!
   Output exampels on how to use wkhtmltopdf
   \param o The outputter to output to
-  \todo Do a better explanation
 */
-#warning "explain what and why"
 void CommandLineParserPrivate::outputExampels(Outputter * o) const {
 	o->beginSection("Exampels");
+	o->paragraph("This section presents a number of exampels of how to invoke wkhtmltopdf.");
+	o->paragraph("To convert a remote HTML file to PDF:");
+	o->verbatim("wkhtmltopdf http://www.google.com google.pdf\n");
+	o->paragraph("To convert a local HTML file to PDF:");
+	o->verbatim("wkhtmltopdf my.html my.pdf\n");
+	o->paragraph("You can also convert to PS files if you like:");
+	o->verbatim("wkhtmltopdf my.html my.ps\n");
+	o->paragraph("Produce the eler2.pdf sample file:");
+	o->verbatim("wkhtmltopdf http://geekz.co.uk/lovesraymond/archive/eler-highlights-2008 eler2.pdf -H --outline\n");
 	o->endSection();
 }
 
+/*!
+  Output information on the problems with the static version
+  \param o The outputter to output to
+*/
+void CommandLineParserPrivate::outputStaticProblems(Outputter * o) const {
+	o->beginSection("Static version");
+	o->beginParagraph();
+	o->text("On the wkhtmltopdf webside you can download a static version of wkhtmltopdf ");
+	o->link("http://code.google.com/p/wkhtmltopdf/downloads/list");
+	o->text(". This static binary will work on most systems and comes with a build in patched QT.");
+	o->endParagraph();
 
+	o->beginParagraph();
+	o->text("Unfortunatly thet static binary is not paticular static, on linux it depends "
+				 "on both glibc and openssl, futhermore you will need to have an xserver installed "
+				 "but not nessenary running. See ");
+	o->link("http://code.google.com/p/wkhtmltopdf/wiki/static");
+	o->text(" for trouble shouting.");
+	o->endParagraph();
+	o->endSection();
+}
 
