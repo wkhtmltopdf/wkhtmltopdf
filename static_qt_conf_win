@@ -12,10 +12,10 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with wkhtmltopdf.  If not, see <http:#www.gnu.org/licenses/>.
-#-no-style-windows
+-no-style-windows
 -no-style-windowsxp
 -no-style-windowsvista
 -no-style-plastique
--no-style-cleanlooks
 -no-style-motif
 -no-style-cde
+-qt-style-cleanlooks

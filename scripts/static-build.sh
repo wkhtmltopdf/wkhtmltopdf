@@ -21,9 +21,16 @@
 
 QT=qt-all-opensource-src-4.5.1
 MIRROR=kent
-MINGWFILES="binutils-2.19.1-mingw32-bin.tar.gz mingw32-make-3.81-20080326-3.tar.gz \
-gcc-g++-3.4.5-20060117-3.tar.gz gcc-core-3.4.5-20060117-3.tar.gz w32api-3.13-mingw32-dev.tar.gz \
-mingwrt-3.15.2-mingw32-dev.tar.gz mingwrt-3.15.2-mingw32-dll.tar.gz"
+#MINGWFILES="
+#gcc-g++-3.4.5-20060117-3.tar.gz gcc-core-3.4.5-20060117-3.tar.gz  \
+#mingwrt-3.15.2-mingw32-dev.tar.gz mingwrt-3.15.2-mingw32-dll.tar.gz"
+MINGWFILES="binutils-2.19.1-mingw32-bin.tar.gz \
+mingw32-make-3.81-20090910.tar.gz \
+gcc-full-4.4.0-mingw32-bin-2.tar.lzma \
+w32api-3.13-mingw32-dev.tar.gz \
+mingwrt-3.16-mingw32-dev.tar.gz \
+mingwrt-3.16-mingw32-dll.tar.gz"
+
 OPENSSL=openssl-0.9.8h-1-lib.zip
 if file /bin/true | grep -q 64-bit; then
     UPX=upx-3.03-amd64_linux
@@ -75,7 +82,7 @@ if [[ "$1" == "all" ]] || [[ "$1" == "linux" ]]; then
 	mkdir -p linux
 	cd linux
 	echo "Updating linux qt"
-	[ -d qts ] || git clone ../qt qts || (rm -rf qt && exit 1)
+	[ -d qts ] || git clone ../qt qts || (rm -rf qts && exit 1)
 	cd qts
 	git checkout staging || exit 1
 	git pull || exit 1
@@ -94,7 +101,6 @@ if [[ "$1" == "all" ]] || [[ "$1" == "linux" ]]; then
 	fi
 	cd ..
 
-	echo ${BASE}
         [ -d wkhtmltopdf ] || git clone ${BASE} wkhtmltopdf || (rm -rf wkhtmltopdf && exit 1)
 	cd wkhtmltopdf
 	git checkout master || exit 1
@@ -142,22 +148,40 @@ EOF
 	unset CPLUS_INCLUDE_PATH
 	unset C_INCLUDE_PATH
 	cd ${BUILD}/mingw/drive_c
-	ln -s ${BUILD}/${QT}.tar.bz2 .
-	unpack ${QT}.tar.bz2 || exit 1
-	mkdir -p qt
-	cp -r ${QT}/mkspecs qt
-	cd ${QT}
-	if ! cmp ${BUILD}/conf_win conf_win; then
-		(yes | wine configure.exe `cat ${BUILD}/conf_win` -prefix "C:\qt" && cp ${BUILD}/conf_win conf_win) || exit 1
+
+	[ -d qts ] || git clone ${BUILD}/qt qts || (rm -rf qts && exit 1)
+	cd qts
+	git checkout staging || exit 1
+	git pull || exit 1
+	if ! [ -z "$2" ] ; then
+	    git checkout wkhtmltopdf-$2 || exit 1
 	fi
-	applypatch ${BUILD}/qt.patch qt.patch || exit 1
-	if ! wine mingw32-make -j5 -q; then
-		wine mingw32-make -j5 || exit 1
+	cd ..
+
+	export CPLUS_INCLUDE_PATH=
+	export C_INCLUDE_PATH=C:\qts\include
+
+	mkdir -p qt
+	cp -r qts/mkspecs qt
+	cd qts
+	if ! cmp ${BUILD}/conf_win conf_win; then
+	    QTDIR=. bin/syncqt
+	    (yes | wine configure.exe -I "C:\qts\include" `cat ${BUILD}/conf_win` -prefix "C:\qt"  && cp ${BUILD}/conf_win conf_win) || exit 1
+	fi
+	if ! wine mingw32-make -j3 -q; then
+		wine mingw32-make -j3 || exit 1
 		wine mingw32-make install || exit 1
 	fi
 	cd ..
-	exportHere
+
+        [ -d wkhtmltopdf ] || git clone ${BASE} wkhtmltopdf || (rm -rf wkhtmltopdf && exit 1)
 	cd wkhtmltopdf
+	git checkout master || exit 1
+	git pull || exit 1
+	if ! [ -z "$2" ] ; then
+	    git checkout $2 || exit 1
+	fi
+
 	wine ../qt/bin/qmake.exe wkhtmltopdf.pro -o Makefile -spec win32-g++ || exit 1
 	wine mingw32-make -j5 || exit 1
 	wine strip.exe release/wkhtmltopdf.exe || exit 1
