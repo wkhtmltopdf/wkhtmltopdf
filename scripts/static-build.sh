@@ -47,7 +47,7 @@ function exportHere() {
 	cd $HERE
 }
 
-BUILD=/tmp/build
+BUILD=$(pwd)/static-build
 #Create static build directory
 mkdir -p $BUILD
 cat static_qt_conf_base static_qt_conf_win | sed -re 's/#.*//' | sed -re '/^[ \t]*$/d' | sort -u > $BUILD/conf_win
@@ -75,8 +75,8 @@ if [[ "$1" == "all" ]] || [[ "$1" == "linux" ]]; then
 	mkdir -p linux
 	cd linux
 	echo "Updating linux qt"
-	[ -d qt ] || git clone ../qt qt || (rm -rf qt && exit 1)
-	cd qt
+	[ -d qts ] || git clone ../qt qts || (rm -rf qt && exit 1)
+	cd qts
 	git checkout staging || exit 1
 	git pull || exit 1
 	if ! [ -z "$2" ] ; then
@@ -85,7 +85,7 @@ if [[ "$1" == "all" ]] || [[ "$1" == "linux" ]]; then
 
 	touch conf_linux
 	if ! cmp ${BUILD}/conf_linux conf_linux; then
- 		(yes yes | ./configure `cat ${BUILD}/conf_linux` -prefix "${BUILD}/linux/qt" && cp ${BUILD}/conf_linux conf_linux) || exit 1
+ 	    (yes yes | ./configure `cat ${BUILD}/conf_linux` -prefix "${BUILD}/linux/qt" && cp ${BUILD}/conf_linux conf_linux) || exit 1
 	fi
 
 	if ! make -j3 -q; then

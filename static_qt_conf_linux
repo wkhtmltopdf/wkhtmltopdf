@@ -14,7 +14,6 @@
 # along with wkhtmltopdf.  If not, see <http:#www.gnu.org/licenses/>.
 -largefile
 -rpath
--svg
 -no-nis
 -no-cups
 -no-iconv
@@ -32,3 +31,6 @@
 -no-xinput
 -no-xkb
 -no-glib
+-no-openvg
+-no-opengl
+-no-xsync

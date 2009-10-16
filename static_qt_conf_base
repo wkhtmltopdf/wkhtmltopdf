@@ -50,3 +50,6 @@
 -nomake translations
 -no-opengl
 -no-dbus
+-no-multimedia
+-no-svg 
+-no-javascript-jit
