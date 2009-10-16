@@ -303,28 +303,28 @@ void CommandLineParserPrivate::outputCompilation(Outputter * o) const {
 	
 	
 
-	Now you have two option either download the latest release source, or make a bleeding edge build from subversion
+// 	Now you have two option either download the latest release source, or make a bleeding edge build from subversion
 
-    * Stable release build
+//     * Stable release build
 
-      Download and extract the code by running
+//       Download and extract the code by running
 
-		wget http://wkhtmltopdf.googlecode.com/files/wkhtmltopdf-0.8.3.tar.bz2
+// 		wget http://wkhtmltopdf.googlecode.com/files/wkhtmltopdf-0.8.3.tar.bz2
 
-      tar -xvf wkhtmltopdf-0.8.3.tar.bz2
+//       tar -xvf wkhtmltopdf-0.8.3.tar.bz2
 
-      ls -s wkhtmltopdf-0.8.3 wkhtmltopdf
+//       ls -s wkhtmltopdf-0.8.3 wkhtmltopdf
 
-      Be sure to change the version number to the latest
-    * Subsersion build
+//       Be sure to change the version number to the latest
+//     * Subsersion build
 
-		First you need to have subversion installed on Debian/Ubuntu:
+// 		First you need to have subversion installed on Debian/Ubuntu:
 
-      sudo aptitude install subversion
+//       sudo aptitude install subversion
 
-      Then download the source
+//       Then download the source
 
-		svn checkout http://wkhtmltopdf.googlecode.com/svn/trunk/ wkhtmltopdf
+// 		svn checkout http://wkhtmltopdf.googlecode.com/svn/trunk/ wkhtmltopdf
 
 
 
