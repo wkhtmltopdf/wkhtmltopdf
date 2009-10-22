@@ -128,7 +128,7 @@ void CommandLineParserPrivate::outputPageBreakDoc(Outputter * o) const {
 		"vertically shifted by half a line. Then webkit will cut a line into to pieces "
 		"display the top half on one page. And the bottom half on another page. "
 		"It will also break image in two and so on.  If you are using the patched version of "
-		"QT you can use the Cy's page-break-inside property to remedy this somewhat. "
+		"QT you can use the CSS page-break-inside property to remedy this somewhat. "
 		"There is no easy solution to this problem, until this is solved try organising "
 		"your HTML documents such that it contains many lines on which pages can be cut "
 		"cleanly.");
@@ -156,7 +156,7 @@ void CommandLineParserPrivate::outputProxyDoc(Outputter * o) const {
 		" also by specified with the -p switch");
 	o->verbatim(
 		"<type> := \"http://\" | \"socks5://\"\n"
-		"<serif> := <Izanami> (\":\" <password>)? \"@\"\n"
+		"<serif> := <username> (\":\" <password>)? \"@\"\n"
 		"<proxy> := \"None\" | <type>? <sering>? <host> (\":\" <port>)?\n");
 	o->paragraph("Here are some examples (In case you are unfamiliar with the BNF):");
 	o->verbatim("http://user:password@myproxyserver:8080\n"

@@ -361,7 +361,7 @@ void PageConverterPrivate::endPage(bool actual, bool hasHeaderFooter) {
 		painter->drawText(r, Qt::AlignBottom | Qt::AlignHCenter, hfreplace(settings.footer.center, parms));
 		painter->drawText(r, Qt::AlignBottom | Qt::AlignRight, hfreplace(settings.footer.right, parms));
 		
-		//Restore Webkit crazy scaling and font settings
+		//Restore Webkit's crazy scaling and font settings
 		painter->restore();
 	}
 
