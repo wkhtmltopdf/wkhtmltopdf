@@ -36,4 +36,4 @@
 -no-xsync
 -no-javascript-jit
 -no-svg
-
+-openssl-linked
