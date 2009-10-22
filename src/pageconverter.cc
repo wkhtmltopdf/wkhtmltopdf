@@ -256,7 +256,7 @@ void PageConverterPrivate::preparePrint(bool ok) {
 	outline = new Outline(settings);
 	//This is the first render face, it is done to calculate:
 	// * The number of pages of each document
-	// * A visual ordering of the header elemnt
+	// * A visual ordering of the header element
 	// * The location and page number of each header
 	for(int d=0; d < pages.size(); ++d) {
 		int tot = pages.size()+(settings.printToc?1:0);
@@ -329,7 +329,7 @@ void PageConverterPrivate::endPage(bool actual, bool hasHeaderFooter) {
 		QHash<QString, QString> parms;
 		outline->fillHeaderFooterParms(logicalPage, parms);
 
-		//Webkit used all kinds of crasy cordinate transformation, and font setup
+		//Webkit used all kinds of crazy coordinate transformation, and font setup
 		//We save it here and restore some sane defaults
 		painter->save();
 		painter->resetTransform();
@@ -355,13 +355,13 @@ void PageConverterPrivate::endPage(bool actual, bool hasHeaderFooter) {
 		//Guess the height of the footer text
 		painter->setFont(QFont(settings.footer.fontName, settings.footer.fontSize));
 		dy = painter->boundingRect(0, 0, w, h, Qt::AlignTop, "M").height();
-		//Draw the fooder text
+		//Draw the footer text
 		r=QRect(0,0,w,h+dy+ spacing);
 		painter->drawText(r, Qt::AlignBottom | Qt::AlignLeft, hfreplace(settings.footer.left, parms));
 		painter->drawText(r, Qt::AlignBottom | Qt::AlignHCenter, hfreplace(settings.footer.center, parms));
 		painter->drawText(r, Qt::AlignBottom | Qt::AlignRight, hfreplace(settings.footer.right, parms));
 		
-		//Restore webkits crasy scaling and font settings
+		//Restore Webkit crazy scaling and font settings
 		painter->restore();
 	}
 
@@ -529,7 +529,7 @@ QWebPage * PageConverterPrivate::loadHeaderFooter(QString url, const QHash<QStri
 }
 
 /*!
- * Replace some variabels in a string used in a header or fooder
+ * Replace some variables in a string used in a header or footer
  * \param q the string to substitute in
  */
 QString PageConverterPrivate::hfreplace(const QString & q, const QHash<QString, QString> & parms) {
@@ -591,7 +591,7 @@ void PageConverterPrivate::cancel() {
 /*!
   \class PageConverter
   \brief Class responsible for converting html pages to pdf
-  \todo explain something about the convertion process here, and mention stages
+  \todo explain something about the conversion process here, and mention stages
 */
 
 /*!
@@ -610,7 +610,7 @@ PageConverter::~PageConverter() {
 }
 
 /*!
-  \brief Count the number of phases that the convertion proccess goes though
+  \brief Count the number of phases that the conversion process goes though
 */
 int PageConverter::phaseCount() {
 	return d->phaseDescriptions.size();
@@ -641,7 +641,7 @@ QString PageConverter::progressString() {
 }
 
 /*!
-  \brief return the http return code, of the converted page
+  \brief return the HTTP return code, of the converted page
 */
 int PageConverter::httpErrorCode() {
 	return d->pageLoader.httpErrorCode();
@@ -656,15 +656,15 @@ void PageConverter::addResource(const QString & url) {
 }
 
 /*!
-  \brief Start a asynchronious convertion of html pages to a pdf document.
-  Once convertion is done an finished signal will be emitted
+  \brief Start a asynchronous conversion of html pages to a pdf document.
+  Once conversion is done an finished signal will be emitted
 */
 void PageConverter::beginConvertion() {
 	d->beginConvert();
 }
 
 /*!
-  \brief Synchronios convert html pages to a pdf document.
+  \brief Synchronous convert html pages to a pdf document.
 */
 bool PageConverter::convert() {
 	return d->convert();
@@ -678,7 +678,7 @@ void PageConverter::cancel() {
 }
 
 /*!
-  \biref Returns the settings object associated with the page converter
+  \brief Returns the settings object associated with the page converter
 */
 const Settings & PageConverter::settings() const {
 	return d->settings;
@@ -686,13 +686,13 @@ const Settings & PageConverter::settings() const {
 
 /*!
   \fn PageConverter::warning(const QString & message)
-  \brief Signal emmited when some non fatal waring occures during conversion
+  \brief Signal emitted when some non fatal warning occurs during conversion
   \param message The warning message
 */
 
 /*!
   \fn PageConverter::error(const QString & message)
-  \brief Signal emmitted when a fatal error has occured during conversion
+  \brief Signal emitted when a fatal error has occurred during conversion
   \param message A message describing the fatal error
 */
 
@@ -703,12 +703,12 @@ const Settings & PageConverter::settings() const {
 
 /*!
   \fn PageConverter::progressChanged()
-  \brief Signal emitted when some progress has been done in the convertion phase
+  \brief Signal emitted when some progress has been done in the conversion phase
 */
 
 /*!
   \fn PageConverter::finised()
-  \brief Signal emitted when convertion has finished.
+  \brief Signal emitted when conversion has finished.
 */
 
 

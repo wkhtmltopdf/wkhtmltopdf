@@ -16,7 +16,7 @@
 #include "commandlineparser_p.hh"
 #include <QWebFrame>
 /*!
-  Output the name and version of the program, and also wether we are using a patched qt
+  Output the name and version of the program, and also whether we are using a patched qt
   \param o The outputter to output to
 */
 void CommandLineParserPrivate::outputName(Outputter * o) const {
@@ -64,12 +64,12 @@ void CommandLineParserPrivate::outputAuthors(Outputter * o) const {
 }
 
 /*!
-  Output a short synnapsis on how to call the commandline program
+  Output a short synopsis on how to call the command line program
   \param o The outputter to output to
 */
 void CommandLineParserPrivate::outputSynopsis(Outputter * o) const {
 	o->beginSection("Synopsis");
-	o->verbatim("wkhtmltopdf [OPTIONS]... <input file> [More inputfiles] <output file>\n");
+	o->verbatim("wkhtmltopdf [OPTIONS]... <input file> [More input files] <output file>\n");
 	o->endSection();
 }
 
@@ -80,7 +80,7 @@ void CommandLineParserPrivate::outputSynopsis(Outputter * o) const {
 void CommandLineParserPrivate::outputDescripton(Outputter * o) const {
 	o->beginSection("Description");
 	o->paragraph(
-		"Converts one or more html pages into a pdf document.");
+		"Converts one or more HTML pages into a PDF document.");
 	o->endSection();
 }
 
@@ -92,22 +92,22 @@ void CommandLineParserPrivate::outputDescripton(Outputter * o) const {
 void CommandLineParserPrivate::outputNotPatched(Outputter * o, bool sure) const {
 	o->beginSection("Reduced Functionality");
 	if (sure) 
-		o->paragraph("This version of wkhtmltopdf has been compiled against a vertion of "
+		o->paragraph("This version of wkhtmltopdf has been compiled against a version of "
 					 "QT without the wkhtmltopdf patches. Therefore some features are missing, "
 					 "if you need these features please use the static version.");
 	else
 		o->paragraph("Some versions of wkhtmltopdf are compiled against a version of QT "
 					 "without the wkhtmltopdf patches. These versions are missing some features, "
-					 "you can find out if your vertion of wkhtmltopdf is one of these by running wkhtmltopdf --version "
-					 "if your version is against an unpatched qt, you can use the static version to get all functionality.");
+					 "you can find out if your version of wkhtmltopdf is one of these by running wkhtmltopdf --version "
+					 "if your version is against an unpatched QT, you can use the static version to get all functionality.");
 
 	o->paragraph("Currently the list of features only supported with patch QT includes:");
 	o->beginList();
-	o->listItem("Printing more then one html document into a PDF file.");
-	o->listItem("Running without an X11 server running on linux.");
+	o->listItem("Printing more then one HTML document into a PDF file.");
+	o->listItem("Running without an X11 server.");
 	o->listItem("Adding a document outline to the PDF file.");
 	o->listItem("Adding headers and footers to the PDF file.");
-	o->listItem("Generating a table of content.");
+	o->listItem("Generating a table of contents.");
 	o->listItem("Adding links in the generated PDF file.");
 	o->listItem("Printing using the screen media-type.");
 	o->listItem("Disabling the smart shrink feature of webkit.");
@@ -122,15 +122,15 @@ void CommandLineParserPrivate::outputNotPatched(Outputter * o, bool sure) const 
 void CommandLineParserPrivate::outputPageBreakDoc(Outputter * o) const {
 	o->beginSection("Page Breaking");
 	o->paragraph(
-		"The current page breaking algorithm of WebKit leaves much to be decired. "
-		"Basicly webkit will render everything into one long page, and the cut it up "
-		"into pages. This means that if you have two coloums of text where one is "
-		"vecticaly shifted by half a line. Then webkit will cut a line into to pices "
+		"The current page breaking algorithm of WebKit leaves much to be desired. "
+		"Basically webkit will render everything into one long page, and the cut it up "
+		"into pages. This means that if you have two columns of text where one is "
+		"vertically shifted by half a line. Then webkit will cut a line into to pieces "
 		"display the top half on one page. And the bottom half on another page. "
 		"It will also break image in two and so on.  If you are using the patched version of "
-		"QT you can use the css page-break-inside property to remidy this somewhat. "
+		"QT you can use the Cy's page-break-inside property to remedy this somewhat. "
 		"There is no easy solution to this problem, until this is solved try organising "
-		"your html documents such that it contains many lines on which pages can be cut "
+		"your HTML documents such that it contains many lines on which pages can be cut "
 		"cleanly.");
 	o->beginParagraph();
 	o->text("See also: ");
@@ -156,9 +156,9 @@ void CommandLineParserPrivate::outputProxyDoc(Outputter * o) const {
 		" also by specified with the -p switch");
 	o->verbatim(
 		"<type> := \"http://\" | \"socks5://\"\n"
-		"<userinfo> := <username> (\":\" <password>)? \"@\"\n"
-		"<proxy> := \"None\" | <type>? <userinfo>? <host> (\":\" <port>)?\n");
-	o->paragraph("Here are some exampels (In case you are unfarmiliar with the BNF):");
+		"<serif> := <Izanami> (\":\" <password>)? \"@\"\n"
+		"<proxy> := \"None\" | <type>? <sering>? <host> (\":\" <port>)?\n");
+	o->paragraph("Here are some examples (In case you are unfamiliar with the BNF):");
 	o->verbatim("http://user:password@myproxyserver:8080\n"
 				"socks5://myproxyserver\n"
 				"None\n");
@@ -172,21 +172,21 @@ void CommandLineParserPrivate::outputProxyDoc(Outputter * o) const {
 void CommandLineParserPrivate::outputHeaderFooterDoc(Outputter * o) const {
 	o->beginSection("Footers And Headers");
 	o->paragraph("Headers and footers can be added to the document by the --header-* and --footer* "
-				 "arguments respecitfully.  In header and footer textstring supplied to e.g. --header-left, "
-				 "the following variabels will be substituded.");
+				 "arguments respectfully.  In header and footer text string supplied to e.g. --header-left, "
+				 "the following variables will be substituted.");
 	o->verbatim(
-" * [page]       Replaced by the number of the pages currently beeing printed\n"
+" * [page]       Replaced by the number of the pages currently being printed\n"
 " * [frompage]   Replaced by the number of the first page to be printed\n"
 " * [topage]     Replaced by the number of the last page to be printed\n"
-" * [webpage]    Replaced by the url of the page beeing printed\n"
+" * [webpage]    Replaced by the URL of the page being printed\n"
 " * [section]    Replaced by the name of the current section\n"
 " * [subsection] Replaced by the name of the current subsection\n"
 "\n");
 	o->paragraph("As an example specifying --header-right \"Page [page] of [toPage]\", "
 				 "will result in the text \"Page x of y\" where x is the number of the "
-				 "current page and y is the number of the last page, to apper in the upper "
+				 "current page and y is the number of the last page, to appear in the upper "
 				 "left corner in the document.");
-	o->paragraph("Headers and footers can also be supplied with html documents. As an example one "
+	o->paragraph("Headers and footers can also be supplied with HTML documents. As an example one "
 				 "could specify --header-html header.html, and use the following content in header.html:");
 	o->verbatim(
 "<html><head><script>\n"
@@ -212,7 +212,7 @@ void CommandLineParserPrivate::outputHeaderFooterDoc(Outputter * o) const {
 "</body></html>\n"
 "\n"
 		);
-	o->paragraph("As can be seen from the exapmle the arguments are send to the header/footer html "
+	o->paragraph("As can be seen from the example the arguments are send to the header/footer html "
 				 "documents in get fashion.");
 	o->endSection();
 }
@@ -224,13 +224,13 @@ void CommandLineParserPrivate::outputHeaderFooterDoc(Outputter * o) const {
 void CommandLineParserPrivate::outputOutlineDoc(Outputter * o) const {
 	o->beginSection("Outlines");
 	o->paragraph(
-		"Wkhtmltodpf with patched qt has support for pdf outlines also known as "
-		"book marks, this can be enabeled by specifying the --outline switch. "
-		"The outlines are generated based on the <h?> tags, for a indepth "
+		"Wkhtmltodpf with patched qt has support for PDF outlines also known as "
+		"book marks, this can be enabled by specifying the --outline switch. "
+		"The outlines are generated based on the <h?> tags, for a in-depth "
 		"description of how this is done see the \"Table Of Contest\" section. ");
 	o->paragraph(
 		"The outline tree can sometimes be very deep, if the <h?> tags where "
-		"spred to generous in the HTML document.  The --outline-depth switch can "
+		"spread to generous in the HTML document.  The --outline-depth switch can "
 		"be used to bound this.");
 	o->endSection();
 }
@@ -242,7 +242,7 @@ void CommandLineParserPrivate::outputOutlineDoc(Outputter * o) const {
 void CommandLineParserPrivate::outputContact(Outputter * o) const {
 	o->beginSection("Contact");
 	o->beginParagraph();
-	o->text("If you experience bugs or want to requent new features please visit ");
+	o->text("If you experience bugs or want to request new features please visit ");
 	o->link("http://code.google.com/p/wkhtmltopdf/issues/list");
 	o->text(", if you have any problems or comments please feel free to contact me: see ");
 	o->link("http://www.madalgo.au.dk/~jakobt/#about");
@@ -251,13 +251,13 @@ void CommandLineParserPrivate::outputContact(Outputter * o) const {
 }
 
 /*!
-  Output beginning of the readmee
+  Output beginning of the readme
   \param o The outputter to output to
 */
 void CommandLineParserPrivate::outputDocStart(Outputter * o) const {
 	o->beginSection("wkhtmltopdf Manual");
 	o->paragraph("This file documents wkhtmltopdf, a program capable of converting html "
-				 "documents into pdf documents.");
+				 "documents into PDF documents.");
 	o->endSection();
 }
 
@@ -267,10 +267,10 @@ void CommandLineParserPrivate::outputDocStart(Outputter * o) const {
 */
 void CommandLineParserPrivate::outputArgsFromStdin(Outputter * o) const {
 	o->beginSection("Reading arguments from stdin");
-	o->paragraph("If you need to convert a lot af pages in a batch, and you feel that wkhtmltopdf "
+	o->paragraph("If you need to convert a lot of pages in a batch, and you feel that wkhtmltopdf "
 				 "is a bit to slow to start up, then you should try --read-args-from-stdin,");
-	o->paragraph("When --read-args-from-stdin each line of input sendt to wkhtmltopdf on stdin "
-				 "will act as a seperate invocation of wkhtmltopdf, with the argumnts specified "
+	o->paragraph("When --read-args-from-stdin each line of input sent to wkhtmltopdf on stdin "
+				 "will act as a separate invocation of wkhtmltopdf, with the arguments specified "
 				 "on the given line combined with the arguments given to wkhtmltopdf");
 	o->paragraph("For example one could do the following:");
 	o->verbatim("echo \"http://doc.trolltech.com/4.5/qapplication.html qapplication.pdf\" >> cmds\n"
@@ -316,7 +316,7 @@ void CommandLineParserPrivate::outputCompilation(Outputter * o) const {
 //       ls -s wkhtmltopdf-0.8.3 wkhtmltopdf
 
 //       Be sure to change the version number to the latest
-//     * Subsersion build
+//     * Subversion build
 
 // 		First you need to have subversion installed on Debian/Ubuntu:
 
@@ -344,12 +344,12 @@ void CommandLineParserPrivate::outputInstallation(Outputter * o) const {
 }
 
 /*!
-  Output exampels on how to use wkhtmltopdf
+  Output examples on how to use wkhtmltopdf
   \param o The outputter to output to
 */
 void CommandLineParserPrivate::outputExampels(Outputter * o) const {
-	o->beginSection("Exampels");
-	o->paragraph("This section presents a number of exampels of how to invoke wkhtmltopdf.");
+	o->beginSection("Examples");
+	o->paragraph("This section presents a number of examples of how to invoke wkhtmltopdf.");
 	o->paragraph("To convert a remote HTML file to PDF:");
 	o->verbatim("wkhtmltopdf http://www.google.com google.pdf\n");
 	o->paragraph("To convert a local HTML file to PDF:");
@@ -368,18 +368,20 @@ void CommandLineParserPrivate::outputExampels(Outputter * o) const {
 void CommandLineParserPrivate::outputStaticProblems(Outputter * o) const {
 	o->beginSection("Static version");
 	o->beginParagraph();
-	o->text("On the wkhtmltopdf webside you can download a static version of wkhtmltopdf ");
+	o->text("On the wkhtmltopdf website you can download a static version of wkhtmltopdf ");
 	o->link("http://code.google.com/p/wkhtmltopdf/downloads/list");
 	o->text(". This static binary will work on most systems and comes with a build in patched QT.");
 	o->endParagraph();
 
 	o->beginParagraph();
-	o->text("Unfortunatly thet static binary is not paticular static, on linux it depends "
-				 "on both glibc and openssl, futhermore you will need to have an xserver installed "
-				 "but not nessenary running. See ");
+	o->text("Unfortunately the static binary is not particularly static, on Linux it depends "
+				 "on both glibc and openssl, furthermore you will need to have an xserver installed "
+				 "but not necessary running. See ");
 	o->link("http://code.google.com/p/wkhtmltopdf/wiki/static");
 	o->text(" for trouble shouting.");
 	o->endParagraph();
 	o->endSection();
 }
 
+
+//  LocalWords:  webkit bool unpatched beginList listItem endList WebKit http

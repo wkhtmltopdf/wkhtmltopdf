@@ -19,7 +19,7 @@
 
 /*!
   \class ArgHandler
-  \brief Class responcible for handling an argument
+  \brief Class responsible for handling an argument
 */
 
 /*!
@@ -60,7 +60,7 @@
 /*!
   \fn ArgHandler::operator()(const char ** args, CommandLineParserPrivate & parser)
   Callend when the switch was specified
-  \param args The arguments to the switch, garantied to have size of argn
+  \param args The arguments to the switch, guarantied to have size of argn
   \param settings The settings to store the information in
 */
 
@@ -294,7 +294,7 @@ template <typename T> struct Caller: public ArgHandler {
 //All these function would have been lambda function, had C++ supported them, now we are forced to write them here
 
 /*!
-  Lamba: Call the usage method
+  Lambda: Call the usage method
 */
 template <bool v>
 struct HelpFunc {
@@ -375,7 +375,7 @@ void CommandLineParserPrivate::section(QString s, QString desc) {
 }
 
 /*!
-  Indicate wether the next arguments we add require a patched qt to work
+  Indicate whether the next arguments we add require a patched qt to work
   /param h Do we require a patch
 */
 void CommandLineParserPrivate::qthack(bool h) {
@@ -383,7 +383,7 @@ void CommandLineParserPrivate::qthack(bool h) {
 }
 
 /*!
-  Indicate wether the next arguments we add are "extended" and should not 
+  Indicate whether the next arguments we add are "extended" and should not 
   be shown in a simple --help
   \param e Are the arguments extended
 */
@@ -395,7 +395,7 @@ void CommandLineParserPrivate::extended(bool e) {
   Add an argument to the list of arguments
   \param l The long "--" name of the argument
   \param s The short '-' name of the argument or 0 if unspecified
-  \param d Descripton of the argument
+  \param d Description of the argument
   \param h The handler for the argument
   \param display Is the argument hidden
 */
@@ -428,13 +428,13 @@ CommandLineParserPrivate::CommandLineParserPrivate(Settings & s):
 	addarg("collate", 0, "Collate when printing multiple copies", new ConstSetter<bool>(s.collate,true,false));
 	addarg("copies", 0, "Number of copies to print into the pdf file", new IntSetter(s.copies, "number", 1));
 	addarg("orientation",'O',"Set orientation to Landscape or Portrait", new OrientationSetter(s.orientation, "orientation", QPrinter::Portrait));
-	addarg("page-size",'s',"Set pape size to: A4, Letter, ect.", new PageSizeSetter(s.pageSize, "size", QPrinter::A4));
+	addarg("page-size",'s',"Set paper size to: A4, Letter, etc.", new PageSizeSetter(s.pageSize, "size", QPrinter::A4));
 	addarg("proxy",'p',"Use a proxy", new ProxySetter(s.proxy, "proxy"));
 	addarg("username",0,"HTTP Authentication username", new QStrSetter(s.username, "username",""));
 	addarg("password",0,"HTTP Authentication password", new QStrSetter(s.password, "password",""));
 	addarg("custom-header",0,"Set an additional HTTP header (repeatable)", new AHMapSetter(s.customHeaders, "name", "value"));
 	qthack(true);
-	addarg("book",'b',"Set the options one would usualy set when printing a book", new Caller<BookFunc>());
+	addarg("book",'b',"Set the options one would usually set when printing a book", new Caller<BookFunc>());
 	addarg("cover",0,"Use html document as cover. It will be inserted before the toc with no headers and footers",new QStrSetter(s.cover,"url",""));
 	addarg("default-header",'H',"Add a default header, with the name of the page to the left, and the page number to the right, this is short for: --header-left='[webpage]' --header-right='[page]/[toPage]' --top 2cm --header-line", new Caller<DefaultHeaderFunc>());
 	addarg("toc",'t',"Insert a table of content in the beginning of the document", new ConstSetter<bool>(s.printToc,true,false));
@@ -445,24 +445,24 @@ CommandLineParserPrivate::CommandLineParserPrivate(Settings & s):
 	addarg("htmldoc", 0, "Output program html help", new Caller<ReadmeFunc<true> >());
 	addarg("readme", 0, "Output program readme", new Caller<ReadmeFunc<false> >());
 	addarg("dpi",'d',"Change the dpi explicitly (this has no effect on X11 based systems)", new IntSetter(s.dpi,"dpi",-1));
-	addarg("disable-javascript",'n',"Do not allow webpages to run javascript", new ConstSetter<bool>(s.enableJavascript,false,true));
+	addarg("disable-javascript",'n',"Do not allow web pages to run javascript", new ConstSetter<bool>(s.enableJavascript,false,true));
 	addarg("grayscale",'g',"PDF will be generated in grayscale", new ConstSetter<QPrinter::ColorMode>(s.colorMode,QPrinter::GrayScale,QPrinter::Color));
 	addarg("lowquality",'l',"Generates lower quality pdf/ps. Useful to shrink the result document space", new ConstSetter<QPrinter::PrinterMode>(s.resolution,QPrinter::ScreenResolution,QPrinter::HighResolution));
 	addarg("margin-bottom",'B',"Set the page bottom margin (default 10mm)", new UnitRealSetter(s.margin.bottom,"unitread",QPair<qreal,QPrinter::Unit>(10,QPrinter::Millimeter)));
 	addarg("margin-left",'L',"Set the page left margin (default 10mm)", new UnitRealSetter(s.margin.left,"unitread",QPair<qreal,QPrinter::Unit>(10,QPrinter::Millimeter)));
 	addarg("margin-right",'R',"Set the page right margin (default 10mm)", new UnitRealSetter(s.margin.right,"unitread",QPair<qreal,QPrinter::Unit>(10,QPrinter::Millimeter)));
 	addarg("margin-top",'T',"Set the page top margin (default 10mm)", new UnitRealSetter(s.margin.top,"unitread",QPair<qreal,QPrinter::Unit>(10,QPrinter::Millimeter)));
-	addarg("redirect-delay",0,"Wait some miliseconds for js-redirects", new IntSetter(s.jsredirectwait,"msec",200));
+	addarg("redirect-delay",0,"Wait some milliseconds for js-redirects", new IntSetter(s.jsredirectwait,"msec",200));
 	addarg("enable-plugins",0,"Enable installed plugins (such as flash", new ConstSetter<bool>(s.enablePlugins,true,false));
 	addarg("zoom",0,"Use this zoom factor", new FloatSetter(s.zoomFactor,"float",1.0));
 	addarg("read-args-from-stdin",0,"Read command line arguments from stdin", new ConstSetter<bool>(s.readArgsFromStdin,true,false));
 
 	qthack(true);
 	addarg("disable-internal-links",0,"Do no make local links", new ConstSetter<bool>(s.useLocalLinks,false,true));
-	addarg("disable-external-links",0,"Do no make links to remote webpages", new ConstSetter<bool>(s.useExternalLinks,false,true));
+	addarg("disable-external-links",0,"Do no make links to remote web pages", new ConstSetter<bool>(s.useExternalLinks,false,true));
 	addarg("print-media-type",0,"Use print media-type instead of screen", new ConstSetter<bool>(s.printMediaType,true,false));
 	addarg("page-offset",0,"Set the starting page number", new IntSetter(s.pageOffset,"offset",1));
-	addarg("disable-smart-shrinking", 0, "Disable the intelligent shrinking strategy used by webkit that makes the pixel/dpi ratio none constant",new ConstSetter<bool>(s.enableIntelligentShrinking, false, true));
+	addarg("disable-smart-shrinking", 0, "Disable the intelligent shrinking strategy used by WebKit that makes the pixel/dpi ratio none constant",new ConstSetter<bool>(s.enableIntelligentShrinking, false, true));
 #ifdef Q_WS_X11
 	addarg("use-xserver",0,"Use the X server (some plugins and other stuff might not work without X11)", new ConstSetter<bool>(s.useGraphics,true,false));
 #endif
@@ -489,7 +489,7 @@ CommandLineParserPrivate::CommandLineParserPrivate(Settings & s):
 	addarg("footer-line",0,"Display line above the footer", new ConstSetter<bool>(s.footer.line,true,false));
 	addarg("footer-right",0,"Right aligned footer text", new QStrSetter(s.footer.right,"text",""));
 	addarg("footer-spacing",0,"Spacing between footer and content in mm", new FloatSetter(s.footer.spacing,"real",0.0));
-	addarg("footer-html",0,"Addes a html header", new QStrSetter(s.footer.htmlUrl,"url",""));
+	addarg("footer-html",0,"Adds a html header", new QStrSetter(s.footer.htmlUrl,"url",""));
 	addarg("header-center",0,"Centered header text", new QStrSetter(s.header.center,"text",""));
 	addarg("header-font-name",0,"Set header font name", new QStrSetter(s.header.fontName,"name","Arial"));
 	addarg("header-font-size",0,"Set header font size", new IntSetter(s.header.fontSize,"size",11));
@@ -497,7 +497,7 @@ CommandLineParserPrivate::CommandLineParserPrivate(Settings & s):
 	addarg("header-line",0,"Display line below the header", new ConstSetter<bool>(s.header.line,true,false));
 	addarg("header-right",0,"Right aligned header text", new QStrSetter(s.header.right,"text",""));
 	addarg("header-spacing",0,"Spacing between header and content in mm", new FloatSetter(s.header.spacing,"real",0.0));
-	addarg("header-html",0,"Addes a html header", new QStrSetter(s.header.htmlUrl,"url",""));
+	addarg("header-html",0,"Adds a html header", new QStrSetter(s.header.htmlUrl,"url",""));
 	extended(false);
 	qthack(false);
 	

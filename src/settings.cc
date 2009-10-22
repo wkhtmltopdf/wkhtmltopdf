@@ -21,10 +21,10 @@
 */
 
 /*!
-  Convert a string to a paper size, basicly all thinkable values are allowed.
+  Convert a string to a paper size, basically all thinkable values are allowed.
   if a unknown value is given A4 is returned
   \param s The string to convert
-  \param ok If supplied indicates if the conversion was successfull
+  \param ok If supplied indicates if the conversion was successful
 */
 QPrinter::PageSize Settings::strToPageSize(const char * s, bool * ok) {
 	if (ok) *ok=true;
@@ -64,7 +64,7 @@ QPrinter::PageSize Settings::strToPageSize(const char * s, bool * ok) {
 
 /*!
   Read orientation from a string, possible values are landscape and portrait (case insensitive)
-  \param s The string contating the orientation
+  \param s The string containing the orientation
   \param ok If supplied indicates whether the s was valid
 */
 QPrinter::Orientation Settings::strToOrientation(const char * s, bool * ok) {
@@ -118,7 +118,7 @@ QPair<qreal, QPrinter::Unit> Settings::strToUnitReal(const char * o, bool * ok) 
 }
 
 /*!
-  Read proxy settings from a string, the gramma is described in the manual
+  Read proxy settings from a string, the grammar is described in the manual
   \param proxy the proxy string to parse
   \param ok If supplied indicates whether the proxy was valid
 */
