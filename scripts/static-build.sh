@@ -41,15 +41,15 @@ fi
 
 #Helper functions
 function get() {
-	[ -f $2.download ] || (rm -rf $2; wget $1 -O $2 && touch $2.download)
+    [ -f $2.download ] || (rm -rf $2; wget $1 -O $2 && touch $2.download)
 }
 function unpack() {
-	[ -f $1.unpack ] || (echo "unpacking $1"; (tar -xf $1 || unzip $1) && touch $1.unpack)
+    [ -f $1.unpack ] || (echo "unpacking $1"; (tar -xf $1 || unzip $1) && touch $1.unpack)
 }
 
 function usage() {
-	echo "please specify what static binary you want build (linux, win or all)"
-	exit 1
+    echo "please specify what static binary you want build (linux, win or all)"
+    exit 1
 }
 
 BASE=${PWD}
@@ -76,8 +76,8 @@ function checkout() {
     unpack ${UPX}.tar.bz2 || exit 1
 }
 
-cat static_qt_conf_base static_qt_conf_win | sed -re 's/#.*//' | sed -re '/^[ \t]*$/d' | sort -u > $BUILD/conf_win
-cat static_qt_conf_base static_qt_conf_linux | sed -re 's/#.*//' | sed -re '/^[ \t]*$/d' | sort -u > $BUILD/conf_linux
+#cat static_qt_conf_base static_qt_conf_win | sed -re 's/#.*//' | sed -re '/^[ \t]*$/d' | sort -u > $BUILD/conf_win
+#cat static_qt_conf_base static_qt_conf_linux | sed -re 's/#.*//' | sed -re '/^[ \t]*$/d' | sort -u > $BUILD/conf_linux
 
 
 function setup_build() {
@@ -149,7 +149,9 @@ function build_linux_local() {
     mkdir -p linux-local
     cd linux-local
     setup_build linux
-    ./build.sh
+    ./build.sh || exit 1
+    cd ..
+    ${BUILD}/${UPX}/upx --best ${BUILD}/linux-local/wkhtmltopdf/wkhtmltopdf -o ${BASE}/wkhtmltopdf || exit 1
 }
 
 function setup_chroot() {
@@ -171,12 +173,17 @@ function setup_chroot() {
     chmod +x linux-$2/build/buildw.sh || exit 1
 }
 
-function build_linux() {
+function build_linux_chroot() {
     cd ${BUILD}
     setup_chroot etch $1
     cd linux-$1/build
     setup_build linux
-    sudo linux32 chroot ${BUILD}/linux-$1/ /build/buildw.sh
+    if [  "$1" == 'i386' ]; then
+	sudo linux32 chroot ${BUILD}/linux-$1/ /build/buildw.sh || exit 1
+    else
+	sudo chroot ${BUILD}/linux-$1/ /build/buildw.sh || exit 1
+    fi
+    ${BUILD}/${UPX}/upx --best ${BUILD}/linux-$1/build/wkhtmltopdf/wkhtmltopdf -o ${BASE}/wkhtmltopdf-$1 || exit 1
 }
 
 # if [[ "$1" == "all" ]] ||; then
@@ -266,16 +273,16 @@ function build_linux() {
 
 case "$1" in
 'linux-local')
-	build_linux_local
 	checkout
+	build_linux_local
 	;;
 'linux-i386')
-	build_linux i386
 	checkout
+	build_linux_chroot i386
 	;;
 'linux-amd64')
 	checkout
-	build_linux amd64
+	build_linux_chroot amd64
 	;;
 'windows')
 	checkout
@@ -283,8 +290,8 @@ case "$1" in
 	;;
 'release')
 	checkout
-	build_linux i386
-	build_linux amd64
+	build_linux_chroot i386
+	build_linux_chroot amd64
 	build_windows
 	;;
 *)
