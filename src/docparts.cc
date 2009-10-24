@@ -15,6 +15,9 @@
 // along with wkhtmltopdf.  If not, see <http://www.gnu.org/licenses/>.
 #include "commandlineparser_p.hh"
 #include <QWebFrame>
+
+#define STRINGIZE(x) #x
+
 /*!
   Output the name and version of the program, and also whether we are using a patched qt
   \param o The outputter to output to
@@ -22,7 +25,7 @@
 void CommandLineParserPrivate::outputName(Outputter * o) const {
 	o->beginSection("Name");
 	o->beginParagraph();
-	o->text(QString("wkhtmltopdf ")+QString::number(MAJOR_VERSION)+"."+QString::number(MINOR_VERSION)+"."+QString::number(PATCH_VERSION));;
+	o->text(QString("wkhtmltopdf ")+QString::number(MAJOR_VERSION)+"."+QString::number(MINOR_VERSION)+"."+QString::number(PATCH_VERSION)+(QString(STRINGIZE(BUILD)).isEmpty()?" ":"")+STRINGIZE(BUILD));
 	o->text(", ");
 #ifdef __EXTENSIVE_WKHTMLTOPDF_QT_HACK__
 	o->text("using wkhtmltopdf patched qt.");
@@ -255,7 +258,7 @@ void CommandLineParserPrivate::outputContact(Outputter * o) const {
   \param o The outputter to output to
 */
 void CommandLineParserPrivate::outputDocStart(Outputter * o) const {
-	o->beginSection("wkhtmltopdf Manual");
+	o->beginSection(QString("wkhtmltopdf ")+QString::number(MAJOR_VERSION)+"."+QString::number(MINOR_VERSION)+"."+QString::number(PATCH_VERSION)+(QString(STRINGIZE(BUILD)).isEmpty()?" ":"")+STRINGIZE(BUILD) + "Manual");
 	o->paragraph("This file documents wkhtmltopdf, a program capable of converting html "
 				 "documents into PDF documents.");
 	o->endSection();

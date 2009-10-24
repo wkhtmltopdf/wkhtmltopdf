@@ -21,9 +21,6 @@
 
 QT=qt-all-opensource-src-4.5.1
 MIRROR=kent
-#MINGWFILES="
-#gcc-g++-3.4.5-20060117-3.tar.gz gcc-core-3.4.5-20060117-3.tar.gz  \
-#mingwrt-3.15.2-mingw32-dev.tar.gz mingwrt-3.15.2-mingw32-dll.tar.gz"
 MINGWFILES="binutils-2.19.1-mingw32-bin.tar.gz \
 mingw32-make-3.81-20090910.tar.gz \
 gcc-full-4.4.0-mingw32-bin-2.tar.lzma \
@@ -31,7 +28,11 @@ w32api-3.13-mingw32-dev.tar.gz \
 mingwrt-3.16-mingw32-dev.tar.gz \
 mingwrt-3.16-mingw32-dll.tar.gz"
 
-OPENSSL=openssl-0.9.8h-1-lib.zip
+GNUWIN32FILES="openssl-0.9.8h-1-lib.zip \
+openssl-0.9.8h-1-bin.zip "
+#freetype-2.3.5-1-bin.zip \
+#freetype-2.3.5-1-lib.zip "
+
 if file /bin/true | grep -q 64-bit; then
     UPX=upx-3.03-amd64_linux
 else
@@ -44,7 +45,7 @@ function get() {
     [ -f $2.download ] || (rm -rf $2; wget $1 -O $2 && touch $2.download)
 }
 function unpack() {
-    [ -f $1.unpack ] || (echo "unpacking $1"; (tar -xf $1 || unzip $1) && touch $1.unpack)
+    [ -f $1.unpack ] || (echo "unpacking $1"; (tar -xf $1 || unzip -o $1) && touch $1.unpack)
 }
 
 function usage() {
@@ -58,7 +59,7 @@ BUILD=${BASE}/static-build
 VERSION=$2
 
 function checkout() {
-#Create static build directory
+    #Create static build directory
     mkdir -p $BUILD
 
     cd ${BUILD}
@@ -75,10 +76,6 @@ function checkout() {
     get http://upx.sourceforge.net/download/${UPX}.tar.bz2 ${UPX}.tar.bz2 || exit 1
     unpack ${UPX}.tar.bz2 || exit 1
 }
-
-#cat static_qt_conf_base static_qt_conf_win | sed -re 's/#.*//' | sed -re '/^[ \t]*$/d' | sort -u > $BUILD/conf_win
-#cat static_qt_conf_base static_qt_conf_linux | sed -re 's/#.*//' | sed -re '/^[ \t]*$/d' | sort -u > $BUILD/conf_linux
-
 
 function setup_build() {
     echo "Updating QT"
@@ -104,6 +101,7 @@ function setup_build() {
 	git checkout "$VERSION" || exit 1
     fi
     cd ..
+    [ "$1" == "win" ] && return 
     cat > build.sh <<EOF
 unset LANG
 unset LC_ALL
@@ -112,16 +110,9 @@ HERE="\${PWD}"
 mkdir -p qt/lib
 
 cd qts
-for lib in libssl.a libcrypt.a; do
-  rm -rf lib/\${lib} ../qt/lib/\${lib}
-  path=\$(g++ -print-file-name=\${lib})
-  ln -s \$(g++ -print-file-name=\${lib}) lib/  || exit 1
-  ln -s \$(g++ -print-file-name=\${lib}) ../qt/lib/  || exit 1
-done
 
 if ! cmp conf conf_new; then
    echo "Configuring QT"
-   export OPENSSL_LIBS='-L../qt/lib ../qt/lib/libssl.a ../qt/lib/libcrypt.a -lssl -lcrypto'
    (yes yes | ./configure \`cat conf_new\` -prefix "\${HERE}/qt" && cp conf_new conf) || exit 1
 fi
     
@@ -138,10 +129,6 @@ make -j3 || exit 1
 strip wkhtmltopdf || exit 1
 EOF
     chmod +x build.sh
-}
-
-function build_linux_actual() {
-    sleep 0
 }
 
 function build_linux_local() {
@@ -186,28 +173,69 @@ function build_linux_chroot() {
     ${BUILD}/${UPX}/upx --best ${BUILD}/linux-$1/build/wkhtmltopdf/wkhtmltopdf -o ${BASE}/wkhtmltopdf-$1 || exit 1
 }
 
-# if [[ "$1" == "all" ]] ||; then
-# 	cd ${BUILD}
-# 	mkdir -p linux
-# 	cd linux
-# 	echo "Updating linux qt"
+function build_windows() {
+    cd ${BUILD}
+ 
+    export WINEPREFIX=${BUILD}/windows
+    if [ ! -f ${BUILD}/windows/create ]; then
+	    cat > tmp <<EOF 
+REGEDIT4
 
-        
-# 	rm -rf ${BASE}/wkhtmltopdf
-# 	${BUILD}/${UPX}/upx --best wkhtmltopdf -o ${BASE}/wkhtmltopdf || exit 1
+[HKEY_LOCAL_MACHINE\System\CurrentControlSet\Control\Session Manager\Environment]
+"PATH"="C:\\\\windows;C:\\\\windows\\\\system32;C:\\\\mingw\\\\bin"
+"INCLUDE"="C:\\\\mingw\\\\include;C:\\\\mingw\\\\include\\\\c++\\\\3.4.5"
+"LIB"="C:\\\\mingw\\\\lib"
+EOF
+	    wine regedit tmp || exit 1
+	    touch ${BUILD}/windows/create
+    fi
+#http://ftp.gnome.org/pub/gnome/binaries/win32/dependencies/fontconfig-2.4.2-tml-20071015.zip
+    mkdir -p windows/drive_c/mingw
+    cd windows/drive_c/mingw
+    for file in ${MINGWFILES}; do
+ 	get http://${MIRROR}.dl.sourceforge.net/sourceforge/mingw/${file} ${file} || exit 1
+ 	unpack ${file} || exit 1
+    done
+    for file in ${GNUWIN32FILES}; do
+	get http://downloads.sourceforge.net/gnuwin32/${file} ${file} || exit 1
+	unpack ${file} || exit 1
+    done
+
+
+    cd ..
+    setup_build win
+    
+    unset CPLUS_INCLUDE_PATH
+    unset C_INCLUDE_PATH
+    export CPLUS_INCLUDE_PATH=
+    export C_INCLUDE_PATH=C:\qts\include
+
+    mkdir -p qt
+    cp -r qts/mkspecs qt
+    cd qts
+    if ! cmp conf conf_new; then
+	QTDIR=. bin/syncqt || exit 1
+	(yes | wine configure.exe -I "C:\qts\include" -I "C:\mingw32\include\freetype2" `cat conf_new` -prefix "C:\qt" --help  && cp conf_new conf) || exit 1
+    fi
+    if ! wine mingw32-make -j3 -q; then
+	wine mingw32-make -j3 || exit 1
+	wine mingw32-make install || exit 1
+    fi
+
+    cd ../wkhtmltopdf
+    wine ../qt/bin/qmake.exe wkhtmltopdf.pro -o Makefile -spec win32-g++ || exit 1
+    wine mingw32-make -j3 || exit 1
+    wine strip.exe release/wkhtmltopdf.exe || exit 1
+    rm -rf ${BASE}/wkhtmltopdf.exe
+    ${BUILD}/${UPX}/upx --best release/wkhtmltopdf.exe -o ${BASE}/wkhtmltopdf.exe || exit 1
+}
+    
+
 # fi
 # if [[ "$1" == "all" ]] || [[ "$1" == "win" ]]; then 
-# 	export WINEPREFIX=`pwd`/mingw
-#     #Setup configuration for mingw
+# 	
+#       #Setup configuration for mingw
 # 	ln -s / "mingw/dosdevices/z:"
-# 	cat <<EOF > tmp
-# REGEDIT4
-
-# [HKEY_LOCAL_MACHINE\System\CurrentControlSet\Control\Session Manager\Environment]
-# "PATH"="C:\\\\windows;C:\\\\windows\\\\system32;C:\\\\mingw\\\\bin"
-# "INCLUDE"="C:\\\\mingw\\\\include;C:\\\\mingw\\\\include\\\\c++\\\\3.4.5"
-# "LIB"="C:\\\\mingw\\\\lib"
-# EOF
 # 	wine regedit tmp || exit 1
 # 	rm -f tmp
 
@@ -216,43 +244,10 @@ function build_linux_chroot() {
 
 # 	echo "Building windows vertion of qt"
 # 	#Install mingw
-# 	mkdir -p mingw/drive_c/mingw
-# 	cd mingw/drive_c/mingw
-# 	for file in ${MINGWFILES}; do
-# 		get http://${MIRROR}.dl.sourceforge.net/sourceforge/mingw/${file} ${file} || exit 1
-# 		unpack ${file} || exit 1
-# 	done
-# 	get http://downloads.sourceforge.net/gnuwin32/${OPENSSL} ${OPENSSL} || exit 1
-# 	unpack ${OPENSSL} || exit 1
 
 # 	#Unpack, configure and build windows qt
-# 	unset CPLUS_INCLUDE_PATH
-# 	unset C_INCLUDE_PATH
-# 	cd ${BUILD}/mingw/drive_c
 
-# 	[ -d qts ] || git clone ${BUILD}/qt qts || (rm -rf qts && exit 1)
-# 	cd qts
-# 	git checkout staging || exit 1
-# 	git pull || exit 1
-# 	if ! [ -z "$2" ] ; then
-# 	    git checkout wkhtmltopdf-$2 || exit 1
-# 	fi
-# 	cd ..
-
-# 	export CPLUS_INCLUDE_PATH=
-# 	export C_INCLUDE_PATH=C:\qts\include
-
-# 	mkdir -p qt
-# 	cp -r qts/mkspecs qt
-# 	cd qts
-# 	if ! cmp ${BUILD}/conf_win conf_win; then
-# 	    QTDIR=. bin/syncqt
-# 	    (yes | wine configure.exe -I "C:\qts\include" `cat ${BUILD}/conf_win` -prefix "C:\qt"  && cp ${BUILD}/conf_win conf_win) || exit 1
-# 	fi
-# 	if ! wine mingw32-make -j3 -q; then
-# 		wine mingw32-make -j3 || exit 1
-# 		wine mingw32-make install || exit 1
-# 	fi
+#	cd qts
 # 	cd ..
 
 #         [ -d wkhtmltopdf ] || git clone ${BASE} wkhtmltopdf || (rm -rf wkhtmltopdf && exit 1)
@@ -263,11 +258,6 @@ function build_linux_chroot() {
 # 	    git checkout $2 || exit 1
 # 	fi
 
-# 	wine ../qt/bin/qmake.exe wkhtmltopdf.pro -o Makefile -spec win32-g++ || exit 1
-# 	wine mingw32-make -j5 || exit 1
-# 	wine strip.exe release/wkhtmltopdf.exe || exit 1
-# 	rm -rf ${BASE}/wkhtmltopdf.exe
-# 	${BUILD}/${UPX}/upx --best release/wkhtmltopdf.exe -o ${BASE}/wkhtmltopdf.exe || exit 1
 # fi
 
 
