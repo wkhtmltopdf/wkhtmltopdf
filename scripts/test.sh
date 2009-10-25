@@ -135,6 +135,7 @@ function testMultidoc() {
     echo "<html><head><title>Local Test</title></head><body><h1>Hello</h1></body></html>" > tmp.html
     echo "<html><head><title>Local Test</title></head><body><h1>world</h1></body></html>" > tmp2.html
     wk tmp.html tmp2.html tmp.pdf
+    echo Foo
     ([ -f tmp.pdf ] && 
 	pdftotext tmp.pdf /dev/stdout | grep -q Hello &&
 	pdftotext tmp.pdf /dev/stdout | grep -q world) && good MultiDoc || bad MultiDoc
@@ -204,7 +205,7 @@ testRemote
 testSSL
 testHeaderFooter
 testBuild qmake
-testNoneStatic
+#testNoneStatic
 testAgsFrmStdin
 #testBuild cmake
 #Lets clean up
