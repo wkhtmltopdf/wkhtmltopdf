@@ -13,6 +13,8 @@ read -p "Are you sure you are ready: " N
 
 sed -ri "s/MAJOR_VERSION=[0-9]+ MINOR_VERSION=[0-9]+ PATCH_VERSION=[0-9]+ BUILD=.*/MAJOR_VERSION=$1 MINOR_VERSION=$2 PATCH_VERSION=$3 BUILD=\"$4\"/" wkhtmltopdf.pro || exit 1
 
+git commit -m "Making ready for version $v" wkhtmltopdf.pro
+
 rm -rf wkhtmltopdf-i386 wkhtmltopdf-amd64 wkhtmltopdf.exe wkhtmltopdf
 ./scripts/static-build.sh linux-i386 || (echo Build failed; exit 1)
 cp wkhtmltopdf-i386 wkhtmltopdf
@@ -25,7 +27,7 @@ fi
 ./scripts/static-build.sh linux-amd64 || (echo Build failed; exit 1)
 ./scripts/static-build.sh windows || (echo Build failed; exit 1)
 
-git commit -m "Making ready for version $v" wkhtmltopdf.pro README
+git commit -m "Making ready for version $v" README
 git tag "$v"
 
 rm -rf "release-$v"
