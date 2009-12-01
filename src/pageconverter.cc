@@ -187,7 +187,7 @@ void PageConverterPrivate::preparePrint(bool ok) {
 		printer->setPaperSize(QSizeF(settings.size.width.first,settings.size.height.first), settings.size.height.second);
 	}
 	else {
-		printer->setPaperSize(settings.pageSize);
+		printer->setPaperSize(settings.size.pageSize);
 	}
 	
 	printer->setOrientation(settings.orientation);

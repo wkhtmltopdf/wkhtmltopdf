@@ -94,8 +94,10 @@ struct Settings {
 		QPair<qreal, QPrinter::Unit> left;
 	};
 	
-	/*! \brief Settings consdering page size */
+	/*! \brief Settings considering page size */
 	struct SizeSettings {
+		//! What size paper should we use
+		QPrinter::PageSize pageSize; 
 		//!Height of the page
 		QPair<qreal, QPrinter::Unit> height;
 		//!Width of the page
@@ -139,8 +141,6 @@ struct Settings {
 	bool enableIntelligentShrinking;
 	//! How many milliseconds should we wait for a javascrit redirect
 	int jsredirectwait;
-	//! What size paper should we use
-	QPrinter::PageSize pageSize; 
 	//! Should we orientate in landscape or portrate
 	QPrinter::Orientation orientation; 
 	//! Color or grayscale
