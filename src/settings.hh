@@ -93,7 +93,15 @@ struct Settings {
 		//!Margin applied to the leftp of the page
 		QPair<qreal, QPrinter::Unit> left;
 	};
-		
+	
+	/*! \brief Settings consdering page size */
+	struct SizeSettings {
+		//!Height of the page
+		QPair<qreal, QPrinter::Unit> height;
+		//!Width of the page
+		QPair<qreal, QPrinter::Unit> width;
+	};
+	
 	//! Proxy related settings
 	ProxySettings proxy;
 	//! Header related settings
@@ -102,6 +110,8 @@ struct Settings {
 	HeaderFooterSettings footer;
 	//! Margin related settings
 	MarginSettings margin;
+	//! Size related settings
+	SizeSettings size;
 	//! Settings regarding the TOC
 	TOCSettings toc;
 
