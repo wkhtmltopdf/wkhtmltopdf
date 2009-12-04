@@ -299,7 +299,7 @@ void CommandLineParserPrivate::outputCompilation(Outputter * o) const {
 	o->endParagraph();
 	o->paragraph("Before compilation you will need to install dependencies: X11, gcc, "
 				 "git and openssl. On Debian/Ubuntu this can be done as follows:");
-	o->verbatim("sudo apt-get build-dep libqt4-gui libqt4-network libqt4-wekbit\n"
+	o->verbatim("sudo apt-get build-dep libqt4-gui libqt4-network libqt4-webkit\n"
 				"sudo apt-get install openssl build-essential xorg git-core git-doc\n");
 	o->paragraph("On other systems you must use your own package manager, the packages might be named differently.");
 	
