@@ -445,8 +445,8 @@ CommandLineParserPrivate::CommandLineParserPrivate(Settings & s):
 	addarg("htmldoc", 0, "Output program html help", new Caller<ReadmeFunc<true> >());
 	addarg("readme", 0, "Output program readme", new Caller<ReadmeFunc<false> >());
 	addarg("dpi",'d',"Change the dpi explicitly (this has no effect on X11 based systems)", new IntSetter(s.dpi,"dpi",-1));
-	addarg("page-height", 'h', "Page height (default unit millimeter)", new UnitRealSetter(s.size.height,"unitread",QPair<qreal,QPrinter::Unit>(-1,QPrinter::Millimeter)));
-	addarg("page-width", 'w', "Page width  (default unit millimeter)", new UnitRealSetter(s.size.width,"unitread",QPair<qreal,QPrinter::Unit>(-1,QPrinter::Millimeter)));
+	addarg("page-height", 0, "Page height (default unit millimeter)", new UnitRealSetter(s.size.height,"unitread",QPair<qreal,QPrinter::Unit>(-1,QPrinter::Millimeter)));
+	addarg("page-width", 0, "Page width  (default unit millimeter)", new UnitRealSetter(s.size.width,"unitread",QPair<qreal,QPrinter::Unit>(-1,QPrinter::Millimeter)));
 	addarg("disable-javascript",'n',"Do not allow web pages to run javascript", new ConstSetter<bool>(s.enableJavascript,false,true));
 	addarg("grayscale",'g',"PDF will be generated in grayscale", new ConstSetter<QPrinter::ColorMode>(s.colorMode,QPrinter::GrayScale,QPrinter::Color));
 	addarg("lowquality",'l',"Generates lower quality pdf/ps. Useful to shrink the result document space", new ConstSetter<QPrinter::PrinterMode>(s.resolution,QPrinter::ScreenResolution,QPrinter::HighResolution));

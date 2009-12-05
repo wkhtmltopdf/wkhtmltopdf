@@ -90,6 +90,7 @@ public:
 	void outputSynopsis(Outputter * o) const;
 	void outputDescripton(Outputter * o) const;
 	void outputProxyDoc(Outputter * o) const;
+	void outputPageSizes(Outputter * o) const;
 	void outputArgsFromStdin(Outputter * o) const;
 	void outputHeaderFooterDoc(Outputter * o) const;
 	void outputOutlineDoc(Outputter * o) const;

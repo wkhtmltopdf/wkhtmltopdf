@@ -348,6 +348,25 @@ void CommandLineParserPrivate::outputInstallation(Outputter * o) const {
 }
 
 /*!
+  Output documentation about page sizes
+  \param o The outputter to output to
+
+*/
+void CommandLineParserPrivate::outputPageSizes(Outputter * o) const {
+	o->beginSection("Page sizes");
+	o->beginParagraph();
+	o->text("The default page size of the rendered document is A4, but using this --page-size option"
+			"this can be changed to almost anything else, such as: A3, Letter and Legal.  "
+			"For a full list of supported pages sizes please see ");
+	o->link("http://doc.trolltech.com/4.6/qprinter.html#PageSize-enum");
+	o->text(".");
+	o->endParagraph();
+	o->paragraph("For a more fine grained control over the page size the "
+				 "--page-height and --page-width options may be used");
+	o->endSection();
+}
+
+/*!
   Output examples on how to use wkhtmltopdf
   \param o The outputter to output to
 */
