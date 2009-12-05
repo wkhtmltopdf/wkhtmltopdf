@@ -216,7 +216,7 @@ void CommandLineParserPrivate::outputHeaderFooterDoc(Outputter * o) const {
 "</body></html>\n"
 "\n"
 		);
-	o->paragraph("As can be seen from the example the arguments are send to the header/footer html "
+	o->paragraph("As can be seen from the example, the arguments are send to the header/footer html "
 				 "documents in get fashion.");
 	o->endSection();
 }
