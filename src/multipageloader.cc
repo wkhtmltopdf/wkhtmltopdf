@@ -67,9 +67,17 @@ void MultiPageLoaderPrivate::authenticationRequired(QNetworkReply *reply, QAuthe
  * \param dst The destination to copy to
  */
 bool MultiPageLoader::copyFile(QFile & src, QFile & dst) {
-	QByteArray buf(1024*1024*5,0);
-	while (qint64 r=src.read(buf.data(),buf.size()))
-		if (dst.write(buf.data(),r) != r) return false;
+//      TODO enable again when
+//      http://bugreports.qt.nokia.com/browse/QTBUG-6894
+//      is fixed
+//      QByteArray buf(1024*1024*5,0);
+//      while ( qint64 r=src.read(buf.data(),buf.size())) {
+//          if (r == -1) return false;
+//          if (dst.write(buf.data(),r) != r) return false;
+//      }
+
+    if (dst.write( src.readAll() ) == -1) return false;
+
 	src.close();
 	dst.close();
 	return true;

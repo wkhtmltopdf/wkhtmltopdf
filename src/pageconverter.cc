@@ -154,9 +154,11 @@ void PageConverterPrivate::preparePrint(bool ok) {
 
 	lout = settings.out;
 	if (settings.out == "-") {
+#ifndef Q_OS_WIN32
 		 if (QFile::exists("/dev/stdout"))
  			lout = "/dev/stdout";
 		 else
+#endif
 			 lout = tempOut.create(".pdf");
 	}
 
