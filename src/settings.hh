@@ -93,7 +93,17 @@ struct Settings {
 		//!Margin applied to the leftp of the page
 		QPair<qreal, QPrinter::Unit> left;
 	};
-		
+	
+	/*! \brief Settings considering page size */
+	struct SizeSettings {
+		//! What size paper should we use
+		QPrinter::PageSize pageSize; 
+		//!Height of the page
+		QPair<qreal, QPrinter::Unit> height;
+		//!Width of the page
+		QPair<qreal, QPrinter::Unit> width;
+	};
+	
 	//! Proxy related settings
 	ProxySettings proxy;
 	//! Header related settings
@@ -102,6 +112,8 @@ struct Settings {
 	HeaderFooterSettings footer;
 	//! Margin related settings
 	MarginSettings margin;
+	//! Size related settings
+	SizeSettings size;
 	//! Settings regarding the TOC
 	TOCSettings toc;
 
@@ -129,8 +141,6 @@ struct Settings {
 	bool enableIntelligentShrinking;
 	//! How many milliseconds should we wait for a javascrit redirect
 	int jsredirectwait;
-	//! What size paper should we use
-	QPrinter::PageSize pageSize; 
 	//! Should we orientate in landscape or portrate
 	QPrinter::Orientation orientation; 
 	//! Color or grayscale

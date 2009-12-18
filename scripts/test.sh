@@ -76,7 +76,7 @@ function testRemote() {
 #Test if we support SSL based sites
 function testSSL() {
     rm -rf tmp.pdf
-    wk https://eopen.microsoft.com/ tmp.pdf
+    wk https://www.google.com/accouts tmp.pdf
     [ -f tmp.pdf ] && good SSL || bad SSL
 }
 
@@ -135,7 +135,6 @@ function testMultidoc() {
     echo "<html><head><title>Local Test</title></head><body><h1>Hello</h1></body></html>" > tmp.html
     echo "<html><head><title>Local Test</title></head><body><h1>world</h1></body></html>" > tmp2.html
     wk tmp.html tmp2.html tmp.pdf
-    echo Foo
     ([ -f tmp.pdf ] && 
 	pdftotext tmp.pdf /dev/stdout | grep -q Hello &&
 	pdftotext tmp.pdf /dev/stdout | grep -q world) && good MultiDoc || bad MultiDoc
@@ -192,7 +191,7 @@ testOutline
 testImgSupport jpg
 testImgSupport gif
 testImgSupport png
-testImgSupport mng
+#testImgSupport mng
 #testImgSupport tiff
 testJSRedirect
 test404

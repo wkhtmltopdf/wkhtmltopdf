@@ -77,6 +77,7 @@ void CommandLineParserPrivate::manpage(FILE * fd) const {
 #else
 	outputNotPatched(o,true);
 #endif
+	outputPageSizes(o);
 	outputArgsFromStdin(o);
  	outputPageBreakDoc(o);
  	outputContact(o);
@@ -99,6 +100,7 @@ void CommandLineParserPrivate::usage(FILE * fd, bool extended) const {
 	outputNotPatched(o, true);
 #endif
 	if (extended) {
+		outputPageSizes(o);
 		outputArgsFromStdin(o);
 		outputProxyDoc(o);
 		outputHeaderFooterDoc(o);
@@ -138,6 +140,7 @@ void CommandLineParserPrivate::readme(FILE * fd, bool html) const {
  	outputHeaderFooterDoc(o);
  	outputOutlineDoc(o);
  	outputPageBreakDoc(o);
+	outputPageSizes(o);
 	outputArgsFromStdin(o);
 	outputStaticProblems(o);
 	outputCompilation(o);

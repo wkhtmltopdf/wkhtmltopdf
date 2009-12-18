@@ -154,9 +154,11 @@ void PageConverterPrivate::preparePrint(bool ok) {
 
 	lout = settings.out;
 	if (settings.out == "-") {
+#ifndef Q_OS_WIN32
 		 if (QFile::exists("/dev/stdout"))
  			lout = "/dev/stdout";
 		 else
+#endif
 			 lout = tempOut.create(".pdf");
 	}
 
@@ -182,7 +184,14 @@ void PageConverterPrivate::preparePrint(bool ok) {
 	printer->setPageMargins(settings.margin.left.first, settings.margin.top.first,
 							settings.margin.right.first, settings.margin.bottom.first,
 							settings.margin.left.second);
-	printer->setPageSize(settings.pageSize);
+	
+	if((settings.size.height.first != -1) && (settings.size.width.first != -1)) {
+		printer->setPaperSize(QSizeF(settings.size.width.first,settings.size.height.first), settings.size.height.second);
+	}
+	else {
+		printer->setPaperSize(settings.size.pageSize);
+	}
+	
 	printer->setOrientation(settings.orientation);
 	printer->setColorMode(settings.colorMode);
 

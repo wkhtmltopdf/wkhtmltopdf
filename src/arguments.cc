@@ -428,7 +428,7 @@ CommandLineParserPrivate::CommandLineParserPrivate(Settings & s):
 	addarg("collate", 0, "Collate when printing multiple copies", new ConstSetter<bool>(s.collate,true,false));
 	addarg("copies", 0, "Number of copies to print into the pdf file", new IntSetter(s.copies, "number", 1));
 	addarg("orientation",'O',"Set orientation to Landscape or Portrait", new OrientationSetter(s.orientation, "orientation", QPrinter::Portrait));
-	addarg("page-size",'s',"Set paper size to: A4, Letter, etc.", new PageSizeSetter(s.pageSize, "size", QPrinter::A4));
+	addarg("page-size",'s',"Set paper size to: A4, Letter, etc.", new PageSizeSetter(s.size.pageSize, "size", QPrinter::A4));
 	addarg("proxy",'p',"Use a proxy", new ProxySetter(s.proxy, "proxy"));
 	addarg("username",0,"HTTP Authentication username", new QStrSetter(s.username, "username",""));
 	addarg("password",0,"HTTP Authentication password", new QStrSetter(s.password, "password",""));
@@ -445,13 +445,15 @@ CommandLineParserPrivate::CommandLineParserPrivate(Settings & s):
 	addarg("htmldoc", 0, "Output program html help", new Caller<ReadmeFunc<true> >());
 	addarg("readme", 0, "Output program readme", new Caller<ReadmeFunc<false> >());
 	addarg("dpi",'d',"Change the dpi explicitly (this has no effect on X11 based systems)", new IntSetter(s.dpi,"dpi",-1));
+	addarg("page-height", 0, "Page height (default unit millimeter)", new UnitRealSetter(s.size.height,"unitreal",QPair<qreal,QPrinter::Unit>(-1,QPrinter::Millimeter)));
+	addarg("page-width", 0, "Page width  (default unit millimeter)", new UnitRealSetter(s.size.width,"unitreal",QPair<qreal,QPrinter::Unit>(-1,QPrinter::Millimeter)));
 	addarg("disable-javascript",'n',"Do not allow web pages to run javascript", new ConstSetter<bool>(s.enableJavascript,false,true));
 	addarg("grayscale",'g',"PDF will be generated in grayscale", new ConstSetter<QPrinter::ColorMode>(s.colorMode,QPrinter::GrayScale,QPrinter::Color));
 	addarg("lowquality",'l',"Generates lower quality pdf/ps. Useful to shrink the result document space", new ConstSetter<QPrinter::PrinterMode>(s.resolution,QPrinter::ScreenResolution,QPrinter::HighResolution));
-	addarg("margin-bottom",'B',"Set the page bottom margin (default 10mm)", new UnitRealSetter(s.margin.bottom,"unitread",QPair<qreal,QPrinter::Unit>(10,QPrinter::Millimeter)));
-	addarg("margin-left",'L',"Set the page left margin (default 10mm)", new UnitRealSetter(s.margin.left,"unitread",QPair<qreal,QPrinter::Unit>(10,QPrinter::Millimeter)));
-	addarg("margin-right",'R',"Set the page right margin (default 10mm)", new UnitRealSetter(s.margin.right,"unitread",QPair<qreal,QPrinter::Unit>(10,QPrinter::Millimeter)));
-	addarg("margin-top",'T',"Set the page top margin (default 10mm)", new UnitRealSetter(s.margin.top,"unitread",QPair<qreal,QPrinter::Unit>(10,QPrinter::Millimeter)));
+	addarg("margin-bottom",'B',"Set the page bottom margin (default 10mm)", new UnitRealSetter(s.margin.bottom,"unitreal",QPair<qreal,QPrinter::Unit>(10,QPrinter::Millimeter)));
+	addarg("margin-left",'L',"Set the page left margin (default 10mm)", new UnitRealSetter(s.margin.left,"unitreal",QPair<qreal,QPrinter::Unit>(10,QPrinter::Millimeter)));
+	addarg("margin-right",'R',"Set the page right margin (default 10mm)", new UnitRealSetter(s.margin.right,"unitreal",QPair<qreal,QPrinter::Unit>(10,QPrinter::Millimeter)));
+	addarg("margin-top",'T',"Set the page top margin (default 10mm)", new UnitRealSetter(s.margin.top,"unitreal",QPair<qreal,QPrinter::Unit>(10,QPrinter::Millimeter)));
 	addarg("redirect-delay",0,"Wait some milliseconds for js-redirects", new IntSetter(s.jsredirectwait,"msec",200));
 	addarg("enable-plugins",0,"Enable installed plugins (such as flash", new ConstSetter<bool>(s.enablePlugins,true,false));
 	addarg("zoom",0,"Use this zoom factor", new FloatSetter(s.zoomFactor,"float",1.0));

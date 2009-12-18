@@ -1,4 +1,4 @@
-=======================> wkhtmltopdf 0.9.0 beta2 Manual <=======================
+=======================> wkhtmltopdf 0.9.0 beta 3 Manual <=======================
 This file documents wkhtmltopdf, a program capable of converting html documents
 into PDF documents.
 
@@ -36,7 +36,7 @@ This is free software: you are free to change and redistribute it. There is NO
 WARRANTY, to the extent permitted by law.
 
 ==================================> Authors <===================================
-Written by Jakob Truelsen. Patches by Patches by Mário Silva and Emmanuel
+Written by Jakob Truelsen. Patches by Mário Silva, Benoit Garret and Emmanuel
 Bouthenot.
 
 ==================================> Synopsis <==================================
@@ -75,6 +75,8 @@ wkhtmltopdf [OPTIONS]... <input file> [More input files] <output file>
     --readme                          Output program readme
 -d, --dpi <dpi>                       Change the dpi explicitly (this has no
                                       effect on X11 based systems)
+    --page-height <unitread>          Page height (default unit millimeter)
+    --page-width <unitread>           Page width  (default unit millimeter)
 -n, --disable-javascript              Do not allow web pages to run javascript
 -g, --grayscale                       PDF will be generated in grayscale
 -l, --lowquality                      Generates lower quality pdf/ps. Useful to
@@ -259,6 +261,15 @@ documents such that it contains many lines on which pages can be cut cleanly.
 See also: <http://code.google.com/p/wkhtmltopdf/issues/detail?id=9>, 
 <http://code.google.com/p/wkhtmltopdf/issues/detail?id=33> and 
 <http://code.google.com/p/wkhtmltopdf/issues/detail?id=57>.
+
+=================================> Page sizes <=================================
+The default page size of the rendered document is A4, but using this --page-size
+optionthis can be changed to almost anything else, such as: A3, Letter and
+Legal.  For a full list of supported pages sizes please see 
+<http://doc.trolltech.com/4.6/qprinter.html#PageSize-enum>.
+
+For a more fine grained control over the page size the --page-height and
+--page-width options may be used
 
 ========================> Reading arguments from stdin <========================
 If you need to convert a lot of pages in a batch, and you feel that wkhtmltopdf

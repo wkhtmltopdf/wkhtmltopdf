@@ -63,7 +63,7 @@ void CommandLineParserPrivate::outputAuthors(Outputter * o) const {
 	o->paragraph(
 		QString::fromUtf8(
 			"Written by Jakob Truelsen. "
-			"Patches by Patches by Mário Silva and Emmanuel Bouthenot."));
+			"Patches by Mário Silva, Benoit Garret and Emmanuel Bouthenot."));
 	o->endSection();
 }
 
@@ -216,7 +216,7 @@ void CommandLineParserPrivate::outputHeaderFooterDoc(Outputter * o) const {
 "</body></html>\n"
 "\n"
 		);
-	o->paragraph("As can be seen from the example the arguments are send to the header/footer html "
+	o->paragraph("As can be seen from the example, the arguments are send to the header/footer html "
 				 "documents in get fashion.");
 	o->endSection();
 }
@@ -344,6 +344,25 @@ void CommandLineParserPrivate::outputCompilation(Outputter * o) const {
 #warning "explain what and why"
 void CommandLineParserPrivate::outputInstallation(Outputter * o) const {
 	o->beginSection("Installation");
+	o->endSection();
+}
+
+/*!
+  Output documentation about page sizes
+  \param o The outputter to output to
+
+*/
+void CommandLineParserPrivate::outputPageSizes(Outputter * o) const {
+	o->beginSection("Page sizes");
+	o->beginParagraph();
+	o->text("The default page size of the rendered document is A4, but using this --page-size option"
+			"this can be changed to almost anything else, such as: A3, Letter and Legal.  "
+			"For a full list of supported pages sizes please see ");
+	o->link("http://doc.trolltech.com/4.6/qprinter.html#PageSize-enum");
+	o->text(".");
+	o->endParagraph();
+	o->paragraph("For a more fine grained control over the page size the "
+				 "--page-height and --page-width options may be used");
 	o->endSection();
 }
 
