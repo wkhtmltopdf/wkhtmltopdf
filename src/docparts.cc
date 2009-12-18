@@ -342,7 +342,7 @@ void CommandLineParserPrivate::outputCompilation(Outputter * o) const {
 */
 void CommandLineParserPrivate::outputInstallation(Outputter * o) const {
 	o->beginSection("Installation");
-	o->beginParagraph(
+	o->paragraph(
 		"There are several ways to install wkhtmltopdf.  You can download a "
 		"already compiled binary, or you can compile wkhtmltopdf your self. "
 		"On windows the easiest way to install wkhtmltopdf is to download "
