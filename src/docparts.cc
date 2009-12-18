@@ -44,7 +44,7 @@ void CommandLineParserPrivate::outputName(Outputter * o) const {
 */
 void CommandLineParserPrivate::outputLicense(Outputter * o) const {
 	o->beginSection("License");
-	o->paragraph("Copyright (C) 2008,2009 WKHtmlToPdf Authors.");
+	o->paragraph("Copyright (C) 2008,2009 Wkhtmltopdf Authors.");
 	o->endParagraph();
 	o->beginParagraph();
 	o->text("License GPLv3+: GNU GPL version 3 or later ");
@@ -228,7 +228,7 @@ void CommandLineParserPrivate::outputHeaderFooterDoc(Outputter * o) const {
 void CommandLineParserPrivate::outputOutlineDoc(Outputter * o) const {
 	o->beginSection("Outlines");
 	o->paragraph(
-		"Wkhtmltodpf with patched qt has support for PDF outlines also known as "
+		"Wkhtmltopdf with patched qt has support for PDF outlines also known as "
 		"book marks, this can be enabled by specifying the --outline switch. "
 		"The outlines are generated based on the <h?> tags, for a in-depth "
 		"description of how this is done see the \"Table Of Contest\" section. ");
@@ -293,7 +293,7 @@ void CommandLineParserPrivate::outputCompilation(Outputter * o) const {
 	o->beginSection("Compilation");
 	o->paragraph("It can happen that the static binary does not work for your system "
 				 "for one reason or the other, in that case you might need to compile "
-				 "qtwkhtmltopdf yourself.");
+				 "wkhtmltopdf yourself.");
 	o->beginParagraph();
 	o->bold("GNU/Linux:");
 	o->endParagraph();
@@ -339,12 +339,18 @@ void CommandLineParserPrivate::outputCompilation(Outputter * o) const {
 /*!
   Output information on how to install
   \param o The outputter to output to
-  \todo Do a better explanation
 */
-#warning "explain what and why"
 void CommandLineParserPrivate::outputInstallation(Outputter * o) const {
 	o->beginSection("Installation");
-	o->endSection();
+	o->beginParagraph(
+		"There are several ways to install wkhtmltopdf.  You can download a "
+		"already compiled binary, or you can compile wkhtmltopdf your self. "
+		"On windows the easiest way to install wkhtmltopdf is to download "
+		"the latest installer. On linux you can download the latest static "
+		"binary, however you still need to install some other pieces of "
+		"software, to learn more about this read the static version section "
+		"of the manual.");
+	o->endSection(); 
 }
 
 /*!
@@ -398,8 +404,9 @@ void CommandLineParserPrivate::outputStaticProblems(Outputter * o) const {
 
 	o->beginParagraph();
 	o->text("Unfortunately the static binary is not particularly static, on Linux it depends "
-				 "on both glibc and openssl, furthermore you will need to have an xserver installed "
-				 "but not necessary running. See ");
+			"on both glibc and openssl, furthermore you will need to have an xserver installed "
+			"but not necessary running. You will need to have different fonts install including "
+			"xfonts-scalable (Type1).  See ");
 	o->link("http://code.google.com/p/wkhtmltopdf/wiki/static");
 	o->text(" for trouble shouting.");
 	o->endParagraph();
@@ -408,3 +415,11 @@ void CommandLineParserPrivate::outputStaticProblems(Outputter * o) const {
 
 
 //  LocalWords:  webkit bool unpatched beginList listItem endList WebKit http
+//  LocalWords:  stroustrup wkhtmltopdf commandlineparser hh QWebFrame param px
+//  LocalWords:  STRINGIZE outputter const beginSection beginParagraph QString
+//  LocalWords:  ifdef endif endParagraph endSection GPLv GPL Truelsen Mário td
+//  LocalWords:  Bouthenot PDF CSS username BNF frompage topage webpage toPage
+//  LocalWords:  html subst unescape subsubsection getElementsByClassName args
+//  LocalWords:  textContent onload readme stdin qapplication pdf cmds google
+//  LocalWords:  todo gcc openssl sudo dep libqt gui xorg wget xvf svn linux ps
+//  LocalWords:  PageSize enum eler glibc xserver xfonts
