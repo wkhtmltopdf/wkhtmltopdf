@@ -24,6 +24,10 @@
 #include <QWebSettings>
 #include <qapplication.h>
 #include <qfileinfo.h>
+#ifdef Q_OS_WIN32
+#include <io.h>
+#include <fcntl.h>
+#endif
  
 /*!
   \file pageconverter.hh
@@ -508,6 +512,9 @@ void PageConverterPrivate::printPage(bool ok) {
 	if (settings.out == "-" && lout != "/dev/stdout") {
 		QFile i(lout);
 		QFile o;
+#ifdef Q_OS_WIN32
+		_setmode(_fileno(stdout), _O_BINARY);
+#endif
 		if( !i.open(QIODevice::ReadOnly) || 
 			!o.open(stdout,QIODevice::WriteOnly) ||
 			!MultiPageLoader::copyFile(i,o) ) {
