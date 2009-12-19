@@ -229,37 +229,6 @@ EOF
     rm -rf ${BASE}/wkhtmltopdf.exe
     ${BUILD}/${UPX}/upx --best release/wkhtmltopdf.exe -o ${BASE}/wkhtmltopdf.exe || exit 1
 }
-    
-
-# fi
-# if [[ "$1" == "all" ]] || [[ "$1" == "win" ]]; then 
-# 	
-#       #Setup configuration for mingw
-# 	ln -s / "mingw/dosdevices/z:"
-# 	wine regedit tmp || exit 1
-# 	rm -f tmp
-
-# 	#Allowing the build to access files in the unix fs, is a bad idee.
-# 	rm -rf "mingw/dosdevices/z:"
-
-# 	echo "Building windows vertion of qt"
-# 	#Install mingw
-
-# 	#Unpack, configure and build windows qt
-
-#	cd qts
-# 	cd ..
-
-#         [ -d wkhtmltopdf ] || git clone ${BASE} wkhtmltopdf || (rm -rf wkhtmltopdf && exit 1)
-# 	cd wkhtmltopdf
-# 	git checkout master || exit 1
-# 	git pull || exit 1
-# 	if ! [ -z "$2" ] ; then
-# 	    git checkout $2 || exit 1
-# 	fi
-
-# fi
-
 
 case "$1" in
 'linux-local')
