@@ -7,7 +7,7 @@ if [[ $1 == "" ]] || [[ $2 == "" ]] || [[ $3 == "" ]]; then
 fi
 v="$1.$2.$3"
 if [[ "$4" != "" ]]; then
-    v="$v_$4"
+    v="${v}_$4"
 fi
 
 echo "About to release $v" 
