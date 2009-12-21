@@ -34,7 +34,8 @@ public:
 				"    body {width: 70em}\n"
 				"    .short {font-weight: bold; width:2em}\n"
 				"    .long {font-weight: bold; width: 15em}\n"
-				"    .arg {font-style: italic; width: 7em}\n"
+				"    .arg {font-style: italic; width: 12em}\n"
+				"    tr {vertical-align: top}\n"
 				"  </style>\n"
 				"</head><body>");
 	}
@@ -102,7 +103,7 @@ public:
 		fprintf(fd, "</td><td class=\"long\">--%s%s</td><td class=\"arg\">",S(h->longName),
 				(h->qthack?"<span style=\"font-weight: normal; font-size: 80%; color:red;\">*</span>":""));
 		foreach(const QString & arg, h->argn)
-			fprintf(fd, "&lt;%s&gt;",S(arg));
+			fprintf(fd, "&lt;%s&gt; ",S(arg));
 		fprintf(fd, "</td><td class=\"desc\">%s</td></tr>\n",S(h->getDesc()));
 	}
 
