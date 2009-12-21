@@ -96,6 +96,7 @@ Outline::~Outline() {delete d;}
   \param frame The frame containing the webpage
 */
 void Outline::addWebPage(const QString & name, QWebPrinter & wp, QWebFrame * frame) {
+	Q_UNUSED(name);
 	QMap< QPair<int, QPair<qreal,qreal> >, QWebElement> headings;
 	
 	foreach(const QWebElement & e, frame->findAllElements("h1,h2,h3,h4,h5,h6,h7,h8,h9")) {

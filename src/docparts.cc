@@ -286,9 +286,7 @@ void CommandLineParserPrivate::outputArgsFromStdin(Outputter * o) const {
 /*!
   Output information on how to compile
   \param o The outputter to output to
-  \todo Do a better explanation
 */
-#warning "explain what and why"
 void CommandLineParserPrivate::outputCompilation(Outputter * o) const {
 	o->beginSection("Compilation");
 	o->paragraph("It can happen that the static binary does not work for your system "
@@ -300,39 +298,37 @@ void CommandLineParserPrivate::outputCompilation(Outputter * o) const {
 	o->paragraph("Before compilation you will need to install dependencies: X11, gcc, "
 				 "git and openssl. On Debian/Ubuntu this can be done as follows:");
 	o->verbatim("sudo apt-get build-dep libqt4-gui libqt4-network libqt4-webkit\n"
-				"sudo apt-get install openssl build-essential xorg git-core git-doc\n");
-	o->paragraph("On other systems you must use your own package manager, the packages might be named differently.");
-	
-	o->paragraph("You now have 2 options either you can build the latest binary, or make a bleeding edge build");
-	
-	
+				"sudo apt-get install openssl build-essential xorg git-core git-doc libssl-dev\n");
+	o->paragraph("On other systems you must use your own package manager, the packages "
+				 "might be named differently.");
+	o->paragraph("First you must check out the modified version of QT");
+	o->verbatim("git clone git://gitorious.org/+wkhtml2pdf/qt/wkhtmltopdf-qt.git wkhtmltopdf-qt");
+	o->paragraph("Next you must configure, compile and install QT, note this will take "
+				 "quite some time, depending on what arguments you use to configure qt");
+	o->verbatim("cd wkhtmltopdf-qt\n"
+				"./configure -nomake tools,examples,demos,docs,translations -opensource -prefix ../wkqt\n"
+				"make -j3\n"
+				"make install\n"
+				"cd ..\n");
+	o->paragraph("All that is needed now is, to compile wkhtmltopdf.");
+	o->verbatim("git clone git://github.com/antialize/wkhtmltopdf.git wkhtmltopdf\n"
+				"cd wkhtmltopdf\n"
+				"../wkqt/bin/qmake\n"
+				"make -j3\n");
+	o->paragraph("You show now have a binary called wkhtmltopdf in the currently folder that "
+				 "you can use, you can optionally install it by running");
+	o->verbatim("make install");
 
-// 	Now you have two option either download the latest release source, or make a bleeding edge build from subversion
+	o->beginParagraph();
+	o->bold("Other operative systems and advanced features");
+	o->endParagraph();
 
-//     * Stable release build
-
-//       Download and extract the code by running
-
-// 		wget http://wkhtmltopdf.googlecode.com/files/wkhtmltopdf-0.8.3.tar.bz2
-
-//       tar -xvf wkhtmltopdf-0.8.3.tar.bz2
-
-//       ls -s wkhtmltopdf-0.8.3 wkhtmltopdf
-
-//       Be sure to change the version number to the latest
-//     * Subversion build
-
-// 		First you need to have subversion installed on Debian/Ubuntu:
-
-//       sudo aptitude install subversion
-
-//       Then download the source
-
-// 		svn checkout http://wkhtmltopdf.googlecode.com/svn/trunk/ wkhtmltopdf
-
-
-
-		
+	o->beginParagraph();
+	o->text("If you want more details or want to compile under other operative systems"
+			"other then GNU/Linux, please see");
+	o->link("http://code.google.com/p/wkhtmltopdf/wiki/compilation");
+	o->text(".");
+	o->endParagraph();
 	o->endSection();
 }
 
@@ -422,4 +418,5 @@ void CommandLineParserPrivate::outputStaticProblems(Outputter * o) const {
 //  LocalWords:  html subst unescape subsubsection getElementsByClassName args
 //  LocalWords:  textContent onload readme stdin qapplication pdf cmds google
 //  LocalWords:  todo gcc openssl sudo dep libqt gui xorg wget xvf svn linux ps
-//  LocalWords:  PageSize enum eler glibc xserver xfonts
+//  LocalWords:  PageSize enum eler glibc xserver xfonts libssl dev wkhtml cd
+//  LocalWords:  nomake opensource
