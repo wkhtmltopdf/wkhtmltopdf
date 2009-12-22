@@ -159,15 +159,15 @@ int main(int argc, char * argv[]) {
 	ProgressFeedback feedback(converter);
 	
 	if (!converter.convert())
-		exit(EXIT_FAILURE);
+		return EXIT_FAILURE;
 	switch(converter.httpErrorCode()) {
 	case 401:
-		exit(3);
+		return 3;
 	case 404: 
-		exit(2);
+		return 2;
 	case 0:
-		exit(EXIT_SUCCESS);
+		return EXIT_SUCCESS;
 	default:
-		exit(EXIT_FAILURE);
+		return EXIT_FAILURE;
 	}
 }

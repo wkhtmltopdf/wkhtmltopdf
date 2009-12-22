@@ -36,7 +36,7 @@ public:
 class MultiPageLoaderPrivate: public QObject {
 	Q_OBJECT
 public:
-	MyCookieJar cookieJar;
+	MyCookieJar * cookieJar;
 	MultiPageLoader & outer;
 	Settings & settings;
 	int httpErrorCode;

@@ -134,14 +134,16 @@ MultiPageLoaderPrivate::MultiPageLoaderPrivate(Settings & s, MultiPageLoader & o
 	connect(&networkAccessManager, SIGNAL(authenticationRequired(QNetworkReply*, QAuthenticator *)),this,
 	        SLOT(authenticationRequired(QNetworkReply *, QAuthenticator *)));
 
-	networkAccessManager.setCookieJar(&cookieJar);
+	cookieJar = new MyCookieJar();
+
+	networkAccessManager.setCookieJar(cookieJar);
 
 	if (!settings.cookieJar.isEmpty()) 
-		cookieJar.loadFromFile(settings.cookieJar);
+		cookieJar->loadFromFile(settings.cookieJar);
 	
 	typedef QPair<QString, QString> SSP;
 	foreach (const SSP & pair, settings.cookies)
-		cookieJar.addGlobalCookie(pair.first, pair.second);
+		cookieJar->addGlobalCookie(pair.first, pair.second);
 		
 	//If we must use a proxy, create a host of objects
 	if (!settings.proxy.host.isEmpty()) {
@@ -313,7 +315,7 @@ void MultiPageLoaderPrivate::loadFinished(bool ok) {
 void MultiPageLoaderPrivate::timedFinished() {
 	if(loadingPages == 0) {
 		if (!settings.cookieJar.isEmpty())
-			cookieJar.saveToFile(settings.cookieJar);
+			cookieJar->saveToFile(settings.cookieJar);
 		emit outer.loadFinished(!error);
 	}
 }
