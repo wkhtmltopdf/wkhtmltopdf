@@ -125,6 +125,7 @@ cd ../wkhtmltopdf
 
 echo "Building wkhtmltopdfe"
 ../qt/bin/qmake || exit 1
+make clean || exit 1
 make -j3 || exit 1
 strip wkhtmltopdf || exit 1
 EOF
@@ -224,6 +225,7 @@ EOF
 
     cd ../wkhtmltopdf
     wine ../qt/bin/qmake.exe wkhtmltopdf.pro -o Makefile -spec win32-g++ || exit 1
+    wine mingw32-make clean || exit 1
     wine mingw32-make -j3 || exit 1
     wine strip.exe release/wkhtmltopdf.exe || exit 1
     rm -rf ${BASE}/wkhtmltopdf.exe
