@@ -21,10 +21,22 @@
 #include <QNetworkAccessManager>
 #include <QNetworkReply>
 #include <QWebFrame>
+#include <QNetworkCookieJar>
+
+class MyCookieJar: public QNetworkCookieJar {
+private:
+	QList<QNetworkCookie> globalCookies;
+public:
+	void addGlobalCookie(const QString & name, const QString & value);
+	QList<QNetworkCookie> cookiesForUrl(const QUrl & url);
+	void loadFromFile(const QString & path);
+	void saveToFile(const QString & path);
+};
 
 class MultiPageLoaderPrivate: public QObject {
 	Q_OBJECT
 public:
+	MyCookieJar cookieJar;
 	MultiPageLoader & outer;
 	Settings & settings;
 	int httpErrorCode;

@@ -177,6 +177,11 @@ struct Settings {
 	QHash<QString, QString> customHeaders;
 	//! Should we read arguments from stdin
 	bool readArgsFromStdin;
+	//! Map of cookies
+	QHash<QString, QString> cookies;
+	//! Path of the cookie jar file
+	QString cookieJar;
+	
 
 	static QPrinter::PageSize strToPageSize(const char * s, bool * ok=0);
 	static QPair<qreal, QPrinter::Unit> strToUnitReal(const char * s, bool * ok=0);

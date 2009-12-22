@@ -116,9 +116,9 @@ public:
 /*!
   Putting values into a map
 */
-struct AHMapSetter: public ArgHandler {
+struct MapSetter: public ArgHandler {
 	QHash<QString, QString> & dst;
-	AHMapSetter(QHash<QString, QString> & a, QString keyName, QString valueName) : dst(a) {
+	MapSetter(QHash<QString, QString> & a, QString keyName, QString valueName) : dst(a) {
 		argn.push_back(keyName);
 		argn.push_back(valueName);
 	}
@@ -432,7 +432,7 @@ CommandLineParserPrivate::CommandLineParserPrivate(Settings & s):
 	addarg("proxy",'p',"Use a proxy", new ProxySetter(s.proxy, "proxy"));
 	addarg("username",0,"HTTP Authentication username", new QStrSetter(s.username, "username",""));
 	addarg("password",0,"HTTP Authentication password", new QStrSetter(s.password, "password",""));
-	addarg("custom-header",0,"Set an additional HTTP header (repeatable)", new AHMapSetter(s.customHeaders, "name", "value"));
+	addarg("custom-header",0,"Set an additional HTTP header (repeatable)", new MapSetter(s.customHeaders, "name", "value"));
 	qthack(true);
 	addarg("book",'b',"Set the options one would usually set when printing a book", new Caller<BookFunc>());
 	addarg("cover",0,"Use html document as cover. It will be inserted before the toc with no headers and footers",new QStrSetter(s.cover,"url",""));
@@ -458,6 +458,8 @@ CommandLineParserPrivate::CommandLineParserPrivate(Settings & s):
 	addarg("enable-plugins",0,"Enable installed plugins (such as flash", new ConstSetter<bool>(s.enablePlugins,true,false));
 	addarg("zoom",0,"Use this zoom factor", new FloatSetter(s.zoomFactor,"float",1.0));
 	addarg("read-args-from-stdin",0,"Read command line arguments from stdin", new ConstSetter<bool>(s.readArgsFromStdin,true,false));
+	addarg("cookie-jar", 0, "Read and write cookies from and to the supplied cookie jar file", new QStrSetter(s.cookieJar, "path", "") );
+	addarg("cookie",0,"Set an additional cookie (repeatable)", new MapSetter(s.cookies, "name", "value"));
 
 	qthack(true);
 	addarg("disable-internal-links",0,"Do no make local links", new ConstSetter<bool>(s.useLocalLinks,false,true));

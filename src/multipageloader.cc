@@ -17,6 +17,7 @@
 #include <QFile>
 #include <QFileInfo>
 #include <QTimer>
+#include <QNetworkCookie>
 
 /*!
   \file multipageloader.hh
@@ -27,6 +28,32 @@
   \file multipageloader_p.hh
   \brief Defines the MultiPageLoaderPrivate class
 */
+
+void MyCookieJar::addGlobalCookie(const QString & name, const QString & value) {
+	globalCookies.append(QNetworkCookie(name.toUtf8(), value.toUtf8()));
+}
+
+QList<QNetworkCookie> MyCookieJar::cookiesForUrl(const QUrl & url) {
+	QList<QNetworkCookie> list = QNetworkCookieJar::cookiesForUrl(url);
+	list.append(globalCookies);
+	return list;
+}
+
+void MyCookieJar::loadFromFile(const QString & path) {
+	QFile cookieJar(path);
+	if (cookieJar.open(QIODevice::ReadOnly | QIODevice::Text) )
+		setAllCookies(QNetworkCookie::parseCookies(cookieJar.readAll()));
+}
+
+void MyCookieJar::saveToFile(const QString & path) {
+	QFile cookieJar(path);
+	if (cookieJar.open(QIODevice::WriteOnly | QIODevice::Text) )
+		foreach (const QNetworkCookie & cookie, allCookies()) {
+			cookieJar.write(cookie.toRawForm());
+			cookieJar.write(";\n");
+		}
+}
+
 
 /*!
  * Track and handle network errors
@@ -106,7 +133,15 @@ MultiPageLoaderPrivate::MultiPageLoaderPrivate(Settings & s, MultiPageLoader & o
 	connect(&networkAccessManager, SIGNAL(authenticationRequired(QNetworkReply*, QAuthenticator *)),this,
 	        SLOT(authenticationRequired(QNetworkReply *, QAuthenticator *)));
 
-		//If we must use a proxy, create a host of objects
+	networkAccessManager.setCookieJar(&cookieJar);
+
+	if (!settings.cookieJar.isEmpty()) 
+		cookieJar.loadFromFile(settings.cookieJar);
+	
+	foreach (const QString & name, settings.cookies )
+		cookieJar.addGlobalCookie(name, settings.cookies[name]);
+		
+	//If we must use a proxy, create a host of objects
 	if (!settings.proxy.host.isEmpty()) {
 		QNetworkProxy proxy;
 		proxy.setHostName(settings.proxy.host);
@@ -233,8 +268,11 @@ void MultiPageLoaderPrivate::loadFinished(bool ok) {
 }
 
 void MultiPageLoaderPrivate::timedFinished() {
-	if(loadingPages == 0) 
+	if(loadingPages == 0) {
+		if (!settings.cookieJar.isEmpty())
+			cookieJar.saveToFile(settings.cookieJar);
 		emit outer.loadFinished(!error);
+	}
 }
 
 /*!
