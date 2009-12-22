@@ -112,24 +112,44 @@ public:
 	}
 };
 
+struct StringPairCreator {
+	typedef QPair<QString, QString> T;
+	inline T operator()(const QString & key, const QString & value) const {
+		return T(key, value);
+	}
+};
+
+template <bool file> 
+struct PostItemCreator {
+	typedef typename Settings::PostItem T;
+	inline T operator()(const QString & key, const QString & value) const {
+		T p;
+		p.name = key;
+		p.value = value;
+		p.file = file;
+		return p;
+	}
+};
 
 /*!
   Putting values into a map
 */
+template <typename T=StringPairCreator>
 struct MapSetter: public ArgHandler {
-	QHash<QString, QString> & dst;
-	MapSetter(QHash<QString, QString> & a, QString keyName, QString valueName) : dst(a) {
+	QList< typename T::T > & dst;
+	MapSetter(QList<typename T::T > & a, QString keyName, QString valueName) : dst(a) {
 		argn.push_back(keyName);
 		argn.push_back(valueName);
 	}
 	virtual bool operator() (const char ** args, CommandLineParserPrivate &) {
-		dst[QString(args[0])] = QString(args[1]);
+		dst.append( T()(args[0], args[1]) );
 		return true;
 	}
 	virtual void useDefault() {
 		dst.clear();
 	}
 };
+
 
 /*!
   SomeSetter template method base
@@ -432,7 +452,7 @@ CommandLineParserPrivate::CommandLineParserPrivate(Settings & s):
 	addarg("proxy",'p',"Use a proxy", new ProxySetter(s.proxy, "proxy"));
 	addarg("username",0,"HTTP Authentication username", new QStrSetter(s.username, "username",""));
 	addarg("password",0,"HTTP Authentication password", new QStrSetter(s.password, "password",""));
-	addarg("custom-header",0,"Set an additional HTTP header (repeatable)", new MapSetter(s.customHeaders, "name", "value"));
+	addarg("custom-header",0,"Set an additional HTTP header (repeatable)", new MapSetter<>(s.customHeaders, "name", "value"));
 	qthack(true);
 	addarg("book",'b',"Set the options one would usually set when printing a book", new Caller<BookFunc>());
 	addarg("cover",0,"Use html document as cover. It will be inserted before the toc with no headers and footers",new QStrSetter(s.cover,"url",""));
@@ -459,7 +479,10 @@ CommandLineParserPrivate::CommandLineParserPrivate(Settings & s):
 	addarg("zoom",0,"Use this zoom factor", new FloatSetter(s.zoomFactor,"float",1.0));
 	addarg("read-args-from-stdin",0,"Read command line arguments from stdin", new ConstSetter<bool>(s.readArgsFromStdin,true,false));
 	addarg("cookie-jar", 0, "Read and write cookies from and to the supplied cookie jar file", new QStrSetter(s.cookieJar, "path", "") );
-	addarg("cookie",0,"Set an additional cookie (repeatable)", new MapSetter(s.cookies, "name", "value"));
+	addarg("cookie",0,"Set an additional cookie (repeatable)", new MapSetter<>(s.cookies, "name", "value"));
+
+	addarg("post", 0, "Add an additional post field (repeatable)", new MapSetter<PostItemCreator<false> >(s.post, "name", "value"));
+	addarg("post-file", 0, "Post an aditional file (repeatable)", new MapSetter<PostItemCreator<true> >(s.post, "name", "path"));
 
 	qthack(true);
 	addarg("disable-internal-links",0,"Do no make local links", new ConstSetter<bool>(s.useLocalLinks,false,true));

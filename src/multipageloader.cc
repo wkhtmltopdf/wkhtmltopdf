@@ -18,6 +18,7 @@
 #include <QFileInfo>
 #include <QTimer>
 #include <QNetworkCookie>
+#include <QUuid>
 
 /*!
   \file multipageloader.hh
@@ -138,8 +139,9 @@ MultiPageLoaderPrivate::MultiPageLoaderPrivate(Settings & s, MultiPageLoader & o
 	if (!settings.cookieJar.isEmpty()) 
 		cookieJar.loadFromFile(settings.cookieJar);
 	
-	foreach (const QString & name, settings.cookies )
-		cookieJar.addGlobalCookie(name, settings.cookies[name]);
+	typedef QPair<QString, QString> SSP;
+	foreach (const SSP & pair, settings.cookies)
+		cookieJar.addGlobalCookie(pair.first, pair.second);
 		
 	//If we must use a proxy, create a host of objects
 	if (!settings.proxy.host.isEmpty()) {
@@ -193,11 +195,52 @@ void MultiPageLoaderPrivate::load() {
 	loadStartedEmitted=false;
 	error=false;
 	loadingPages=0;
-	for(int i=0; i < pages.size(); ++i) {
+
+	QString boundary = QUuid::createUuid().toString().remove('-').remove('{').remove('}');
+	QByteArray postData;
+	
+	foreach (const Settings::PostItem & pi, settings.post) {
+		//TODO escape values here
+		postData.append("--");
+		postData.append(boundary);
+		postData.append("\ncontent-disposition: form-data; name=\"");
+		postData.append(pi.name);
+		postData.append('\"');
+		if (pi.file) {
+			QFile f(pi.value);
+			if (!f.open(QIODevice::ReadOnly) ) {
+				emit outer.error(QString("Unable to open file ")+pi.value);
+				fail();
+			}
+			postData.append("; filename=\"");
+			postData.append( QFileInfo(pi.value).fileName());
+			postData.append("\"\n\n");
+			postData.append( f.readAll() );
+			//TODO ADD MIME TYPE
+		} else {
+			postData.append("\n\n");
+			postData.append(pi.value);
+		}
+		postData.append('\n');
+	}
+	if (!postData.isEmpty()) {
+		postData.append("--");
+		postData.append(boundary);
+		postData.append("--\n");
+	}
+
+	for (int i=0; i < pages.size(); ++i) {
 		QNetworkRequest r = QNetworkRequest(urls[i]);
-		for(QHash<QString, QString>::const_iterator j = settings.customHeaders.constBegin(); j != settings.customHeaders.constEnd(); ++j)
-			r.setRawHeader(j.key().toAscii(), j.value().toAscii());
-		pages[i]->mainFrame()->load(r);
+		typedef QPair<QString, QString> HT;
+		foreach (const HT & j, settings.customHeaders)
+			r.setRawHeader(j.first.toAscii(), j.second.toAscii());
+	
+		if (postData.isEmpty())
+			pages[i]->mainFrame()->load(r);
+		else {
+			r.setHeader(QNetworkRequest::ContentTypeHeader, QString("multipart/form-data, boundary=")+boundary);
+			pages[i]->mainFrame()->load(r, QNetworkAccessManager::PostOperation, postData);
+		}
 	}	
 }
 

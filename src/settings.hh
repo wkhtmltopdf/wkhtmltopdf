@@ -81,6 +81,12 @@ struct Settings {
 		//! Password for the said proxy or NULL
 		QString password; 
 	};
+
+	struct PostItem {
+		QString name;
+		QString value;
+		bool file;
+	};
 	
 	/*! \brief Settings consdering margins */
 	struct MarginSettings {
@@ -174,14 +180,15 @@ struct Settings {
 	//! The file where in to store the output
 	QString out;
 	//! Map of custum header valiabels
-	QHash<QString, QString> customHeaders;
+	QList< QPair<QString, QString> > customHeaders;
 	//! Should we read arguments from stdin
 	bool readArgsFromStdin;
 	//! Map of cookies
-	QHash<QString, QString> cookies;
+	QList< QPair<QString, QString> > cookies;
 	//! Path of the cookie jar file
 	QString cookieJar;
 	
+	QList< PostItem > post;
 
 	static QPrinter::PageSize strToPageSize(const char * s, bool * ok=0);
 	static QPair<qreal, QPrinter::Unit> strToUnitReal(const char * s, bool * ok=0);
