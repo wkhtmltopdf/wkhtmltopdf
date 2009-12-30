@@ -402,7 +402,7 @@ void CommandLineParserPrivate::outputStaticProblems(Outputter * o) const {
 	o->text("Unfortunately the static binary is not particularly static, on Linux it depends "
 			"on both glibc and openssl, furthermore you will need to have an xserver installed "
 			"but not necessary running. You will need to have different fonts install including "
-			"xfonts-scalable (Type1).  See ");
+			"xfonts-scalable (Type1), and msttcorefonts.  See ");
 	o->link("http://code.google.com/p/wkhtmltopdf/wiki/static");
 	o->text(" for trouble shouting.");
 	o->endParagraph();
