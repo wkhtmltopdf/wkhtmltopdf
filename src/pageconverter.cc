@@ -307,6 +307,7 @@ void PageConverterPrivate::preparePrint(bool ok) {
 	headers.clear();
 	footers.clear();
 	if(!settings.header.htmlUrl.isEmpty() || !settings.footer.htmlUrl.isEmpty()) {
+		QWebSettings::globalSettings()->setAttribute(QWebSettings::JavascriptEnabled, true);
 		currentPhase = 3;
 		emit outer.phaseChanged();
 		for(int p=0; p < outline->pageCount(); ++p) {
