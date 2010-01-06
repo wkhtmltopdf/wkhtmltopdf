@@ -452,7 +452,6 @@ CommandLineParserPrivate::CommandLineParserPrivate(Settings & s):
 	addarg("proxy",'p',"Use a proxy", new ProxySetter(s.proxy, "proxy"));
 	addarg("username",0,"HTTP Authentication username", new QStrSetter(s.username, "username",""));
 	addarg("password",0,"HTTP Authentication password", new QStrSetter(s.password, "password",""));
-	addarg("custom-header",0,"Set an additional HTTP header (repeatable)", new MapSetter<>(s.customHeaders, "name", "value"));
 	qthack(true);
 	addarg("book",'b',"Set the options one would usually set when printing a book", new Caller<BookFunc>());
 	addarg("cover",0,"Use html document as cover. It will be inserted before the toc with no headers and footers",new QStrSetter(s.cover,"url",""));
@@ -461,6 +460,7 @@ CommandLineParserPrivate::CommandLineParserPrivate(Settings & s):
 	qthack(false);
 	
 	extended(true);
+	addarg("custom-header",0,"Set an additional HTTP header (repeatable)", new MapSetter<>(s.customHeaders, "name", "value"));
 	addarg("manpage", 0, "Output program man page", new Caller<ManPageFunc>());
 	addarg("htmldoc", 0, "Output program html help", new Caller<ReadmeFunc<true> >());
 	addarg("readme", 0, "Output program readme", new Caller<ReadmeFunc<false> >());
@@ -483,13 +483,13 @@ CommandLineParserPrivate::CommandLineParserPrivate(Settings & s):
 
 	addarg("post", 0, "Add an additional post field (repeatable)", new MapSetter<PostItemCreator<false> >(s.post, "name", "value"));
 	addarg("post-file", 0, "Post an aditional file (repeatable)", new MapSetter<PostItemCreator<true> >(s.post, "name", "path"));
-
 	qthack(true);
 	addarg("disable-internal-links",0,"Do no make local links", new ConstSetter<bool>(s.useLocalLinks,false,true));
 	addarg("disable-external-links",0,"Do no make links to remote web pages", new ConstSetter<bool>(s.useExternalLinks,false,true));
 	addarg("print-media-type",0,"Use print media-type instead of screen", new ConstSetter<bool>(s.printMediaType,true,false));
 	addarg("page-offset",0,"Set the starting page number", new IntSetter(s.pageOffset,"offset",1));
 	addarg("disable-smart-shrinking", 0, "Disable the intelligent shrinking strategy used by WebKit that makes the pixel/dpi ratio none constant",new ConstSetter<bool>(s.enableIntelligentShrinking, false, true));
+	addarg("replace",0, "Replace [name] with value in header and footer (repeatable)", new MapSetter<>(s.replacements, "name", "value"));
 #ifdef Q_WS_X11
 	addarg("use-xserver",0,"Use the X server (some plugins and other stuff might not work without X11)", new ConstSetter<bool>(s.useGraphics,true,false));
 #endif
