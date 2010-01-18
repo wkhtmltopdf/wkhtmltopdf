@@ -39,6 +39,11 @@
   \brief Defines the PageConverterPrivate class
 */
 
+bool looksLikeHtmlAndNotAUrl(QString str) {
+	QString s = str.split("?")[0];
+	return s.count('<') > 0 || s.count('<') > 0;
+}
+
 PageConverterPrivate::PageConverterPrivate(Settings & s, PageConverter & o) :
 	settings(s), pageLoader(s),
 	outer(o), printer(0), painter(0)
@@ -122,6 +127,18 @@ void PageConverterPrivate::beginConvert() {
 
   	if (!settings.cover.isEmpty())
 		settings.in.push_front(settings.cover);
+
+	if (!settings.header.htmlUrl.isEmpty() && looksLikeHtmlAndNotAUrl(settings.header.htmlUrl)) {
+		emit outer.error("--header-html should be a URL and not a string containing HTML code.");
+		fail();
+		return;
+	}
+
+	if (!settings.footer.htmlUrl.isEmpty() && looksLikeHtmlAndNotAUrl(settings.footer.htmlUrl)) {
+		emit outer.error("--header-html should be a URL and not a string containing HTML code.");
+		fail();
+		return;
+	}
 	
 #ifndef __EXTENSIVE_WKHTMLTOPDF_QT_HACK__	
 	if (settings.in.size() > 1) {
