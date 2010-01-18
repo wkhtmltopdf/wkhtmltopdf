@@ -51,6 +51,8 @@ public:
 
 	QList<int> progressList;
 	QList<bool> finishedList;
+	QList<bool> signalPrintList;
+	int signalPrintSum;
 	int progressSum;
 	int finishedSum;
 	bool loadStartedEmitted;
@@ -73,4 +75,5 @@ public slots:
 	void sslErrors(QNetworkReply *reply, const QList<QSslError> &);
 	void amfinished(QNetworkReply * reply);
 	void authenticationRequired(QNetworkReply *reply, QAuthenticator *authenticator);
+	void printRequested(QWebFrame * frame);
 };

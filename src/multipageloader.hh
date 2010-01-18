@@ -37,6 +37,7 @@ public slots:
 	void clearResources();
 	void cancel();
 signals:
+	void printRequested(QWebFrame * frame);
 	void loadFinished(bool ok);
 	void loadProgress(int progress);
 	void loadStarted();

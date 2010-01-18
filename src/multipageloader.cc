@@ -183,9 +183,11 @@ QWebPage * MultiPageLoaderPrivate::addResource(const QUrl & url) {
 	connect(page, SIGNAL(loadStarted()), this, SLOT(loadStarted()));
 	connect(page, SIGNAL(loadProgress(int)), this, SLOT(loadProgress(int)));
 	connect(page, SIGNAL(loadFinished(bool)), this, SLOT(loadFinished(bool)));
+	connect(page, SIGNAL(printRequested(QWebFrame*)), this, SLOT(printRequested(QWebFrame*)));
 
 	progressList.push_back(0);
 	finishedList.push_back(false);
+	signalPrintList.push_back(false);
 	return page;
 }
 	
@@ -194,6 +196,7 @@ void MultiPageLoaderPrivate::load() {
 	loginTry = 0;
 	progressSum=0;
 	finishedSum=0;
+	signalPrintSum=0;
 	loadStartedEmitted=false;
 	error=false;
 	loadingPages=0;
@@ -293,7 +296,6 @@ void MultiPageLoaderPrivate::loadProgress(int progress) {
 }
 
 void MultiPageLoaderPrivate::loadFinished(bool ok) {
-
 	loadingPages--;
 	error = error || !ok;
 	if (!pageToIndex.count(QObject::sender())) return;
@@ -308,8 +310,21 @@ void MultiPageLoaderPrivate::loadFinished(bool ok) {
 		finishedSum += 1;
 	}
 
-	if (finishedSum == finishedList.size())
+	if (signalPrintSum == signalPrintList.size()) 
+		timedFinished();
+	else if (finishedSum == finishedList.size())
 		QTimer::singleShot(settings.jsredirectwait, this, SLOT(timedFinished()));
+}
+
+void MultiPageLoaderPrivate::printRequested(QWebFrame *) {
+	if (!pageToIndex.count(QObject::sender())) return;
+	int idx=pageToIndex[QObject::sender()];
+	if (!signalPrintList[idx]) {
+		signalPrintList[idx] = true;
+		signalPrintSum += 1;
+	}
+	if (signalPrintSum == signalPrintList.size()) 
+		timedFinished();
 }
 
 void MultiPageLoaderPrivate::timedFinished() {
