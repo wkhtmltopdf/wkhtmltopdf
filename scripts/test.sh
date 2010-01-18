@@ -117,6 +117,12 @@ function testJSRedirect() {
 	pdftotext tmp.pdf /dev/stdout | grep -q Right) && good JSRedicet || bad JSRedirect
 }
 
+function testServersideRedirect() {
+    wk http://madalgo.au.dk/~jakobt/redirect.php tmp.pdf
+    ([ -f tmp.pdf ] && 
+	pdftotext tmp.pdf /dev/stdout | grep -q Right) && good ServersideRedicet || bad ServersideRedirect
+}
+
 function test404() {
     wk http://madalgo.au.dk/~jakobt/nosuchfile.nsf tmp.pdf && bad 404 || good 404
 }
@@ -194,6 +200,7 @@ testImgSupport png
 #testImgSupport mng
 #testImgSupport tiff
 testJSRedirect
+testServersideRedirect
 test404
 testBadDest
 testBadSource
