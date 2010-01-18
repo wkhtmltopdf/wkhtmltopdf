@@ -365,7 +365,7 @@ void PageConverterPrivate::endPage(bool actual, bool hasHeaderFooter) {
 		
 		spacing = settings.footer.spacing * printer->height() / printer->heightMM();
 		//IF needed draw the footer line
-		if (settings.footer.line) painter->drawLine(0, h + spacing, w, h);
+		if (settings.footer.line) painter->drawLine(0, h + spacing, w, h + spacing);
 		//Guess the height of the footer text
 		painter->setFont(QFont(settings.footer.fontName, settings.footer.fontSize));
 		dy = painter->boundingRect(0, 0, w, h, Qt::AlignTop, "M").height();

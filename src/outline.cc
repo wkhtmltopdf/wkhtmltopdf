@@ -157,7 +157,7 @@ void OutlinePrivate::buildHFCache(OutlineItem * i, int level) {
 void Outline::fillHeaderFooterParms(int page, QHash<QString, QString> & parms) {
 	//Build hfcache
 	if (d->hfCache.size() == 0) {
-		for(int i=0; i < 3; ++i) {
+		for (int i=0; i < 3; ++i) {
 			QList< OutlineItem *> x;
 			x.push_back(NULL);
 			d->hfCache.push_back(x);
@@ -165,11 +165,15 @@ void Outline::fillHeaderFooterParms(int page, QHash<QString, QString> & parms) {
 		foreach (OutlineItem * i, d->documentOutlines) 
 			d->buildHFCache(i, 0);
 	}
-	for(int i=0; i < 3; ++i)
-		while(d->hfCache[i].size() <= page) 
+	for (int i=0; i < 3; ++i)
+		while (d->hfCache[i].size() <= page) 
 			d->hfCache[i].push_back(d->hfCache[i].back());
 
 	int off = d->settings.pageOffset;
+	typedef QPair<QString,QString> SP;
+	foreach (const SP & rep, d->settings.replacements) 
+		parms[rep.first] = rep.second;
+		
 	parms["frompage"] = QString::number(off);
 	parms["topage"] = QString::number(off+d->pageCount-1);
 	parms["page" ] = QString::number(page+off-1);

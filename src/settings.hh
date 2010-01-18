@@ -185,6 +185,8 @@ struct Settings {
 	bool readArgsFromStdin;
 	//! Map of cookies
 	QList< QPair<QString, QString> > cookies;
+	//! Replacements
+	QList< QPair<QString, QString> > replacements;
 	//! Path of the cookie jar file
 	QString cookieJar;
 	

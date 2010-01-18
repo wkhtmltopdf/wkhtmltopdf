@@ -26,6 +26,9 @@
   \brief Defines the CommandLineParserPrivate, ArgHandler and Outputter class
 */
 
+bool ahsort(const ArgHandler * a, const ArgHandler * b) {
+	return a->longName < b->longName;
+}
 
 /*!
   Output description of switches to an outputter
@@ -45,6 +48,7 @@ void CommandLineParserPrivate::outputSwitches(Outputter * o, bool extended, bool
 			if(!extended && handler->extended) continue;
 			display.push_back(handler);
 		}
+		qSort(display.begin(), display.end(), ahsort);
 		if(display.size() == 0) continue;
 		o->beginSection(section);
 		if(!sectionDesc[section].isEmpty()) {
