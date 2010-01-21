@@ -161,6 +161,19 @@ function testCustomHeader() {
 	pdftotext tmp.pdf /dev/stdout | grep -q hello) && good CustomHeader || bad CustomHeader
 }
 
+function testCookies() {
+    rm -rf tmp.jar tmp.pdf tmp2.pdf
+    wk --cookie mykey myvalue1 --cookie mykey2 myvalue2 --cookie-jar tmp.jar http://cs.au.dk/~jakobt/cookie.php tmp.pdf
+    wk --cookie-jar tmp.jar http://cs.au.dk/~jakobt/cookie.php tmp2.pdf
+    (   [ -f tmp.pdf ] &&
+	pdftotext tmp.pdf /dev/stdout | grep -q "mykey:myvalue1;" &&
+	pdftotext tmp.pdf /dev/stdout | grep -q "mykey2:myvalue2;" &&
+	[ -f tmp2.pdf ] &&
+	pdftotext tmp2.pdf /dev/stdout | grep -q "writetest:success;") &&
+    good Cookies || bad Cookies
+}
+
+
 function testBuild() {
     rm -rf wkhtmltopdf
     (cd .. && git checkout-index --prefix=./test/wkhtmltopdf/ -a) || (bad "Build $1 (1)" && return 1)
@@ -189,6 +202,7 @@ EOF
 }
 
 good TestTest
+testCookies
 testLocalFileSupport
 testPipeInSupport
 testPipeOutSupport 

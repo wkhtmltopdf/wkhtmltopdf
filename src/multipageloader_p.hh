@@ -28,7 +28,7 @@ private:
 	QList<QNetworkCookie> globalCookies;
 public:
 	void addGlobalCookie(const QString & name, const QString & value);
-	QList<QNetworkCookie> cookiesForUrl(const QUrl & url);
+	QList<QNetworkCookie> cookiesForUrl(const QUrl & url) const;
 	void loadFromFile(const QString & path);
 	void saveToFile(const QString & path);
 };

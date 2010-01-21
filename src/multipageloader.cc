@@ -34,7 +34,7 @@ void MyCookieJar::addGlobalCookie(const QString & name, const QString & value) {
 	globalCookies.append(QNetworkCookie(name.toUtf8(), value.toUtf8()));
 }
 
-QList<QNetworkCookie> MyCookieJar::cookiesForUrl(const QUrl & url) {
+QList<QNetworkCookie> MyCookieJar::cookiesForUrl(const QUrl & url) const {
 	QList<QNetworkCookie> list = QNetworkCookieJar::cookiesForUrl(url);
 	list.append(globalCookies);
 	return list;
