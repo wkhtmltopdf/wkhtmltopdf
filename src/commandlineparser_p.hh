@@ -84,6 +84,7 @@ public:
 	void addarg(QString, char, QString, ArgHandler * h, bool display=true);
 
 	//docparts.cc
+	void outputManName(Outputter * o) const;
 	void outputName(Outputter * o) const;
 	void outputLicense(Outputter * o) const;
 	void outputAuthors(Outputter * o) const;

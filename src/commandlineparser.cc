@@ -70,7 +70,7 @@ void CommandLineParserPrivate::outputSwitches(Outputter * o, bool extended, bool
 */
 void CommandLineParserPrivate::manpage(FILE * fd) const {
 	Outputter * o = Outputter::man(fd);
- 	outputName(o);
+ 	outputManName(o);
  	outputSynopsis(o);
  	outputDescripton(o);
 	outputSwitches(o, true, false);

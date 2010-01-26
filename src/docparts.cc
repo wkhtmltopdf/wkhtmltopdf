@@ -25,16 +25,18 @@
 */
 void CommandLineParserPrivate::outputName(Outputter * o) const {
 	o->beginSection("Name");
-	o->beginParagraph();
-	o->text(QString("wkhtmltopdf ")+QString::number(MAJOR_VERSION)+"."+QString::number(MINOR_VERSION)+"."+QString::number(PATCH_VERSION)+(QString(STRINGIZE(BUILD)).isEmpty()?"":" ")+STRINGIZE(BUILD));
-	o->text(", ");
-#ifdef __EXTENSIVE_WKHTMLTOPDF_QT_HACK__
-	o->text("using wkhtmltopdf patched qt.");
-#else
-	o->bold("not");
-	o->text(" using wkhtmltopdf patched qt.");
-#endif
-	o->endParagraph();
+	o->paragraph(QString("wkhtmltopdf ")+QString::number(MAJOR_VERSION)+"."+QString::number(MINOR_VERSION)+"."+QString::number(PATCH_VERSION)+(QString(STRINGIZE(BUILD)).isEmpty()?"":" ")+STRINGIZE(BUILD));
+	o->endSection();
+}
+
+
+/*!
+  Output name and a short description
+  \param o The outputter to output to
+*/
+void CommandLineParserPrivate::outputManName(Outputter * o) const {
+	o->beginSection("Name");
+	o->paragraph("wkhtmltopdf - html to pdf converter");
 	o->endSection();
 }
 
@@ -83,8 +85,15 @@ void CommandLineParserPrivate::outputSynopsis(Outputter * o) const {
 */
 void CommandLineParserPrivate::outputDescripton(Outputter * o) const {
 	o->beginSection("Description");
-	o->paragraph(
-		"Converts one or more HTML pages into a PDF document.");
+	o->beginParagraph();
+	o->text("Converts one or more HTML pages into a PDF document, ");
+#ifdef __EXTENSIVE_WKHTMLTOPDF_QT_HACK__
+	o->text("using wkhtmltopdf patched qt.");
+#else
+	o->bold("not");
+	o->text(" using wkhtmltopdf patched qt.");
+#endif
+	o->endParagraph();
 	o->endSection();
 }
 

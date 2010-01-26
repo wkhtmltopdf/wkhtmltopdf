@@ -15,7 +15,7 @@
 // along with wkhtmltopdf.  If not, see <http://www.gnu.org/licenses/>.
 #include "commandlineparser_p.hh"
 #include <QStringList>
-#define S(x) ((x).toLocal8Bit().constData())
+#define S(x) ((x).toUtf8().constData())
 
 class ManOutputter: public Outputter {
 private:
@@ -42,7 +42,8 @@ public:
 	}
 	
 	void text(const QString & t) {
-		fprintf(fd, "%s", S(t));
+		QString str = QString(t).replace("-", "\\-");
+		fprintf(fd, "%s", S(str));
 	}
 	
 	void bold(const QString & t) {
@@ -58,7 +59,8 @@ public:
 	}
 
 	void verbatim(const QString & t) {
-		QStringList l = t.split('\n');
+		QString str = QString(t).replace("-", "\\-");
+		QStringList l = str.split('\n');
 		while ( l.back() == "") l.pop_back();
 		foreach(const QString & line, l)
 			fprintf(fd, "  %s\n", S(line));
