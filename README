@@ -1,4 +1,4 @@
-==========================> wkhtmltopdf 0.9.0 Manual <==========================
+==========================> wkhtmltopdf 0.9.1 Manual <==========================
 This file documents wkhtmltopdf, a program capable of converting html documents
 into PDF documents.
 
@@ -43,71 +43,73 @@ Bouthenot.
 wkhtmltopdf [OPTIONS]... <input file> [More input files] <output file>
 
 ==============================> General Options <===============================
--h, --help                            Display help
--q, --quiet                           Be less verbose
--V, --version                         Output version information an exit
-    --extended-help                   Display more extensive help, detailing
-                                      less common command switches
-    --collate                         Collate when printing multiple copies
-    --copies <number>                 Number of copies to print into the pdf
-                                      file (default 1)
--O, --orientation <orientation>       Set orientation to Landscape or Portrait
--s, --page-size <size>                Set paper size to: A4, Letter, etc.
--p, --proxy <proxy>                   Use a proxy
-    --username <username>             HTTP Authentication username
-    --password <password>             HTTP Authentication password
-    --custom-header <name> <value>    Set an additional HTTP header (repeatable)
 -b, --book *                          Set the options one would usually set when
                                       printing a book
+    --collate                         Collate when printing multiple copies
+    --cookie <name> <value>           Set an additional cookie (repeatable)
+    --cookie-jar <path>               Read and write cookies from and to the
+                                      supplied cookie jar file
+    --copies <number>                 Number of copies to print into the pdf
+                                      file (default 1)
     --cover * <url>                   Use html document as cover. It will be
                                       inserted before the toc with no headers
                                       and footers
+    --custom-header <name> <value>    Set an additional HTTP header (repeatable)
 -H, --default-header *                Add a default header, with the name of the
                                       page to the left, and the page number to
                                       the right, this is short for:
                                       --header-left='[webpage]'
                                       --header-right='[page]/[toPage]' --top 2cm
                                       --header-line
--t, --toc *                           Insert a table of content in the beginning
-                                      of the document
-    --manpage                         Output program man page
-    --htmldoc                         Output program html help
-    --readme                          Output program readme
+    --disable-external-links *        Do no make links to remote web pages
+    --disable-internal-links *        Do no make local links
+-n, --disable-javascript              Do not allow web pages to run javascript
+    --disable-smart-shrinking *       Disable the intelligent shrinking strategy
+                                      used by WebKit that makes the pixel/dpi
+                                      ratio none constant
 -d, --dpi <dpi>                       Change the dpi explicitly (this has no
                                       effect on X11 based systems)
-    --page-height <unitreal>          Page height (default unit millimeter)
-    --page-width <unitreal>           Page width  (default unit millimeter)
--n, --disable-javascript              Do not allow web pages to run javascript
+    --enable-plugins                  Enable installed plugins (such as flash
+    --encoding <encoding>             Set the default text encoding, for input
+    --extended-help                   Display more extensive help, detailing
+                                      less common command switches
 -g, --grayscale                       PDF will be generated in grayscale
+-h, --help                            Display help
+    --htmldoc                         Output program html help
 -l, --lowquality                      Generates lower quality pdf/ps. Useful to
                                       shrink the result document space
+    --manpage                         Output program man page
 -B, --margin-bottom <unitreal>        Set the page bottom margin (default 10mm)
 -L, --margin-left <unitreal>          Set the page left margin (default 10mm)
 -R, --margin-right <unitreal>         Set the page right margin (default 10mm)
 -T, --margin-top <unitreal>           Set the page top margin (default 10mm)
-    --redirect-delay <msec>           Wait some milliseconds for js-redirects
-                                      (default 200)
-    --enable-plugins                  Enable installed plugins (such as flash
-    --zoom <float>                    Use this zoom factor (default 1)
-    --read-args-from-stdin            Read command line arguments from stdin
-    --cookie-jar <path>               Read and write cookies from and to the
-                                      supplied cookie jar file
-    --cookie <name> <value>           Set an additional cookie (repeatable)
+    --no-background                   Do not print background
+-O, --orientation <orientation>       Set orientation to Landscape or Portrait
+    --page-height <unitreal>          Page height (default unit millimeter)
+    --page-offset * <offset>          Set the starting page number (default 1)
+-s, --page-size <size>                Set paper size to: A4, Letter, etc.
+    --page-width <unitreal>           Page width  (default unit millimeter)
+    --password <password>             HTTP Authentication password
     --post <name> <value>             Add an additional post field (repeatable)
     --post-file <name> <path>         Post an aditional file (repeatable)
-    --disable-internal-links *        Do no make local links
-    --disable-external-links *        Do no make links to remote web pages
     --print-media-type *              Use print media-type instead of screen
-    --page-offset * <offset>          Set the starting page number (default 1)
-    --disable-smart-shrinking *       Disable the intelligent shrinking strategy
-                                      used by WebKit that makes the pixel/dpi
-                                      ratio none constant
+-p, --proxy <proxy>                   Use a proxy
+-q, --quiet                           Be less verbose
+    --read-args-from-stdin            Read command line arguments from stdin
+    --readme                          Output program readme
+    --redirect-delay <msec>           Wait some milliseconds for js-redirects
+                                      (default 200)
+    --replace * <name> <value>        Replace [name] with value in header and
+                                      footer (repeatable)
+-t, --toc *                           Insert a table of content in the beginning
+                                      of the document
     --use-xserver *                   Use the X server (some plugins and other
                                       stuff might not work without X11)
-    --encoding <encoding>             Set the default text encoding, for input
-    --no-background                   Do not print background
     --user-style-sheet <url>          Specify a user style sheet, to load with
                                       every page
+    --username <username>             HTTP Authentication username
+-V, --version                         Output version information an exit
+    --zoom <float>                    Use this zoom factor (default 1)
 
 Items marked * are only avalible using patched QT.
 
@@ -115,35 +117,34 @@ Items marked * are only avalible using patched QT.
     --footer-center * <text>          Centered footer text
     --footer-font-name * <name>       Set footer font name (default Arial)
     --footer-font-size * <size>       Set footer font size (default 11)
+    --footer-html * <url>             Adds a html header
     --footer-left * <text>            Left aligned footer text
     --footer-line *                   Display line above the footer
     --footer-right * <text>           Right aligned footer text
     --footer-spacing * <real>         Spacing between footer and content in mm
                                       (default 0)
-    --footer-html * <url>             Adds a html header
     --header-center * <text>          Centered header text
     --header-font-name * <name>       Set header font name (default Arial)
     --header-font-size * <size>       Set header font size (default 11)
+    --header-html * <url>             Adds a html header
     --header-left * <text>            Left aligned header text
     --header-line *                   Display line below the header
     --header-right * <text>           Right aligned header text
     --header-spacing * <real>         Spacing between header and content in mm
                                       (default 0)
-    --header-html * <url>             Adds a html header
 
 Items marked * are only avalible using patched QT.
 
 ==========================> Table Of Content Options <==========================
+    --toc-depth * <level>             Set the depth of the toc (default 3)
+    --toc-disable-back-links *        Do not link from section header to toc
+    --toc-disable-links *             Do not link from toc to sections
     --toc-font-name * <name>          Set the font used for the toc (default
                                       Arial)
-    --toc-no-dots *                   Do not use dots, in the toc
-    --toc-depth * <level>             Set the depth of the toc (default 3)
-    --toc-header-text * <text>        The header text of the toc (default Table
-                                      Of Contents)
     --toc-header-fs * <size>          The font size of the toc header (default
                                       15)
-    --toc-disable-links *             Do not link from toc to sections
-    --toc-disable-back-links *        Do not link from section header to toc
+    --toc-header-text * <text>        The header text of the toc (default Table
+                                      Of Contents)
     --toc-l1-font-size * <size>       Set the font size on level 1 of the toc
                                       (default 12)
     --toc-l1-indentation * <num>      Set indentation on level 1 of the toc
@@ -172,6 +173,7 @@ Items marked * are only avalible using patched QT.
                                       (default 0)
     --toc-l7-indentation * <num>      Set indentation on level 7 of the toc
                                       (default 120)
+    --toc-no-dots *                   Do not use dots, in the toc
 
 Items marked * are only avalible using patched QT.
 
@@ -298,7 +300,7 @@ work on most systems and comes with a build in patched QT.
 Unfortunately the static binary is not particularly static, on Linux it depends
 on both glibc and openssl, furthermore you will need to have an xserver
 installed but not necessary running. You will need to have different fonts
-install including xfonts-scalable (Type1).  See 
+install including xfonts-scalable (Type1), and msttcorefonts.  See 
 <http://code.google.com/p/wkhtmltopdf/wiki/static> for trouble shouting.
 
 ================================> Compilation <=================================
