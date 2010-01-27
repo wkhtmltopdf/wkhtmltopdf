@@ -36,6 +36,7 @@ git tag "$v"
 rm -rf "release-$v"
 mkdir "release-$v"
 git checkout-index --prefix="./release-$v/wkhtmltopdf-$v/" -a
+wget "http://code.google.com/p/wkhtmltopdf/wiki/ChangeLog" -qO - | sed -nre 's/.*<p>CHANGELOGBEGIN[ ]*<\/p>(.*)<p>CHANGELOGEND.*/\1/p' | html2text  > "./release-$v/wkhtmltopdf-$v/changelog"
 tar -cjvf "release-$v/wkhtmltopdf-$v.tar.bz2" -C "release-$v" "wkhtmltopdf-$v"
 cp wkhtmltopdf.exe "release-$v/wkhtmltopdf.exe"
 m4 -D "WKVERSION=$v" wkhtmltopdf.nsi.m4 > "release-$v/wkhtmltopdf.nsi"
