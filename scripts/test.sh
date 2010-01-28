@@ -52,6 +52,14 @@ function testLocalFileSupport() {
     ([ -f tmp.pdf ] && pdftotext tmp.pdf /dev/stdout | grep -q Hello) && good LocalFile || bad LocalFile
 }
 
+function testUserStyleSheet {
+    rm -f tmp.pdf tmp.html tmp.css
+    echo "<html><head><title>Local Test</title></head><body><p>.</p></body></html>" > tmp.html
+    echo "p:before {content: \"Hello \"}" > tmp.css
+    wk tmp.html tmp.pdf --user-style-sheet tmp.css
+    ([ -f tmp.pdf ] && pdftotext tmp.pdf /dev/stdout | grep -q Hello) && good UserStyle || bad UserStyle
+}
+
 function testPipeInSupport() {
     rm -rf tmp.pdf
     echo "<html><head><title>Local Test</title></head><body><h1>Hello</h1></body></html>" > tmp.html
@@ -206,6 +214,7 @@ testCookies
 testLocalFileSupport
 testPipeInSupport
 testPipeOutSupport 
+testUserStyleSheet
 testToc
 testOutline
 testImgSupport jpg
