@@ -229,6 +229,11 @@ void PageConverterPrivate::preparePrint(bool ok) {
 	printPage(true);
 #else
 	painter = new QPainter();
+	
+	QString title = settings.documentTitle;
+	if (title == "") 
+		title = pages[0]->mainFrame()->title();
+	printer->setDocName(title);
 	if (!painter->begin(printer)) {
 		emit outer.error("Unable to write to destination");
 		fail();
@@ -450,7 +455,7 @@ void PageConverterPrivate::printPage(bool ok) {
 
 	progressString = "Preparing";
 	emit outer.progressChanged(0);
-	
+			
 	for(int cc_=0; cc_ < cc; ++cc_) {
 		logicalPage=1;
 		for(int d=0; d < pages.size(); ++d) {

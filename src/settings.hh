@@ -191,6 +191,7 @@ struct Settings {
 	QString cookieJar;
 	
 	QList< PostItem > post;
+	QString documentTitle;
 
 	static QPrinter::PageSize strToPageSize(const char * s, bool * ok=0);
 	static QPair<qreal, QPrinter::Unit> strToUnitReal(const char * s, bool * ok=0);
