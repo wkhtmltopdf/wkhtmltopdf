@@ -245,7 +245,7 @@ typedef SomeSetter<StrTM> StrSetter;
 struct QStrTM: public SomeSetterTM<QString> {
 	static QString strToT(const char * val, bool & ok) {
 		ok=true;
-		return QString(val);
+		return QString::fromLocal8Bit(val);
 	}
 	static QString TToStr(QString t, bool & ok) {
 		ok=!t.isEmpty();
