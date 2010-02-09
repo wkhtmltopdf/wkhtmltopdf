@@ -23,6 +23,18 @@
 #include <QWebFrame>
 #include <QNetworkCookieJar>
 
+
+class MyQWebPage: public QWebPage {
+	Q_OBJECT ;
+private:
+	Settings & settings;
+	MultiPageLoader & multiPageLoader;
+public:
+	MyQWebPage(MultiPageLoader & mpl, Settings & s);
+public slots:
+	bool shouldInterruptJavaScript();
+};
+
 class MyCookieJar: public QNetworkCookieJar {
 private:
 	QList<QNetworkCookie> globalCookies;

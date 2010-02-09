@@ -21,6 +21,7 @@
 #include <QUrl>
 #include <QWebPage>
 
+class MyQWebPage;
 class MultiPageLoaderPrivate;
 class MultiPageLoader: public QObject {
 	Q_OBJECT
@@ -46,6 +47,7 @@ signals:
 private:
 	MultiPageLoaderPrivate * d;
 	friend class MultiPageLoaderPrivate;
+	friend class MyQWebPage;
 };
 
 #endif //__MULTIPAGELOADER_HH__

@@ -30,6 +30,16 @@
   \brief Defines the MultiPageLoaderPrivate class
 */
 
+MyQWebPage::MyQWebPage(MultiPageLoader & mpl, Settings & s): settings(s), multiPageLoader(mpl) {};
+													
+bool MyQWebPage::shouldInterruptJavaScript() {
+	if (settings.stopSlowScripts) {
+		multiPageLoader.warning("A slow script was stopped");
+		return true;
+	}
+	return false;
+}
+
 void MyCookieJar::addGlobalCookie(const QString & name, const QString & value) {
 	globalCookies.append(QNetworkCookie(name.toUtf8(), value.toUtf8()));
 }
@@ -171,7 +181,7 @@ MultiPageLoaderPrivate::~MultiPageLoaderPrivate() {
 }
 
 QWebPage * MultiPageLoaderPrivate::addResource(const QUrl & url) {
-	QWebPage * page = new QWebPage(); 
+	QWebPage * page = new MyQWebPage(outer, settings); 
 	pages.push_back(page);
 	urls.push_back(url);
 	page->setNetworkAccessManager(&networkAccessManager);
