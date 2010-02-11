@@ -40,6 +40,26 @@ bool MyQWebPage::shouldInterruptJavaScript() {
 	return false;
 }
 
+void MyQWebPage::javaScriptAlert(QWebFrame *, const QString & msg) {
+	multiPageLoader.warning(QString("Javascript alert: %1").arg(msg));
+}
+
+bool MyQWebPage::javaScriptConfirm(QWebFrame *, const QString & msg) {
+	multiPageLoader.warning(QString("Javascript confirm: %1 (answered yes)").arg(msg));
+	return true;
+}
+
+bool MyQWebPage::javaScriptPrompt(QWebFrame *, const QString & msg, const QString & defaultValue, QString * result) {
+	multiPageLoader.warning(QString("Javascript prompt: %1 (answered %2)").arg(msg,defaultValue));
+	result = (QString*)&defaultValue;
+	return true;
+}
+
+void MyQWebPage::javaScriptConsoleMessage(const QString & message, int lineNumber, const QString & sourceID) {
+	if (settings.debugJavascript)
+		multiPageLoader.warning(QString("%1:%2 %3").arg(sourceID).arg(lineNumber).arg(message));
+}
+
 void MyCookieJar::addGlobalCookie(const QString & name, const QString & value) {
 	globalCookies.append(QNetworkCookie(name.toUtf8(), value.toUtf8()));
 }

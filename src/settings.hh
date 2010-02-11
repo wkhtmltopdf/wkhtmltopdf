@@ -193,6 +193,7 @@ struct Settings {
 	QList< PostItem > post;
 	QString documentTitle;
 	bool stopSlowScripts;
+	bool debugJavascript;
 
 	static QPrinter::PageSize strToPageSize(const char * s, bool * ok=0);
 	static QPair<qreal, QPrinter::Unit> strToUnitReal(const char * s, bool * ok=0);

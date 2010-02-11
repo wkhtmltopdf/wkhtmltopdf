@@ -31,6 +31,10 @@ private:
 	MultiPageLoader & multiPageLoader;
 public:
 	MyQWebPage(MultiPageLoader & mpl, Settings & s);
+	virtual void javaScriptAlert(QWebFrame * frame, const QString & msg);
+	virtual bool javaScriptConfirm(QWebFrame * frame, const QString & msg);
+	virtual bool javaScriptPrompt(QWebFrame * frame, const QString & msg, const QString & defaultValue, QString * result);
+	virtual void javaScriptConsoleMessage(const QString & message, int lineNumber, const QString & sourceID);
 public slots:
 	bool shouldInterruptJavaScript();
 };

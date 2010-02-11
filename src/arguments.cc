@@ -504,7 +504,7 @@ CommandLineParserPrivate::CommandLineParserPrivate(Settings & s):
 	addarg("no-background",0,"Do not print background", new ConstSetter<bool>(s.background,false,true));
 	addarg("user-style-sheet",0,"Specify a user style sheet, to load with every page", new QStrSetter(s.userStyleSheet,"url",""));
 #endif
-
+	addarg("debug-javascript", 0,"Show javascript debugging output", new ConstSetter<bool>(s.debugJavascript, true, false));
 #if QT_VERSION >= 0x040600
 	addarg("stop-slow-scripts", 0, "Stop slow running javascripts", new ConstSetter<bool>(s.stopSlowScripts, true, false));
 #endif	
