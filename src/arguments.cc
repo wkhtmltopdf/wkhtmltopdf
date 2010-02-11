@@ -519,7 +519,7 @@ CommandLineParserPrivate::CommandLineParserPrivate(Settings & s):
 	addarg("footer-line",0,"Display line above the footer", new ConstSetter<bool>(s.footer.line,true,false));
 	addarg("footer-right",0,"Right aligned footer text", new QStrSetter(s.footer.right,"text",""));
 	addarg("footer-spacing",0,"Spacing between footer and content in mm", new FloatSetter(s.footer.spacing,"real",0.0));
-	addarg("footer-html",0,"Adds a html header", new QStrSetter(s.footer.htmlUrl,"url",""));
+	addarg("footer-html",0,"Adds a html footer", new QStrSetter(s.footer.htmlUrl,"url",""));
 	addarg("header-center",0,"Centered header text", new QStrSetter(s.header.center,"text",""));
 	addarg("header-font-name",0,"Set header font name", new QStrSetter(s.header.fontName,"name","Arial"));
 	addarg("header-font-size",0,"Set header font size", new IntSetter(s.header.fontSize,"size",11));
