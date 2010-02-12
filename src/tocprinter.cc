@@ -91,7 +91,7 @@ TocPrinterPrivate::TocPrinterPrivate(Outline * o, QPrinter * pr, QPainter & pa):
 	toc->value = s.captionText;
 	toc->anchor = "_WK_TOC";
 	toc->parent = root;
-	toc->page = 1;
+	toc->page = outline->d->settings.pageOffset;
 
 	y += step[0];
 	pages.back().push_back( qMakePair(0, toc) );

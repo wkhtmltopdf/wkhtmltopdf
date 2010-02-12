@@ -44,7 +44,7 @@ OutlineItem::~OutlineItem() {
 */
 
 OutlinePrivate::OutlinePrivate(const Settings & s):
-	settings(s), pageCount(0), anchorCounter(0) {
+	settings(s), pageCount(s.pageOffset-1), anchorCounter(0) {
 }
 
 OutlinePrivate::~OutlinePrivate() {
