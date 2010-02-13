@@ -1,4 +1,4 @@
-==========================> wkhtmltopdf 0.9.1 Manual <==========================
+==========================> wkhtmltopdf 0.9.2 Manual <==========================
 This file documents wkhtmltopdf, a program capable of converting html documents
 into PDF documents.
 
@@ -55,6 +55,7 @@ wkhtmltopdf [OPTIONS]... <input file> [More input files] <output file>
                                       inserted before the toc with no headers
                                       and footers
     --custom-header <name> <value>    Set an additional HTTP header (repeatable)
+    --debug-javascript                Show javascript debugging output
 -H, --default-header *                Add a default header, with the name of the
                                       page to the left, and the page number to
                                       the right, this is short for:
@@ -101,6 +102,10 @@ wkhtmltopdf [OPTIONS]... <input file> [More input files] <output file>
                                       (default 200)
     --replace * <name> <value>        Replace [name] with value in header and
                                       footer (repeatable)
+    --stop-slow-scripts               Stop slow running javascripts
+    --title <text>                    The title of the generated pdf file (The
+                                      title of the first document is used if not
+                                      specified)
 -t, --toc *                           Insert a table of content in the beginning
                                       of the document
     --use-xserver *                   Use the X server (some plugins and other
@@ -117,7 +122,7 @@ Items marked * are only avalible using patched QT.
     --footer-center * <text>          Centered footer text
     --footer-font-name * <name>       Set footer font name (default Arial)
     --footer-font-size * <size>       Set footer font size (default 11)
-    --footer-html * <url>             Adds a html header
+    --footer-html * <url>             Adds a html footer
     --footer-left * <text>            Left aligned footer text
     --footer-line *                   Display line above the footer
     --footer-right * <text>           Right aligned footer text
