@@ -29,7 +29,7 @@ failed=0
 
 function result() { printf "%-30s [%-4s]\n" "$1" "$2";}
 function good() { result "$1" " OK ";}
-function bad() { result "$1" "Fail"; export failed=$(($failed+1));}
+function bad() { result "$1" "Fail"; [ "$2" != "false" ] && export failed=$(($failed+1));}
 function fs() { du -b "$1" | sed -re 's/([0-9]*).*/\1/';}
 function wk() { $WK -q $*;}
 
@@ -41,7 +41,7 @@ function testImgSupport() {
     echo "<html><head><title>Img test $1</title></head><body><h1>The $1 image</h1><img src=\"img.$1\" /></body></html>" > tmp.html
     wk tmp.html tmp.pdf
     S=`fs tmp.pdf`
-    ([ -f tmp.pdf ] && [[ $S -ge 20000 ]]) && good "$1 Suppport ($S)" || bad "$1 Support ($S)"
+    ([ -f tmp.pdf ] && [[ $S -ge 20000 ]]) && good "$1 Suppport ($S)" || bad "$1 Support ($S)" "$2"
 }
 
 #Test if we can convert a local file, and that it has some of the right words
@@ -57,7 +57,7 @@ function testUserStyleSheet {
     echo "<html><head><title>Local Test</title></head><body><p>.</p></body></html>" > tmp.html
     echo "p:before {content: \"Hello \"}" > tmp.css
     wk tmp.html tmp.pdf --user-style-sheet tmp.css
-    ([ -f tmp.pdf ] && pdftotext tmp.pdf /dev/stdout | grep -q Hello) && good UserStyle || bad UserStyle
+    ([ -f tmp.pdf ] && pdftotext tmp.pdf /dev/stdout | grep -q Hello) && good UserStyle || bad UserStyle "$1"
 }
 
 function testPipeInSupport() {
@@ -214,14 +214,14 @@ testCookies
 testLocalFileSupport
 testPipeInSupport
 testPipeOutSupport 
-testUserStyleSheet
+testUserStyleSheet false
 testToc
 testOutline
-testImgSupport jpg
-testImgSupport gif
-testImgSupport png
-#testImgSupport mng
-#testImgSupport tiff
+testImgSupport jpg true
+testImgSupport gif true
+testImgSupport png true
+testImgSupport mng false
+testImgSupport tiff false
 testJSRedirect
 testServersideRedirect
 test404
