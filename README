@@ -116,7 +116,7 @@ wkhtmltopdf [OPTIONS]... <input file> [More input files] <output file>
 -V, --version                         Output version information an exit
     --zoom <float>                    Use this zoom factor (default 1)
 
-Items marked * are only avalible using patched QT.
+Items marked * are only available using patched QT.
 
 =========================> Headers And Footer Options <=========================
     --footer-center * <text>          Centered footer text
@@ -138,7 +138,7 @@ Items marked * are only avalible using patched QT.
     --header-spacing * <real>         Spacing between header and content in mm
                                       (default 0)
 
-Items marked * are only avalible using patched QT.
+Items marked * are only available using patched QT.
 
 ==========================> Table Of Content Options <==========================
     --toc-depth * <level>             Set the depth of the toc (default 3)
@@ -180,13 +180,13 @@ Items marked * are only avalible using patched QT.
                                       (default 120)
     --toc-no-dots *                   Do not use dots, in the toc
 
-Items marked * are only avalible using patched QT.
+Items marked * are only available using patched QT.
 
 ==============================> Outline Options <===============================
     --outline *                       Put an outline into the pdf
     --outline-depth * <level>         Set the depth of the outline (default 4)
 
-Items marked * are only avalible using patched QT.
+Items marked * are only available using patched QT.
 
 =============================> Specifying A Proxy <=============================
 By default proxy information will be read from the environment variables: proxy,
@@ -246,7 +246,7 @@ function subst() {
 </body></html>
 
 
-As can be seen from the example, the arguments are send to the header/footer
+As can be seen from the example, the arguments are sent to the header/footer
 html documents in get fashion.
 
 ==================================> Outlines <==================================
@@ -261,7 +261,7 @@ this.
 
 ===============================> Page Breaking <================================
 The current page breaking algorithm of WebKit leaves much to be desired.
-Basically webkit will render everything into one long page, and the cut it up
+Basically webkit will render everything into one long page, and then cut it up
 into pages. This means that if you have two columns of text where one is
 vertically shifted by half a line. Then webkit will cut a line into to pieces
 display the top half on one page. And the bottom half on another page. It will
@@ -355,7 +355,7 @@ then GNU/Linux, please see
 
 ================================> Installation <================================
 There are several ways to install wkhtmltopdf.  You can download a already
-compiled binary, or you can compile wkhtmltopdf your self. On windows the
+compiled binary, or you can compile wkhtmltopdf yourself. On windows the
 easiest way to install wkhtmltopdf is to download the latest installer. On linux
 you can download the latest static binary, however you still need to install
 some other pieces of software, to learn more about this read the static version

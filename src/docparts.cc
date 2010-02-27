@@ -136,7 +136,7 @@ void CommandLineParserPrivate::outputPageBreakDoc(Outputter * o) const {
 	o->beginSection("Page Breaking");
 	o->paragraph(
 		"The current page breaking algorithm of WebKit leaves much to be desired. "
-		"Basically webkit will render everything into one long page, and the cut it up "
+		"Basically webkit will render everything into one long page, and then cut it up "
 		"into pages. This means that if you have two columns of text where one is "
 		"vertically shifted by half a line. Then webkit will cut a line into to pieces "
 		"display the top half on one page. And the bottom half on another page. "
@@ -225,7 +225,7 @@ void CommandLineParserPrivate::outputHeaderFooterDoc(Outputter * o) const {
 "</body></html>\n"
 "\n"
 		);
-	o->paragraph("As can be seen from the example, the arguments are send to the header/footer html "
+	o->paragraph("As can be seen from the example, the arguments are sent to the header/footer html "
 				 "documents in get fashion.");
 	o->endSection();
 }
@@ -349,7 +349,7 @@ void CommandLineParserPrivate::outputInstallation(Outputter * o) const {
 	o->beginSection("Installation");
 	o->paragraph(
 		"There are several ways to install wkhtmltopdf.  You can download a "
-		"already compiled binary, or you can compile wkhtmltopdf your self. "
+		"already compiled binary, or you can compile wkhtmltopdf yourself. "
 		"On windows the easiest way to install wkhtmltopdf is to download "
 		"the latest installer. On linux you can download the latest static "
 		"binary, however you still need to install some other pieces of "
