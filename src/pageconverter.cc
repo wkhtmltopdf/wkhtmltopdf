@@ -162,6 +162,8 @@ void PageConverterPrivate::fail() {
 	convertionDone = true;
 	clearResources();
 	emit outer.finished(false);
+	
+	qApp->exit(0); // quit qt's event handling
 }
 
 /*!
@@ -555,6 +557,8 @@ void PageConverterPrivate::printPage(bool ok) {
 	emit outer.phaseChanged();
 	convertionDone = true;
 	emit outer.finished(true);
+	
+  qApp->exit(0); // quit qt's event handling
 }
 
 #ifdef __EXTENSIVE_WKHTMLTOPDF_QT_HACK__
@@ -582,8 +586,10 @@ QString PageConverterPrivate::hfreplace(const QString & q, const QHash<QString, 
 bool PageConverterPrivate::convert() {
 	convertionDone=false;
 	beginConvert();
-	while(!convertionDone)
-		qApp->processEvents(QEventLoop::WaitForMoreEvents | QEventLoop::AllEvents);
+	while(!convertionDone) {
+    qApp->exec();
+	  //qApp->processEvents(QEventLoop::WaitForMoreEvents | QEventLoop::AllEvents);
+	}
 	return !error;
 }
 
