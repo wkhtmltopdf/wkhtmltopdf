@@ -1,4 +1,4 @@
-==========================> wkhtmltopdf 0.9.2 Manual <==========================
+==========================> wkhtmltopdf 0.9.3 Manual <==========================
 This file documents wkhtmltopdf, a program capable of converting html documents
 into PDF documents.
 
@@ -355,11 +355,11 @@ then GNU/Linux, please see
 
 ================================> Installation <================================
 There are several ways to install wkhtmltopdf.  You can download a already
-compiled binary, or you can compile wkhtmltopdf yourself. On windows the
-easiest way to install wkhtmltopdf is to download the latest installer. On linux
-you can download the latest static binary, however you still need to install
-some other pieces of software, to learn more about this read the static version
-section of the manual.
+compiled binary, or you can compile wkhtmltopdf yourself. On windows the easiest
+way to install wkhtmltopdf is to download the latest installer. On linux you can
+download the latest static binary, however you still need to install some other
+pieces of software, to learn more about this read the static version section of
+the manual.
 
 ==================================> Examples <==================================
 This section presents a number of examples of how to invoke wkhtmltopdf.
