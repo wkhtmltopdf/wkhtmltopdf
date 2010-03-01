@@ -163,6 +163,8 @@ struct Settings {
 	bool collate;
 	//! What zoom fator should we apply when printing
 	float zoomFactor;
+	//! Minimum font size
+	int minimumFontSize;
 	//! Should we used the print or the screen mediatype
 	bool printMediaType;
 	//! Encoding used to enterpit a document with do supplied encoding
