@@ -44,6 +44,7 @@ public:
 	void fillChildAnchors(OutlineItem * item, QHash<QString, QWebElement> & anchors);
 	void outlineChildren(OutlineItem * item, QPrinter * printer, int level);
 	void buildHFCache(OutlineItem * i, int level);
+	void dumpOutlineChildren(OutlineItem * item, std::ofstream &dumpfile, int level);
 };
 
 #endif //__EXTENSIVE_WKHTMLTOPDF_QT_HACK__

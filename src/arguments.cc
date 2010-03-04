@@ -555,6 +555,7 @@ CommandLineParserPrivate::CommandLineParserPrivate(Settings & s):
 	qthack(true);
 	addarg("outline",0,"Put an outline into the pdf", new ConstSetter<bool>(s.outline,true,false));
 	addarg("outline-depth",0,"Set the depth of the outline", new IntSetter(s.outlineDepth,"level",4));
+	addarg("dump-outline",0,"Dump the outline to a file",new QStrSetter(s.dumpOutline,"file",""));
 	qthack(true);
 	extended(false);
 }
