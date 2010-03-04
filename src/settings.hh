@@ -177,6 +177,8 @@ struct Settings {
 	bool outline;
 	//! Maximal depth of the generated outline
 	int outlineDepth;
+	//! dump outline to this filename
+	QString dumpOutline;
 	//! List of input files
 	QList<QString> in;
 	//! The file where in to store the output
