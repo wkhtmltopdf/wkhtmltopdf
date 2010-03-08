@@ -477,6 +477,7 @@ CommandLineParserPrivate::CommandLineParserPrivate(Settings & s):
 	addarg("redirect-delay",0,"Wait some milliseconds for js-redirects", new IntSetter(s.jsredirectwait,"msec",200));
 	addarg("enable-plugins",0,"Enable installed plugins (such as flash", new ConstSetter<bool>(s.enablePlugins,true,false));
 	addarg("zoom",0,"Use this zoom factor", new FloatSetter(s.zoomFactor,"float",1.0));
+	addarg("minimum-font-size",0,"Minimum font size", new IntSetter(s.minimumFontSize,"int",5));
 	addarg("read-args-from-stdin",0,"Read command line arguments from stdin", new ConstSetter<bool>(s.readArgsFromStdin,true,false));
 	addarg("cookie-jar", 0, "Read and write cookies from and to the supplied cookie jar file", new QStrSetter(s.cookieJar, "path", "") );
 	addarg("cookie",0,"Set an additional cookie (repeatable)", new MapSetter<>(s.cookies, "name", "value"));
@@ -554,6 +555,7 @@ CommandLineParserPrivate::CommandLineParserPrivate(Settings & s):
 	qthack(true);
 	addarg("outline",0,"Put an outline into the pdf", new ConstSetter<bool>(s.outline,true,false));
 	addarg("outline-depth",0,"Set the depth of the outline", new IntSetter(s.outlineDepth,"level",4));
+	addarg("dump-outline",0,"Dump the outline to a file",new QStrSetter(s.dumpOutline,"file",""));
 	qthack(true);
 	extended(false);
 }

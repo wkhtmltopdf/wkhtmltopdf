@@ -75,6 +75,8 @@ PageConverterPrivate::PageConverterPrivate(Settings & s, PageConverter & o) :
 	QWebSettings::globalSettings()->setAttribute(QWebSettings::JavascriptCanOpenWindows, false);
 	QWebSettings::globalSettings()->setAttribute(QWebSettings::JavascriptCanAccessClipboard, false);
 
+	QWebSettings::globalSettings()->setFontSize(QWebSettings::MinimumFontSize, s.minimumFontSize);
+
 #if QT_VERSION >= 0x040500
 	//Newer vertions of QT have even more settings to change
 	QWebSettings::globalSettings()->setAttribute(QWebSettings::PrintElementBackgrounds, settings.background);
@@ -532,6 +534,7 @@ void PageConverterPrivate::printPage(bool ok) {
 		}
  	}
 	outline->printOutline(printer);
+	outline->dumpOutline();
  	painter->end();
 #endif
 	if (settings.out == "-" && lout != "/dev/stdout") {

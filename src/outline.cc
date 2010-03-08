@@ -57,9 +57,10 @@ void OutlinePrivate::fillChildAnchors(OutlineItem * item, QHash<QString, QWebEle
 		if (i->anchor.isEmpty()) continue;
 		anchors[i->anchor] = i->element;
 		fillChildAnchors(i, anchors);
-	}	
+	}
 }
 
+#include <fstream>
 #include <iostream>
 using namespace std;
 void OutlinePrivate::outlineChildren(OutlineItem * item, QPrinter * printer, int level) {
@@ -68,7 +69,35 @@ void OutlinePrivate::outlineChildren(OutlineItem * item, QPrinter * printer, int
 		printer->beginSectionOutline(i->value, i->anchor);
 		outlineChildren(i, printer, level+1);
 		printer->endSectionOutline();
-	}	
+	}
+}
+
+/* dump outline */
+void OutlinePrivate::dumpOutlineChildren(OutlineItem * item, ofstream &dumpfile, int level) {
+	if (level){
+		dumpfile << "Level: " << level << "  ";
+		dumpfile << "Page: "  << item->page << "  ";
+		dumpfile << "Title: " << item->value.toUtf8().toPercentEncoding().data();
+		//dumpfile << item->anchor.toUtf8().toPercentEncoding() << " ";
+		dumpfile << "\n";
+	}
+	if (level + 1 <= settings.outlineDepth){
+		foreach (OutlineItem * i, item->children) {
+			dumpOutlineChildren(i, dumpfile, level + 1);
+		}
+	}
+}
+
+
+void Outline::dumpOutline() {
+	if (d->settings.dumpOutline.isEmpty()) return;
+	char * filename = d->settings.dumpOutline.toUtf8().data();
+	ofstream dumpfile(filename, ios::out);
+	dumpfile << "Pages: " << pageCount() << "\n";
+	foreach(OutlineItem * i, d->documentOutlines){
+		d->dumpOutlineChildren(i, dumpfile, 0);
+	}
+	dumpfile.close();
 }
 
 
