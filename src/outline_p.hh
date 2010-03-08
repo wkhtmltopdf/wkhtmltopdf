@@ -15,6 +15,7 @@
 // along with wkhtmltopdf.  If not, see <http://www.gnu.org/licenses/>.
 #ifndef __OUTLINE_P_HH
 #define __OUTLINE_P_HH
+#include <fstream>
 #include "outline.hh"
 #ifdef __EXTENSIVE_WKHTMLTOPDF_QT_HACK__
 
