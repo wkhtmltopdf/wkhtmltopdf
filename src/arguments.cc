@@ -538,7 +538,8 @@ CommandLineParserPrivate::CommandLineParserPrivate(Settings & s):
 	addarg("toc-no-dots",0,"Do not use dots, in the toc", new ConstSetter<bool>(s.toc.useDots,false,true));
 	addarg("toc-depth",0,"Set the depth of the toc", new IntSetter(s.toc.depth,"level",3));
 	addarg("toc-header-text",0,"The header text of the toc", new QStrSetter(s.toc.captionText,"text","Table Of Contents"));
-	addarg("toc-header-fs",0,"The font size of the toc header", new IntSetter(s.toc.captionFontSize,"size",15));
+	addarg("toc-header-font-size",0,"The font size of the toc header", new IntSetter(s.toc.captionFontSize,"size",15));
+	addarg("toc-header-font-name",0,"The font of the toc header (if unset use --toc-font-name)", new QStrSetter(s.toc.captionFontName,"name"));
 	addarg("toc-disable-links",0,"Do not link from toc to sections", new ConstSetter<bool>(s.toc.forwardLinks,false, true));
 	addarg("toc-disable-back-links",0,"Do not link from section header to toc", new ConstSetter<bool>(s.toc.backLinks,false,true));
 	for (uint i=0; i < Settings::TOCSettings::levels; ++i) {
