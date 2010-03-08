@@ -34,6 +34,8 @@ struct Settings {
 		int depth;
 		//! Font used for printing the TOC
 		QString fontName;
+		//! Font used for printing the TOC caption
+		QString captionFontName;
 		//! Indentation used on a given level
 		int indentation[levels];
 		//! Font size used on a given level

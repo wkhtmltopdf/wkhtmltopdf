@@ -160,6 +160,8 @@ void TocPrinter::spoolPage(int page) {
 	if(page == 0) {
 		double h = d->painter.boundingRect(pr,Qt::AlignTop | Qt::AlignHCenter, s.captionText).height();
 		QRect r((int)h,0,pr.width(),(int)h*3);
+		
+		d->painter.setFont(QFont(s.captionFontName.isEmpty()?s.fontName:s.captionFontName, s.captionFontSize));
 		d->painter.drawText(r, Qt::AlignVCenter | Qt::AlignHCenter, s.captionText);
 		d->painter.addAnchor(r, "_WK_TOC");
 		y += r.height();
