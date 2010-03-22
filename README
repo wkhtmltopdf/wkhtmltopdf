@@ -1,4 +1,4 @@
-==========================> wkhtmltopdf 0.9.3 Manual <==========================
+==========================> wkhtmltopdf 0.9.5 Manual <==========================
 This file documents wkhtmltopdf, a program capable of converting html documents
 into PDF documents.
 
@@ -84,6 +84,7 @@ wkhtmltopdf [OPTIONS]... <input file> [More input files] <output file>
 -L, --margin-left <unitreal>          Set the page left margin (default 10mm)
 -R, --margin-right <unitreal>         Set the page right margin (default 10mm)
 -T, --margin-top <unitreal>           Set the page top margin (default 10mm)
+    --minimum-font-size <int>         Minimum font size (default 5)
     --no-background                   Do not print background
 -O, --orientation <orientation>       Set orientation to Landscape or Portrait
     --page-height <unitreal>          Page height (default unit millimeter)
@@ -146,7 +147,9 @@ Items marked * are only available using patched QT.
     --toc-disable-links *             Do not link from toc to sections
     --toc-font-name * <name>          Set the font used for the toc (default
                                       Arial)
-    --toc-header-fs * <size>          The font size of the toc header (default
+    --toc-header-font-name * <name>   The font of the toc header (if unset use
+                                      --toc-font-name)
+    --toc-header-font-size * <size>   The font size of the toc header (default
                                       15)
     --toc-header-text * <text>        The header text of the toc (default Table
                                       Of Contents)
@@ -183,6 +186,7 @@ Items marked * are only available using patched QT.
 Items marked * are only available using patched QT.
 
 ==============================> Outline Options <===============================
+    --dump-outline * <file>           Dump the outline to a file
     --outline *                       Put an outline into the pdf
     --outline-depth * <level>         Set the depth of the outline (default 4)
 
