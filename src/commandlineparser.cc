@@ -235,7 +235,7 @@ void CommandLineParser::parseArguments(int argc, const char ** argv, bool final)
 			//The following code is a bit of a hack, we register all
 			//default arguments as input urls, we then later
 			//extract the last one to use as output
-			d->settings.in.push_back(argv[i]);
+			d->settings.in.push_back(QString::fromLocal8Bit(argv[i]) );
 		} else if (argv[i][1] == '-') { //We have a long style argument
 			//After an -- apperas in the argument list all that follows is interpited as default arguments
 			if (argv[i][2] == '0') {
