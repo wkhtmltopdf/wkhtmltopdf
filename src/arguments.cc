@@ -510,6 +510,7 @@ CommandLineParserPrivate::CommandLineParserPrivate(Settings & s):
 	addarg("page-offset",0,"Set the starting page number", new IntSetter(s.pageOffset,"offset",1));
 	addarg("disable-smart-shrinking", 0, "Disable the intelligent shrinking strategy used by WebKit that makes the pixel/dpi ratio none constant",new ConstSetter<bool>(s.enableIntelligentShrinking, false, true));
 	addarg("replace",0, "Replace [name] with value in header and footer (repeatable)", new MapSetter<>(s.replacements, "name", "value"));
+	addarg("disable-pdf-compression", 0 , "Do not use lossless compression on pdf objects", new ConstSetter<bool>(s.useCompression,false,true));
 #ifdef Q_WS_X11
 	addarg("use-xserver",0,"Use the X server (some plugins and other stuff might not work without X11)", new ConstSetter<bool>(s.useGraphics,true,false));
 #endif

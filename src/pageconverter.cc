@@ -19,6 +19,7 @@
 #include <QFile>
 #include <QPair>
 #include <QTimer>
+#include <QPrintEngine>
 #include <QWebFrame>
 #include <QWebPage>
 #include <QWebSettings>
@@ -219,6 +220,8 @@ void PageConverterPrivate::preparePrint(bool ok) {
 	
 	printer->setOrientation(settings.orientation);
 	printer->setColorMode(settings.colorMode);
+
+	printer->printEngine()->setProperty(QPrintEngine::PKK_UseCompression, settings.useCompression);
 
 	if (!printer->isValid()) {
 		emit outer.error("Unable to write to destination");
