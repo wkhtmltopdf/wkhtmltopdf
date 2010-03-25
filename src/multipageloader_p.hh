@@ -22,7 +22,20 @@
 #include <QNetworkReply>
 #include <QWebFrame>
 #include <QNetworkCookieJar>
+#include <QFileInfo>
 
+class MyNetworkAccessManager: public QNetworkAccessManager {
+	Q_OBJECT
+private:
+	bool blockAccess;
+	QSet<QString> allowed;
+public:
+	void allow(QString path);
+	MyNetworkAccessManager(bool block);
+	QNetworkReply * createRequest(Operation op, const QNetworkRequest & req, QIODevice * outgoingData = 0);
+signals:
+	void warning(const QString & text);
+};
 
 class MyQWebPage: public QWebPage {
 	Q_OBJECT ;
@@ -62,7 +75,7 @@ public:
 
 	int loginTry;
 
-	QNetworkAccessManager networkAccessManager;
+	MyNetworkAccessManager networkAccessManager;
 	QHash<QObject *, int> pageToIndex;
 
 	QList<int> progressList;
@@ -84,6 +97,7 @@ public:
 	void cancel();
 	void fail();
 public slots:
+	void warning(const QString & msg);
 	void loadStarted();
 	void loadProgress(int progress);
 	void loadFinished(bool ok);
