@@ -202,6 +202,7 @@ struct Settings {
 	bool debugJavascript;
 	bool blockLocalFileAccess;
 	QList< QString > allowed;
+	bool useCompression;
 
 	static QPrinter::PageSize strToPageSize(const char * s, bool * ok=0);
 	static QPair<qreal, QPrinter::Unit> strToUnitReal(const char * s, bool * ok=0);
