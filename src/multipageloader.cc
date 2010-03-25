@@ -30,6 +30,39 @@
   \brief Defines the MultiPageLoaderPrivate class
 */
 
+
+MyNetworkAccessManager::MyNetworkAccessManager(bool block): blockAccess(block) {}
+
+void MyNetworkAccessManager::allow(QString path) {
+	QString x = QFileInfo(path).canonicalFilePath();
+	if (x.isEmpty()) return;
+	allowed.insert(x);
+}
+
+QNetworkReply * MyNetworkAccessManager::createRequest(Operation op, const QNetworkRequest & req, QIODevice * outgoingData) {
+	if (req.url().scheme() == "file" && blockAccess) { 
+		bool ok=false;
+		QString path = QFileInfo(req.url().toLocalFile()).canonicalFilePath();
+		QString old = "";
+		while(path != old) {
+			if (allowed.contains(path)) {
+				ok=true;
+				break;
+			}
+			old = path;
+			path = QFileInfo(path).path();
+		}
+		if (!ok) {
+			QNetworkRequest r2 = req;
+			emit warning(QString("Blocked access to file %1").arg(QFileInfo(req.url().toLocalFile()).canonicalFilePath()));
+			r2.setUrl(QUrl("about:blank"));
+			return QNetworkAccessManager::createRequest(op, r2, outgoingData);
+		}
+	}
+	return QNetworkAccessManager::createRequest(op, req, outgoingData);
+}
+
+
 MyQWebPage::MyQWebPage(MultiPageLoader & mpl, Settings & s): settings(s), multiPageLoader(mpl) {};
 													
 bool MyQWebPage::shouldInterruptJavaScript() {
@@ -152,8 +185,10 @@ void MultiPageLoaderPrivate::sslErrors(QNetworkReply *reply, const QList<QSslErr
 }
 
 MultiPageLoaderPrivate::MultiPageLoaderPrivate(Settings & s, MultiPageLoader & o): 
-	outer(o), settings(s) {
-	
+	outer(o), settings(s), networkAccessManager(s.blockLocalFileAccess) {
+	foreach(const QString & path, s.allowed)
+		networkAccessManager.allow(path);
+
 	//If some ssl error occures we want sslErrors to be called, so the we can ignore it
 	connect(&networkAccessManager, SIGNAL(sslErrors(QNetworkReply*, const QList<QSslError>&)),this,
 	        SLOT(sslErrors(QNetworkReply*, const QList<QSslError>&)));
@@ -164,6 +199,8 @@ MultiPageLoaderPrivate::MultiPageLoaderPrivate(Settings & s, MultiPageLoader & o
 	connect(&networkAccessManager, SIGNAL(authenticationRequired(QNetworkReply*, QAuthenticator *)),this,
 	        SLOT(authenticationRequired(QNetworkReply *, QAuthenticator *)));
 
+	connect(&networkAccessManager, SIGNAL(warning(const QString &)), 
+			this, SLOT(warning(const QString &)));
 	cookieJar = new MyCookieJar();
 
 	networkAccessManager.setCookieJar(cookieJar);
@@ -201,6 +238,8 @@ MultiPageLoaderPrivate::~MultiPageLoaderPrivate() {
 }
 
 QWebPage * MultiPageLoaderPrivate::addResource(const QUrl & url) {
+	if (url.scheme() == "file")
+		networkAccessManager.allow(url.toLocalFile());
 	QWebPage * page = new MyQWebPage(outer, settings); 
 	pages.push_back(page);
 	urls.push_back(url);
@@ -363,6 +402,10 @@ void MultiPageLoaderPrivate::timedFinished() {
 			cookieJar->saveToFile(settings.cookieJar);
 		emit outer.loadFinished(!error);
 	}
+}
+
+void MultiPageLoaderPrivate::warning(const QString & msg) {
+	emit outer.warning(msg);
 }
 
 /*!
