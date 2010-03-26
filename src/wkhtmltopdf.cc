@@ -19,6 +19,8 @@
 #include "settings.hh"
 #include <QCleanlooksStyle>
 #include <QCommonStyle>
+#include <QPainter>
+#include <QStyleOption>
 #include <QWebFrame>
 #include <QtPlugin>
 #include <cstdlib>
@@ -111,6 +113,22 @@ void parseString(char * buff, int &nargc, char **nargv) {
 	nargv[nargc]=NULL;
 }
 
+class MyLooksStyle: public QCleanlooksStyle {
+public:
+	typedef QCleanlooksStyle parent_t;
+	
+	void drawPrimitive( PrimitiveElement element, const QStyleOption * option, QPainter * painter, const QWidget * widget = 0 ) const {
+		if (element == QStyle::PE_PanelLineEdit) {
+			painter->setBrush(Qt::NoBrush);
+			painter->setPen(Qt::black);
+			painter->drawRect(option->rect);
+			//painter->drawRoundedRect(option->rect,  2, 2);
+		} else 
+			parent_t::drawPrimitive(element, option, painter, widget);
+	}
+};
+
+
 int main(int argc, char * argv[]) {
 	//This will store all our settings
 	Settings settings;
@@ -130,7 +148,7 @@ int main(int argc, char * argv[]) {
 #endif
 #endif
 	QApplication a(argc, argv, use_graphics);
-	a.setStyle(new QCleanlooksStyle());
+	a.setStyle(new MyLooksStyle());
 
 	if (settings.readArgsFromStdin) {
 		char buff[20400];
