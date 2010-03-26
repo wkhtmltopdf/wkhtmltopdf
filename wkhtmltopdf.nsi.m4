@@ -49,7 +49,7 @@ Section
                    "DisplayName" "wkhtmltopdf"
   WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\wkhtmltopdf" \
                    "UninstallString" "$\"$INSTDIR\uninstall.exe$\""
-  ${EnvVarUpdate} $0 "PATH" "A" "HKLM" "$INSTDIR" 
+;  ${EnvVarUpdate} $0 "PATH" "A" "HKLM" "$INSTDIR" 
 SectionEnd
 
 
@@ -61,7 +61,7 @@ Section "Uninstall"
   Delete "$INSTDIR\libgcc_s_dw2-1.dll"
   Delete "$INSTDIR\ssleay32.dll"
   Delete "$INSTDIR\libeay32.dll"
-
+;  ${un.EnvVarUpdate} $0 "PATH" "R" "HKLM" "$INSTDIR"
   Delete "$INSTDIR\uninstall.exe"
   RMDir "$INSTDIR"
   DeleteRegKey /ifempty HKCU "Software\wkhtmltopdf"
