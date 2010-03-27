@@ -115,16 +115,37 @@ void parseString(char * buff, int &nargc, char **nargv) {
 
 class MyLooksStyle: public QCleanlooksStyle {
 public:
+	Settings & settings;
+	
 	typedef QCleanlooksStyle parent_t;
 	
+	MyLooksStyle(Settings & s): settings(s) {}
+	
 	void drawPrimitive( PrimitiveElement element, const QStyleOption * option, QPainter * painter, const QWidget * widget = 0 ) const {
+		painter->setBrush(Qt::white);
+		painter->setPen(QPen(Qt::black, 0.7));
+		QRect r = option->rect;
 		if (element == QStyle::PE_PanelLineEdit) {
-			painter->setBrush(Qt::NoBrush);
-			painter->setPen(Qt::black);
-			painter->drawRect(option->rect);
-			//painter->drawRoundedRect(option->rect,  2, 2);
-		} else 
+			painter->drawRect(r);
+		} else if(element == QStyle::PE_IndicatorCheckBox) {
+			painter->drawRect(r);
+			if (!settings.produceForms && (option->state & QStyle::State_On)) {
+				r.translate(r.width()*0.075, r.width()*0.075);
+				painter->drawLine(r.topLeft(), r.bottomRight());
+				painter->drawLine(r.topRight(), r.bottomLeft());
+			}
+		} else if(element == QStyle::PE_IndicatorRadioButton) {
+			painter->drawEllipse(r);
+			if (!settings.produceForms && (option->state & QStyle::State_On)) {
+				r.translate(r.width()*0.20, r.width()*0.20);
+				r.setWidth(r.width()*0.70);
+				r.setHeight(r.height()*0.70);
+				painter->setBrush(Qt::black);
+				painter->drawEllipse(r);
+			}
+		} else {
 			parent_t::drawPrimitive(element, option, painter, widget);
+		}
 	}
 };
 
@@ -148,7 +169,7 @@ int main(int argc, char * argv[]) {
 #endif
 #endif
 	QApplication a(argc, argv, use_graphics);
-	a.setStyle(new MyLooksStyle());
+	a.setStyle(new MyLooksStyle(settings));
 
 	if (settings.readArgsFromStdin) {
 		char buff[20400];
