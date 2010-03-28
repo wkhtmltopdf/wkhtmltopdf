@@ -536,6 +536,12 @@ void PageConverterPrivate::printPage(bool ok) {
 								elm.attribute("readonly") == "readonly", 
 								elm.hasAttribute("maxlength")?elm.attribute("maxlength").toInt():-1
 								);
+						} else if (type == "checkbox") {
+							painter->addCheckBox(
+								wp.elementLocation(elm).second,
+								elm.attribute("checked") == "checked",
+								name,
+								elm.attribute("readonly") == "readonly");
 						}
 					}
 
