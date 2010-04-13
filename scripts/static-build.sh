@@ -69,9 +69,9 @@ function checkout() {
 	git clone git://gitorious.org/+wkhtml2pdf/qt/wkhtmltopdf-qt.git qt || (rm -rf qt && exit 1)
     fi
     cd qt
-    git checkout staging || exit 1
-    git pull || exit 1
-    cd ..
+    git checkout staging -f || exit 1
+	git reset --hard || exit 1
+    git pull origin staging -f || exit 1
     #Fetch and unpack upx
     get http://upx.sourceforge.net/download/${UPX}.tar.bz2 ${UPX}.tar.bz2 || exit 1
     unpack ${UPX}.tar.bz2 || exit 1
@@ -79,11 +79,11 @@ function checkout() {
 
 function setup_build() {
     echo "Updating QT"
-
     [ -d qts ] || git clone ${BUILD}/qt qts || (rm -rf qts && exit 1)
     cd qts
-    git checkout staging || exit 1
-    git pull || exit 1
+	git checkout origin/staging -f || exit 1
+	git reset --hard || exit 1
+    git pull origin staging -f || exit 1
     if ! [ -z "$VERSION" ] ; then
 	git checkout wkhtmltopdf-$VERSION || exit 1
     fi
@@ -95,7 +95,7 @@ function setup_build() {
     echo "Updating wkhtmltopdf"
     [ -d wkhtmltopdf ] || git clone ${BASE} wkhtmltopdf || (rm -rf wkhtmltopdf && exit 1)
     cd wkhtmltopdf
-    git checkout master || exit 1
+    git checkout "$(cd ${BASE} && git branch --no-color | sed -nre 's/\* //p')" -f || exit 1
     git pull || exit 1
     if ! [ -z "$VERSION" ] ; then
 	git checkout "$VERSION" || exit 1
