@@ -509,11 +509,42 @@ void PageConverterPrivate::printPage(bool ok) {
 			for(QVector< QPair<QWebElement,QString> >::iterator i=externalLinks[d].begin();
 				i != externalLinks[d].end(); ++i)
 				myExternalLinks[wp.elementLocation(i->first).first].push_back(*i);
-				
+
+			QHash<int, QVector<QWebElement> > myFormElements;
+			if (settings.produceForms) {
+				foreach(const QWebElement & elm,pages[d]->mainFrame()->findAllElements("input")) 
+					myFormElements[wp.elementLocation(elm).first].push_back(elm);
+				foreach(const QWebElement & elm,pages[d]->mainFrame()->findAllElements("textarea")) 
+					myFormElements[wp.elementLocation(elm).first].push_back(elm);
+			}
 			for(int p=0; p < wp.pageCount(); ++p) {
 				for(int pc_=0; pc_ < pc; ++pc_) {
 					beginPage(actualPage,first);
 					wp.spoolPage(p+1);
+
+					foreach(const QWebElement & elm, myFormElements[p+1]) {
+						QString type = elm.attribute("type");
+						QString tn = elm.tagName();
+						QString name = elm.attribute("name");
+						if (tn == "TEXTAREA" || type == "text" || type == "password") {
+							painter->addTextField(
+								wp.elementLocation(elm).second,
+								tn == "TEXTAREA"?elm.toPlainText():elm.attribute("value"),
+								name, 
+								tn == "TEXTAREA",		   
+								type == "password",
+								elm.attribute("readonly") == "readonly", 
+								elm.hasAttribute("maxlength")?elm.attribute("maxlength").toInt():-1
+								);
+						} else if (type == "checkbox") {
+							painter->addCheckBox(
+								wp.elementLocation(elm).second,
+								elm.attribute("checked") == "checked",
+								name,
+								elm.attribute("readonly") == "readonly");
+						}
+					}
+
 					for(QHash<QString, QWebElement>::iterator i=myAnchors[p+1].begin();
 						i != myAnchors[p+1].end(); ++i) {
 						QRectF r = wp.elementLocation(i.value()).second;

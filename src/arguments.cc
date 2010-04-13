@@ -504,6 +504,7 @@ CommandLineParserPrivate::CommandLineParserPrivate(Settings & s):
 	addarg("allow", 0, "Allow the file or files from the specified folder to be loaded (repeatable)", new StringListSetter(s.allowed,"path"));
 	
 	qthack(true);
+	addarg("forms", 0, "Turn HTML form fields into pdf form fields", new ConstSetter<bool>(s.produceForms, true, false));
 	addarg("disable-internal-links",0,"Do no make local links", new ConstSetter<bool>(s.useLocalLinks,false,true));
 	addarg("disable-external-links",0,"Do no make links to remote web pages", new ConstSetter<bool>(s.useExternalLinks,false,true));
 	addarg("print-media-type",0,"Use print media-type instead of screen", new ConstSetter<bool>(s.printMediaType,true,false));
