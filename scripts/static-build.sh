@@ -58,6 +58,23 @@ BUILD=${BASE}/static-build
 
 VERSION=$2
 
+function git_fetch_and_update() {
+	if [ ! -d "$1" ]; then
+		git clone "$2" "$1" || (rm -rf "$1" && return 1)
+	fi
+	cd "$1"
+	git fetch origin 
+    if ! (git checkout "$3" -f && git pull origin "$3"); then
+		git branch -a
+		git checkout origin/"$3" -f || return 1
+		git branch -D "$3" || return 1
+		git checkout origin/"$3" -b "$3" || return 1
+		git pull origin "$3" -f || return 1
+	fi
+	cd ..
+}
+
+
 function checkout() {
     #Create static build directory
     mkdir -p $BUILD
@@ -65,13 +82,8 @@ function checkout() {
     cd ${BUILD}
     #Fetch most recent version of qt
     echo "Updating qt from remote"
-    if [ ! -d qt ] ; then
-	git clone git://gitorious.org/+wkhtml2pdf/qt/wkhtmltopdf-qt.git qt || (rm -rf qt && exit 1)
-    fi
-    cd qt
-    git checkout staging -f || exit 1
-	git reset --hard || exit 1
-    git pull origin staging -f || exit 1
+	git_fetch_and_update qt git://gitorious.org/+wkhtml2pdf/qt/wkhtmltopdf-qt.git staging || exit 1
+	cd qt
     #Fetch and unpack upx
     get http://upx.sourceforge.net/download/${UPX}.tar.bz2 ${UPX}.tar.bz2 || exit 1
     unpack ${UPX}.tar.bz2 || exit 1
@@ -79,26 +91,20 @@ function checkout() {
 
 function setup_build() {
     echo "Updating QT"
-    [ -d qts ] || git clone ${BUILD}/qt qts || (rm -rf qts && exit 1)
+	git_fetch_and_update qts ${BUILD}/qt staging || exit 1
     cd qts
-	git checkout origin/staging -f || exit 1
-	git reset --hard || exit 1
-    git pull origin staging -f || exit 1
     if ! [ -z "$VERSION" ] ; then
-	git checkout wkhtmltopdf-$VERSION || exit 1
+		git checkout wkhtmltopdf-$VERSION || exit 1
     fi
     touch conf
     cat ${BASE}/static_qt_conf_base ${BASE}/static_qt_conf_${1} | sed -re 's/#.*//' | sed -re '/^[ \t]*$/d' | sort -u > conf_new
-  
     cd ..
 
     echo "Updating wkhtmltopdf"
-    [ -d wkhtmltopdf ] || git clone ${BASE} wkhtmltopdf || (rm -rf wkhtmltopdf && exit 1)
-    cd wkhtmltopdf
-    git checkout "$(cd ${BASE} && git branch --no-color | sed -nre 's/\* //p')" -f || exit 1
-    git pull || exit 1
+	git_fetch_and_update wkhtmltopdf "${BASE}" "$(cd ${BASE} && git branch --no-color | sed -nre 's/\* //p')" || exit 1
+	cd wkhtmltopdf
     if ! [ -z "$VERSION" ] ; then
-	git checkout "$VERSION" || exit 1
+		git checkout "$VERSION" || exit 1
     fi
     cd ..
     [ "$1" == "win" ] && return 
@@ -111,22 +117,23 @@ mkdir -p qt/lib
 
 cd qts
 
-if ! cmp conf conf_new; then
+function do_configure() {
    echo "Configuring QT"
    (yes yes | ./configure \`cat conf_new\` -prefix "\${HERE}/qt" && cp conf_new conf) || exit 1
+}
+
+if ! cmp conf conf_new; then
+  do_configure
 fi
     
 if ! make -j3 -q; then
    echo "Building QT"
-   make -j3 || exit 1
-   make install || exit 1
+   (make -j3 && make install) || (make distclean; do_configure && make -j3 && make install) || exit 1
 fi
 cd ../wkhtmltopdf
 
 echo "Building wkhtmltopdfe"
-../qt/bin/qmake || exit 1
-make clean || exit 1
-make -j3 || exit 1
+(../qt/bin/qmake && make -j3) || (make distclean; ../qt/bin/qmake && make -j3) || exit 1
 strip wkhtmltopdf || exit 1
 EOF
     chmod +x build.sh
@@ -194,14 +201,13 @@ EOF
     mkdir -p windows/drive_c/mingw
     cd windows/drive_c/mingw
     for file in ${MINGWFILES}; do
- 	get http://${MIRROR}.dl.sourceforge.net/sourceforge/mingw/${file} ${file} || exit 1
- 	unpack ${file} || exit 1
+ 		get http://${MIRROR}.dl.sourceforge.net/sourceforge/mingw/${file} ${file} || exit 1
+ 		unpack ${file} || exit 1
     done
     for file in ${GNUWIN32FILES}; do
-	get http://downloads.sourceforge.net/gnuwin32/${file} ${file} || exit 1
-	unpack ${file} || exit 1
+		get http://downloads.sourceforge.net/gnuwin32/${file} ${file} || exit 1
+		unpack ${file} || exit 1
     done
-
 
     cd ..
     setup_build win
@@ -216,11 +222,11 @@ EOF
     cd qts
     if ! cmp conf conf_new; then
 	QTDIR=. bin/syncqt || exit 1
-	(yes | wine configure.exe -I "C:\qts\include" -I "C:\mingw32\include\freetype2" `cat conf_new` -prefix "C:\qt"  && cp conf_new conf) || exit 1
+	(yes | wine configure.exe -I "C:\qts\include" -I "C:\mingw32\include\freetype2" `cat conf_new` -prefix "C:\qt" && cp conf_new conf) || exit 1
     fi
     if ! wine mingw32-make -j3 -q; then
-	wine mingw32-make -j3 || exit 1
-	wine mingw32-make install || exit 1
+		wine mingw32-make -j3 || exit 1
+		wine mingw32-make install || exit 1
     fi
 
     cd ../wkhtmltopdf
