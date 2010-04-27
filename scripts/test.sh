@@ -31,7 +31,7 @@ function result() { printf "%-30s [%-4s]\n" "$1" "$2";}
 function good() { result "$1" " OK ";}
 function bad() { result "$1" "Fail"; [ "$2" != "false" ] && export failed=$(($failed+1));}
 function fs() { du -b "$1" | sed -re 's/([0-9]*).*/\1/';}
-function wk() { $WK -q $*;}
+function wk() { $WK -q "$@";}
 
 #Test if we can convert a html file containing
 #An image of some format
@@ -155,6 +155,7 @@ function testMultidoc() {
 }
 
 function testHtmlHeader() {
+    rm -rf tmp.pdf
     echo "<html><body>Header</body></html>" > tmp.html
     echo "<html><head><title>Local Test</title></head><body><h1>world</h1></body></html>" > tmp2.html
     wk --header-html tmp.html tmp2.html tmp.pdf
@@ -164,6 +165,7 @@ function testHtmlHeader() {
 }
 
 function testCustomHeader() {
+    rm -rf tmp.pdf
     wk http://madalgo.au.dk/~jakobt/cookiewrite.php --custom-header "Cookie" "cookie=hello" tmp.pdf
     ([ -f tmp.pdf ] && 
 	pdftotext tmp.pdf /dev/stdout | grep -q hello) && good CustomHeader || bad CustomHeader
@@ -179,6 +181,13 @@ function testCookies() {
 	[ -f tmp2.pdf ] &&
 	pdftotext tmp2.pdf /dev/stdout | grep -q "writetest:success;") &&
     good Cookies || bad Cookies
+}
+
+function testTitle() {
+    rm -rf tmp.pdf
+    title="fooæøåおさか おかみ"
+    wk http://google.com --title "$title" tmp.pdf
+    ([ -f tmp.pdf ] && [[ "$(pdfinfo tmp.pdf  | sed -nre 's/Title:[\t ]*//p')" == "$title" ]]) && good title || bad "title"
 }
 
 
@@ -217,6 +226,7 @@ testPipeOutSupport
 testUserStyleSheet false
 testToc
 testOutline
+testTitle
 testImgSupport jpg true
 testImgSupport gif true
 testImgSupport png true
