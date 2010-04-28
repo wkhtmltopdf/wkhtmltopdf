@@ -19,7 +19,6 @@
 
 #Configuration for the static build
 
-QT=qt-all-opensource-src-4.5.1
 MIRROR=kent
 MINGWFILES="binutils-2.19.1-mingw32-bin.tar.gz \
 mingw32-make-3.81-20090910.tar.gz \
@@ -32,13 +31,48 @@ GNUWIN32FILES="openssl-0.9.8h-1-lib.zip \
 openssl-0.9.8h-1-bin.zip "
 #freetype-2.3.5-1-bin.zip \
 #freetype-2.3.5-1-lib.zip "
+QTBRANCH=
+
+function usage() {
+	echo "Usage: $0 [OPTIONS] target"
+	echo ""
+	echo "Options:"
+	echo "-h            Display this help message"
+	echo "-q branch     Use this qt branch"
+	echo "-v version    Compile this version of wkhtmltopdf"
+	echo ""
+	echo "Target:"
+	echo "linux-local   Compile under local linux distro"
+	echo "linux-amd64   Compile under debian 64bit chroot"
+	echo "linux-i368    Compile under debian 32bit chroot"
+	echo "windows       Compile windows binary using wine"
+}
+VERSION=""
+QTBRANCH="staging"
+
+while getopts hq:v: O; do
+	case "$O" in
+		[h?])
+			usage
+			exit 1
+			;;
+		v)
+			shift 2
+			VERSION=$OPTARG
+			;;
+		q)
+			shift 2
+			QTBRANCH=$OPTARG
+			;;
+	esac
+done
+
 
 if file /bin/true | grep -q 64-bit; then
     UPX=upx-3.03-amd64_linux
 else
     UPX=upx-3.03-i386_linux
 fi
-
 
 #Helper functions
 function get() {
@@ -48,10 +82,6 @@ function unpack() {
     [ -f $1.unpack ] || (echo "unpacking $1"; (tar -xf $1 || unzip -o $1) && touch $1.unpack)
 }
 
-function usage() {
-    echo "please specify what static binary you want build (linux, win or all)"
-    exit 1
-}
 
 BASE=${PWD}
 BUILD=${BASE}/static-build
@@ -59,19 +89,19 @@ BUILD=${BASE}/static-build
 VERSION=$2
 
 function git_fetch_and_update() {
-	if [ ! -d "$1" ]; then
-		git clone "$2" "$1" || (rm -rf "$1" && return 1)
-	fi
-	cd "$1"
-	git fetch origin 
-    if ! (git checkout "$3" -f && git pull origin "$3"); then
-		git branch -a
-		git checkout origin/"$3" -f || return 1
-		git branch -D "$3" || return 1
-		git checkout origin/"$3" -b "$3" || return 1
-		git pull origin "$3" -f || return 1
-	fi
-	cd ..
+    if [ ! -d "$1" ]; then
+	git clone "$2" "$1" || (rm -rf "$1" && return 1)
+    fi
+    cd "$1"
+    git fetch origin 
+    if ! (git checkout "$3" -f 2>/dev/null && git pull origin "$3" 2>/dev/null); then
+	git branch -a
+	git checkout origin/"$3" -f 2>/dev/null || return 1
+	git branch -D "$3" 2>/dev/null
+	git checkout origin/"$3" -b "$3" || return 1
+	git pull origin "$3" -f || return 1
+    fi
+    cd ..
 }
 
 
@@ -82,7 +112,7 @@ function checkout() {
     cd ${BUILD}
     #Fetch most recent version of qt
     echo "Updating qt from remote"
-	git_fetch_and_update qt git://gitorious.org/+wkhtml2pdf/qt/wkhtmltopdf-qt.git staging || exit 1
+	git_fetch_and_update qt git://gitorious.org/+wkhtml2pdf/qt/wkhtmltopdf-qt.git "$QTBRANCH" || exit 1
 	cd qt
     #Fetch and unpack upx
     get http://upx.sourceforge.net/download/${UPX}.tar.bz2 ${UPX}.tar.bz2 || exit 1
@@ -91,7 +121,7 @@ function checkout() {
 
 function setup_build() {
     echo "Updating QT"
-	git_fetch_and_update qts ${BUILD}/qt staging || exit 1
+	git_fetch_and_update qts ${BUILD}/qt "$QTBRANCH" || exit 1
     cd qts
     if ! [ -z "$VERSION" ] ; then
 		git checkout wkhtmltopdf-$VERSION || exit 1
@@ -100,7 +130,7 @@ function setup_build() {
     cat ${BASE}/static_qt_conf_base ${BASE}/static_qt_conf_${1} | sed -re 's/#.*//' | sed -re '/^[ \t]*$/d' | sort -u > conf_new
     cd ..
 
-    echo "Updating wkhtmltopdf"
+    echo "$(cd ${BASE} && git branch --no-color | sed -nre 's/\* //p')"
 	git_fetch_and_update wkhtmltopdf "${BASE}" "$(cd ${BASE} && git branch --no-color | sed -nre 's/\* //p')" || exit 1
 	cd wkhtmltopdf
     if ! [ -z "$VERSION" ] ; then
@@ -123,6 +153,7 @@ function do_configure() {
 }
 
 if ! cmp conf conf_new; then
+  QTDIR=. bin/syncqt || exit 1
   do_configure
 fi
     
