@@ -16,237 +16,255 @@
 
 #This script will test a compiled wkhtmltopdf for some basic functionality
 
-#This is just some random image
-img=http://madalgo.au.dk/img/Forside/KatrinebjMay-05.jpg
-[ -d test ] || mkdir test
-cd test
-
-[ -f img.jpg ] || wget $img -O img.jpg
-
-
-export WK=../wkhtmltopdf 
-failed=0
-
 function result() { printf "%-30s [%-4s]\n" "$1" "$2";}
 function good() { result "$1" " OK ";}
 function bad() { result "$1" "Fail"; [ "$2" != "false" ] && export failed=$(($failed+1));}
 function fs() { du -b "$1" | sed -re 's/([0-9]*).*/\1/';}
-function wk() { $WK -q "$@";}
+function wk() { $WK -q "$@"; }
+
+function testTest() {
+    (which pdftotext > $LEVEL1 && which pdfinfo > $LEVEL1) && good $1 || bad $1
+}
 
 #Test if we can convert a html file containing
 #An image of some format
-function testImgSupport() {
+function doTestImgSupport() {
     [ -f img.$1 ] || convert img.jpg img.$1
     rm -rf tmp.pdf
     echo "<html><head><title>Img test $1</title></head><body><h1>The $1 image</h1><img src=\"img.$1\" /></body></html>" > tmp.html
-    wk tmp.html tmp.pdf
+    wk tmp.html tmp.pdf 2>$LEVEL2 >$LEVEL1
     S=`fs tmp.pdf`
     ([ -f tmp.pdf ] && [[ $S -ge 20000 ]]) && good "$1 Suppport ($S)" || bad "$1 Support ($S)" "$2"
 }
 
-#Test if we can convert a local file, and that it has some of the right words
-function testLocalFileSupport() {
-    rm -rf tmp.pdf
+function testJPEGSupport() {
+    doTestImgSupport jpg true
+}
+
+function testGIFSupport() {
+    doTestImgSupport gif true
+}
+
+function testPNGSupport() {
+    doTestImgSupport png true
+}
+
+function testMNGSupport() {
+    doTestImgSupport mng false
+}
+
+function testTIFFSupport() {
+    doTestImgSupport tiff false
+}
+
+function testLocalFile() {
     echo "<html><head><title>Local Test</title></head><body><h1>Hello</h1></body></html>" > tmp.html
-    wk tmp.html tmp.pdf
-    ([ -f tmp.pdf ] && pdftotext tmp.pdf /dev/stdout | grep -q Hello) && good LocalFile || bad LocalFile
+    wk tmp.html tmp.pdf 2>$LEVEL2 >$LEVEL1
+    ([ -f tmp.pdf ] && pdftotext tmp.pdf /dev/stdout | grep -q Hello) && good $1 || bad $1
 }
 
 function testUserStyleSheet {
-    rm -f tmp.pdf tmp.html tmp.css
     echo "<html><head><title>Local Test</title></head><body><p>.</p></body></html>" > tmp.html
     echo "p:before {content: \"Hello \"}" > tmp.css
-    wk tmp.html tmp.pdf --user-style-sheet tmp.css
-    ([ -f tmp.pdf ] && pdftotext tmp.pdf /dev/stdout | grep -q Hello) && good UserStyle || bad UserStyle "$1"
+    wk tmp.html tmp.pdf --user-style-sheet tmp.css 2>$LEVEL2 >$LEVEL1
+    ([ -f tmp.pdf ] && pdftotext tmp.pdf /dev/stdout | grep -q Hello) && good $1 || bad $1 false
 }
 
-function testPipeInSupport() {
+function testPipeIn() {
     rm -rf tmp.pdf
     echo "<html><head><title>Local Test</title></head><body><h1>Hello</h1></body></html>" > tmp.html
-    cat tmp.html | wk - tmp.pdf
-    ([ -f tmp.pdf ] && pdftotext tmp.pdf /dev/stdout | grep -q Hello) && good PipeInFile || bad PipeInFile
+    cat tmp.html | wk - tmp.pdf 2>$LEVEL2 >$LEVEL1
+    ([ -f tmp.pdf ] && pdftotext tmp.pdf /dev/stdout | grep -q Hello) && good $1 || bad $1
 }
 
 function testPipeOutSupport() {
-    rm -rf tmp.pdf
     echo "<html><head><title>Local Test</title></head><body><h1>Hello</h1></body></html>" > tmp.html
-    wk tmp.html - > tmp.pdf
-    ([ -f tmp.pdf ] && pdftotext tmp.pdf /dev/stdout | grep -q Hello) && good PipeOutFile || bad PipeQutFile
+    wk tmp.html - > tmp.pdf  2>$LEVEL2
+    ([ -f tmp.pdf ] && pdftotext tmp.pdf /dev/stdout | grep -q Hello) && good $1 || bad $1
 }
 
-#Test if we can convert a remove site.
 function testRemote() {
-    rm -rf tmp.pdf
-    wk http://www.google.dk/ tmp.pdf
-    [ -f tmp.pdf ] && good Remote || bad Remote
+    wk http://www.google.dk/ tmp.pdf 2>$LEVEL2 >$LEVEL1
+    [ -f tmp.pdf ] && good $1 || bad $1
 }
 
-#Test if we support SSL based sites
 function testSSL() {
-    rm -rf tmp.pdf
-    wk https://www.google.com/accouts tmp.pdf
-    [ -f tmp.pdf ] && good SSL || bad SSL
+    wk https://www.google.com/accouts tmp.pdf 2>$LEVEL2 >$LEVEL1
+    [ -f tmp.pdf ] && good $1 || bad $1
 }
 
-#Test if the header footer stuff works
 function testHeaderFooter() {
-    rm -rf tmp.pdf
     echo "<html><head><title>Local Test</title></head><body><h1>monster</h1></body></html>" > tmp.html
-    wk tmp.html tmp.pdf --footer-left hat --header-right emacs
+    wk tmp.html tmp.pdf --footer-left hat --header-right emacs 2>$LEVEL2 >$LEVEL1
     ([ -f tmp.pdf ] && 
 	pdftotext tmp.pdf /dev/stdout | grep -q monster &&
 	pdftotext tmp.pdf /dev/stdout | grep -q emacs &&
-	pdftotext tmp.pdf /dev/stdout | grep -q hat) && good HeaderFooter || bad HeaderFooter
+	pdftotext tmp.pdf /dev/stdout | grep -q hat) && good $1 || bad $1
 }
 
 function testToc() {
     echo "<html><head></head><body><h1>foo</h1><h2>bar</h2><h3>baz</h3></body>" > tmp.html
-    wk tmp.html tmp.pdf --toc --toc-depth 2
+    wk tmp.html tmp.pdf --toc --toc-depth 2 2>$LEVEL2 >$LEVEL1
     ([ -f tmp.pdf ] && 
 	[ "$(pdftotext tmp.pdf /dev/stdout | grep -c foo)" == 2 ] &&
 	[ "$(pdftotext tmp.pdf /dev/stdout | grep -c bar)" == 2 ] &&
-	[ "$(pdftotext tmp.pdf /dev/stdout | grep -c baz)" == 1 ]) && good Toc || bad Toc 
+	[ "$(pdftotext tmp.pdf /dev/stdout | grep -c baz)" == 1 ]) && good $1 || bad $1
 }
 
 
 function testOutline() {
-    rm -rf tmp.df
     echo "<html><head></head><body><h1>foo</h1><h2>bar</h2><h3>baz</h3></body>" > tmp.html
-    wk tmp.html tmp.pdf --outline --outline-depth 2
+    wk tmp.html tmp.pdf --outline --outline-depth 2 2>$LEVEL2 >$LEVEL1
     ([ -f tmp.pdf ] && 
 	cat tmp.pdf | grep -q ".f.o.o" &&
 	cat tmp.pdf | grep -q ".b.a.r" &&
-	! cat tmp.pdf | grep -q ".b.a.z") && good Outline || bad Outline
+	! cat tmp.pdf | grep -q ".b.a.z") && good $1 || bad $1
 }
 
 function testJSRedirect() {
-    wk http://madalgo.au.dk/~jakobt/jsredirect.html tmp.pdf
+    wk http://madalgo.au.dk/~jakobt/jsredirect.html tmp.pdf 2>$LEVEL2 >$LEVEL1
     ([ -f tmp.pdf ] && 
-	pdftotext tmp.pdf /dev/stdout | grep -q Right) && good JSRedicet || bad JSRedirect
+	pdftotext tmp.pdf /dev/stdout | grep -q Right) && good $1 || bad $1
 }
 
 function testServersideRedirect() {
-    wk http://madalgo.au.dk/~jakobt/redirect.php tmp.pdf
+    wk http://madalgo.au.dk/~jakobt/redirect.php tmp.pdf 2>$LEVEL2 >$LEVEL1
     ([ -f tmp.pdf ] && 
-	pdftotext tmp.pdf /dev/stdout | grep -q Right) && good ServersideRedicet || bad ServersideRedirect
+	pdftotext tmp.pdf /dev/stdout | grep -q Right) && good $1 || bad $1
 }
 
 function test404() {
-    wk http://madalgo.au.dk/~jakobt/nosuchfile.nsf tmp.pdf && bad 404 || good 404
+    wk http://madalgo.au.dk/~jakobt/nosuchfile.nsf tmp.pdf 2>$LEVEL2 >$LEVEL1 && bad $1 || good $1
 }
 
 function testBadDest() {
     echo "<html><head></head><body><h1>foo</h1><h2>bar</h2><h3>baz</h3></body>" > tmp.html
-    (! wk tmp.html /proc/cpuinfo 2> tmp.out && grep -q "Error" tmp.out) && good BadDest || bad BadDest
+    (! wk tmp.html /proc/cpuinfo 2> tmp.out >$LEVEL1 && grep -q "Error" tmp.out) && good $1 || bad $1
 }
 
 function testBadSource() {
-    (! wk http://nosuchdomain.nosuchtld tmp.pdf 2> tmp.out && grep -q "Error" tmp.out) && good BadSource || bad BadSource
+    (! wk http://nosuchdomain.nosuchtld tmp.pdf 2> tmp.out && grep -q "Error" tmp.out) && good $1 || bad $1
 }
 
-function testMultidoc() {
-    rm -rf tmp.pdf
+function testMultipleInputDocuments() {
     echo "<html><head><title>Local Test</title></head><body><h1>Hello</h1></body></html>" > tmp.html
     echo "<html><head><title>Local Test</title></head><body><h1>world</h1></body></html>" > tmp2.html
-    wk tmp.html tmp2.html tmp.pdf
+    wk tmp.html tmp2.html tmp.pdf 2>$LEVEL2 >$LEVEL1
     ([ -f tmp.pdf ] && 
 	pdftotext tmp.pdf /dev/stdout | grep -q Hello &&
-	pdftotext tmp.pdf /dev/stdout | grep -q world) && good MultiDoc || bad MultiDoc
+	pdftotext tmp.pdf /dev/stdout | grep -q world) && good $1 || bad $1
 }
 
 function testHtmlHeader() {
-    rm -rf tmp.pdf
     echo "<html><body>Header</body></html>" > tmp.html
     echo "<html><head><title>Local Test</title></head><body><h1>world</h1></body></html>" > tmp2.html
-    wk --header-html tmp.html tmp2.html tmp.pdf
+    wk --header-html tmp.html tmp2.html tmp.pdf 2>$LEVEL2 >$LEVEL1
     ([ -f tmp.pdf ] && 
 	pdftotext tmp.pdf /dev/stdout | grep -q Header &&
-	pdftotext tmp.pdf /dev/stdout | grep -q world) && good HtmlHeader || bad HtmlHeader
+	pdftotext tmp.pdf /dev/stdout | grep -q world) && good $1 || bad $1
 }
 
 function testCustomHeader() {
-    rm -rf tmp.pdf
-    wk http://madalgo.au.dk/~jakobt/cookiewrite.php --custom-header "Cookie" "cookie=hello" tmp.pdf
+    wk http://madalgo.au.dk/~jakobt/cookiewrite.php --custom-header "Cookie" "cookie=hello" tmp.pdf 2>$LEVEL2 >$LEVEL1
     ([ -f tmp.pdf ] && 
-	pdftotext tmp.pdf /dev/stdout | grep -q hello) && good CustomHeader || bad CustomHeader
+	pdftotext tmp.pdf /dev/stdout | grep -q hello) && good $1 || bad $1
 }
 
 function testCookies() {
-    rm -rf tmp.jar tmp.pdf tmp2.pdf
-    wk --cookie mykey myvalue1 --cookie mykey2 myvalue2 --cookie-jar tmp.jar http://cs.au.dk/~jakobt/cookie.php tmp.pdf
-    wk --cookie-jar tmp.jar http://cs.au.dk/~jakobt/cookie.php tmp2.pdf
+    wk --cookie mykey myvalue1 --cookie mykey2 myvalue2 --cookie-jar tmp.jar http://cs.au.dk/~jakobt/cookie.php tmp.pdf 2>$LEVEL2 >$LEVEL1
+    wk --cookie-jar tmp.jar http://cs.au.dk/~jakobt/cookie.php tmp2.pdf 2>$LEVEL2 >$LEVEL1
     (   [ -f tmp.pdf ] &&
 	pdftotext tmp.pdf /dev/stdout | grep -q "mykey:myvalue1;" &&
 	pdftotext tmp.pdf /dev/stdout | grep -q "mykey2:myvalue2;" &&
 	[ -f tmp2.pdf ] &&
 	pdftotext tmp2.pdf /dev/stdout | grep -q "writetest:success;") &&
-    good Cookies || bad Cookies
+    good $1 || bad $1
 }
 
 function testTitle() {
-    rm -rf tmp.pdf
     title="fooæøåおさか おかみ"
-    wk http://google.com --title "$title" tmp.pdf
-    ([ -f tmp.pdf ] && [[ "$(pdfinfo tmp.pdf  | sed -nre 's/Title:[\t ]*//p')" == "$title" ]]) && good title || bad "title"
+    wk http://google.com --title "$title" tmp.pdf 2>$LEVEL2 >$LEVEL1
+    ([ -f tmp.pdf ] && [[ "$(pdfinfo tmp.pdf  | sed -nre 's/Title:[\t ]*//p')" == "$title" ]]) && good $1 || bad $1
 }
 
 
-function testBuild() {
-    rm -rf wkhtmltopdf
-    (cd .. && git checkout-index --prefix=./test/wkhtmltopdf/ -a) || (bad "Build $1 (1)" && return 1)
+function testQMakeBuild() {
+    (cd .. && git checkout-index --prefix=./test/wkhtmltopdf/ -a) || (bad "$1 (1)" && return 1)
     cd wkhtmltopdf
-    if [[ "$1" == "qmake" ]]; then
-	qmake 2>/dev/null >/dev/null || (bad "Build $1 (2)" && return 1)
-    else
-	cmake . 2>/dev/null >/dev/null || (bad "Build $1 (2)" && return 1)
-    fi
-    make -j2 >/dev/null 2>/dev/null && good "Build $1" || bad "Build $1 (3)"
+    qmake 2>$LEVEL2 >$LEVEL1 || (bad "$1 (2)" && return 1)
+    make -j2 2>$LEVEL2 >$LEVEL1 || good $1 || bad $1
     cd ..
 }
 
-function testNoneStatic() {
-    ([ -f wkhtmltopdf/wkhtmltopdf ] && echo "<html><body>Foo</body></html>" | wkhtmltopdf/wkhtmltopdf -q - tmp.pdf && pdftotext tmp.pdf /dev/stdout | grep -q Foo) && good "None Static" || bad "None Static"
-}
-
-function testAgsFrmStdin() {
+function testArgumentFromStdin() {
     echo "<html><body>XFooZ</body></html>" > tmp.html
-    wk --read-args-from-stdin <<EOF
+    wk --read-args-from-stdin 2>$LEVEL2 >$LEVEL1 <<EOF
 -q tmp.html tmp1.pdf
 -q tmp.html tmp2.pdf
 EOF
     (   [ -f tmp1.pdf ] && pdftotext tmp1.pdf /dev/stdout | grep -q XFooZ &&
-	[ -f tmp2.pdf ] && pdftotext tmp2.pdf /dev/stdout | grep -q XFooZ) && good "Args from stdin" || bad "Arg from stdin"
+	[ -f tmp2.pdf ] && pdftotext tmp2.pdf /dev/stdout | grep -q XFooZ) && good $1 || bad $1
 }
 
-good TestTest
-testCookies
-testLocalFileSupport
-testPipeInSupport
-testPipeOutSupport 
-testUserStyleSheet false
-testToc
-testOutline
-testTitle
-testImgSupport jpg true
-testImgSupport gif true
-testImgSupport png true
-testImgSupport mng false
-testImgSupport tiff false
-testJSRedirect
-testServersideRedirect
-test404
-testBadDest
-testBadSource
-testMultidoc
-testHtmlHeader
-testCustomHeader
-testRemote 
-testSSL
-testHeaderFooter
-testBuild qmake
-#testNoneStatic
-testAgsFrmStdin
-#testBuild cmake
-#Lets clean up
-rm -rf *.pdf *.html wkhtmltopdf
+function usage() {
+    echo "Usage $0 [OPTIONS] [EXPRESSION]"
+    echo ""
+    echo "Options:"
+    echo "-h         Display this message"
+    echo "-v         Be more verbose"
+    echo "-q         Be more quiet"
+    echo "-w path    wkhtmltopdf binary to test"
+    echo ""
+    echo "Expression:"
+    echo "grep regular expresion on what tests to run"
+}
+
+LEVEL1=/dev/null
+LEVEL2=/dev/stdout
+LEVEL3=/dev/stdout
+
+export WK=../wkhtmltopdf 
+
+while getopts hvqw: O; do
+    case "$O" in
+	[h?])
+	    usage
+	    exit 1
+	    ;;
+	v)
+	    shift 1
+	    LEVEL1=/dev/stdout
+	    ;;
+	q)
+	    shift 1
+	    LEVEL2=/dev/null
+	    ;;
+	w)
+	    shift 2
+	    export WK=$OPTARG
+	    ;;
+    esac
+done
+R=$1
+if [ -z "$R" ]; then 
+    R=.*
+fi
+
+TESTS=$(cat $0 | sed -nre 's/^function test(.*)\(\)\ \{.*/\1/p' | grep "$R");
+
+#This is just some random image
+img=http://madalgo.au.dk/img/Forside/KatrinebjMay-05.jpg
+[ -d test ] || mkdir test
+cd test
+[ -f img.jpg ] || wget $img -O img.jpg
+
+failed=0
+
+TMPFILES="tmp.pdf tmp.html tmp.css tmp2.html tmp.jar tmp1.pdf tmp2.pdf wkhtmltopdf/"
+
+for test in $TESTS; do
+    rm -rf $TMPFILES
+    eval test$test $test
+done
+rm -rf $TMPFILES
 exit $failed 
