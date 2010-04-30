@@ -53,7 +53,7 @@ fi
 ./scripts/static-build.sh $QB linux-amd64 || (echo Build failed; git reset $HEAD --hard; exit 1)
 ./scripts/static-build.sh $QB windows || (echo Build failed; git reset $HEAD --hard; exit 1)
 
-git commit -amend -m "Version $v" wkhtmltopdf.pro README
+git commit --amend -m "Version $v" wkhtmltopdf.pro README
 git tag "$v"
 
 rm -rf "release-$v"
