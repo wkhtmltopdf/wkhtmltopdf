@@ -182,7 +182,7 @@ function testCookies() {
 }
 
 function testTitle() {
-    title="fooæøåおさか おかみ"
+    title="\()fooæøåおさか おかみ"
     wk http://google.com --title "$title" tmp.pdf 2>$LEVEL2 >$LEVEL1
     ([ -f tmp.pdf ] && [[ "$(pdfinfo tmp.pdf  | sed -nre 's/Title:[\t ]*//p')" == "$title" ]]) && good $1 || bad $1
 }
