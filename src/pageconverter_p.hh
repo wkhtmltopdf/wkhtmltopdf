@@ -69,10 +69,12 @@ private:
 	QHash<int, QVector< QPair<QWebElement,QString> > > localLinks;
 	QHash<int, QVector< QPair<QWebElement,QString> > > externalLinks;
 
+	QHash<QString, int> urlToDoc;
 	QList<QWebPage *> headers;
 	QList<QWebPage *> footers;
 	Outline * outline;
 	TocPrinter * tocPrinter;
+	void findLinks(QWebFrame * frame, QVector<QPair<QWebElement, QString> > & local, QVector<QPair<QWebElement, QString> > & external);
 	void beginPage(int & actualPage, bool & first);
 	void endPage(bool actual, bool hasHeaderFooter);
 	QString hfreplace(const QString & q, const QHash<QString, QString> & parms);
