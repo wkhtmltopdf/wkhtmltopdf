@@ -34,6 +34,5 @@
 -no-openvg
 -no-opengl
 -no-xsync
--no-javascript-jit
 -no-svg
 

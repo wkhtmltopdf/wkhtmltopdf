@@ -231,10 +231,13 @@ void PageConverterPrivate::preparePrint(bool ok) {
 
 #ifndef __EXTENSIVE_WKHTMLTOPDF_QT_HACK__
 	//If you do not have the hacks you get this crappy solution
+
 	printer->setCollateCopies(settings.copies);
 	printer->setCollateCopies(settings.collate);
 	printPage(true);
 #else
+	printer->printEngine()->setProperty(QPrintEngine::PKK_UseCompression, settings.useCompression);
+
 	painter = new QPainter();
 	
 	QString title = settings.documentTitle;
