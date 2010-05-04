@@ -204,6 +204,7 @@ struct Settings {
 	QList< QString > allowed;
 	bool useCompression;
 	bool produceForms;
+	bool ignoreLoadErrors;
 
 	static QPrinter::PageSize strToPageSize(const char * s, bool * ok=0);
 	static QPair<qreal, QPrinter::Unit> strToUnitReal(const char * s, bool * ok=0);
