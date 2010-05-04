@@ -77,6 +77,7 @@ private:
 	void findLinks(QWebFrame * frame, QVector<QPair<QWebElement, QString> > & local, QVector<QPair<QWebElement, QString> > & external);
 	void beginPage(int & actualPage, bool & first);
 	void endPage(bool actual, bool hasHeaderFooter);
+	void fillParms(QHash<QString, QString> & parms, int page);
 	QString hfreplace(const QString & q, const QHash<QString, QString> & parms);
 	QWebPage * loadHeaderFooter(QString url, const QHash<QString, QString> & parms);
 #endif

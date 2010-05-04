@@ -25,6 +25,7 @@
 #include <QWebSettings>
 #include <qapplication.h>
 #include <qfileinfo.h>
+#include <QDateTime>
 #ifdef Q_OS_WIN32
 #include <io.h>
 #include <fcntl.h>
@@ -347,8 +348,8 @@ void PageConverterPrivate::preparePrint(bool ok) {
 		emit outer.phaseChanged();
 		for(int p=0; p < outline->pageCount(); ++p) {
 			QHash<QString, QString> parms;
-			outline->fillHeaderFooterParms(page, parms);
-
+			fillParms(parms, page);
+			
 			if(!settings.header.htmlUrl.isEmpty())
 				headers.push_back(loadHeaderFooter(settings.header.htmlUrl, parms) );
 			if(!settings.footer.htmlUrl.isEmpty())
@@ -362,6 +363,13 @@ void PageConverterPrivate::preparePrint(bool ok) {
 }
 
 #ifdef __EXTENSIVE_WKHTMLTOPDF_QT_HACK__
+void PageConverterPrivate::fillParms(QHash<QString, QString> & parms, int page) {
+	outline->fillHeaderFooterParms(page, parms);
+	QDateTime t(QDateTime::currentDateTime());
+	parms["time"] = t.time().toString(Qt::SystemLocaleShortDate);
+	parms["date"] = t.date().toString(Qt::SystemLocaleShortDate);
+}
+
 void PageConverterPrivate::beginPage(int & actualPage, bool & first) {
 	progressString = QString("Page ") + QString::number(actualPage) + QString(" of ") + QString::number(actualPages);
 	emit outer.progressChanged(actualPage * 100 / actualPages);
@@ -377,7 +385,7 @@ void PageConverterPrivate::endPage(bool actual, bool hasHeaderFooter) {
 		
 	if(hasHeaderFooter && actual) {
 		QHash<QString, QString> parms;
-		outline->fillHeaderFooterParms(logicalPage, parms);
+		fillParms(parms, logicalPage);
 
 		//Webkit used all kinds of crazy coordinate transformation, and font setup
 		//We save it here and restore some sane defaults
