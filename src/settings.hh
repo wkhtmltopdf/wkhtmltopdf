@@ -114,96 +114,146 @@ struct Settings {
 	
 	//! Proxy related settings
 	ProxySettings proxy;
-	//! Header related settings
-	HeaderFooterSettings header;
-	//! Header related settings
-	HeaderFooterSettings footer;
-	//! Margin related settings
-	MarginSettings margin;
+
 	//! Size related settings
 	SizeSettings size;
-	//! Settings regarding the TOC
-	TOCSettings toc;
 
-	//! Username used for http auth login
-	QString username;
-	//! Password used for http auth login
-	QString password;
 	//! Be less verbose
 	bool quiet; 
-	//! Should we print background images
-	bool background;
-	//! Should we print a table of content
-	bool printToc;
+
 	//! Should plugins be allowed
 	bool enablePlugins;
+
 	//! Should we use the graphics system
 	bool useGraphics;
-	//! Should external links be links in the PDF
-	bool useExternalLinks;
-	//! Should internal links be links in the PDF
-	bool useLocalLinks;
-	//! Should we enable Java Script
-	bool enableJavascript; 
-	//! Should the horrible intelligent shrking feature be enabled?
-	bool enableIntelligentShrinking;
-	//! How many milliseconds should we wait for a javascrit redirect
-	int jsredirectwait;
+
 	//! Should we orientate in landscape or portrate
 	QPrinter::Orientation orientation; 
+
 	//! Color or grayscale
 	QPrinter::ColorMode colorMode; 
+
 	//! What overall resolution should we use
 	QPrinter::PrinterMode resolution; 
+
 	//! What dpi should be used when printing
 	int dpi;
+
 	//! When pagenumbers are printed, apply this offset to them all
 	int pageOffset;
+
 	//! How many copies do we wan to print
 	int copies;
+
 	//! Should be print a whole copy before beginnig the next
 	bool collate;
-	//! What zoom fator should we apply when printing
-	float zoomFactor;
-	//! Minimum font size
-	int minimumFontSize;
-	//! Should we used the print or the screen mediatype
-	bool printMediaType;
-	//! Encoding used to enterpit a document with do supplied encoding
-	QString defaultEncoding;
+
 	//! Stylesheet supplied by the user
 	QString userStyleSheet;
-	//! Url of document to use as cover
-	QString cover;
+
 	//! Should we generate an outline and put it into the pdf file
 	bool outline;
+
 	//! Maximal depth of the generated outline
 	int outlineDepth;
+
 	//! dump outline to this filename
 	QString dumpOutline;
-	//! List of input files
-	QList<QString> in;
+
 	//! The file where in to store the output
 	QString out;
-	//! Map of custum header valiabels
-	QList< QPair<QString, QString> > customHeaders;
-	//! Should we read arguments from stdin
-	bool readArgsFromStdin;
-	//! Map of cookies
-	QList< QPair<QString, QString> > cookies;
-	//! Replacements
-	QList< QPair<QString, QString> > replacements;
+
 	//! Path of the cookie jar file
 	QString cookieJar;
 	
-	QList< PostItem > post;
 	QString documentTitle;
-	bool stopSlowScripts;
-	bool debugJavascript;
-	bool blockLocalFileAccess;
-	QList< QString > allowed;
+
 	bool useCompression;
-	bool produceForms;
+
+	struct PageSettings {
+
+		//! Settings regarding the TOC
+		TOCSettings toc;
+		
+		//! Should we print a table of content
+		bool printToc;
+
+		QString page;
+
+		//! Header related settings
+		HeaderFooterSettings header;
+		
+		//! Header related settings
+		HeaderFooterSettings footer;
+		
+		//! Margin related settings
+		MarginSettings margin;
+				
+		//! Username used for http auth login
+		QString username;
+		
+		//! Password used for http auth login
+		QString password;
+		
+		//! Should we print background images
+		bool background;
+		
+		//! Should external links be links in the PDF
+		bool useExternalLinks;
+		
+		//! Should internal links be links in the PDF
+		bool useLocalLinks;
+		
+		//! Should we enable Java Script
+		bool enableJavascript; 
+		
+		//! Should the horrible intelligent shrking feature be enabled?
+		bool enableIntelligentShrinking;
+		
+		//! How many milliseconds should we wait for a javascrit redirect
+		int jsredirectwait;
+
+		//! What zoom fator should we apply when printing
+		float zoomFactor;
+		
+		//! Minimum font size
+		int minimumFontSize;
+		
+		//! Should we used the print or the screen mediatype
+		bool printMediaType;
+		
+		//! Encoding used to enterpit a document with do supplied encoding
+		QString defaultEncoding;
+		
+		//! Map of custum header valiabels
+		QList< QPair<QString, QString> > customHeaders;
+		
+		//! Map of cookies
+		QList< QPair<QString, QString> > cookies;
+		
+		//! Replacements
+		QList< QPair<QString, QString> > replacements;
+		
+		QList< PostItem > post;
+		
+		//! Block access to local files for the given page
+		bool blockLocalFileAccess;
+		
+		//! If access to local files is not allowed in general, alow it for these files
+		QList< QString > allowed;
+
+		//! Stop javascript from running too long
+		bool stopSlowScripts;		
+		
+		//! Output javascript debug messages
+		bool debugJavascript;
+		
+		//! Convert forms on the pages into pdf forms
+		bool produceForms;
+		
+		//! If loading of the page fails continue as if nothing happened
+		bool ignoreLoadErrors;
+	};
 
 	static QPrinter::PageSize strToPageSize(const char * s, bool * ok=0);
 	static QPair<qreal, QPrinter::Unit> strToUnitReal(const char * s, bool * ok=0);

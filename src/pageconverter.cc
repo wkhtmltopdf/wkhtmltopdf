@@ -25,6 +25,7 @@
 #include <QWebSettings>
 #include <qapplication.h>
 #include <qfileinfo.h>
+#include <QDateTime>
 #ifdef Q_OS_WIN32
 #include <io.h>
 #include <fcntl.h>
@@ -169,6 +170,36 @@ void PageConverterPrivate::fail() {
 	qApp->exit(0); // quit qt's event handling
 }
 
+
+void PageConverterPrivate::findLinks(QWebFrame * frame, QVector<QPair<QWebElement, QString> > & local, QVector<QPair<QWebElement, QString> > & external) {
+	if (!settings.useLocalLinks && !settings.useExternalLinks) return;
+	foreach (const QWebElement & elm, frame->findAllElements("a")) {
+		QUrl href=QUrl(elm.attribute("href"));
+		if (href.isEmpty()) continue;
+		href=frame->url().resolved(href);
+		if (urlToDoc.contains(href.toString(QUrl::RemoveFragment))) {
+			if (settings.useLocalLinks) {
+				int t = urlToDoc[href.toString(QUrl::RemoveFragment)];
+				QWebElement e;
+				if (!href.hasFragment()) 
+					e = pages[t]->mainFrame()->findFirstElement("body");
+				else {
+					e = pages[t]->mainFrame()->findFirstElement("a[name=\""+href.fragment()+"\"]");
+					if(e.isNull()) 
+						e = pages[t]->mainFrame()->findFirstElement("*[id=\""+href.fragment()+"\"]");
+				}
+				if (e.isNull())
+					qDebug() << "Unable to find target for local link " << href; 
+				else {
+					anchors[t][href.toString()] = e;
+					local.push_back( qMakePair(elm, href.toString()) );
+				}
+			}
+		} else if (settings.useExternalLinks)
+			external.push_back( qMakePair(elm, href.toString() ) );
+	}
+}
+
 /*!
  * Prepares printing out the document to the pdf file
  */
@@ -231,10 +262,13 @@ void PageConverterPrivate::preparePrint(bool ok) {
 
 #ifndef __EXTENSIVE_WKHTMLTOPDF_QT_HACK__
 	//If you do not have the hacks you get this crappy solution
+
 	printer->setCollateCopies(settings.copies);
 	printer->setCollateCopies(settings.collate);
 	printPage(true);
 #else
+	printer->printEngine()->setProperty(QPrintEngine::PKK_UseCompression, settings.useCompression);
+
 	painter = new QPainter();
 	
 	QString title = settings.documentTitle;
@@ -261,35 +295,9 @@ void PageConverterPrivate::preparePrint(bool ok) {
 			urlToDoc[ pages[d]->mainFrame()->url().toString(QUrl::RemoveFragment) ]  = d;
 		
 		for(int d=0; d < pages.size(); ++d) {
-
 			progressString = QString("Page ")+QString::number(d+1)+QString(" of ")+QString::number(pages.size());
 			emit outer.progressChanged((d+1)*100 / pages.size());
-			
-			foreach(const QWebElement & elm,pages[d]->mainFrame()->findAllElements("a")) {
-				QUrl href=QUrl(elm.attribute("href"));
-				if(href.isEmpty()) continue;
-				href=pages[d]->mainFrame()->url().resolved(href);
-				if(urlToDoc.contains(href.toString(QUrl::RemoveFragment))) {
-					if(settings.useLocalLinks) {
-						int t = urlToDoc[href.toString(QUrl::RemoveFragment)];
-						QWebElement e;
-						if(!href.hasFragment()) 
-							e = pages[t]->mainFrame()->findFirstElement("body");
-						else {
-							e = pages[t]->mainFrame()->findFirstElement("a[name=\""+href.fragment()+"\"]");
-							if(e.isNull()) 
-								e = pages[t]->mainFrame()->findFirstElement("*[id=\""+href.fragment()+"\"]");
-						}
-						if(e.isNull())
-							qDebug() << "Unable to find target for local link " << href; 
-						else {
-							anchors[t][href.toString()] = e;
-							localLinks[d].push_back( qMakePair(elm, href.toString()) );
-						}
-					}
-				} else if(settings.useExternalLinks)
-					externalLinks[d].push_back( qMakePair(elm, href.toString() ) );
-			}
+			findLinks(pages[d]->mainFrame(), localLinks[d], externalLinks[d]);
 		}
 	}
 
@@ -341,8 +349,8 @@ void PageConverterPrivate::preparePrint(bool ok) {
 		emit outer.phaseChanged();
 		for(int p=0; p < outline->pageCount(); ++p) {
 			QHash<QString, QString> parms;
-			outline->fillHeaderFooterParms(page, parms);
-
+			fillParms(parms, page);
+			
 			if(!settings.header.htmlUrl.isEmpty())
 				headers.push_back(loadHeaderFooter(settings.header.htmlUrl, parms) );
 			if(!settings.footer.htmlUrl.isEmpty())
@@ -356,6 +364,13 @@ void PageConverterPrivate::preparePrint(bool ok) {
 }
 
 #ifdef __EXTENSIVE_WKHTMLTOPDF_QT_HACK__
+void PageConverterPrivate::fillParms(QHash<QString, QString> & parms, int page) {
+	outline->fillHeaderFooterParms(page, parms);
+	QDateTime t(QDateTime::currentDateTime());
+	parms["time"] = t.time().toString(Qt::SystemLocaleShortDate);
+	parms["date"] = t.date().toString(Qt::SystemLocaleShortDate);
+}
+
 void PageConverterPrivate::beginPage(int & actualPage, bool & first) {
 	progressString = QString("Page ") + QString::number(actualPage) + QString(" of ") + QString::number(actualPages);
 	emit outer.progressChanged(actualPage * 100 / actualPages);
@@ -367,10 +382,11 @@ void PageConverterPrivate::beginPage(int & actualPage, bool & first) {
 }
 
 void PageConverterPrivate::endPage(bool actual, bool hasHeaderFooter) {
+	typedef QPair<QWebElement, QString> p_t;		
+		
 	if(hasHeaderFooter && actual) {
-
 		QHash<QString, QString> parms;
-		outline->fillHeaderFooterParms(logicalPage, parms);
+		fillParms(parms, logicalPage);
 
 		//Webkit used all kinds of crazy coordinate transformation, and font setup
 		//We save it here and restore some sane defaults
@@ -415,9 +431,22 @@ void PageConverterPrivate::endPage(bool actual, bool hasHeaderFooter) {
 		painter->translate(0, -spacing);
 		QWebPrinter wp(headers[logicalPage-1]->mainFrame(), printer, *painter);
 		painter->translate(0,-wp.elementLocation(headers[logicalPage-1]->mainFrame()->findFirstElement("body")).second.height());
+
+		QVector<p_t> local;
+		QVector<p_t> external;
+		findLinks(headers[logicalPage-1]->mainFrame(), local, external);
+		foreach(const p_t & p, local) {
+			QRectF r = wp.elementLocation(p.first).second;
+			painter->addLink(r, p.second);
+		}
+		foreach(const p_t & p, external) {
+			QRectF r = wp.elementLocation(p.first).second;
+			qDebug() << p.second;
+			painter->addHyperlink(r, QUrl(p.second));
+		}
 		wp.spoolPage(1);
 		painter->restore();
-	}
+ 	}
 
 	if(actual && logicalPage <= footers.size()) {
 		painter->save();
@@ -425,6 +454,19 @@ void PageConverterPrivate::endPage(bool actual, bool hasHeaderFooter) {
 		double spacing = settings.footer.spacing * printer->height() / printer->heightMM();
 		painter->translate(0, printer->height()+ spacing);
 		QWebPrinter wp(footers[logicalPage-1]->mainFrame(), printer, *painter);
+		
+		QVector<p_t> local;
+		QVector<p_t> external;
+		findLinks(footers[logicalPage-1]->mainFrame(), local, external);
+		foreach(const p_t & p, local) {
+			QRectF r = wp.elementLocation(p.first).second;
+			painter->addLink(r, p.second);
+		}
+		foreach(const p_t & p, external) {
+			QRectF r = wp.elementLocation(p.first).second;
+			qDebug() << p.second;
+			painter->addHyperlink(r, QUrl(p.second));
+		}
 		wp.spoolPage(1);
 		painter->restore();
 	}

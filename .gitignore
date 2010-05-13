@@ -3,3 +3,10 @@ build/
 *.plist
 wkhtmltopdf.app/
 wkhtmltopdf.xcodeproj/
+release*/
+test/
+static-build/
+.obj/
+doc/
+man1/
+Makefile

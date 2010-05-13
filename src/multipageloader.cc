@@ -366,13 +366,17 @@ void MultiPageLoaderPrivate::loadProgress(int progress) {
 
 void MultiPageLoaderPrivate::loadFinished(bool ok) {
 	loadingPages--;
-	error = error || !ok;
+	error = error || (!ok && !settings.ignoreLoadErrors);
 	if (!pageToIndex.count(QObject::sender())) return;
 	
 	int idx=pageToIndex[QObject::sender()];
-
-	if (!ok)
-		emit outer.error(QString("Failed loading page ") + urls[idx].toString());
+	
+	if (!ok) {
+		if (!settings.ignoreLoadErrors)
+			emit outer.error(QString("Failed loading page ") + urls[idx].toString()+" (sometimes it will work just to ignore this error with --ignore-load-errors)");
+		else
+			emit outer.warning(QString("Failed loading page ") + urls[idx].toString()+" (ignored)");
+	}
 
 	if (!finishedList[idx]) {
 		finishedList[idx] = true;

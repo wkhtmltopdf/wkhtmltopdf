@@ -1,4 +1,4 @@
-==========================> wkhtmltopdf 0.9.5 Manual <==========================
+==========================> wkhtmltopdf 0.9.6 Manual <==========================
 This file documents wkhtmltopdf, a program capable of converting html documents
 into PDF documents.
 
@@ -43,6 +43,8 @@ Bouthenot.
 wkhtmltopdf [OPTIONS]... <input file> [More input files] <output file>
 
 ==============================> General Options <===============================
+    --allow <path>                    Allow the file or files from the specified
+                                      folder to be loaded (repeatable)
 -b, --book *                          Set the options one would usually set when
                                       printing a book
     --collate                         Collate when printing multiple copies
@@ -65,15 +67,21 @@ wkhtmltopdf [OPTIONS]... <input file> [More input files] <output file>
     --disable-external-links *        Do no make links to remote web pages
     --disable-internal-links *        Do no make local links
 -n, --disable-javascript              Do not allow web pages to run javascript
+    --disable-pdf-compression *       Do not use lossless compression on pdf
+                                      objects
     --disable-smart-shrinking *       Disable the intelligent shrinking strategy
                                       used by WebKit that makes the pixel/dpi
                                       ratio none constant
+    --disallow-local-file-access      Do not allowed conversion of a local file
+                                      to read in other local files, unless
+                                      explecitily allowed with --allow
 -d, --dpi <dpi>                       Change the dpi explicitly (this has no
                                       effect on X11 based systems)
     --enable-plugins                  Enable installed plugins (such as flash
     --encoding <encoding>             Set the default text encoding, for input
     --extended-help                   Display more extensive help, detailing
                                       less common command switches
+    --forms *                         Turn HTML form fields into pdf form fields
 -g, --grayscale                       PDF will be generated in grayscale
 -h, --help                            Display help
     --htmldoc                         Output program html help

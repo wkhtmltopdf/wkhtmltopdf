@@ -1,5 +1,26 @@
 #!/bin/bash
 
+function usage() {
+    echo "Usage $0: [Options] Major Minor Patch [Build]"
+    echo ""
+    echo "Options:"
+    echo "-h           Display this help message"
+    echo "-q           Build against this branch of QT"
+}
+
+while getopts hq: O; do
+    case "$O" in
+	[?h])
+	    usage;
+	    exit 1
+	    ;;
+	q)
+	    shift 2
+	    QB="-q $OPTARG"
+	    ;;
+    esac
+done
+
 git status
 if [[ $1 == "" ]] || [[ $2 == "" ]] || [[ $3 == "" ]]; then
 	echo "Bad version"
@@ -10,27 +31,29 @@ if [[ "$4" != "" ]]; then
     v="${v}_$4"
 fi
 
-echo "About to release $v" 
+echo "About to release $v"
 read -p "Are you sure you are ready: " N
 [ "$N" != "YES" ] && exit
 
 sed -ri "s/MAJOR_VERSION=[0-9]+ MINOR_VERSION=[0-9]+ PATCH_VERSION=[0-9]+ BUILD=.*/MAJOR_VERSION=$1 MINOR_VERSION=$2 PATCH_VERSION=$3 BUILD=\"$4\"/" wkhtmltopdf.pro || exit 1
 
-git commit -m "Making ready for version $v" wkhtmltopdf.pro
+HEAD="$(git log --pretty=oneline  -n 1 | sed -e 's/ .*//')"
+git commit -m "TEMPORERY DO NOT COMMIT $v" wkhtmltopdf.pro
 
 rm -rf wkhtmltopdf-i386 wkhtmltopdf-amd64 wkhtmltopdf.exe wkhtmltopdf
-./scripts/static-build.sh linux-i386 || (echo Build failed; exit 1)
+./scripts/static-build.sh $QB linux-i386 || (echo Build failed; git reset $HEAD --hard; exit 1)
 cp wkhtmltopdf-i386 wkhtmltopdf
-if ! ./scripts/test.sh; then
+if ! ./scripts/test.sh -q; then
 	echo "Test failed"
+	git reset $HEAD --hard
 	exit 1
 fi
 
 ./wkhtmltopdf-i386 --readme > README
-./scripts/static-build.sh linux-amd64 || (echo Build failed; exit 1)
-./scripts/static-build.sh windows || (echo Build failed; exit 1)
+./scripts/static-build.sh $QB linux-amd64 || (echo Build failed; git reset $HEAD --hard; exit 1)
+./scripts/static-build.sh $QB windows || (echo Build failed; git reset $HEAD --hard; exit 1)
 
-git commit -m "Making ready for version $v" README
+git commit --amend -m "Version $v" wkhtmltopdf.pro README
 git tag "$v"
 
 rm -rf "release-$v"
