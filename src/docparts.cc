@@ -75,7 +75,7 @@ void CommandLineParserPrivate::outputAuthors(Outputter * o) const {
 */
 void CommandLineParserPrivate::outputSynopsis(Outputter * o) const {
 	o->beginSection("Synopsis");
-	o->verbatim("wkhtmltopdf [OPTIONS]... <input file> [More input files] <output file>\n");
+	o->verbatim("wkhtmltopdf [GLOBAL OPTION]... (<input file> [FILE OPTION]...)... <output file>\n");
 	o->endSection();
 }
 
