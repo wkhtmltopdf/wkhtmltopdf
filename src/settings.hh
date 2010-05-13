@@ -25,8 +25,11 @@
     \sa CommandLineParser::parse()
 */
 struct Settings {
+	Settings();
+
 	/*! \brief Settings considdirng the table of content */
 	struct TOCSettings {
+		TOCSettings();
 		static const uint levels = 7;
 		//! Should we print dots between the name and the page number?
 		bool useDots;
@@ -52,6 +55,7 @@ struct Settings {
 
 	/*! \brief Settings considering headers and footers */
 	struct HeaderFooterSettings {
+		HeaderFooterSettings();
 		//! Size of the font used to render the text
 		int fontSize;
 		//! Name of font used to render text
@@ -72,6 +76,7 @@ struct Settings {
 
 	/*! \brief Settings consdering proxy */
 	struct ProxySettings {
+		ProxySettings();
 		//! Type of proxy to use
 		QNetworkProxy::ProxyType type; 
 		//! The port of the proxy to use
@@ -92,6 +97,7 @@ struct Settings {
 	
 	/*! \brief Settings consdering margins */
 	struct MarginSettings {
+		MarginSettings();
 		//!Margin applied to the top of the page
 		QPair<qreal, QPrinter::Unit> top;
 		//!Margin applied to the right of the page
@@ -104,6 +110,7 @@ struct Settings {
 	
 	/*! \brief Settings considering page size */
 	struct SizeSettings {
+		SizeSettings();
 		//! What size paper should we use
 		QPrinter::PageSize pageSize; 
 		//!Height of the page
@@ -120,10 +127,7 @@ struct Settings {
 
 	//! Be less verbose
 	bool quiet; 
-
-	//! Should plugins be allowed
-	bool enablePlugins;
-
+	
 	//! Should we use the graphics system
 	bool useGraphics;
 
@@ -138,18 +142,15 @@ struct Settings {
 
 	//! What dpi should be used when printing
 	int dpi;
-
+	
 	//! When pagenumbers are printed, apply this offset to them all
-	int pageOffset;
+	//int pageOffset;
 
 	//! How many copies do we wan to print
 	int copies;
 
 	//! Should be print a whole copy before beginnig the next
 	bool collate;
-
-	//! Stylesheet supplied by the user
-	QString userStyleSheet;
 
 	//! Should we generate an outline and put it into the pdf file
 	bool outline;
@@ -253,12 +254,29 @@ struct Settings {
 		
 		//! If loading of the page fails continue as if nothing happened
 		bool ignoreLoadErrors;
+
+		//! Stylesheet supplied by the user
+		QString userStyleSheet;
+		
+		//! Should plugins be allowed
+		bool enablePlugins;
 	};
 
+	
+	QList<PageSettings> pages;
+
+
 	static QPrinter::PageSize strToPageSize(const char * s, bool * ok=0);
+	static QString pageSizeToStr(QPrinter::PageSize ps);
+
 	static QPair<qreal, QPrinter::Unit> strToUnitReal(const char * s, bool * ok=0);
+	static QString unitRealToStr(const QPair<qreal, QPrinter::Unit> & ur, bool * ok);
+	
 	static ProxySettings strToProxy(const char * s, bool * ok=0);
+
 	static QPrinter::Orientation strToOrientation(const char * s, bool * ok=0);
+	static QString orientationToStr(QPrinter::Orientation o);
+	
 };
 
 #endif //__SETTINGS_HH__

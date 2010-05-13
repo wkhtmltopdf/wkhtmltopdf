@@ -14,11 +14,47 @@
 // You should have received a copy of the GNU General Public License
 // along with wkhtmltopdf.  If not, see <http://www.gnu.org/licenses/>.
 #include <settings.hh>
-
+#include <QMap>
 /*!
   \file settings.hh
   \brief Defines the Settings class
 */
+
+QMap<QString, QPrinter::PageSize> pageSizeMap() {
+	QMap<QString, QPrinter::PageSize> res;
+	res["A0"] = QPrinter::A0;
+	res["A1"] = QPrinter::A1;
+	res["A2"] = QPrinter::A2;
+	res["A3"] = QPrinter::A3;
+	res["A4"] = QPrinter::A4;
+	res["A5"] = QPrinter::A5;
+	res["A6"] = QPrinter::A6;
+	res["A7"] = QPrinter::A7;
+	res["A8"] = QPrinter::A8;
+	res["A9"] = QPrinter::A9;
+	res["B0"] = QPrinter::B0;
+	res["B1"] = QPrinter::B1;
+	res["B10"] = QPrinter::B10;
+	res["B2"] = QPrinter::B2;
+	res["B3"] = QPrinter::B3;
+	res["B4"] = QPrinter::B4;
+	res["B5"] = QPrinter::B5;
+	res["B6"] = QPrinter::B6;
+	res["B7"] = QPrinter::B7;
+	res["B8"] = QPrinter::B8;
+	res["B9"] = QPrinter::B9;
+	res["C5E"] = QPrinter::C5E;
+	res["Comm10E"] = QPrinter::Comm10E;
+	res["DLE"] = QPrinter::DLE;
+	res["Executive"] = QPrinter::Executive;
+	res["Folio"] = QPrinter::Folio;
+	res["Ledger"] = QPrinter::Ledger;
+	res["Legal"] = QPrinter::Legal;
+	res["Letter"] = QPrinter::Letter;
+	res["Tabloid"] = QPrinter::Tabloid;
+	return res;
+
+}
 
 /*!
   Convert a string to a paper size, basically all thinkable values are allowed.
@@ -27,39 +63,22 @@
   \param ok If supplied indicates if the conversion was successful
 */
 QPrinter::PageSize Settings::strToPageSize(const char * s, bool * ok) {
-	if (ok) *ok=true;
-	if (!strcasecmp("A0", s)) return QPrinter::A0;
-	if (!strcasecmp("A1", s)) return QPrinter::A1;
-	if (!strcasecmp("A2", s)) return QPrinter::A2;
-	if (!strcasecmp("A3", s)) return QPrinter::A3;
-	if (!strcasecmp("A4", s)) return QPrinter::A4;
-	if (!strcasecmp("A5", s)) return QPrinter::A5;
-	if (!strcasecmp("A6", s)) return QPrinter::A6;
-	if (!strcasecmp("A7", s)) return QPrinter::A7;
-	if (!strcasecmp("A8", s)) return QPrinter::A8;
-	if (!strcasecmp("A9", s)) return QPrinter::A9;
-	if (!strcasecmp("B0", s)) return QPrinter::B0;
-	if (!strcasecmp("B1", s)) return QPrinter::B1;
-	if (!strcasecmp("B10", s)) return QPrinter::B10;
-	if (!strcasecmp("B2", s)) return QPrinter::B2;
-	if (!strcasecmp("B3", s)) return QPrinter::B3;
-	if (!strcasecmp("B4", s)) return QPrinter::B4;
-	if (!strcasecmp("B5", s)) return QPrinter::B5;
-	if (!strcasecmp("B6", s)) return QPrinter::B6;
-	if (!strcasecmp("B7", s)) return QPrinter::B7;
-	if (!strcasecmp("B8", s)) return QPrinter::B8;
-	if (!strcasecmp("B9", s)) return QPrinter::B9;
-	if (!strcasecmp("C5E", s)) return QPrinter::C5E;
-	if (!strcasecmp("Comm10E", s)) return QPrinter::Comm10E;
-	if (!strcasecmp("DLE", s)) return QPrinter::DLE;
-	if (!strcasecmp("Executive", s)) return QPrinter::Executive;
-	if (!strcasecmp("Folio", s)) return QPrinter::Folio;
-	if (!strcasecmp("Ledger", s)) return QPrinter::Ledger;
-	if (!strcasecmp("Legal", s)) return QPrinter::Legal;
-	if (!strcasecmp("Letter", s)) return QPrinter::Letter;
-	if (!strcasecmp("Tabloid", s)) return QPrinter::Tabloid;
+	QMap<QString,QPrinter::PageSize> map = pageSizeMap();
+	for(QMap<QString,QPrinter::PageSize>::const_iterator i=map.begin(); i != map.end(); ++i) {
+		if (!i.key().compare(s, Qt::CaseInsensitive) ) continue;
+		if (ok) *ok=true;
+		return i.value();
+	}
 	if (ok) *ok = false;
 	return QPrinter::A4;
+}
+
+QString Settings::pageSizeToStr(QPrinter::PageSize ps) {
+	QMap<QString,QPrinter::PageSize> map = pageSizeMap();
+	for(QMap<QString,QPrinter::PageSize>::const_iterator i=map.begin(); i != map.end(); ++i) {
+		if (i.value() == ps) return i.key();
+	}
+	return "";
 }
 
 /*!
@@ -74,6 +93,11 @@ QPrinter::Orientation Settings::strToOrientation(const char * s, bool * ok) {
 	if (ok) *ok = false;
 	return QPrinter::Portrait;
 }
+
+QString Settings::orientationToStr(QPrinter::Orientation o) {
+	return (o == QPrinter::Landscape)?"Landscape":"Portrait";
+}
+
 
 /*!
   Parse a string describing a distance, into a real number and a unit.
@@ -116,6 +140,27 @@ QPair<qreal, QPrinter::Unit> Settings::strToUnitReal(const char * o, bool * ok) 
 	}
 	return qMakePair((qreal)QString(o).left(i).toDouble(ok)*s, u);
 }
+
+QString Settings::unitRealToStr(const QPair<qreal, QPrinter::Unit> & ur, bool * ok) {
+	QString c;
+	if (ur.first == -1) {
+		if (ok) *ok=false;
+		return "";
+	}
+	if (ok) *ok=true;
+	switch(ur.second) {
+	case QPrinter::Didot: c = "didot"; break;
+	case QPrinter::Inch: c = "in"; break;
+	case QPrinter::Pica: c = "pica"; break;
+	case QPrinter::DevicePixel: c = "px"; break;
+	case QPrinter::Point: c = "pt"; break;
+	case QPrinter::Millimeter: c = "mm"; break;
+	default: 
+		if (ok) *ok=false; break;
+	}
+	return QString("%1%2").arg(ur.first).arg(c);
+}
+
 
 /*!
   Read proxy settings from a string, the grammar is described in the manual
@@ -169,3 +214,33 @@ Settings::ProxySettings Settings::strToProxy(const char * proxy, bool * ok) {
 	if(ok && p.host.size() == 0) *ok = false;
 	return p;
 }
+
+Settings::ProxySettings::ProxySettings() {}
+Settings::SizeSettings::SizeSettings():
+	pageSize(QPrinter::A4), 
+	height(QPair<qreal,QPrinter::Unit>(-1,QPrinter::Millimeter)),
+	width(QPair<qreal,QPrinter::Unit>(-1,QPrinter::Millimeter)) {}
+Settings::TOCSettings::TOCSettings() {}
+Settings::HeaderFooterSettings::HeaderFooterSettings() {}
+Settings::MarginSettings::MarginSettings():
+	top(QPair<qreal,QPrinter::Unit>(10,QPrinter::Millimeter)),
+	right(QPair<qreal,QPrinter::Unit>(10,QPrinter::Millimeter)),
+	bottom(QPair<qreal,QPrinter::Unit>(10,QPrinter::Millimeter)),
+	left(QPair<qreal,QPrinter::Unit>(10,QPrinter::Millimeter)) {}
+
+Settings::Settings():
+	quiet(false),
+	useGraphics(false),
+	orientation(QPrinter::Portrait),
+	colorMode(QPrinter::Color), 
+	resolution(QPrinter::HighResolution),
+	dpi(-1),
+	copies(false),
+	collate(true),
+	outline(true),
+	outlineDepth(4),
+	dumpOutline(""),
+	out("-"),
+	cookieJar(""),
+	documentTitle(""),
+	useCompression(true) {};
