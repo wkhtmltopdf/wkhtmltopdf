@@ -32,8 +32,9 @@ public:
 	bool display;
 	bool extended;
 	bool qthack;
-	virtual bool operator() (const char ** args, CommandLineParserPrivate & parser) = 0;
-	virtual void useDefault(CommandLineParserPrivate & parser);
+	int section;
+	virtual bool operator() (const char ** args, CommandLineParserPrivate & parser, Settings::PageSettings & page) = 0;
+	//virtual void useDefault(CommandLineParserPrivate & parser, Settings::PageSettings & page);
 	virtual QString getDesc() const;
 	virtual ~ArgHandler();
 };
@@ -65,6 +66,13 @@ public:
 
 class CommandLineParserPrivate {
 public:
+	const static int global = 1;
+	const static int page = 2;
+	const static int toc = 4;
+
+	Settings::PageSettings od;
+
+	int currentMode;
 	QString currentSection;
 	Settings & settings;
 	bool currentExtended;
@@ -79,9 +87,11 @@ public:
 	//arguments.cc
 	CommandLineParserPrivate(Settings & s);
 	void section(QString s, QString desc="");
+	void mode(int m);
 	void qthack(bool);
 	void extended(bool);
 	void addarg(QString, char, QString, ArgHandler * h, bool display=true);
+	void parseArg(int sections, const int argc, const char ** argv, bool & defaultMode, int & arg, Settings::PageSettings & pageSettings);
 
 	//docparts.cc
 	void outputManName(Outputter * o) const;

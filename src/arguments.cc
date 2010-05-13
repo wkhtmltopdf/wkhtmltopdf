@@ -71,9 +71,9 @@
   This is a NOOP for ArgHandler
   \param parser The parser giving the request
 */
-void ArgHandler::useDefault(CommandLineParserPrivate & parser) {
-	Q_UNUSED(parser);
-} 
+//void ArgHandler::useDefault(CommandLineParserPrivate & parser) {
+//	Q_UNUSED(parser);
+//} 
 
 /*!
   \fn ArgHandler::getDesc() const
@@ -94,22 +94,43 @@ ArgHandler::~ArgHandler() {}
   Implementation details for CommandLineParser
 */
 
+
+template <typename T> class DstArgHandler: public ArgHandler {
+public:
+	T & dst;
+	DstArgHandler(T & d): dst(d) {};
+
+	T & realDst(CommandLineParserPrivate & cp, Settings::PageSettings & ps) {
+		//Very very ugly hack, when the setting is within the page settisgs offset
+		//Dummy struct return its location within the supplied page settings
+		//The dest is within the fake page offset struct 
+		
+		char * d = reinterpret_cast<char *>(&dst);
+		char * od = reinterpret_cast<char *>(&cp.od);
+		if(od > d || d >= od + sizeof(Settings::PageSettings)) return dst;
+		return * reinterpret_cast<T*>(d - od + reinterpret_cast<char *>(&ps));
+	}
+};
+
+
 /*!
   Sets a variable to some constant
 */
-template <typename T> class ConstSetter: public ArgHandler {
+template <typename T> class ConstSetter: public DstArgHandler<T> {
 public:
-	T & dst;
+	typedef DstArgHandler<T> p_t;
 	const T src;
-	const T def;
-	ConstSetter(T & arg, const T s, const T d): dst(arg), src(s), def(d) {};
-	bool operator() (const char **, CommandLineParserPrivate &) {
-		dst=src;
+	ConstSetter(T & arg, const T s): p_t(arg), src(s) {};
+	bool operator() (const char **, CommandLineParserPrivate & cp, Settings::PageSettings & ps) {
+		p_t::realDst(cp,ps)=src;
 		return true;
 	}
-	virtual void useDefault(CommandLineParserPrivate &) {
-		dst=def;
+
+	virtual QString getDesc() const {
+		if (src != p_t::dst) return p_t::desc;
+		return p_t::desc + " (default)";
 	}
+
 };
 
 struct StringPairCreator {
@@ -132,17 +153,14 @@ struct PostItemCreator {
 };
 
 
-struct StringListSetter: public ArgHandler {
-	QList<QString> & dst;
-	StringListSetter(QList<QString> & a, QString valueName) : dst(a) {
-		argn.push_back(valueName);
+struct StringListSetter: public DstArgHandler<QList<QString> > {
+	typedef DstArgHandler<QList<QString> > p_t;
+	StringListSetter(QList<QString> & a, QString valueName) : p_t (a) {
+		p_t::argn.push_back(valueName);
 	}
-	virtual bool operator() (const char ** args, CommandLineParserPrivate &) {
-		dst.append( args[0] );
+	virtual bool operator() (const char ** args, CommandLineParserPrivate & cp, Settings::PageSettings & ps) {
+		p_t::realDst(cp, ps).append( args[0] );
 		return true;
-	}
-	virtual void useDefault() {
-		dst.clear();
 	}
 };
 
@@ -151,18 +169,15 @@ struct StringListSetter: public ArgHandler {
   Putting values into a map
 */
 template <typename T=StringPairCreator>
-struct MapSetter: public ArgHandler {
-	QList< typename T::T > & dst;
-	MapSetter(QList<typename T::T > & a, QString keyName, QString valueName) : dst(a) {
-		argn.push_back(keyName);
-		argn.push_back(valueName);
+struct MapSetter: public DstArgHandler< QList< typename T::T > > {
+	typedef DstArgHandler< QList< typename T::T > > p_t;
+	MapSetter(QList<typename T::T > & a, QString keyName, QString valueName) : p_t(a) {
+		p_t::argn.push_back(keyName);
+		p_t::argn.push_back(valueName);
 	}
-	virtual bool operator() (const char ** args, CommandLineParserPrivate &) {
-		dst.append( T()(args[0], args[1]) );
+	virtual bool operator() (const char ** args, CommandLineParserPrivate & cp, Settings::PageSettings & ps) {
+		p_t::realDst(cp, ps).append( T()(args[0], args[1]) );
 		return true;
-	}
-	virtual void useDefault() {
-		dst.clear();
 	}
 };
 
@@ -181,37 +196,27 @@ struct SomeSetterTM {
   TemplateMethod class used to set a single variable of some type TT::T
 */
 template <typename TT>
-struct SomeSetter: public ArgHandler {
+struct SomeSetter: public DstArgHandler< typename TT::T > {
+	typedef DstArgHandler< typename TT::T > p_t;
 	typedef typename TT::T T;
-	T & val;
-	T def;
 	bool hasDef;
 
-	SomeSetter(T & a, QString an, T d): val(a), def(d), hasDef(true) {
-		argn.push_back(an);
+	SomeSetter(T & a, QString an, bool def=true): p_t(a), hasDef(def) {
+		p_t::argn.push_back(an);
 	}
 
-	SomeSetter(T & a, QString an): val(a), hasDef(false) {
-		argn.push_back(an);
-	}
-
-	virtual void useDefault(CommandLineParserPrivate &) {
-		if (hasDef)
-			val=def;
-	}
-
-	bool operator() (const char ** vals, CommandLineParserPrivate &) {
+	bool operator() (const char ** vals, CommandLineParserPrivate & cp, Settings::PageSettings & ps) {
 		bool ok;
-		val = TT::strToT(vals[0], ok);
+		p_t::realDst(cp, ps) = TT::strToT(vals[0], ok);
 		return ok;
 	}
 
 	virtual QString getDesc() const {
-		if (!hasDef) return desc;
+		if (!hasDef) return p_t::desc;
 		bool ok;
-		QString x = TT::TToStr(def,ok);
-		if (!ok) return desc;
-		return desc + " (default " + x + ")";
+		QString x = TT::TToStr(p_t::dst, ok);
+		if (!ok) return p_t::desc;
+		return p_t::desc + " (default " + x + ")";
 	}
 };
 
@@ -224,6 +229,7 @@ struct IntTM: public SomeSetterTM<int> {
 		return QString::number(t);
 	}
 };
+
 /*!
   Argument handler setting an int variable
 */
@@ -263,7 +269,7 @@ struct QStrTM: public SomeSetterTM<QString> {
 		ok=true;
 		return QString::fromLocal8Bit(val);
 	}
-	static QString TToStr(QString t, bool & ok) {
+	static QString TToStr(const QString & t, bool & ok) {
 		ok=!t.isEmpty();
 		return t;
 	}
@@ -277,6 +283,9 @@ struct UnitRealTM: public SomeSetterTM<QPair<qreal, QPrinter::Unit> > {
 	static QPair<qreal, QPrinter::Unit> strToT(const char * val, bool &ok) {
 		return Settings::strToUnitReal(val, &ok);
 	}
+	static QString TToStr(const QPair<qreal, QPrinter::Unit> & u, bool & ok) {
+		return Settings::unitRealToStr(u, &ok);
+	}
 };
 /*!
   Argument handler setting a real-number/unit combo variable  
@@ -286,6 +295,10 @@ typedef SomeSetter<UnitRealTM> UnitRealSetter;
 struct PageSizeTM: public SomeSetterTM<QPrinter::PageSize> {
 	static QPrinter::PageSize strToT(const char * val, bool &ok) {
 		return Settings::strToPageSize(val, &ok);
+	}
+	static QString TToStr(const QPrinter::PageSize & s, bool & ok) {
+		ok=true;
+		return Settings::pageSizeToStr(s);
 	}
 };
 /*!
@@ -307,6 +320,10 @@ struct OrientationTM: public SomeSetterTM<QPrinter::Orientation> {
 	static QPrinter::Orientation strToT(const char * val, bool &ok) {
 		return Settings::strToOrientation(val, &ok);
 	}
+	static QString TToStr(const QPrinter::Orientation & o, bool & ok) {
+		ok=true;
+		return Settings::orientationToStr(o);
+	}
 };
 /*!
   Argument handler setting a orientation variable  
@@ -322,7 +339,7 @@ template <typename T> struct Caller: public ArgHandler {
 	Caller(QString a1) {
 		argn.push_back(a1);
 	}
-	bool operator() (const char **vals, CommandLineParserPrivate & s) {
+	bool operator() (const char **vals, CommandLineParserPrivate & s, Settings::PageSettings &) {
 		return T()(vals,s);
 	}
 };
@@ -376,10 +393,10 @@ struct VersionFunc {
 */
 struct DefaultHeaderFunc {
 	bool operator()(const char **, CommandLineParserPrivate & p) {
-		p.settings.header.left="[webpage]";
-		p.settings.header.right="[page]/[toPage]";
-		p.settings.header.line=true;
-		p.settings.margin.top = Settings::strToUnitReal("2cm");
+		//p.settings.header.left="[webpage]";
+		//p.settings.header.right="[page]/[toPage]";
+		//p.settings.header.line=true;
+		//p.settings.margin.top = Settings::strToUnitReal("2cm");
 		return true;
 	}
 };
@@ -389,12 +406,12 @@ struct DefaultHeaderFunc {
 */
 struct BookFunc {
 	bool operator()(const char **, CommandLineParserPrivate & p) {
-		p.settings.header.left="[section]";
-		p.settings.header.right="[page]/[toPage]";
-		p.settings.header.line=true;
-		p.settings.outline = true;
-		p.settings.printToc = true;
-		p.settings.margin.top = Settings::strToUnitReal("2cm");
+		//p.settings.header.left="[section]";
+		//p.settings.header.right="[page]/[toPage]";
+		//p.settings.header.line=true;
+		//p.settings.outline = true;
+		//p.settings.printToc = true;
+		//p.settings.margin.top = Settings::strToUnitReal("2cm");
 		return true;
 	}
 };
@@ -416,6 +433,10 @@ void CommandLineParserPrivate::section(QString s, QString desc) {
 */
 void CommandLineParserPrivate::qthack(bool h) {
 	currentHack = h;
+}
+
+void CommandLineParserPrivate::mode(int m) {
+	currentMode = m;
 }
 
 /*!
@@ -442,6 +463,7 @@ void CommandLineParserPrivate::addarg(QString l, char s, QString d, ArgHandler *
 	h->display = display;
 	h->qthack = currentHack;
 	h->extended = currentExtended;
+	h->section = currentMode;
 	longToHandler[l] = h;
 	if(s) shortToHandler[s] = h;
 	sectionArgumentHandles[currentSection].push_back(h);
@@ -454,130 +476,155 @@ void CommandLineParserPrivate::addarg(QString l, char s, QString d, ArgHandler *
 CommandLineParserPrivate::CommandLineParserPrivate(Settings & s):
 	settings(s)
 {
-	section("General Options");
+	section("Global Options");
+	mode(global);
+	
 	extended(false);
 	qthack(false);
-	addarg("help",'h',"Display help",new Caller<HelpFunc<false> >());
-	addarg("quiet",'q',"Be less verbose",new ConstSetter<bool>(s.quiet,true,false));
-	addarg("version",'V',"Output version information an exit", new Caller<VersionFunc>());
-	addarg("extended-help",0,"Display more extensive help, detailing less common command switches", new Caller<HelpFunc<true> >());
-	addarg("collate", 0, "Collate when printing multiple copies", new ConstSetter<bool>(s.collate,true,false));
-	addarg("copies", 0, "Number of copies to print into the pdf file", new IntSetter(s.copies, "number", 1));
-	addarg("orientation",'O',"Set orientation to Landscape or Portrait", new OrientationSetter(s.orientation, "orientation", QPrinter::Portrait));
-	addarg("page-size",'s',"Set paper size to: A4, Letter, etc.", new PageSizeSetter(s.size.pageSize, "size", QPrinter::A4));
+	addarg("help", 'h', "Display help", new Caller<HelpFunc<false> >());
+	addarg("quiet", 'q', "Be less verbose", new ConstSetter<bool>(s.quiet,true));
+	addarg("version", 'V' ,"Output version information an exit", new Caller<VersionFunc>());
+	
+	addarg("extended-help", 'H',"Display more extensive help, detailing less common command switches", new Caller<HelpFunc<true> >());
+	addarg("no-collate", 0, "Do not collate when printing multiple copies", new ConstSetter<bool>(s.collate, false));
+	addarg("collate", 0, "Collate when printing multiple copies", new ConstSetter<bool>(s.collate, true));
+
+	addarg("copies", 0, "Number of copies to print into the pdf file", new IntSetter(s.copies, "number"));
+	addarg("orientation",'O',"Set orientation to Landscape or Portrait", new OrientationSetter(s.orientation, "orientation"));
+	addarg("page-size",'s',"Set paper size to: A4, Letter, etc.", new PageSizeSetter(s.size.pageSize, "Size"));
 	addarg("proxy",'p',"Use a proxy", new ProxySetter(s.proxy, "proxy"));
-	addarg("username",0,"HTTP Authentication username", new QStrSetter(s.username, "username",""));
-	addarg("password",0,"HTTP Authentication password", new QStrSetter(s.password, "password",""));
-	qthack(true);
-	addarg("book",'b',"Set the options one would usually set when printing a book", new Caller<BookFunc>());
-	addarg("cover",0,"Use html document as cover. It will be inserted before the toc with no headers and footers",new QStrSetter(s.cover,"url",""));
-	addarg("default-header",'H',"Add a default header, with the name of the page to the left, and the page number to the right, this is short for: --header-left='[webpage]' --header-right='[page]/[toPage]' --top 2cm --header-line", new Caller<DefaultHeaderFunc>());
-	addarg("toc",'t',"Insert a table of content in the beginning of the document", new ConstSetter<bool>(s.printToc,true,false));
-	qthack(false);
-	
+
+	addarg("grayscale",'g',"PDF will be generated in grayscale", new ConstSetter<QPrinter::ColorMode>(s.colorMode,QPrinter::GrayScale));
+
+	addarg("lowquality",'l',"Generates lower quality pdf/ps. Useful to shrink the result document space", new ConstSetter<QPrinter::PrinterMode>(s.resolution,QPrinter::ScreenResolution));
+ 	addarg("title", 0, "The title of the generated pdf file (The title of the first document is used if not specified)", new QStrSetter(s.documentTitle,"text"));
+
+
 	extended(true);
-	addarg("ignore-load-errors", 0, "Ignore pages that claimes to have encountered an error during loading", new ConstSetter<bool>(s.ignoreLoadErrors, true, false));
-	addarg("custom-header",0,"Set an additional HTTP header (repeatable)", new MapSetter<>(s.customHeaders, "name", "value"));
-	addarg("manpage", 0, "Output program man page", new Caller<ManPageFunc>());
-	addarg("htmldoc", 0, "Output program html help", new Caller<ReadmeFunc<true> >());
-	addarg("readme", 0, "Output program readme", new Caller<ReadmeFunc<false> >());
-	addarg("dpi",'d',"Change the dpi explicitly (this has no effect on X11 based systems)", new IntSetter(s.dpi,"dpi",-1));
-	addarg("page-height", 0, "Page height (default unit millimeter)", new UnitRealSetter(s.size.height,"unitreal",QPair<qreal,QPrinter::Unit>(-1,QPrinter::Millimeter)));
-	addarg("page-width", 0, "Page width  (default unit millimeter)", new UnitRealSetter(s.size.width,"unitreal",QPair<qreal,QPrinter::Unit>(-1,QPrinter::Millimeter)));
-	addarg("disable-javascript",'n',"Do not allow web pages to run javascript", new ConstSetter<bool>(s.enableJavascript,false,true));
-	addarg("grayscale",'g',"PDF will be generated in grayscale", new ConstSetter<QPrinter::ColorMode>(s.colorMode,QPrinter::GrayScale,QPrinter::Color));
-	addarg("lowquality",'l',"Generates lower quality pdf/ps. Useful to shrink the result document space", new ConstSetter<QPrinter::PrinterMode>(s.resolution,QPrinter::ScreenResolution,QPrinter::HighResolution));
-	addarg("margin-bottom",'B',"Set the page bottom margin (default 10mm)", new UnitRealSetter(s.margin.bottom,"unitreal",QPair<qreal,QPrinter::Unit>(10,QPrinter::Millimeter)));
-	addarg("margin-left",'L',"Set the page left margin (default 10mm)", new UnitRealSetter(s.margin.left,"unitreal",QPair<qreal,QPrinter::Unit>(10,QPrinter::Millimeter)));
-	addarg("margin-right",'R',"Set the page right margin (default 10mm)", new UnitRealSetter(s.margin.right,"unitreal",QPair<qreal,QPrinter::Unit>(10,QPrinter::Millimeter)));
-	addarg("margin-top",'T',"Set the page top margin (default 10mm)", new UnitRealSetter(s.margin.top,"unitreal",QPair<qreal,QPrinter::Unit>(10,QPrinter::Millimeter)));
-	addarg("redirect-delay",0,"Wait some milliseconds for js-redirects", new IntSetter(s.jsredirectwait,"msec",200));
-	addarg("enable-plugins",0,"Enable installed plugins (such as flash", new ConstSetter<bool>(s.enablePlugins,true,false));
-	addarg("zoom",0,"Use this zoom factor", new FloatSetter(s.zoomFactor,"float",1.0));
-	addarg("minimum-font-size",0,"Minimum font size", new IntSetter(s.minimumFontSize,"int",5));
-	addarg("read-args-from-stdin",0,"Read command line arguments from stdin", new ConstSetter<bool>(s.readArgsFromStdin,true,false));
-	addarg("cookie-jar", 0, "Read and write cookies from and to the supplied cookie jar file", new QStrSetter(s.cookieJar, "path", "") );
-	addarg("cookie",0,"Set an additional cookie (repeatable)", new MapSetter<>(s.cookies, "name", "value"));
-	addarg("post", 0, "Add an additional post field (repeatable)", new MapSetter<PostItemCreator<false> >(s.post, "name", "value"));
-	addarg("post-file", 0, "Post an aditional file (repeatable)", new MapSetter<PostItemCreator<true> >(s.post, "name", "path"));
-	addarg("title", 0, "The title of the generated pdf file (The title of the first document is used if not specified)", new QStrSetter(s.documentTitle,"text",""));
-	addarg("disallow-local-file-access", 0, "Do not allowed conversion of a local file to read in other local files, unless explecitily allowed with --allow", new ConstSetter<bool>(s.blockLocalFileAccess, true, false));
-	addarg("allow", 0, "Allow the file or files from the specified folder to be loaded (repeatable)", new StringListSetter(s.allowed,"path"));
+ 	qthack(false);
+ 	addarg("manpage", 0, "Output program man page", new Caller<ManPageFunc>());
+ 	addarg("htmldoc", 0, "Output program html help", new Caller<ReadmeFunc<true> >());
+ 	addarg("readme", 0, "Output program readme", new Caller<ReadmeFunc<false> >());
+ 	addarg("dpi",'d',"Change the dpi explicitly (this has no effect on X11 based systems)", new IntSetter(s.dpi,"dpi"));
+ 	addarg("page-height", 0, "Page height", new UnitRealSetter(s.size.height,"unitreal"));
+ 	addarg("page-width", 0, "Page width", new UnitRealSetter(s.size.width,"unitreal"));
+
+// 	addarg("book",'b',"Set the options one would usually set when printing a book", new Caller<BookFunc>());
+// 	addarg("cover",0,"Use html document as cover. It will be inserted before the toc with no headers and footers",new QStrSetter(s.cover,"url",""));
+// 	addarg("default-header",'H',"Add a default header, with the name of the page to the left, and the page number to the right, this is short for: --header-left='[webpage]' --header-right='[page]/[toPage]' --top 2cm --header-line", new Caller<DefaultHeaderFunc>());
 	
-	qthack(true);
-	addarg("forms", 0, "Turn HTML form fields into pdf form fields", new ConstSetter<bool>(s.produceForms, true, false));
-	addarg("disable-internal-links",0,"Do no make local links", new ConstSetter<bool>(s.useLocalLinks,false,true));
-	addarg("disable-external-links",0,"Do no make links to remote web pages", new ConstSetter<bool>(s.useExternalLinks,false,true));
-	addarg("print-media-type",0,"Use print media-type instead of screen", new ConstSetter<bool>(s.printMediaType,true,false));
-	addarg("page-offset",0,"Set the starting page number", new IntSetter(s.pageOffset,"offset",1));
-	addarg("disable-smart-shrinking", 0, "Disable the intelligent shrinking strategy used by WebKit that makes the pixel/dpi ratio none constant",new ConstSetter<bool>(s.enableIntelligentShrinking, false, true));
-	addarg("replace",0, "Replace [name] with value in header and footer (repeatable)", new MapSetter<>(s.replacements, "name", "value"));
-	addarg("disable-pdf-compression", 0 , "Do not use lossless compression on pdf objects", new ConstSetter<bool>(s.useCompression,false,true));
-#ifdef Q_WS_X11
-	addarg("use-xserver",0,"Use the X server (some plugins and other stuff might not work without X11)", new ConstSetter<bool>(s.useGraphics,true,false));
+	addarg("cookie-jar", 0, "Read and write cookies from and to the supplied cookie jar file", new QStrSetter(s.cookieJar, "path") );
+
+
+	extended(true);
+ 	qthack(true);
+	addarg("no-pdf-compression", 0 , "Do not use lossless compression on pdf objects", new ConstSetter<bool>(s.useCompression,false));
+
+ #ifdef Q_WS_X11
+ 	addarg("use-xserver",0,"Use the X server (some plugins and other stuff might not work without X11)", new ConstSetter<bool>(s.useGraphics,true));
 #endif
 
-#if QT_VERSION >= 0x040600
-	qthack(false);
-#endif
-	addarg("encoding",0,"Set the default text encoding, for input", new QStrSetter(s.defaultEncoding,"encoding",""));
-	qthack(false);
+ 	section("Outline Options");
+ 	extended(true);
+ 	qthack(true);
+	addarg("outline",0,"Put an outline into the pdf", new ConstSetter<bool>(s.outline,true));
+ 	addarg("no-outline",0,"Do not put an outline into the pdf", new ConstSetter<bool>(s.outline,false));
+ 	addarg("outline-depth",0,"Set the depth of the outline", new IntSetter(s.outlineDepth,"level"));
+ 	addarg("dump-outline",0,"Dump the outline to a file",new QStrSetter(s.dumpOutline,"file"));
+
+
+	section("Page options");
+	mode(page);
+ 	extended(true);
+ 	qthack(false);
+
+ 	addarg("username",0,"HTTP Authentication username", new QStrSetter(od.username, "username"));
+ 	addarg("password",0,"HTTP Authentication password", new QStrSetter(od.password, "password"));
+	addarg("ignore-load-errors", 0, "Ignore pages that claimes to have encountered an error during loading", new ConstSetter<bool>(od.ignoreLoadErrors, true));
+	addarg("no-ignore-load-errors", 0, "Do not ignore pages that claimes to have encountered an error during loading"
+, new ConstSetter<bool>(od.ignoreLoadErrors, false));
+	addarg("custom-header",0,"Set an additional HTTP header (repeatable)", new MapSetter<>(od.customHeaders, "name", "value"));
+
+	addarg("disable-javascript",'n',"Do not allow web pages to run javascript", new ConstSetter<bool>(od.enableJavascript,false));
+	addarg("enable-javascript",'n',"Do allow web pages to run javascript", new ConstSetter<bool>(od.enableJavascript,true));
 	
-#if QT_VERSION >= 0x040500 //Not printing the background was added in QT4.5
-	addarg("no-background",0,"Do not print background", new ConstSetter<bool>(s.background,false,true));
-	addarg("user-style-sheet",0,"Specify a user style sheet, to load with every page", new QStrSetter(s.userStyleSheet,"url",""));
+	addarg("margin-bottom",'B',"Set the page bottom margin", new UnitRealSetter(od.margin.bottom,"unitreal"));
+ 	addarg("margin-left",'L',"Set the page left margin", new UnitRealSetter(od.margin.left,"unitreal"));
+ 	addarg("margin-right",'R',"Set the page right margin", new UnitRealSetter(od.margin.right,"unitreal"));
+ 	addarg("margin-top",'T',"Set the page top margin", new UnitRealSetter(od.margin.top,"unitreal"));
+
+	addarg("redirect-delay",0,"Wait some milliseconds for js-redirects", new IntSetter(od.jsredirectwait,"msec"));
+ 	addarg("enable-plugins",0,"Enable installed plugins (plugins will likely not work)", new ConstSetter<bool>(od.enablePlugins,true));
+ 	addarg("disable-plugins",0,"Disable installed plugins", new ConstSetter<bool>(od.enablePlugins,false));
+
+	addarg("minimum-font-size",0,"Minimum font size", new IntSetter(od.minimumFontSize,"int"));
+ 	addarg("zoom",0,"Use this zoom factor", new FloatSetter(od.zoomFactor,"float",1.0));
+ 	addarg("cookie",0,"Set an additional cookie (repeatable)", new MapSetter<>(od.cookies, "name", "value"));
+ 	addarg("post", 0, "Add an additional post field (repeatable)", new MapSetter<PostItemCreator<false> >(od.post, "name", "value"));
+ 	addarg("post-file", 0, "Post an aditional file (repeatable)", new MapSetter<PostItemCreator<true> >(od.post, "name", "path"));
+	
+	addarg("disable-local-file-access", 0, "Do not allowed conversion of a local file to read in other local files, unless explecitily allowed with --allow", new ConstSetter<bool>(od.blockLocalFileAccess, true));
+	addarg("enable-local-file-access", 0, "Allowed conversion of a local file to read in other local files.", new ConstSetter<bool>(od.blockLocalFileAccess, false));
+ 	addarg("allow", 0, "Allow the file or files from the specified folder to be loaded (repeatable)", new StringListSetter(od.allowed,"path"));
+
+ #if QT_VERSION >= 0x040500 //Not printing the background was added in QT4.5
+ 	addarg("no-background",0,"Do not print background", new ConstSetter<bool>(od.background, false));
+ 	addarg("background",0,"Do not print background", new ConstSetter<bool>(od.background, true));
+ 	addarg("user-style-sheet",0,"Specify a user style sheet, to load with every page", new QStrSetter(od.userStyleSheet,"url"));
 #endif
-	addarg("debug-javascript", 0,"Show javascript debugging output", new ConstSetter<bool>(s.debugJavascript, true, false));
+   	
+ 	addarg("debug-javascript", 0,"Show javascript debugging output", new ConstSetter<bool>(od.debugJavascript, true));
+	addarg("no-debug-javascript", 0,"Do not show javascript debugging output", new ConstSetter<bool>(od.debugJavascript, false));
 #if QT_VERSION >= 0x040600
-	addarg("stop-slow-scripts", 0, "Stop slow running javascripts", new ConstSetter<bool>(s.stopSlowScripts, true, false));
+ 	addarg("stop-slow-scripts", 0, "Stop slow running javascripts", new ConstSetter<bool>(od.stopSlowScripts, true));
+ 	addarg("no-stop-slow-scripts", 0, "Do not Stop slow running javascripts", new ConstSetter<bool>(od.stopSlowScripts, true));
 #endif	
-	extended(false);
-	section("Headers And Footer Options");
-	qthack(true);
-	extended(true);
-	addarg("footer-center",0,"Centered footer text", new QStrSetter(s.footer.center,"text",""));
-	addarg("footer-font-name",0,"Set footer font name", new QStrSetter(s.footer.fontName,"name","Arial"));;
-	addarg("footer-font-size",0,"Set footer font size", new IntSetter(s.footer.fontSize,"size",11));
-	addarg("footer-left",0,"Left aligned footer text", new QStrSetter(s.footer.left,"text",""));
-	addarg("footer-line",0,"Display line above the footer", new ConstSetter<bool>(s.footer.line,true,false));
-	addarg("footer-right",0,"Right aligned footer text", new QStrSetter(s.footer.right,"text",""));
-	addarg("footer-spacing",0,"Spacing between footer and content in mm", new FloatSetter(s.footer.spacing,"real",0.0));
-	addarg("footer-html",0,"Adds a html footer", new QStrSetter(s.footer.htmlUrl,"url",""));
-	addarg("header-center",0,"Centered header text", new QStrSetter(s.header.center,"text",""));
-	addarg("header-font-name",0,"Set header font name", new QStrSetter(s.header.fontName,"name","Arial"));
-	addarg("header-font-size",0,"Set header font size", new IntSetter(s.header.fontSize,"size",11));
-	addarg("header-left",0,"Left aligned header text", new QStrSetter(s.header.left,"text",""));
-	addarg("header-line",0,"Display line below the header", new ConstSetter<bool>(s.header.line,true,false));
-	addarg("header-right",0,"Right aligned header text", new QStrSetter(s.header.right,"text",""));
-	addarg("header-spacing",0,"Spacing between header and content in mm", new FloatSetter(s.header.spacing,"real",0.0));
-	addarg("header-html",0,"Adds a html header", new QStrSetter(s.header.htmlUrl,"url",""));
-	extended(false);
-	qthack(false);
-	
-	section("Table Of Content Options");
-	extended(true);
-	qthack(true);
-	addarg("toc-font-name",0,"Set the font used for the toc", new QStrSetter(s.toc.fontName,"name","Arial"));
-	addarg("toc-no-dots",0,"Do not use dots, in the toc", new ConstSetter<bool>(s.toc.useDots,false,true));
-	addarg("toc-depth",0,"Set the depth of the toc", new IntSetter(s.toc.depth,"level",3));
-	addarg("toc-header-text",0,"The header text of the toc", new QStrSetter(s.toc.captionText,"text","Table Of Contents"));
-	addarg("toc-header-font-size",0,"The font size of the toc header", new IntSetter(s.toc.captionFontSize,"size",15));
-	addarg("toc-header-font-name",0,"The font of the toc header (if unset use --toc-font-name)", new QStrSetter(s.toc.captionFontName,"name"));
-	addarg("toc-disable-links",0,"Do not link from toc to sections", new ConstSetter<bool>(s.toc.forwardLinks,false, true));
-	addarg("toc-disable-back-links",0,"Do not link from section header to toc", new ConstSetter<bool>(s.toc.backLinks,false,true));
-	for (uint i=0; i < Settings::TOCSettings::levels; ++i) {
-		addarg(QString("toc-l")+QString::number(i+1)+"-font-size",0,QString("Set the font size on level ")+QString::number(i+1)+" of the toc",new IntSetter(s.toc.fontSize[i],"size",12-2*i), i < 3);
-		addarg(QString("toc-l")+QString::number(i+1)+"-indentation",0,QString("Set indentation on level ")+QString::number(i+1)+" of the toc",new IntSetter(s.toc.indentation[i],"num",i*20), i < 3);
-	}
-	qthack(true);
-	extended(false);
 
-	section("Outline Options");
-	extended(true);
-	qthack(true);
-	addarg("outline",0,"Put an outline into the pdf", new ConstSetter<bool>(s.outline,true,false));
-	addarg("outline-depth",0,"Set the depth of the outline", new IntSetter(s.outlineDepth,"level",4));
-	addarg("dump-outline",0,"Dump the outline to a file",new QStrSetter(s.dumpOutline,"file",""));
-	qthack(true);
-	extended(false);
+ 	extended(true);
+ 	qthack(true);
+	addarg("enable-forms", 0, "Turn HTML form fields into pdf form fields", new ConstSetter<bool>(od.produceForms, true));
+	addarg("disable-forms", 0, "Do not turn HTML form fields into pdf form fields", new ConstSetter<bool>(od.produceForms, false));
+ 	addarg("disable-internal-links",0,"Do no make local links", new ConstSetter<bool>(od.useLocalLinks, false));
+ 	addarg("enable-internal-links",0,"Make local links", new ConstSetter<bool>(od.useLocalLinks, true));
+ 	addarg("disable-external-links",0,"Do no make links to remote web pages", new ConstSetter<bool>(od.useExternalLinks, false));
+ 	addarg("enable-external-links",0,"Make links to remote web pages", new ConstSetter<bool>(od.useExternalLinks, true));
+	
+	addarg("print-media-type",0,"Use print media-type instead of screen", new ConstSetter<bool>(od.printMediaType,true));
+	addarg("no-print-media-type",0,"Do not use print media-type instead of screen", new ConstSetter<bool>(od.printMediaType, false));
+
+// 	addarg("page-offset",0,"Set the starting page number", new IntSetter(s.pageOffset,"offset",1));
+
+ 	addarg("disable-smart-shrinking", 0, "Disable the intelligent shrinking strategy used by WebKit that makes the pixel/dpi ratio none constant",new ConstSetter<bool>(od.enableIntelligentShrinking, false));
+ 	addarg("enable-smart-shrinking", 0, "Enable the intelligent shrinking strategy used by WebKit that makes the pixel/dpi ratio none constant",new ConstSetter<bool>(od.enableIntelligentShrinking, true));
+
+#if QT_VERSION >= 0x040600
+ 	qthack(false);
+#endif
+ 	addarg("encoding", 0, "Set the default text encoding, for input", new QStrSetter(od.defaultEncoding,"encoding"));
+
+
+
+	section("Headers And Footer Options");
+ 	qthack(true);
+ 	extended(true);
+ 	addarg("footer-center",0,"Centered footer text", new QStrSetter(od.footer.center,"text"));
+ 	addarg("footer-font-name",0,"Set footer font name", new QStrSetter(od.footer.fontName,"name"));;
+ 	addarg("footer-font-size",0,"Set footer font size", new IntSetter(od.footer.fontSize,"size"));
+ 	addarg("footer-left",0,"Left aligned footer text", new QStrSetter(od.footer.left,"text"));
+ 	addarg("footer-line",0,"Display line above the footer", new ConstSetter<bool>(od.footer.line,true));
+ 	addarg("no-footer-line",0,"Do not display line above the footer", new ConstSetter<bool>(od.footer.line,false));
+ 	addarg("footer-right",0,"Right aligned footer text", new QStrSetter(od.footer.right,"text"));
+ 	addarg("footer-spacing",0,"Spacing between footer and content in mm", new FloatSetter(od.footer.spacing,"real"));
+ 	addarg("footer-html",0,"Adds a html footer", new QStrSetter(od.footer.htmlUrl,"url"));
+ 	addarg("header-center",0,"Centered header text", new QStrSetter(od.header.center,"text"));
+ 	addarg("header-font-name",0,"Set header font name", new QStrSetter(od.header.fontName,"name"));
+ 	addarg("header-font-size",0,"Set header font size", new IntSetter(od.header.fontSize,"size"));
+ 	addarg("header-left",0,"Left aligned header text", new QStrSetter(od.header.left,"text"));
+ 	addarg("no-header-line",0,"Display line below the header", new ConstSetter<bool>(od.header.line,false));
+ 	addarg("header-right",0,"Right aligned header text", new QStrSetter(od.header.right,"text"));
+ 	addarg("header-spacing",0,"Spacing between header and content in mm", new FloatSetter(od.header.spacing,"real"));
+ 	addarg("header-html",0,"Adds a html header", new QStrSetter(od.header.htmlUrl,"url"));
+	
+	addarg("replace",0, "Replace [name] with value in header and footer (repeatable)", new MapSetter<>(od.replacements, "name", "value"));
+
 }

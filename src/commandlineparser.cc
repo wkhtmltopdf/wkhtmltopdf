@@ -27,7 +27,19 @@
 */
 
 bool ahsort(const ArgHandler * a, const ArgHandler * b) {
-	return a->longName < b->longName;
+	QRegExp e("^(no|enable|disable)-");
+	QString x=a->longName;
+	QString y=b->longName;
+	x.remove(e);
+	y.remove(e);
+	if (x == y) {
+		QRegExp e("^no-");
+		x=a->longName;
+		y=b->longName;
+		x.replace(e,"zzzz");
+		y.replace(e,"zzzz");
+	}
+	return x < y;
 }
 
 /*!
@@ -204,20 +216,93 @@ CommandLineParser::~CommandLineParser() {
  * Load default arguments and put them in the settings structure
  */
 void CommandLineParser::loadDefaults() {
-	d->settings.in.clear();
-	d->settings.proxy.host = "";
-	foreach(ArgHandler * h, d->longToHandler) 
-		h->useDefault(*d);
+	//d->settings.in.clear();
+	//d->settings.proxy.host = "";
+	//foreach(ArgHandler * h, d->longToHandler) 
+	//	h->useDefault(*d);
 
 	//Load configuration from enviornment
-	char * val;
-	const char * vars[] = {"proxy","all_proxy","http_proxy", NULL};
-	for(int i=0; vars[i]; ++i) {
-		if ((val = getenv("proxy"))) {
-			bool ok=false;
-			Settings::ProxySettings p = Settings::strToProxy(val, &ok);
-			if(ok) 
-				d->settings.proxy = p;
+	//char * val;
+	//const char * vars[] = {"proxy","all_proxy","http_proxy", NULL};
+	//for(int i=0; vars[i]; ++i) {
+	//	if ((val = getenv("proxy"))) {
+	//		bool ok=false;
+	//		Settings::ProxySettings p = Settings::strToProxy(val, &ok);
+	//		if(ok) 
+	//			d->settings.proxy = p;
+	//	}
+	//}
+}
+
+
+void CommandLineParserPrivate::parseArg(int sections, const int argc, const char ** argv, bool & defaultMode, int & arg, Settings::PageSettings & pageSettings) {
+	if (argv[arg][1] == '-') { //We have a long style argument
+		//After an -- apperas in the argument list all that follows is interpited as default arguments
+		if (argv[arg][2] == '0') {
+			defaultMode=true;
+			return;
+		}
+		//Try to find a handler for this long switch
+		QHash<QString, ArgHandler*>::iterator j = longToHandler.find(argv[arg]+2);
+		if (j == longToHandler.end()) { //Ups that argument did not exist
+			fprintf(stderr, "Unknown long argument %s\n\n", argv[arg]);
+			usage(stderr, false);
+			exit(1);
+		}
+		if (!(j.value()->section & sections)) {
+			fprintf(stderr, "%s specified in incorrect location\n\n", argv[arg]);
+			usage(stderr, false);
+			exit(1);
+		}
+		//Check to see if there is enough arguments to the switch
+		if (argc-arg < j.value()->argn.size()+1) {
+			fprintf(stderr, "Not enough arguments parsed to %s\n\n", argv[arg]);
+			usage(stderr, false);
+			exit(1);
+		}
+		if (!(*(j.value()))(argv+arg+1, *this, pageSettings)) {
+			fprintf(stderr, "Invalid argument(s) parsed to %s\n\n", argv[arg]);
+			usage(stderr, false);
+			exit(1);
+		}
+#ifndef __EXTENSIVE_WKHTMLTOPDF_QT_HACK__
+		if (j.value()->qthack)
+			fprintf(stderr, "The switch %s, is not support using unpatched qt, and will be ignored.", argv[i]);
+#endif
+		//Skip allredy handled switch arguments
+		arg += j.value()->argn.size();
+	} else {
+		int c=arg;//Remember the current argument we are parsing
+		for (int j=1; argv[c][j] != '\0'; ++j) {
+			QHash<char, ArgHandler*>::iterator k = shortToHandler.find(argv[c][j]);
+			//If the short argument is invalid print usage information and exit
+			if (k == shortToHandler.end()) {
+				fprintf(stderr, "Unknown switch -%c\n\n", argv[c][j]);
+				usage(stderr, false);
+				exit(1);
+			}
+			if (!(k.value()->section & sections)) {
+				fprintf(stderr, "-%c specified in incorrect location\n\n", argv[c][j]);
+				usage(stderr, false);
+				exit(1);
+			}
+			//Check to see if there is enough arguments to the switch
+			if (argc-arg < k.value()->argn.size()+1) {
+				fprintf(stderr, "Not enough arguments parsed to -%c\n\n", argv[c][j]);
+				usage(stderr, false);
+				exit(1);
+			}
+			if (!(*(k.value()))(argv+arg+1, *this, pageSettings)) {
+				fprintf(stderr, "Invalid argument(s) parsed to -%c\n\n", argv[c][j]);
+				usage(stderr, false);
+				exit(1);
+			}
+#ifndef __EXTENSIVE_WKHTMLTOPDF_QT_HACK__
+ 			if (k.value()->qthack)
+ 				fprintf(stderr, "The switch -%c, is not support using unpatched qt, and will be ignored.", argv[c][j]);
+#endif
+			//Skip allredy handled switch arguments
+			arg += k.value()->argn.size();
 		}
 	}
 }
@@ -229,83 +314,59 @@ void CommandLineParser::loadDefaults() {
  */
 void CommandLineParser::parseArguments(int argc, const char ** argv, bool final) {
 	bool defaultMode = false;
-	for (int i=1; i < argc; ++i) {
-		if (argv[i][0] != '-' || argv[i][1] == '\0' || defaultMode ) {
-			//Default arguments alwayes input or output files,
-			//The following code is a bit of a hack, we register all
-			//default arguments as input urls, we then later
-			//extract the last one to use as output
-			d->settings.in.push_back(QString::fromLocal8Bit(argv[i]) );
-		} else if (argv[i][1] == '-') { //We have a long style argument
-			//After an -- apperas in the argument list all that follows is interpited as default arguments
-			if (argv[i][2] == '0') {
-				defaultMode=true;
-				continue;
-			}
-			//Try to find a handler for this long switch
-			QHash<QString, ArgHandler*>::iterator j = d->longToHandler.find(argv[i]+2);
-			if (j == d->longToHandler.end()) { //Ups that argument did not exist
-				fprintf(stderr, "Unknown long argument %s\n\n", argv[i]);
-				d->usage(stderr, false);
-				exit(1);
-			}
-			//Check to see if there is enough arguments to the switch
-			if (argc-i < j.value()->argn.size()+1) {
-				fprintf(stderr, "Not enough arguments parsed to %s\n\n", argv[i]);
-				d->usage(stderr, false);
-				exit(1);
-			}
-			if (!(*(j.value()))(argv+i+1, *d)) {
-				fprintf(stderr, "Invalid argument(s) parsed to %s\n\n", argv[i]);
-				d->usage(stderr, false);
-				exit(1);
-			}
-#ifndef __EXTENSIVE_WKHTMLTOPDF_QT_HACK__
-			if (j.value()->qthack)
-				fprintf(stderr, "The switch %s, is not support using unpatched qt, and will be ignored.", argv[i]);
-#endif
-			//Skip allredy handled switch arguments
-			i += j.value()->argn.size();
-		} else {
-			int c=i;//Remember the current argument we are parsing
-			for (int j=1; argv[c][j] != '\0'; ++j) {
-				QHash<char, ArgHandler*>::iterator k = d->shortToHandler.find(argv[c][j]);
-				//If the short argument is invalid print usage information and exit
-				if (k == d->shortToHandler.end()) {
-					fprintf(stderr, "Unknown switch -%c\n\n", argv[c][j]);
-					d->usage(stderr, false);
-					exit(1);
-				}
-				//Check to see if there is enough arguments to the switch
-				if (argc-i < k.value()->argn.size()+1) {
-					fprintf(stderr, "Not enough arguments parsed to -%c\n\n", argv[c][j]);
-					d->usage(stderr, false);
-					exit(1);
-				}
-				if (!(*(k.value()))(argv+i+1, *d)) {
-					fprintf(stderr, "Invalid argument(s) parsed to -%c\n\n", argv[c][j]);
-					d->usage(stderr, false);
-					exit(1);
-				}
-#ifndef __EXTENSIVE_WKHTMLTOPDF_QT_HACK__
-			if (k.value()->qthack)
-				fprintf(stderr, "The switch -%c, is not support using unpatched qt, and will be ignored.", argv[c][j]);
-#endif
-				//Skip allredy handled switch arguments
-				i += k.value()->argn.size();
-			}
-		}
+	int arg=1;
+	
+	Settings::PageSettings def;
+	
+	//Parse global options
+	for(;arg < argc;++arg) {
+		if (argv[arg][0] != '-' || argv[arg][1] == '\0' || defaultMode) break;
+		d->parseArg(d->global | d->page, argc, argv, defaultMode, arg, def);
 	}
 
-	if(final || ! d->settings.readArgsFromStdin) {
-		if (d->settings.in.size() < 2) {
-			fprintf(stderr, "You need to specify atleast one input file, and exactly one output file\nUse - for stdin or stdout\n\n");
-			d->usage(stderr, false);
-			exit(1);
+	//Parse page options
+	for(;arg < argc-1;++arg) {
+		d->settings.pages.push_back(def);
+		
+		Settings::PageSettings & ps = d->settings.pages.back();
+		int sections = d->page;
+		if (!strcmp(argv[arg],"cover")) {
+			++arg;
+			if(argc >= argc-1) {
+				fprintf(stderr, "You need to specify a input file to cover\n\n");
+				usage(stderr, false);
+				exit(1);
+			}
+
+			ps.page = QString::fromLocal8Bit(argv[arg]);
+			++arg;
+			//Setup varius cover settings her
+		} else if (!strcmp(argv[arg],"toc")) {
+			sections = d->page | d->toc;
+		} else {
+			if (!strcmp(argv[arg],"page")) {
+				++arg;
+				if(argc >= argc-1) {
+					fprintf(stderr, "You need to specify a input file to page\n\n");
+					usage(stderr, false);
+					exit(1);
+				}
+			}
+			ps.page = QString::fromLocal8Bit(argv[arg]);
+			++arg;
 		}
-		//The last default argument was realy the name of the output file
-		d->settings.out = d->settings.in.back();
-		d->settings.in.pop_back();
+		for(;arg < argc-1;++arg) {
+			if (argv[arg][0] != '-' || argv[arg][1] == '\0' || defaultMode) break;
+			d->parseArg(sections, argc, argv, defaultMode, arg, def);
+		}
 	}
+	
+	if (d->settings.pages.size() == 0 || argc < 2) {
+		fprintf(stderr, "You need to specify atleast one input file, and exactly one output file\nUse - for stdin or stdout\n\n");
+		d->usage(stderr, false);
+		exit(1);
+	}
+	d->settings.out = argv[argc-1];
 }
+
 
