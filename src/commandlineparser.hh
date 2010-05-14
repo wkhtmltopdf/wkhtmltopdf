@@ -24,7 +24,8 @@ class CommandLineParserPrivate;
 */
 class CommandLineParser {
 public:
-	CommandLineParser(Settings & settings);
+	CommandLineParser(wkhtmltopdf::settings::Global & globalSettings, 
+					  QList<wkhtmltopdf::settings::Page> & pageSettings);
 	~CommandLineParser();
 	void version(FILE * fd) const;
 	void usage(FILE * fd, bool extended) const;

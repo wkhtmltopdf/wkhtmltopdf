@@ -100,14 +100,14 @@ public:
 	T & dst;
 	DstArgHandler(T & d): dst(d) {};
 
-	T & realDst(CommandLineParserPrivate & cp, Settings::PageSettings & ps) {
+	T & realDst(CommandLineParserPrivate & cp, Page & ps) {
 		//Very very ugly hack, when the setting is within the page settisgs offset
 		//Dummy struct return its location within the supplied page settings
 		//The dest is within the fake page offset struct 
 		
 		char * d = reinterpret_cast<char *>(&dst);
 		char * od = reinterpret_cast<char *>(&cp.od);
-		if(od > d || d >= od + sizeof(Settings::PageSettings)) return dst;
+		if(od > d || d >= od + sizeof(Page)) return dst;
 		return * reinterpret_cast<T*>(d - od + reinterpret_cast<char *>(&ps));
 	}
 };
@@ -121,7 +121,7 @@ public:
 	typedef DstArgHandler<T> p_t;
 	const T src;
 	ConstSetter(T & arg, const T s): p_t(arg), src(s) {};
-	bool operator() (const char **, CommandLineParserPrivate & cp, Settings::PageSettings & ps) {
+	bool operator() (const char **, CommandLineParserPrivate & cp, Page & ps) {
 		p_t::realDst(cp,ps)=src;
 		return true;
 	}
@@ -142,7 +142,7 @@ struct StringPairCreator {
 
 template <bool file> 
 struct PostItemCreator {
-	typedef typename Settings::PostItem T;
+	typedef PostItem T;
 	inline T operator()(const QString & key, const QString & value) const {
 		T p;
 		p.name = key;
@@ -158,7 +158,7 @@ struct StringListSetter: public DstArgHandler<QList<QString> > {
 	StringListSetter(QList<QString> & a, QString valueName) : p_t (a) {
 		p_t::argn.push_back(valueName);
 	}
-	virtual bool operator() (const char ** args, CommandLineParserPrivate & cp, Settings::PageSettings & ps) {
+	virtual bool operator() (const char ** args, CommandLineParserPrivate & cp, Page & ps) {
 		p_t::realDst(cp, ps).append( args[0] );
 		return true;
 	}
@@ -175,7 +175,7 @@ struct MapSetter: public DstArgHandler< QList< typename T::T > > {
 		p_t::argn.push_back(keyName);
 		p_t::argn.push_back(valueName);
 	}
-	virtual bool operator() (const char ** args, CommandLineParserPrivate & cp, Settings::PageSettings & ps) {
+	virtual bool operator() (const char ** args, CommandLineParserPrivate & cp, Page & ps) {
 		p_t::realDst(cp, ps).append( T()(args[0], args[1]) );
 		return true;
 	}
@@ -205,7 +205,7 @@ struct SomeSetter: public DstArgHandler< typename TT::T > {
 		p_t::argn.push_back(an);
 	}
 
-	bool operator() (const char ** vals, CommandLineParserPrivate & cp, Settings::PageSettings & ps) {
+	bool operator() (const char ** vals, CommandLineParserPrivate & cp, Page & ps) {
 		bool ok;
 		p_t::realDst(cp, ps) = TT::strToT(vals[0], ok);
 		return ok;
@@ -279,12 +279,12 @@ struct QStrTM: public SomeSetterTM<QString> {
 */
 typedef SomeSetter<QStrTM> QStrSetter;
 
-struct UnitRealTM: public SomeSetterTM<QPair<qreal, QPrinter::Unit> > {
-	static QPair<qreal, QPrinter::Unit> strToT(const char * val, bool &ok) {
-		return Settings::strToUnitReal(val, &ok);
+struct UnitRealTM: public SomeSetterTM<UnitReal> {
+	static UnitReal strToT(const char * val, bool &ok) {
+		return strToUnitReal(val, &ok);
 	}
-	static QString TToStr(const QPair<qreal, QPrinter::Unit> & u, bool & ok) {
-		return Settings::unitRealToStr(u, &ok);
+	static QString TToStr(const UnitReal & u, bool & ok) {
+		return unitRealToStr(u, &ok);
 	}
 };
 /*!
@@ -294,11 +294,11 @@ typedef SomeSetter<UnitRealTM> UnitRealSetter;
 
 struct PageSizeTM: public SomeSetterTM<QPrinter::PageSize> {
 	static QPrinter::PageSize strToT(const char * val, bool &ok) {
-		return Settings::strToPageSize(val, &ok);
+		return strToPageSize(val, &ok);
 	}
 	static QString TToStr(const QPrinter::PageSize & s, bool & ok) {
 		ok=true;
-		return Settings::pageSizeToStr(s);
+		return pageSizeToStr(s);
 	}
 };
 /*!
@@ -306,9 +306,9 @@ struct PageSizeTM: public SomeSetterTM<QPrinter::PageSize> {
  */
 typedef SomeSetter<PageSizeTM> PageSizeSetter;
 
-struct ProxyTM: public SomeSetterTM<Settings::ProxySettings> {
-	static Settings::ProxySettings strToT(const char * val, bool &ok) {
-		return Settings::strToProxy(val, &ok);
+struct ProxyTM: public SomeSetterTM<Proxy> {
+	static Proxy strToT(const char * val, bool &ok) {
+		return strToProxy(val, &ok);
 	}
 };
 /*!
@@ -318,11 +318,11 @@ typedef SomeSetter<ProxyTM> ProxySetter;
 
 struct OrientationTM: public SomeSetterTM<QPrinter::Orientation> {
 	static QPrinter::Orientation strToT(const char * val, bool &ok) {
-		return Settings::strToOrientation(val, &ok);
+		return strToOrientation(val, &ok);
 	}
 	static QString TToStr(const QPrinter::Orientation & o, bool & ok) {
 		ok=true;
-		return Settings::orientationToStr(o);
+		return orientationToStr(o);
 	}
 };
 /*!
@@ -339,7 +339,7 @@ template <typename T> struct Caller: public ArgHandler {
 	Caller(QString a1) {
 		argn.push_back(a1);
 	}
-	bool operator() (const char **vals, CommandLineParserPrivate & s, Settings::PageSettings &) {
+	bool operator() (const char **vals, CommandLineParserPrivate & s, Page &) {
 		return T()(vals,s);
 	}
 };
@@ -473,9 +473,10 @@ void CommandLineParserPrivate::addarg(QString l, char s, QString d, ArgHandler *
   Construct the commandline parser adding all the arguments
   \param s The settings to store values in
 */
-CommandLineParserPrivate::CommandLineParserPrivate(Settings & s):
+CommandLineParserPrivate::CommandLineParserPrivate(Global & s, QList<Page> & ps):
 	readArgsFromStdin(false),
-	settings(s)
+	globalSettings(s),
+	pageSettings(ps)
 {
 	section("Global Options");
 	mode(global);

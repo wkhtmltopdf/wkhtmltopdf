@@ -1,4 +1,5 @@
-//-*- mode: c++; tab-width: 4; indent-tabs-mode: t; c-file-style: "stroustrup"; -*-
+// -*- mode: c++; tab-width: 4; indent-tabs-mode: t; eval: (progn (c-set-style "stroustrup") (c-set-offset 'innamespace 0)); -*-
+// vi:set ts=4 sts=4 sw=4 noet :
 // This file is part of wkhtmltopdf.
 //
 // wkhtmltopdf is free software: you can redistribute it and/or modify
@@ -15,11 +16,12 @@
 // along with wkhtmltopdf.  If not, see <http://www.gnu.org/licenses/>.
 #include <settings.hh>
 #include <QMap>
+namespace wkhtmltopdf {
+namespace settings {
 /*!
   \file settings.hh
   \brief Defines the Settings class
 */
-
 QMap<QString, QPrinter::PageSize> pageSizeMap() {
 	QMap<QString, QPrinter::PageSize> res;
 	res["A0"] = QPrinter::A0;
@@ -62,7 +64,7 @@ QMap<QString, QPrinter::PageSize> pageSizeMap() {
   \param s The string to convert
   \param ok If supplied indicates if the conversion was successful
 */
-QPrinter::PageSize Settings::strToPageSize(const char * s, bool * ok) {
+QPrinter::PageSize strToPageSize(const char * s, bool * ok) {
 	QMap<QString,QPrinter::PageSize> map = pageSizeMap();
 	for(QMap<QString,QPrinter::PageSize>::const_iterator i=map.begin(); i != map.end(); ++i) {
 		if (!i.key().compare(s, Qt::CaseInsensitive) ) continue;
@@ -73,7 +75,7 @@ QPrinter::PageSize Settings::strToPageSize(const char * s, bool * ok) {
 	return QPrinter::A4;
 }
 
-QString Settings::pageSizeToStr(QPrinter::PageSize ps) {
+QString pageSizeToStr(QPrinter::PageSize ps) {
 	QMap<QString,QPrinter::PageSize> map = pageSizeMap();
 	for(QMap<QString,QPrinter::PageSize>::const_iterator i=map.begin(); i != map.end(); ++i) {
 		if (i.value() == ps) return i.key();
@@ -86,7 +88,7 @@ QString Settings::pageSizeToStr(QPrinter::PageSize ps) {
   \param s The string containing the orientation
   \param ok If supplied indicates whether the s was valid
 */
-QPrinter::Orientation Settings::strToOrientation(const char * s, bool * ok) {
+QPrinter::Orientation strToOrientation(const char * s, bool * ok) {
 	if (ok) *ok = true;
  	if (!strcasecmp(s,"Landscape")) return QPrinter::Landscape;
  	if (!strcasecmp(s,"Portrait")) return QPrinter::Portrait;
@@ -94,7 +96,7 @@ QPrinter::Orientation Settings::strToOrientation(const char * s, bool * ok) {
 	return QPrinter::Portrait;
 }
 
-QString Settings::orientationToStr(QPrinter::Orientation o) {
+QString orientationToStr(QPrinter::Orientation o) {
 	return (o == QPrinter::Landscape)?"Landscape":"Portrait";
 }
 
@@ -104,7 +106,7 @@ QString Settings::orientationToStr(QPrinter::Orientation o) {
   \param o Tho string describing the distance
   \param ok If supplied indicates whether the s was valid
 */
-QPair<qreal, QPrinter::Unit> Settings::strToUnitReal(const char * o, bool * ok) {
+UnitReal strToUnitReal(const char * o, bool * ok) {
 	qreal s=1.0; //Since not all units are provided by qt, we use this variable to scale
 	//Them into units that are.
 	QPrinter::Unit u=QPrinter::Millimeter;
@@ -136,12 +138,12 @@ QPair<qreal, QPrinter::Unit> Settings::strToUnitReal(const char * o, bool * ok) 
 		u=QPrinter::Point;
 	else {
 		if(ok) ok=false;
-		return qMakePair((qreal)QString(o).left(i).toDouble()*s, u);
+		return UnitReal(QString(o).left(i).toDouble()*s, u);
 	}
-	return qMakePair((qreal)QString(o).left(i).toDouble(ok)*s, u);
+	return UnitReal(QString(o).left(i).toDouble(ok)*s, u);
 }
 
-QString Settings::unitRealToStr(const QPair<qreal, QPrinter::Unit> & ur, bool * ok) {
+QString unitRealToStr(const UnitReal & ur, bool * ok) {
 	QString c;
 	if (ur.first == -1) {
 		if (ok) *ok=false;
@@ -167,8 +169,8 @@ QString Settings::unitRealToStr(const QPair<qreal, QPrinter::Unit> & ur, bool * 
   \param proxy the proxy string to parse
   \param ok If supplied indicates whether the proxy was valid
 */
-Settings::ProxySettings Settings::strToProxy(const char * proxy, bool * ok) {
-	Settings::ProxySettings p;
+Proxy strToProxy(const char * proxy, bool * ok) {
+	Proxy p;
 	if(ok) *ok=true;
 	//Allow users to use no proxy, even if one is specified in the env
 	if (!strcmp(proxy,"none")) {
@@ -215,20 +217,26 @@ Settings::ProxySettings Settings::strToProxy(const char * proxy, bool * ok) {
 	return p;
 }
 
-Settings::ProxySettings::ProxySettings() {}
-Settings::SizeSettings::SizeSettings():
-	pageSize(QPrinter::A4), 
-	height(QPair<qreal,QPrinter::Unit>(-1,QPrinter::Millimeter)),
-	width(QPair<qreal,QPrinter::Unit>(-1,QPrinter::Millimeter)) {}
-Settings::TOCSettings::TOCSettings() {}
-Settings::HeaderFooterSettings::HeaderFooterSettings() {}
-Settings::MarginSettings::MarginSettings():
-	top(QPair<qreal,QPrinter::Unit>(10,QPrinter::Millimeter)),
-	right(QPair<qreal,QPrinter::Unit>(10,QPrinter::Millimeter)),
-	bottom(QPair<qreal,QPrinter::Unit>(10,QPrinter::Millimeter)),
-	left(QPair<qreal,QPrinter::Unit>(10,QPrinter::Millimeter)) {}
+Proxy::Proxy():
+    type(QNetworkProxy::NoProxy),
+	port(-1),
+	host(),
+	user(),
+	password() {}
 
-Settings::Settings():
+Size::Size():
+	pageSize(QPrinter::A4), 
+	height(UnitReal(-1,QPrinter::Millimeter)),
+	width(UnitReal(-1,QPrinter::Millimeter)) {}
+
+HeaderFooter::HeaderFooter() {}
+Margin::Margin():
+	top(UnitReal(10,QPrinter::Millimeter)),
+	right(UnitReal(10,QPrinter::Millimeter)),
+	bottom(UnitReal(10,QPrinter::Millimeter)),
+	left(UnitReal(10,QPrinter::Millimeter)) {}
+
+Global::Global():
 	quiet(false),
 	useGraphics(false),
 	orientation(QPrinter::Portrait),
@@ -244,3 +252,22 @@ Settings::Settings():
 	cookieJar(""),
 	documentTitle(""),
 	useCompression(true) {};
+
+Page::Page():
+	background(true),
+	useExternalLinks(true),
+	useLocalLinks(true),
+	enableJavascript(true),
+	enableIntelligentShrinking(true),
+	jsredirectwait(200),
+	zoomFactor(1.0),
+	minimumFontSize(-1),
+	printMediaType(false),
+	blockLocalFileAccess(false),
+	stopSlowScripts(true),
+	debugJavascript(false),
+	produceForms(false),
+	ignoreLoadErrors(false),
+	enablePlugins(false) {}
+}
+}

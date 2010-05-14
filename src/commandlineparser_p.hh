@@ -20,6 +20,7 @@
 #include <QString>
 #include "commandlineparser.hh"
 #include "settings.hh"
+using namespace wkhtmltopdf::settings;
 
 class CommandLineParserPrivate;
 
@@ -33,7 +34,7 @@ public:
 	bool extended;
 	bool qthack;
 	int section;
-	virtual bool operator() (const char ** args, CommandLineParserPrivate & parser, Settings::PageSettings & page) = 0;
+	virtual bool operator() (const char ** args, CommandLineParserPrivate & parser, Page & page) = 0;
 	//virtual void useDefault(CommandLineParserPrivate & parser, Settings::PageSettings & page);
 	virtual QString getDesc() const;
 	virtual ~ArgHandler();
@@ -71,10 +72,11 @@ public:
 	const static int toc = 4;
 
 	bool readArgsFromStdin;
-	Settings::PageSettings od;
+	Page od;
 	int currentMode;
 	QString currentSection;
-	Settings & settings;
+	Global & globalSettings;
+	QList<Page> & pageSettings;
 	bool currentExtended;
 	bool currentHack;
 
@@ -85,13 +87,13 @@ public:
 	QHash<QString, QString> sectionDesc;
 
 	//arguments.cc
-	CommandLineParserPrivate(Settings & s);
+	CommandLineParserPrivate(Global & gs, QList<Page> & ps);
 	void section(QString s, QString desc="");
 	void mode(int m);
 	void qthack(bool);
 	void extended(bool);
 	void addarg(QString, char, QString, ArgHandler * h, bool display=true);
-	void parseArg(int sections, const int argc, const char ** argv, bool & defaultMode, int & arg, Settings::PageSettings & pageSettings);
+	void parseArg(int sections, const int argc, const char ** argv, bool & defaultMode, int & arg, Page & page);
 
 	//docparts.cc
 	void outputManName(Outputter * o) const;

@@ -1,4 +1,5 @@
-//-*- mode: c++; tab-width: 4; indent-tabs-mode: t; c-file-style: "stroustrup"; -*-
+// -*- mode: c++; tab-width: 4; indent-tabs-mode: t; eval: (progn (c-set-style "stroustrup") (c-set-offset 'innamespace 0)); -*-
+// vi:set ts=4 sts=4 sw=4 noet :
 // This file is part of wkhtmltopdf.
 //
 // wkhtmltopdf is free software: you can redistribute it and/or modify
@@ -17,20 +18,21 @@
 #define __PAGECONVERTER_HH__
 #include "settings.hh"
 #include <QObject>
+namespace wkhtmltopdf {
 
 class PageConverterPrivate;
 class PageConverter: public QObject {
 	Q_OBJECT
 public:
-	PageConverter(Settings & settings);
+	PageConverter(settings::Global & globalSettings);
 	~PageConverter();
 	int phaseCount();
 	int currentPhase();
 	QString phaseDescription(int phase=-1);
 	QString progressString();
 	int httpErrorCode();
-	void addResource(const QString & url);
-	const Settings & settings() const;
+	void addResource(const settings::Page & pageSettings);
+	const settings::Global & globalSettings() const;
 signals:
 	void warning(const QString & message);
 	void error(const QString & message);
@@ -46,4 +48,5 @@ private:
 	friend class PageConverterPrivate;
 };
 
+}
 #endif //__PAGECONVERTER_HH__

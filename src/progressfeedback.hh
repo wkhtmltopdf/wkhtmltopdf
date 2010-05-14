@@ -1,4 +1,5 @@
-//-*- mode: c++; tab-width: 4; indent-tabs-mode: t; c-file-style: "stroustrup"; -*-
+// -*- mode: c++; tab-width: 4; indent-tabs-mode: t; eval: (progn (c-set-style "stroustrup") (c-set-offset 'innamespace 0)); -*-
+// vi:set ts=4 sts=4 sw=4 noet :
 // This file is part of wkhtmltopdf.
 //
 // wkhtmltopdf is free software: you can redistribute it and/or modify
@@ -16,6 +17,7 @@
 #ifndef __PROGRESSFEEDBACK_HH__
 #define __PROGRESSFEEDBACK_HH__
 #include "pageconverter.hh"
+namespace wkhtmltopdf {
 
 class ProgressFeedback: public QObject {
 	Q_OBJECT
@@ -31,4 +33,5 @@ public:
 	ProgressFeedback(PageConverter & _);
 };
 
+}
 #endif //__PROGRESSFEEDBACK_HH__

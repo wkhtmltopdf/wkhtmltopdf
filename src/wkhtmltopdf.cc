@@ -115,11 +115,11 @@ void parseString(char * buff, int &nargc, char **nargv) {
 
 class MyLooksStyle: public QCleanlooksStyle {
 public:
-	Settings & settings;
+	//Settings & settings;
 	
 	typedef QCleanlooksStyle parent_t;
 	
-	MyLooksStyle(Settings & s): settings(s) {}
+	//MyLooksStyle(Settings & s): settings(s) {}
 	
 	void drawPrimitive( PrimitiveElement element, const QStyleOption * option, QPainter * painter, const QWidget * widget = 0 ) const {
 		painter->setBrush(Qt::white);
@@ -129,14 +129,14 @@ public:
 			painter->drawRect(r);
 		} else if(element == QStyle::PE_IndicatorCheckBox) {
 			painter->drawRect(r);
-			if (!settings.produceForms && (option->state & QStyle::State_On)) {
+			if (true) { //(!settings.produceForms && (option->state & QStyle::State_On)) {
 				r.translate(r.width()*0.075, r.width()*0.075);
 				painter->drawLine(r.topLeft(), r.bottomRight());
 				painter->drawLine(r.topRight(), r.bottomLeft());
 			}
 		} else if(element == QStyle::PE_IndicatorRadioButton) {
 			painter->drawEllipse(r);
-			if (!settings.produceForms && (option->state & QStyle::State_On)) {
+			if (true) { //!settings.produceForms && (option->state & QStyle::State_On)) {
 				r.translate(r.width()*0.20, r.width()*0.20);
 				r.setWidth(r.width()*0.70);
 				r.setHeight(r.height()*0.70);
@@ -152,9 +152,10 @@ public:
 
 int main(int argc, char * argv[]) {
 	//This will store all our settings
-	Settings settings;
+	Global globalSettings:
+	QList<Page> pageSettings;
 	//Create a command line parser to parse commandline arguments
-	CommandLineParser parser(settings);
+	CommandLineParser parser(globalSettings, pageSettings);
 	//Setup default values in settings
 	parser.loadDefaults();
 	//Parse the arguments
@@ -169,7 +170,7 @@ int main(int argc, char * argv[]) {
 #endif
 #endif
 	QApplication a(argc, argv, use_graphics);
-	a.setStyle(new MyLooksStyle(settings));
+	a.setStyle(new MyLooksStyle());
 
 	if (parser.readArgsFromStdin()) {
 		char buff[20400];
@@ -181,22 +182,30 @@ int main(int argc, char * argv[]) {
 			int nargc=argc;
 			parseString(buff,nargc,nargv);
 
-			//CommandLineParser parser(settings);
+			Global globalSettings:
+			QList<Page> pageSettings;
+			//Create a command line parser to parse commandline arguments
+			CommandLineParser parser(globalSettings, pageSettings);
 			//Setup default values in settings
 			parser.loadDefaults();
 			//Parse the arguments
 			parser.parseArguments(nargc, (const char**)nargv, true);
 			
-			PageConverter converter(settings);
+			PageConverter converter(globalSettings);
 			ProgressFeedback feedback(converter);
+			foreach(const Page & page, pageSettings) 
+				converter.addResource(page);
+
 			if (!converter.convert())
 				exit(EXIT_FAILURE);
 		}
 		exit(EXIT_SUCCESS);
 	}
 	//Create the actual page converter to convert the pages
-	PageConverter converter(settings);
+	PageConverter converter(globalSettings);
 	ProgressFeedback feedback(converter);
+	foreach(const Page & page, pageSettings) 
+		converter.addResource(page);
 	
 	if (!converter.convert())
 		return EXIT_FAILURE;

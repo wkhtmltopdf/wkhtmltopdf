@@ -203,8 +203,8 @@ void CommandLineParser::readme(FILE * fd, bool html) const {
   Construct a commandline parser, storing its values in some settings
   \param s The settings to store the values in.
 */
-CommandLineParser::CommandLineParser(Settings & s):
-	d(new CommandLineParserPrivate(s))
+CommandLineParser::CommandLineParser(Global & s, QList<Page> & ps):
+	d(new CommandLineParserPrivate(s, ps))
 {
 }
 	
@@ -235,7 +235,7 @@ void CommandLineParser::loadDefaults() {
 }
 
 
-void CommandLineParserPrivate::parseArg(int sections, const int argc, const char ** argv, bool & defaultMode, int & arg, Settings::PageSettings & pageSettings) {
+void CommandLineParserPrivate::parseArg(int sections, const int argc, const char ** argv, bool & defaultMode, int & arg, Page & page) {
 	if (argv[arg][1] == '-') { //We have a long style argument
 		//After an -- apperas in the argument list all that follows is interpited as default arguments
 		if (argv[arg][2] == '0') {
@@ -260,7 +260,7 @@ void CommandLineParserPrivate::parseArg(int sections, const int argc, const char
 			usage(stderr, false);
 			exit(1);
 		}
-		if (!(*(j.value()))(argv+arg+1, *this, pageSettings)) {
+		if (!(*(j.value()))(argv+arg+1, *this, page)) {
 			fprintf(stderr, "Invalid argument(s) parsed to %s\n\n", argv[arg]);
 			usage(stderr, false);
 			exit(1);
@@ -292,7 +292,7 @@ void CommandLineParserPrivate::parseArg(int sections, const int argc, const char
 				usage(stderr, false);
 				exit(1);
 			}
-			if (!(*(k.value()))(argv+arg+1, *this, pageSettings)) {
+			if (!(*(k.value()))(argv+arg+1, *this, page)) {
 				fprintf(stderr, "Invalid argument(s) parsed to -%c\n\n", argv[c][j]);
 				usage(stderr, false);
 				exit(1);
@@ -321,7 +321,7 @@ void CommandLineParser::parseArguments(int argc, const char ** argv, bool fromSt
 	bool defaultMode = false;
 	int arg=1;
 	
-	Settings::PageSettings def;
+	Page def;
 	
 	//Parse global options
 	for(;arg < argc;++arg) {
@@ -333,9 +333,9 @@ void CommandLineParser::parseArguments(int argc, const char ** argv, bool fromSt
 
 	//Parse page options
 	for(;arg < argc-1;++arg) {
-		d->settings.pages.push_back(def);
-		
-		Settings::PageSettings & ps = d->settings.pages.back();
+		d->pageSettings.push_back(def);
+
+		Page & ps = d->pageSettings.back();
 		int sections = d->page;
 		if (!strcmp(argv[arg],"cover")) {
 			++arg;
@@ -368,12 +368,12 @@ void CommandLineParser::parseArguments(int argc, const char ** argv, bool fromSt
 		}
 	}
 	
-	if (d->settings.pages.size() == 0 || argc < 2) {
+	if (d->pageSettings.size() == 0 || argc < 2) {
 		fprintf(stderr, "You need to specify atleast one input file, and exactly one output file\nUse - for stdin or stdout\n\n");
 		d->usage(stderr, false);
 		exit(1);
 	}
-	d->settings.out = argv[argc-1];
+	d->globalSettings.out = argv[argc-1];
 }
 
 
