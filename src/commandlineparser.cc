@@ -307,12 +307,17 @@ void CommandLineParserPrivate::parseArg(int sections, const int argc, const char
 	}
 }
 
+
+bool CommandLineParser::readArgsFromStdin() const {
+	return d->readArgsFromStdin;
+}
+
 /*!
  * Parse command line arguments, and set settings accordingly.
  * \param argc the number of command line arguments
  * \param argv a NULL terminated list with the arguments
  */
-void CommandLineParser::parseArguments(int argc, const char ** argv, bool final) {
+void CommandLineParser::parseArguments(int argc, const char ** argv, bool fromStdin) {
 	bool defaultMode = false;
 	int arg=1;
 	
@@ -323,6 +328,8 @@ void CommandLineParser::parseArguments(int argc, const char ** argv, bool final)
 		if (argv[arg][0] != '-' || argv[arg][1] == '\0' || defaultMode) break;
 		d->parseArg(d->global | d->page, argc, argv, defaultMode, arg, def);
 	}
+	
+	if (d->readArgsFromStdin && !fromStdin) return;
 
 	//Parse page options
 	for(;arg < argc-1;++arg) {

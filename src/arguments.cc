@@ -474,6 +474,7 @@ void CommandLineParserPrivate::addarg(QString l, char s, QString d, ArgHandler *
   \param s The settings to store values in
 */
 CommandLineParserPrivate::CommandLineParserPrivate(Settings & s):
+	readArgsFromStdin(false),
 	settings(s)
 {
 	section("Global Options");
@@ -499,9 +500,15 @@ CommandLineParserPrivate::CommandLineParserPrivate(Settings & s):
 	addarg("lowquality",'l',"Generates lower quality pdf/ps. Useful to shrink the result document space", new ConstSetter<QPrinter::PrinterMode>(s.resolution,QPrinter::ScreenResolution));
  	addarg("title", 0, "The title of the generated pdf file (The title of the first document is used if not specified)", new QStrSetter(s.documentTitle,"text"));
 
+	addarg("read-args-from-stdin", 0, "Read command line arguments from stdin", new ConstSetter<bool>(readArgsFromStdin, true) );
 
 	extended(true);
  	qthack(false);
+	addarg("margin-bottom",'B',"Set the page bottom margin", new UnitRealSetter(s.margin.bottom,"unitreal"));
+ 	addarg("margin-left",'L',"Set the page left margin", new UnitRealSetter(s.margin.left,"unitreal"));
+ 	addarg("margin-right",'R',"Set the page right margin", new UnitRealSetter(s.margin.right,"unitreal"));
+ 	addarg("margin-top",'T',"Set the page top margin", new UnitRealSetter(s.margin.top,"unitreal"));
+
  	addarg("manpage", 0, "Output program man page", new Caller<ManPageFunc>());
  	addarg("htmldoc", 0, "Output program html help", new Caller<ReadmeFunc<true> >());
  	addarg("readme", 0, "Output program readme", new Caller<ReadmeFunc<false> >());
@@ -548,11 +555,6 @@ CommandLineParserPrivate::CommandLineParserPrivate(Settings & s):
 	addarg("disable-javascript",'n',"Do not allow web pages to run javascript", new ConstSetter<bool>(od.enableJavascript,false));
 	addarg("enable-javascript",'n',"Do allow web pages to run javascript", new ConstSetter<bool>(od.enableJavascript,true));
 	
-	addarg("margin-bottom",'B',"Set the page bottom margin", new UnitRealSetter(od.margin.bottom,"unitreal"));
- 	addarg("margin-left",'L',"Set the page left margin", new UnitRealSetter(od.margin.left,"unitreal"));
- 	addarg("margin-right",'R',"Set the page right margin", new UnitRealSetter(od.margin.right,"unitreal"));
- 	addarg("margin-top",'T',"Set the page top margin", new UnitRealSetter(od.margin.top,"unitreal"));
-
 	addarg("redirect-delay",0,"Wait some milliseconds for js-redirects", new IntSetter(od.jsredirectwait,"msec"));
  	addarg("enable-plugins",0,"Enable installed plugins (plugins will likely not work)", new ConstSetter<bool>(od.enablePlugins,true));
  	addarg("disable-plugins",0,"Disable installed plugins", new ConstSetter<bool>(od.enablePlugins,false));

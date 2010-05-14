@@ -171,19 +171,20 @@ int main(int argc, char * argv[]) {
 	QApplication a(argc, argv, use_graphics);
 	a.setStyle(new MyLooksStyle(settings));
 
-	if (settings.readArgsFromStdin) {
+	if (parser.readArgsFromStdin()) {
 		char buff[20400];
 		char *nargv[1000];
 		nargv[0] = argv[0];
+		for (int i=0; i < argc; ++i) nargv[i] = argv[i];
 		while (fgets(buff,20398,stdin)) {
 			//x.resetPages();
-			int nargc=1;
+			int nargc=argc;
 			parseString(buff,nargc,nargv);
-			CommandLineParser parser(settings);
+
+			//CommandLineParser parser(settings);
 			//Setup default values in settings
 			parser.loadDefaults();
 			//Parse the arguments
-			parser.parseArguments(argc, (const char**)argv);
 			parser.parseArguments(nargc, (const char**)nargv, true);
 			
 			PageConverter converter(settings);

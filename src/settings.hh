@@ -171,6 +171,9 @@ struct Settings {
 
 	bool useCompression;
 
+	//! Margin related settings
+	MarginSettings margin;
+	
 	struct PageSettings {
 
 		//! Settings regarding the TOC
@@ -186,10 +189,7 @@ struct Settings {
 		
 		//! Header related settings
 		HeaderFooterSettings footer;
-		
-		//! Margin related settings
-		MarginSettings margin;
-				
+						
 		//! Username used for http auth login
 		QString username;
 		

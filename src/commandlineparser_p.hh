@@ -70,8 +70,8 @@ public:
 	const static int page = 2;
 	const static int toc = 4;
 
+	bool readArgsFromStdin;
 	Settings::PageSettings od;
-
 	int currentMode;
 	QString currentSection;
 	Settings & settings;
