@@ -29,6 +29,9 @@
 #include <qglobal.h>
 #include <string.h>
 
+using namespace wkhtmltopdf::settings;
+using namespace wkhtmltopdf;
+
 #ifdef QT_STATIC
 //When doing a static build, we need to load the plugins to make images work
 Q_IMPORT_PLUGIN(qjpeg)
@@ -36,7 +39,6 @@ Q_IMPORT_PLUGIN(qgif)
 Q_IMPORT_PLUGIN(qtiff)
 Q_IMPORT_PLUGIN(qmng)
 #endif
-
 
 /*!
  * State mashine driven, shell like parser. This is used for
@@ -152,7 +154,7 @@ public:
 
 int main(int argc, char * argv[]) {
 	//This will store all our settings
-	Global globalSettings:
+	Global globalSettings;
 	QList<Page> pageSettings;
 	//Create a command line parser to parse commandline arguments
 	CommandLineParser parser(globalSettings, pageSettings);
@@ -165,7 +167,7 @@ int main(int argc, char * argv[]) {
 	bool use_graphics=true;
 #ifdef Q_WS_X11
 #ifdef __EXTENSIVE_WKHTMLTOPDF_QT_HACK__
-	use_graphics=settings.useGraphics;
+	use_graphics=globalSettings.useGraphics;
 	if (!use_graphics) QApplication::setGraphicsSystem("raster");
 #endif
 #endif
@@ -182,7 +184,7 @@ int main(int argc, char * argv[]) {
 			int nargc=argc;
 			parseString(buff,nargc,nargv);
 
-			Global globalSettings:
+			Global globalSettings;
 			QList<Page> pageSettings;
 			//Create a command line parser to parse commandline arguments
 			CommandLineParser parser(globalSettings, pageSettings);

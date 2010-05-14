@@ -1,4 +1,5 @@
-//-*- mode: c++; tab-width: 4; indent-tabs-mode: t; c-file-style: "stroustrup"; -*-
+// -*- mode: c++; tab-width: 4; indent-tabs-mode: t; eval: (progn (c-set-style "stroustrup") (c-set-offset 'innamespace 0)); -*-
+// vi:set ts=4 sts=4 sw=4 noet :
 // This file is part of wkhtmltopdf.
 //
 // wkhtmltopdf is free software: you can redistribute it and/or modify
@@ -14,7 +15,7 @@
 // You should have received a copy of the GNU General Public License
 // along with wkhtmltopdf.  If not, see <http://www.gnu.org/licenses/>.
 #include "progressfeedback.hh"
-
+namespace wkhtmltopdf {
 /*!
   \file progressfeedback.hh
   \brief Define the ProgressFeedback class
@@ -32,7 +33,7 @@
   \param message The warning message
 */
 void ProgressFeedback::warning(const QString &message) {
-	if (pageConverter.settings().quiet) return;
+	if (pageConverter.globalSettings().quiet) return;
 	fprintf(stderr, "Warning: %s",S(message));
 	for(int l = 9 + message.size(); l < lw; ++l) 
 		fprintf(stderr, " ");
@@ -56,7 +57,7 @@ void ProgressFeedback::error(const QString &message) {
   \brief Write out the name of the next phase
 */
 void ProgressFeedback::phaseChanged() {
-	if (pageConverter.settings().quiet) return;
+	if (pageConverter.globalSettings().quiet) return;
 	QString desc=pageConverter.phaseDescription();
 	fprintf(stderr, "%s", S(desc));
 	
@@ -73,7 +74,7 @@ void ProgressFeedback::phaseChanged() {
   \brief Update progress bar
 */
 void ProgressFeedback::progressChanged(int progress) {
-	if (pageConverter.settings().quiet) return;
+	if (pageConverter.globalSettings().quiet) return;
 	fprintf(stderr, "[");
 	int w=60;
 	progress *= w;
@@ -99,3 +100,4 @@ ProgressFeedback::ProgressFeedback(PageConverter & _):
 	connect(&pageConverter, SIGNAL(progressChanged(int)), this, SLOT(progressChanged(int)));
 }
 
+}
