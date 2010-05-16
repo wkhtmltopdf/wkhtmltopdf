@@ -1,4 +1,5 @@
-//-*- mode: c++; tab-width: 4; indent-tabs-mode: t; c-file-style: "stroustrup"; -*-
+// -*- mode: c++; tab-width: 4; indent-tabs-mode: t; eval: (progn (c-set-style "stroustrup") (c-set-offset 'innamespace 0)); -*-
+// vi:set ts=4 sts=4 sw=4 noet :
 // This file is part of wkhtmltopdf.
 //
 // wkhtmltopdf is free software: you can redistribute it and/or modify
@@ -21,15 +22,17 @@
 #include <QUrl>
 #include <QWebPage>
 
+namespace wkhtmltopdf {
+
 class MyQWebPage;
 class MultiPageLoaderPrivate;
 class MultiPageLoader: public QObject {
 	Q_OBJECT
 public:
-	MultiPageLoader(Settings & s);
+	MultiPageLoader(settings::Global & s);
 	~MultiPageLoader();
-	QWebPage * addResource(const QString & string);
-	QWebPage * addResource(const QUrl & url);
+	QWebPage * addResource(const QString & url, const settings::Page & pageSettings);
+	QWebPage * addResource(const QUrl & url, const settings::Page & pageSettingns);
 	static QUrl guessUrlFromString(const QString &string);
 	int httpErrorCode();
 	static bool copyFile(QFile & src, QFile & dst);
@@ -38,7 +41,6 @@ public slots:
 	void clearResources();
 	void cancel();
 signals:
-	void printRequested(QWebFrame * frame);
 	void loadFinished(bool ok);
 	void loadProgress(int progress);
 	void loadStarted();
@@ -50,4 +52,5 @@ private:
 	friend class MyQWebPage;
 };
 
+}
 #endif //__MULTIPAGELOADER_HH__
