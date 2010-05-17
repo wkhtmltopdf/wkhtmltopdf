@@ -1,4 +1,5 @@
-//-*- mode: c++; tab-width: 4; indent-tabs-mode: t; c-file-style: "stroustrup"; -*-
+// -*- mode: c++; tab-width: 4; indent-tabs-mode: t; eval: (progn (c-set-style "stroustrup") (c-set-offset 'innamespace 0)); -*-
+// vi:set ts=4 sts=4 sw=4 noet :
 // This file is part of wkhtmltopdf.
 //
 // wkhtmltopdf is free software: you can redistribute it and/or modify
@@ -20,14 +21,16 @@
 #include <QWebElement>
 #include "settings.hh"
 
+namespace wkhtmltopdf {
+
 class OutlinePrivate;
 
 class Outline {
 public:
-	Outline(const Settings & settings);
+	Outline(const settings::Global & settings);
 	~Outline();
-	void addWebPage(const QString & name, QWebPrinter & wp, QWebFrame * frame);
-	void fillHeaderFooterParms(int page, QHash<QString, QString> & parms);
+	void addWebPage(const QString & name, QWebPrinter & wp, QWebFrame * frame, const settings::Page & ps);
+	void fillHeaderFooterParms(int page, QHash<QString, QString> & parms, const settings::Page & ps);
 	void fillAnchors(int d, QHash<QString, QWebElement> & anchors);
 	int pageCount();
 	void printOutline(QPrinter * printer);
@@ -38,5 +41,7 @@ private:
 	friend class TocPrinterPrivate;
 };
 
+
+}
 #endif //__EXTENSIVE_WKHTMLTOPDF_QT_HACK__
 #endif //__OUTLINE_HH__

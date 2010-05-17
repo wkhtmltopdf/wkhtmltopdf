@@ -1,4 +1,5 @@
-//-*- mode: c++; tab-width: 4; indent-tabs-mode: t; c-file-style: "stroustrup"; -*-
+// -*- mode: c++; tab-width: 4; indent-tabs-mode: t; eval: (progn (c-set-style "stroustrup") (c-set-offset 'innamespace 0)); -*-
+// vi:set ts=4 sts=4 sw=4 noet :
 // This file is part of wkhtmltopdf.
 //
 // wkhtmltopdf is free software: you can redistribute it and/or modify
@@ -14,8 +15,12 @@
 // You should have received a copy of the GNU General Public License
 // along with wkhtmltopdf.  If not, see <http://www.gnu.org/licenses/>.
 #include "outline_p.hh"
+#include <fstream>
+#include <iostream>
+using namespace std;
 #ifdef __EXTENSIVE_WKHTMLTOPDF_QT_HACK__
 
+namespace wkhtmltopdf {
 /*!
   \file outline_p.hh
   \brief Defines the classes OutlinePrivate and OutlineItem
@@ -43,7 +48,7 @@ OutlineItem::~OutlineItem() {
   \brief Class providing implemenation details of Outline
 */
 
-OutlinePrivate::OutlinePrivate(const Settings & s):
+OutlinePrivate::OutlinePrivate(const settings::Global & s):
 	settings(s), pageCount(s.pageOffset-1), anchorCounter(0) {
 }
 
@@ -60,9 +65,6 @@ void OutlinePrivate::fillChildAnchors(OutlineItem * item, QHash<QString, QWebEle
 	}
 }
 
-#include <fstream>
-#include <iostream>
-using namespace std;
 void OutlinePrivate::outlineChildren(OutlineItem * item, QPrinter * printer, int level) {
 	if (level + 1 > settings.outlineDepth) return;
 	foreach (OutlineItem * i, item->children) {
@@ -115,7 +117,7 @@ void Outline::dumpOutline() {
   \brief Construct a new outline class
   \param settings The settings to use
 */
-Outline::Outline(const Settings & settings): d(new OutlinePrivate(settings)) {}
+Outline::Outline(const settings::Global & settings): d(new OutlinePrivate(settings)) {}
 Outline::~Outline() {delete d;}
 
 /*!
@@ -124,7 +126,7 @@ Outline::~Outline() {delete d;}
   \param wp A webprinter for the page
   \param frame The frame containing the webpage
 */
-void Outline::addWebPage(const QString & name, QWebPrinter & wp, QWebFrame * frame) {
+void Outline::addWebPage(const QString & name, QWebPrinter & wp, QWebFrame * frame, const settings::Page & ps) {
 	Q_UNUSED(name);
 	QMap< QPair<int, QPair<qreal,qreal> >, QWebElement> headings;
 	
@@ -149,6 +151,7 @@ void Outline::addWebPage(const QString & name, QWebPrinter & wp, QWebFrame * fra
 		item->page = d->pageCount + i.key().first;
 		item->value = element.toPlainText().replace("\n", " ");
 		item->element = element;
+		item->display = ps.includeInOutline;
 		item->anchor = QString("__WKANCHOR_")+QString::number(d->anchorCounter++,36);
 		while(levelStack.back() >= level) {
 			old = old->parent;
@@ -183,7 +186,7 @@ void OutlinePrivate::buildHFCache(OutlineItem * i, int level) {
   \param page The page to fill in for
   \param parms The structure to fill
  */
-void Outline::fillHeaderFooterParms(int page, QHash<QString, QString> & parms) {
+void Outline::fillHeaderFooterParms(int page, QHash<QString, QString> & parms, const settings::Page & ps) {
 	//Build hfcache
 	if (d->hfCache.size() == 0) {
 		for (int i=0; i < 3; ++i) {
@@ -200,7 +203,7 @@ void Outline::fillHeaderFooterParms(int page, QHash<QString, QString> & parms) {
 
 	int off = d->settings.pageOffset;
 	typedef QPair<QString,QString> SP;
-	foreach (const SP & rep, d->settings.replacements) 
+	foreach (const SP & rep, ps.replacements) 
 		parms[rep.first] = rep.second;
 		
 	parms["frompage"] = QString::number(off);
@@ -238,5 +241,7 @@ void Outline::printOutline(QPrinter * printer) {
 	if (!d->settings.outline) return;
 	foreach(OutlineItem * i, d->documentOutlines)
 		d->outlineChildren(i, printer, 0);
+}
+
 }
 #endif //__EXTENSIVE_WKHTMLTOPDF_QT_HACK__

@@ -1,4 +1,5 @@
-//-*- mode: c++; tab-width: 4; indent-tabs-mode: t; c-file-style: "stroustrup"; -*-
+// -*- mode: c++; tab-width: 4; indent-tabs-mode: t; eval: (progn (c-set-style "stroustrup") (c-set-offset 'innamespace 0)); -*-
+// vi:set ts=4 sts=4 sw=4 noet :
 // This file is part of wkhtmltopdf.
 //
 // wkhtmltopdf is free software: you can redistribute it and/or modify
@@ -18,6 +19,7 @@
 #include <fstream>
 #include "outline.hh"
 #ifdef __EXTENSIVE_WKHTMLTOPDF_QT_HACK__
+namespace wkhtmltopdf {
 
 class OutlineItem {
 public:
@@ -27,20 +29,21 @@ public:
 	QString value;
 	QWebElement element;
 	QString anchor;
+	bool display;
 	OutlineItem();
 	~OutlineItem();
 };
 
 class OutlinePrivate {
 public:
-	const Settings & settings;
+	const settings::Global & settings;
 	QList<OutlineItem *> documentOutlines;
 	int pageCount;
 	int anchorCounter;
 
 	QList< QList< OutlineItem *> > hfCache;
 
-	OutlinePrivate(const Settings & settings);
+	OutlinePrivate(const settings::Global & settings);
 	~OutlinePrivate();
 	void fillChildAnchors(OutlineItem * item, QHash<QString, QWebElement> & anchors);
 	void outlineChildren(OutlineItem * item, QPrinter * printer, int level);
@@ -48,5 +51,6 @@ public:
 	void dumpOutlineChildren(OutlineItem * item, std::ofstream &dumpfile, int level);
 };
 
+}
 #endif //__EXTENSIVE_WKHTMLTOPDF_QT_HACK__
 #endif //__OUTLINE_P_HH
