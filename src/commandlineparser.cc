@@ -332,28 +332,34 @@ void CommandLineParser::parseArguments(int argc, const char ** argv, bool fromSt
 	if (d->readArgsFromStdin && !fromStdin) return;
 
 	//Parse page options
-	for(;arg < argc-1;++arg) {
+	while(arg < argc-1) {
 		d->pageSettings.push_back(def);
-
 		Page & ps = d->pageSettings.back();
 		int sections = d->page;
 		if (!strcmp(argv[arg],"cover")) {
 			++arg;
-			if(argc >= argc-1) {
+			if(arg >= argc-1) {
 				fprintf(stderr, "You need to specify a input file to cover\n\n");
 				usage(stderr, false);
 				exit(1);
 			}
-
 			ps.page = QString::fromLocal8Bit(argv[arg]);
-			++arg;
+
+			ps.header.left = ps.header.right = ps.header.center = "";
+			ps.footer.left = ps.footer.right = ps.footer.center = "";
+			ps.header.line = ps.footer.line = false;
+			ps.header.htmlUrl = ps.footer.htmlUrl = "";
+			ps.includeInOutline = false;
+				
 			//Setup varius cover settings her
+			++arg;
 		} else if (!strcmp(argv[arg],"toc")) {
 			sections = d->page | d->toc;
+			++arg;
 		} else {
 			if (!strcmp(argv[arg],"page")) {
 				++arg;
-				if(argc >= argc-1) {
+				if(arg >= argc-1) {
 					fprintf(stderr, "You need to specify a input file to page\n\n");
 					usage(stderr, false);
 					exit(1);
@@ -364,7 +370,7 @@ void CommandLineParser::parseArguments(int argc, const char ** argv, bool fromSt
 		}
 		for(;arg < argc-1;++arg) {
 			if (argv[arg][0] != '-' || argv[arg][1] == '\0' || defaultMode) break;
-			d->parseArg(sections, argc, argv, defaultMode, arg, def);
+			d->parseArg(sections, argc, argv, defaultMode, arg, ps);
 		}
 	}
 	

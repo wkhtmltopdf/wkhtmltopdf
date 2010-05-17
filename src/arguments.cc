@@ -339,8 +339,8 @@ template <typename T> struct Caller: public ArgHandler {
 	Caller(QString a1) {
 		argn.push_back(a1);
 	}
-	bool operator() (const char **vals, CommandLineParserPrivate & s, Page &) {
-		return T()(vals,s);
+	bool operator() (const char **vals, CommandLineParserPrivate & s, Page & page) {
+		return T()(vals, s, page);
 	}
 };
 
@@ -351,7 +351,7 @@ template <typename T> struct Caller: public ArgHandler {
 */
 template <bool v>
 struct HelpFunc {
-	bool operator()(const char **, CommandLineParserPrivate & p) {
+	bool operator()(const char **, CommandLineParserPrivate & p, Page &) {
 		p.usage(stdout,v);
 		exit(0);
 	}
@@ -361,7 +361,7 @@ struct HelpFunc {
   Lambda: Call the man method
 */
 struct ManPageFunc {
-	bool operator()(const char **, CommandLineParserPrivate & p) {
+	bool operator()(const char **, CommandLineParserPrivate & p, Page &) {
 		p.manpage(stdout);
 		exit(0);
 	}
@@ -372,7 +372,7 @@ struct ManPageFunc {
 */
 template <bool T>
 struct ReadmeFunc {
-	bool operator()(const char **, CommandLineParserPrivate & p) {
+	bool operator()(const char **, CommandLineParserPrivate & p, Page &) {
 		p.readme(stdout, T);
 		exit(0);
 	}
@@ -382,7 +382,7 @@ struct ReadmeFunc {
   Lambda: Call the version method
 */
 struct VersionFunc {
-	bool operator()(const char **, CommandLineParserPrivate & p) {
+	bool operator()(const char **, CommandLineParserPrivate & p, Page &) {
 		p.version(stdout);
 		exit(0);
 	}
@@ -392,11 +392,11 @@ struct VersionFunc {
   Set the default header
 */
 struct DefaultHeaderFunc {
-	bool operator()(const char **, CommandLineParserPrivate & p) {
-		//p.settings.header.left="[webpage]";
-		//p.settings.header.right="[page]/[toPage]";
-		//p.settings.header.line=true;
-		//p.settings.margin.top = Settings::strToUnitReal("2cm");
+	bool operator()(const char **, CommandLineParserPrivate & p, Page & page) {
+		page.header.left="[webpage]";
+		page.header.right="[page]/[toPage]";
+		page.header.line=true;
+		p.globalSettings.margin.top = strToUnitReal("2cm");
 		return true;
 	}
 };
@@ -494,7 +494,6 @@ CommandLineParserPrivate::CommandLineParserPrivate(Global & s, QList<Page> & ps)
 	addarg("copies", 0, "Number of copies to print into the pdf file", new IntSetter(s.copies, "number"));
 	addarg("orientation",'O',"Set orientation to Landscape or Portrait", new OrientationSetter(s.orientation, "orientation"));
 	addarg("page-size",'s',"Set paper size to: A4, Letter, etc.", new PageSizeSetter(s.size.pageSize, "Size"));
-	addarg("proxy",'p',"Use a proxy", new ProxySetter(s.proxy, "proxy"));
 
 	addarg("grayscale",'g',"PDF will be generated in grayscale", new ConstSetter<QPrinter::ColorMode>(s.colorMode,QPrinter::GrayScale));
 
@@ -519,7 +518,6 @@ CommandLineParserPrivate::CommandLineParserPrivate(Global & s, QList<Page> & ps)
 
 // 	addarg("book",'b',"Set the options one would usually set when printing a book", new Caller<BookFunc>());
 // 	addarg("cover",0,"Use html document as cover. It will be inserted before the toc with no headers and footers",new QStrSetter(s.cover,"url",""));
-// 	addarg("default-header",'H',"Add a default header, with the name of the page to the left, and the page number to the right, this is short for: --header-left='[webpage]' --header-right='[page]/[toPage]' --top 2cm --header-line", new Caller<DefaultHeaderFunc>());
 	
 	addarg("cookie-jar", 0, "Read and write cookies from and to the supplied cookie jar file", new QStrSetter(s.cookieJar, "path") );
 
@@ -545,7 +543,8 @@ CommandLineParserPrivate::CommandLineParserPrivate(Global & s, QList<Page> & ps)
 	mode(page);
  	extended(true);
  	qthack(false);
-
+ 	addarg("default-header",'H',"Add a default header, with the name of the page to the left, and the page number to the right, this is short for: --header-left='[webpage]' --header-right='[page]/[toPage]' --top 2cm --header-line", new Caller<DefaultHeaderFunc>());
+	addarg("proxy",'p',"Use a proxy", new ProxySetter(od.proxy, "proxy"));
  	addarg("username",0,"HTTP Authentication username", new QStrSetter(od.username, "username"));
  	addarg("password",0,"HTTP Authentication password", new QStrSetter(od.password, "password"));
 	addarg("ignore-load-errors", 0, "Ignore pages that claimes to have encountered an error during loading", new ConstSetter<bool>(od.ignoreLoadErrors, true));
@@ -556,7 +555,7 @@ CommandLineParserPrivate::CommandLineParserPrivate(Global & s, QList<Page> & ps)
 	addarg("disable-javascript",'n',"Do not allow web pages to run javascript", new ConstSetter<bool>(od.enableJavascript,false));
 	addarg("enable-javascript",'n',"Do allow web pages to run javascript", new ConstSetter<bool>(od.enableJavascript,true));
 	
-	addarg("redirect-delay",0,"Wait some milliseconds for js-redirects", new IntSetter(od.jsredirectwait,"msec"));
+	addarg("javascript-delay",0,"Wait some milliseconds for javascript finish", new IntSetter(od.jsdelay,"msec"));
  	addarg("enable-plugins",0,"Enable installed plugins (plugins will likely not work)", new ConstSetter<bool>(od.enablePlugins,true));
  	addarg("disable-plugins",0,"Disable installed plugins", new ConstSetter<bool>(od.enablePlugins,false));
 
