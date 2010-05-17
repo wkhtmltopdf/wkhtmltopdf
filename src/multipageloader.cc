@@ -1,4 +1,5 @@
-//-*- mode: c++; tab-width: 4; indent-tabs-mode: t; c-file-style: "stroustrup"; -*-
+// -*- mode: c++; tab-width: 4; indent-tabs-mode: t; eval: (progn (c-set-style "stroustrup") (c-set-offset 'innamespace 0)); -*-
+// vi:set ts=4 sts=4 sw=4 noet :
 // This file is part of wkhtmltopdf.
 //
 // wkhtmltopdf is free software: you can redistribute it and/or modify
@@ -20,6 +21,7 @@
 #include <QNetworkCookie>
 #include <QUuid>
 
+namespace wkhtmltopdf {
 /*!
   \file multipageloader.hh
   \brief Defines the MultiPageLoader class
@@ -63,34 +65,246 @@ QNetworkReply * MyNetworkAccessManager::createRequest(Operation op, const QNetwo
 }
 
 
-MyQWebPage::MyQWebPage(MultiPageLoader & mpl, Settings & s): settings(s), multiPageLoader(mpl) {};
-													
-bool MyQWebPage::shouldInterruptJavaScript() {
-	if (settings.stopSlowScripts) {
-		multiPageLoader.warning("A slow script was stopped");
-		return true;
-	}
-	return false;
-}
+MyQWebPage::MyQWebPage(ResourceObject & res): resource(res) {}
 
 void MyQWebPage::javaScriptAlert(QWebFrame *, const QString & msg) {
-	multiPageLoader.warning(QString("Javascript alert: %1").arg(msg));
+	resource.warning(QString("Javascript alert: %1").arg(msg));
 }
 
 bool MyQWebPage::javaScriptConfirm(QWebFrame *, const QString & msg) {
-	multiPageLoader.warning(QString("Javascript confirm: %1 (answered yes)").arg(msg));
+	resource.warning(QString("Javascript confirm: %1 (answered yes)").arg(msg));
 	return true;
 }
 
 bool MyQWebPage::javaScriptPrompt(QWebFrame *, const QString & msg, const QString & defaultValue, QString * result) {
-	multiPageLoader.warning(QString("Javascript prompt: %1 (answered %2)").arg(msg,defaultValue));
+	resource.warning(QString("Javascript prompt: %1 (answered %2)").arg(msg,defaultValue));
 	result = (QString*)&defaultValue;
 	return true;
 }
 
 void MyQWebPage::javaScriptConsoleMessage(const QString & message, int lineNumber, const QString & sourceID) {
-	if (settings.debugJavascript)
-		multiPageLoader.warning(QString("%1:%2 %3").arg(sourceID).arg(lineNumber).arg(message));
+	if (resource.settings.debugJavascript)
+		resource.warning(QString("%1:%2 %3").arg(sourceID).arg(lineNumber).arg(message));
+}
+
+bool MyQWebPage::shouldInterruptJavaScript() {
+	if (resource.settings.stopSlowScripts) {
+		resource.warning("A slow script was stopped");
+		return true;
+	}
+	return false;
+}
+
+
+ResourceObject::ResourceObject(MultiPageLoaderPrivate & mpl, const QUrl & u, const settings::Page & s): 
+	networkAccessManager(s.blockLocalFileAccess),
+	webPage(*this),
+	url(u),
+	loginTry(0), 
+	progress(0), 
+	finished(false),
+	signalPrint(false),
+	multiPageLoader(mpl), 
+	httpErrorCode(false),
+	settings(s) {
+	
+	connect(&networkAccessManager, SIGNAL(authenticationRequired(QNetworkReply*, QAuthenticator *)),this,
+	        SLOT(handleAuthenticationRequired(QNetworkReply *, QAuthenticator *)));
+	foreach(const QString & path, s.allowed)
+		networkAccessManager.allow(path);
+	if (url.scheme() == "file")
+		networkAccessManager.allow(url.toLocalFile());
+
+	connect(&webPage, SIGNAL(loadStarted()), this, SLOT(loadStarted()));
+	connect(&webPage, SIGNAL(loadProgress(int)), this, SLOT(loadProgress(int)));
+	connect(&webPage, SIGNAL(loadFinished(bool)), this, SLOT(loadFinished(bool)));
+	connect(&webPage, SIGNAL(printRequested(QWebFrame*)), this, SLOT(printRequested(QWebFrame*)));
+
+	//If some ssl error occures we want sslErrors to be called, so the we can ignore it
+	connect(&networkAccessManager, SIGNAL(sslErrors(QNetworkReply*, const QList<QSslError>&)),this,
+	        SLOT(sslErrors(QNetworkReply*, const QList<QSslError>&)));
+
+	connect(&networkAccessManager, SIGNAL(finished (QNetworkReply *)),
+			this, SLOT(amfinished (QNetworkReply *) ) );
+
+	connect(&networkAccessManager, SIGNAL(warning(const QString &)), 
+			this, SLOT(warning(const QString &)));
+
+	networkAccessManager.setCookieJar(multiPageLoader.cookieJar);
+
+	//If we must use a proxy, create a host of objects
+	if (!settings.proxy.host.isEmpty()) {
+		QNetworkProxy proxy;
+		proxy.setHostName(settings.proxy.host);
+		proxy.setPort(settings.proxy.port);
+		proxy.setType(settings.proxy.type);
+		// to retrieve a web page, it's not needed to use a fully transparent
+		// http proxy. Moreover, the CONNECT() method is frequently disabled
+		// by proxies administrators.
+#if QT_VERSION >= 0x040500
+		if (settings.proxy.type == QNetworkProxy::HttpProxy)
+			proxy.setCapabilities(QNetworkProxy::CachingCapability);
+#endif
+		if (!settings.proxy.user.isEmpty())
+			proxy.setUser(settings.proxy.user);
+		if (!settings.proxy.password.isEmpty())
+			proxy.setPassword(settings.proxy.password);
+		networkAccessManager.setProxy(proxy);
+	}
+
+	webPage.setNetworkAccessManager(&networkAccessManager);
+	webPage.mainFrame()->setZoomFactor(settings.zoomFactor);
+}
+
+/*!
+ * Once loading starting, this is called
+ */
+void ResourceObject::loadStarted() {
+	if (finished == true) {
+		++multiPageLoader.loading;
+		finished = false;
+	}
+	if (multiPageLoader.loadStartedEmitted) return;
+	multiPageLoader.loadStartedEmitted=true;
+	emit multiPageLoader.outer.loadStarted();
+}
+
+
+/*!
+ * Called when the page is loading, display some progress to the using
+ * \param progress the loading progress in percent
+ */
+void ResourceObject::loadProgress(int p) {
+	multiPageLoader.progressSum -= progress;
+	progress = p;
+	multiPageLoader.progressSum += progress;
+	emit multiPageLoader.outer.loadProgress(multiPageLoader.progressSum / multiPageLoader.resources.size());
+}
+
+
+void ResourceObject::loadFinished(bool ok) {
+	multiPageLoader.hasError = multiPageLoader.hasError || (!ok && !settings.ignoreLoadErrors);
+	if (!ok) {
+		if (!settings.ignoreLoadErrors)
+			error(QString("Failed loading page ") + url.toString() + " (sometimes it will work just to ignore this error with --ignore-load-errors)");
+		else
+			warning(QString("Failed loading page ") + url.toString() + " (ignored)");
+	}
+	if (signalPrint || settings.jsdelay == 0) loadDone();
+	else QTimer::singleShot(settings.jsdelay, this, SLOT(loadDone()));
+}
+
+void ResourceObject::printRequested(QWebFrame *) {
+	signalPrint=true;
+	loadDone();
+}
+
+void ResourceObject::loadDone() {
+	if (finished) return;
+	finished=true;
+	--multiPageLoader.loading;
+	if (multiPageLoader.loading == 0) 
+		multiPageLoader.loadDone();
+}
+
+/*!
+ * Called when the page requires authentication, filles in the username
+ * and password supplied on the command line
+ */
+void ResourceObject::handleAuthenticationRequired(QNetworkReply *reply, QAuthenticator *authenticator) {
+	if (settings.username.isEmpty()) {
+		//If no username is given, complain the such is required
+		error("Authentication Required");
+		reply->abort();
+		multiPageLoader.fail();
+	} else if (loginTry >= 2) {
+		//If the login has failed a sufficient number of times,
+		//the username or password must be wrong
+		error("Invalid username or password");
+		reply->abort();
+		multiPageLoader.fail();
+	} else {
+		authenticator->setUser(settings.username);
+		authenticator->setPassword(settings.password);
+		++loginTry;
+	}
+}
+
+void ResourceObject::warning(const QString & str) {
+	emit multiPageLoader.outer.warning(str);
+}
+
+void ResourceObject::error(const QString & str) {
+	emit multiPageLoader.outer.error(str);
+}
+
+/*!
+ * Track and handle network errors
+ * \param reply The networkreply that has finished
+ */
+void ResourceObject::amfinished(QNetworkReply * reply) {
+	int error = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
+	if (error > 399 && httpErrorCode == 0) httpErrorCode = error;
+}
+
+/*!
+ * Handel any ssl error by ignoring
+ */
+void ResourceObject::sslErrors(QNetworkReply *reply, const QList<QSslError> &) {
+	//We ignore any ssl error, as it is next to impossible to send or receive
+	//any private information with wkhtmltopdf anyhow, seeing as you cannot authenticate
+	reply->ignoreSslErrors();
+	warning("SSL error ignored");
+}
+
+
+
+void ResourceObject::load() {
+	finished=false;
+	++multiPageLoader.loading;
+	QString boundary = QUuid::createUuid().toString().remove('-').remove('{').remove('}');
+	QByteArray postData;
+	foreach (const settings::PostItem & pi, settings.post) {
+		//TODO escape values here
+		postData.append("--");
+		postData.append(boundary);
+		postData.append("\ncontent-disposition: form-data; name=\"");
+		postData.append(pi.name);
+		postData.append('\"');
+		if (pi.file) {
+			QFile f(pi.value);
+			if (!f.open(QIODevice::ReadOnly) ) {
+				error(QString("Unable to open file ")+pi.value);
+				multiPageLoader.fail();
+			}
+			postData.append("; filename=\"");
+			postData.append( QFileInfo(pi.value).fileName());
+			postData.append("\"\n\n");
+			postData.append( f.readAll() );
+			//TODO ADD MIME TYPE
+		} else {
+			postData.append("\n\n");
+			postData.append(pi.value);
+		}
+		postData.append('\n');
+	}
+	if (!postData.isEmpty()) {
+		postData.append("--");
+		postData.append(boundary);
+		postData.append("--\n");
+	}
+
+	QNetworkRequest r = QNetworkRequest(url);
+	typedef QPair<QString, QString> HT;
+	foreach (const HT & j, settings.customHeaders)
+		r.setRawHeader(j.first.toAscii(), j.second.toAscii());
+
+	if (postData.isEmpty())
+		webPage.mainFrame()->load(r);
+	else {
+		r.setHeader(QNetworkRequest::ContentTypeHeader, QString("multipart/form-data, boundary=")+boundary);
+		webPage.mainFrame()->load(r, QNetworkAccessManager::PostOperation, postData);
+	}
 }
 
 void MyCookieJar::addGlobalCookie(const QString & name, const QString & value) {
@@ -118,38 +332,16 @@ void MyCookieJar::saveToFile(const QString & path) {
 		}
 }
 
-
-/*!
- * Track and handle network errors
- * \param reply The networkreply that has finished
- */
-void MultiPageLoaderPrivate::amfinished(QNetworkReply * reply) {
-	int error = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
-	if (error > 399 && httpErrorCode == 0) httpErrorCode = error;
-}
-
-/*!
- * Called when the page requires authentication, filles in the username
- * and password supplied on the command line
- */
-void MultiPageLoaderPrivate::authenticationRequired(QNetworkReply *reply, QAuthenticator *authenticator) {
-	if (settings.username.isEmpty()) {
-		//If no username is given, complain the such is required
-		emit outer.error("Authentication Required");
-		reply->abort();
-		fail();
-	} else if (loginTry >= 2) {
-		//If the login has failed a sufficient number of times,
-		//the username or password must be wrong
-		emit outer.error("Invalid username or password");
-		reply->abort();
-		fail();
-	} else {
-		authenticator->setUser(settings.username);
-		authenticator->setPassword(settings.password);
-		++loginTry;
+void MultiPageLoaderPrivate::loadDone() {
+	 if (!settings.cookieJar.isEmpty())
+	 	cookieJar->saveToFile(settings.cookieJar);
+	
+	if (!finishedEmitted) {
+		finishedEmitted = true;
+		emit outer.loadFinished(!hasError);
 	}
 }
+
 
 
 /*!
@@ -174,249 +366,62 @@ bool MultiPageLoader::copyFile(QFile & src, QFile & dst) {
 	return true;
 }
 
-/*!
- * Handel any ssl error by ignoring
- */
-void MultiPageLoaderPrivate::sslErrors(QNetworkReply *reply, const QList<QSslError> &) {
-	//We ignore any ssl error, as it is next to impossible to send or receive
-	//any private information with wkhtmltopdf anyhow, seeing as you cannot authenticate
-	reply->ignoreSslErrors();
-	emit outer.warning("SSL error ignored");
-}
+MultiPageLoaderPrivate::MultiPageLoaderPrivate(settings::Global & s, MultiPageLoader & o): 
+	outer(o), settings(s) {
 
-MultiPageLoaderPrivate::MultiPageLoaderPrivate(Settings & s, MultiPageLoader & o): 
-	outer(o), settings(s), networkAccessManager(s.blockLocalFileAccess) {
-	foreach(const QString & path, s.allowed)
-		networkAccessManager.allow(path);
-
-	//If some ssl error occures we want sslErrors to be called, so the we can ignore it
-	connect(&networkAccessManager, SIGNAL(sslErrors(QNetworkReply*, const QList<QSslError>&)),this,
-	        SLOT(sslErrors(QNetworkReply*, const QList<QSslError>&)));
-
-	connect(&networkAccessManager, SIGNAL(finished (QNetworkReply *)),
-			this, SLOT(amfinished (QNetworkReply *) ) );
-
-	connect(&networkAccessManager, SIGNAL(authenticationRequired(QNetworkReply*, QAuthenticator *)),this,
-	        SLOT(authenticationRequired(QNetworkReply *, QAuthenticator *)));
-
-	connect(&networkAccessManager, SIGNAL(warning(const QString &)), 
-			this, SLOT(warning(const QString &)));
 	cookieJar = new MyCookieJar();
-
-	networkAccessManager.setCookieJar(cookieJar);
 
 	if (!settings.cookieJar.isEmpty()) 
 		cookieJar->loadFromFile(settings.cookieJar);
 	
-	typedef QPair<QString, QString> SSP;
-	foreach (const SSP & pair, settings.cookies)
-		cookieJar->addGlobalCookie(pair.first, pair.second);
-		
-	//If we must use a proxy, create a host of objects
-	if (!settings.proxy.host.isEmpty()) {
-		QNetworkProxy proxy;
-		proxy.setHostName(settings.proxy.host);
-		proxy.setPort(settings.proxy.port);
-		proxy.setType(settings.proxy.type);
-		// to retrieve a web page, it's not needed to use a fully transparent
-		// http proxy. Moreover, the CONNECT() method is frequently disabled
-		// by proxies administrators.
-#if QT_VERSION >= 0x040500
-		if (settings.proxy.type == QNetworkProxy::HttpProxy)
-			proxy.setCapabilities(QNetworkProxy::CachingCapability);
-#endif
-		if (!settings.proxy.user.isEmpty())
-			proxy.setUser(settings.proxy.user);
-		if (!settings.proxy.password.isEmpty())
-			proxy.setPassword(settings.proxy.password);
-		networkAccessManager.setProxy(proxy);
-	}
+	//typedef QPair<QString, QString> SSP;
+	//foreach (const SSP & pair, settings.cookies)
+	//cookieJar->addGlobalCookie(pair.first, pair.second);
 }
 
 MultiPageLoaderPrivate::~MultiPageLoaderPrivate() {
 	clearResources();
 }
 
-QWebPage * MultiPageLoaderPrivate::addResource(const QUrl & url) {
-	if (url.scheme() == "file")
-		networkAccessManager.allow(url.toLocalFile());
-	QWebPage * page = new MyQWebPage(outer, settings); 
-	pages.push_back(page);
-	urls.push_back(url);
-	page->setNetworkAccessManager(&networkAccessManager);
-
-	page->mainFrame()->setZoomFactor(settings.zoomFactor);
-
-	pageToIndex[page] = pages.size()-1;
-
-	connect(page, SIGNAL(loadStarted()), this, SLOT(loadStarted()));
-	connect(page, SIGNAL(loadProgress(int)), this, SLOT(loadProgress(int)));
-	connect(page, SIGNAL(loadFinished(bool)), this, SLOT(loadFinished(bool)));
-	connect(page, SIGNAL(printRequested(QWebFrame*)), this, SLOT(printRequested(QWebFrame*)));
-
-	progressList.push_back(0);
-	finishedList.push_back(false);
-	signalPrintList.push_back(false);
-	return page;
+QWebPage * MultiPageLoaderPrivate::addResource(const QUrl & url, const settings::Page & page) {
+	ResourceObject * ro = new ResourceObject(*this, url, page);
+	resources.push_back(ro);
+	return &ro->webPage;
 }
 	
 void MultiPageLoaderPrivate::load() {
-	httpErrorCode = 0;
-	loginTry = 0;
 	progressSum=0;
-	finishedSum=0;
-	signalPrintSum=0;
 	loadStartedEmitted=false;
-	error=false;
-	loadingPages=0;
-
-	QString boundary = QUuid::createUuid().toString().remove('-').remove('{').remove('}');
-	QByteArray postData;
-	
-	foreach (const Settings::PostItem & pi, settings.post) {
-		//TODO escape values here
-		postData.append("--");
-		postData.append(boundary);
-		postData.append("\ncontent-disposition: form-data; name=\"");
-		postData.append(pi.name);
-		postData.append('\"');
-		if (pi.file) {
-			QFile f(pi.value);
-			if (!f.open(QIODevice::ReadOnly) ) {
-				emit outer.error(QString("Unable to open file ")+pi.value);
-				fail();
-			}
-			postData.append("; filename=\"");
-			postData.append( QFileInfo(pi.value).fileName());
-			postData.append("\"\n\n");
-			postData.append( f.readAll() );
-			//TODO ADD MIME TYPE
-		} else {
-			postData.append("\n\n");
-			postData.append(pi.value);
-		}
-		postData.append('\n');
-	}
-	if (!postData.isEmpty()) {
-		postData.append("--");
-		postData.append(boundary);
-		postData.append("--\n");
-	}
-
-	for (int i=0; i < pages.size(); ++i) {
-		QNetworkRequest r = QNetworkRequest(urls[i]);
-		typedef QPair<QString, QString> HT;
-		foreach (const HT & j, settings.customHeaders)
-			r.setRawHeader(j.first.toAscii(), j.second.toAscii());
-	
-		if (postData.isEmpty())
-			pages[i]->mainFrame()->load(r);
-		else {
-			r.setHeader(QNetworkRequest::ContentTypeHeader, QString("multipart/form-data, boundary=")+boundary);
-			pages[i]->mainFrame()->load(r, QNetworkAccessManager::PostOperation, postData);
-		}
-	}	
+	finishedEmitted=false;
+	hasError=false;
+	loading=0;
+	for(int i=0; i < resources.size(); ++i)
+		resources[i]->load();
 }
 
 void MultiPageLoaderPrivate::clearResources() {
-	pages.clear();
-	urls.clear();
-	progressList.clear();
-	finishedList.clear();
+	for(int i=0; i < resources.size(); ++i)
+		delete resources[i];
+	resources.clear();
 	tempIn.remove();
 }
 
 void MultiPageLoaderPrivate::cancel() {
-	foreach (QWebPage * page, pages) 
-		page->triggerAction(QWebPage::Stop);
+	//foreach (QWebPage * page, pages) 
+	//	page->triggerAction(QWebPage::Stop);
 }
 
 void MultiPageLoaderPrivate::fail() {
-	error = true;
+	hasError = true;
 	cancel();
 	clearResources();
-}
-
-
-/*!
- * Once loading starting, this is called
- */
-void MultiPageLoaderPrivate::loadStarted() {
-	loadingPages++;
-	if (loadStartedEmitted) return;
-	loadStartedEmitted=true;
-	emit outer.loadStarted();
-}
-
-/*!
- * Called when the page is loading, display some progress to the using
- * \param progress the loading progress in percent
- */
-void MultiPageLoaderPrivate::loadProgress(int progress) {
-	if (!pageToIndex.count(QObject::sender())) return;
-	
-	int idx=pageToIndex[QObject::sender()];
-		
-	progressSum -= progressList[idx];
-	progressList[idx] = progress;
-	progressSum += progressList[idx];
-
-	emit outer.loadProgress(progressSum / progressList.size());
-}
-
-void MultiPageLoaderPrivate::loadFinished(bool ok) {
-	loadingPages--;
-	error = error || (!ok && !settings.ignoreLoadErrors);
-	if (!pageToIndex.count(QObject::sender())) return;
-	
-	int idx=pageToIndex[QObject::sender()];
-	
-	if (!ok) {
-		if (!settings.ignoreLoadErrors)
-			emit outer.error(QString("Failed loading page ") + urls[idx].toString()+" (sometimes it will work just to ignore this error with --ignore-load-errors)");
-		else
-			emit outer.warning(QString("Failed loading page ") + urls[idx].toString()+" (ignored)");
-	}
-
-	if (!finishedList[idx]) {
-		finishedList[idx] = true;
-		finishedSum += 1;
-	}
-
-	if (signalPrintSum == signalPrintList.size()) 
-		timedFinished();
-	else if (finishedSum == finishedList.size())
-		QTimer::singleShot(settings.jsredirectwait, this, SLOT(timedFinished()));
-}
-
-void MultiPageLoaderPrivate::printRequested(QWebFrame *) {
-	if (!pageToIndex.count(QObject::sender())) return;
-	int idx=pageToIndex[QObject::sender()];
-	if (!signalPrintList[idx]) {
-		signalPrintList[idx] = true;
-		signalPrintSum += 1;
-	}
-	if (signalPrintSum == signalPrintList.size()) 
-		timedFinished();
-}
-
-void MultiPageLoaderPrivate::timedFinished() {
-	if(loadingPages == 0) {
-		if (!settings.cookieJar.isEmpty())
-			cookieJar->saveToFile(settings.cookieJar);
-		emit outer.loadFinished(!error);
-	}
-}
-
-void MultiPageLoaderPrivate::warning(const QString & msg) {
-	emit outer.warning(msg);
 }
 
 /*!
   \brief Construct a multipage loader object, load settings read from the supplied settings
   \param s The settings to be used while loading pages
 */
-MultiPageLoader::MultiPageLoader(Settings & s):
+MultiPageLoader::MultiPageLoader(settings::Global & s):
 	d(new MultiPageLoaderPrivate(s, *this)) {
 }
 
@@ -428,7 +433,7 @@ MultiPageLoader::~MultiPageLoader() {
   \brief Add a resource, to be loaded described by a string
   @param string Url describing the resource to load
 */
-QWebPage * MultiPageLoader::addResource(const QString & string) {
+QWebPage * MultiPageLoader::addResource(const QString & string, const settings::Page & s) {
 	QString url=string;
 	if (url == "-") {
 		QFile in;
@@ -440,15 +445,15 @@ QWebPage * MultiPageLoader::addResource(const QString & string) {
 			return NULL;
 		}
 	}
-	return addResource(guessUrlFromString(url));
+	return addResource(guessUrlFromString(url), s);
 }
 
 /*!
   \brief Add a page to be loaded
   @param url Url of the page to load
 */
-QWebPage * MultiPageLoader::addResource(const QUrl & url) {
-	return d->addResource(url);
+QWebPage * MultiPageLoader::addResource(const QUrl & url, const settings::Page & s) {
+	return d->addResource(url, s);
 }
 
 /*!
@@ -518,7 +523,10 @@ QUrl MultiPageLoader::guessUrlFromString(const QString &string) {
   \brief Return the most severe http error code returned during loading
  */
 int MultiPageLoader::httpErrorCode() {
-	return d->httpErrorCode;
+	int res=0;
+	foreach (const ResourceObject * ro, d->resources)
+		if (ro->httpErrorCode > res) res = ro->httpErrorCode;
+	return res;
 }
 
 /*!
@@ -570,3 +578,4 @@ void MultiPageLoader::cancel() {
   \brief Signal emmitted when a fatel error has occured
   \param text A string describing the error
 */
+}

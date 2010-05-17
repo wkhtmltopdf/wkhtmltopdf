@@ -25,6 +25,8 @@
 namespace wkhtmltopdf {
 
 class MyQWebPage;
+class ResourceObject;
+
 class MultiPageLoaderPrivate;
 class MultiPageLoader: public QObject {
 	Q_OBJECT
@@ -50,6 +52,7 @@ private:
 	MultiPageLoaderPrivate * d;
 	friend class MultiPageLoaderPrivate;
 	friend class MyQWebPage;
+	friend class ResourceObject;
 };
 
 }
