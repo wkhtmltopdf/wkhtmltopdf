@@ -105,9 +105,6 @@ struct Global {
 // 		bool backLinks;
 // 	};
 
-	//! Proxy related settings
-	Proxy proxy;
-
 	//! Size related settings
 	Size size;
 
@@ -130,7 +127,7 @@ struct Global {
 	int dpi;
 	
 	//! When pagenumbers are printed, apply this offset to them all
-	//int pageOffset;
+	int pageOffset;
 
 	//! How many copies do we wan to print
 	int copies;
@@ -221,7 +218,7 @@ struct Page {
 	bool enableIntelligentShrinking;
 	
 	//! How many milliseconds should we wait for a javascrit redirect
-	int jsredirectwait;
+	int jsdelay;
 	
 	//! What zoom fator should we apply when printing
 	float zoomFactor;
@@ -269,6 +266,13 @@ struct Page {
 	
 	//! Should plugins be allowed
 	bool enablePlugins;
+
+	//! Proxy related settings
+	Proxy proxy;
+
+	bool includeInOutline;
+
+	bool pagesCount;
 };
 
 QPrinter::PageSize strToPageSize(const char * s, bool * ok=0);

@@ -229,7 +229,16 @@ Size::Size():
 	height(UnitReal(-1,QPrinter::Millimeter)),
 	width(UnitReal(-1,QPrinter::Millimeter)) {}
 
-HeaderFooter::HeaderFooter() {}
+HeaderFooter::HeaderFooter():
+	fontSize(12),
+	fontName("Ariel"),
+	left(""),
+	right(""),
+	center(""),
+	line(false),
+	htmlUrl(""),
+	spacing(0.0) {}
+
 Margin::Margin():
 	top(UnitReal(10,QPrinter::Millimeter)),
 	right(UnitReal(10,QPrinter::Millimeter)),
@@ -243,7 +252,7 @@ Global::Global():
 	colorMode(QPrinter::Color), 
 	resolution(QPrinter::HighResolution),
 	dpi(-1),
-	copies(false),
+	copies(1),
 	collate(true),
 	outline(true),
 	outlineDepth(4),
@@ -259,7 +268,7 @@ Page::Page():
 	useLocalLinks(true),
 	enableJavascript(true),
 	enableIntelligentShrinking(true),
-	jsredirectwait(200),
+	jsdelay(200),
 	zoomFactor(1.0),
 	minimumFontSize(-1),
 	printMediaType(false),
@@ -268,6 +277,9 @@ Page::Page():
 	debugJavascript(false),
 	produceForms(false),
 	ignoreLoadErrors(false),
-	enablePlugins(false) {}
+	enablePlugins(false),
+	includeInOutline(true),
+	pagesCount(true)
+ {}
 }
 }
