@@ -368,7 +368,7 @@ void CommandLineParser::parseArguments(int argc, const char ** argv, bool fromSt
 			ps.page = QString::fromLocal8Bit(argv[arg]);
 			++arg;
 		}
-		for(;arg < argc-1;++arg) {
+		for(;arg < argc;++arg) {
 			if (argv[arg][0] != '-' || argv[arg][1] == '\0' || defaultMode) break;
 			d->parseArg(sections, argc, argv, defaultMode, arg, ps);
 		}

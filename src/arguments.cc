@@ -543,7 +543,7 @@ CommandLineParserPrivate::CommandLineParserPrivate(Global & s, QList<Page> & ps)
 	mode(page);
  	extended(true);
  	qthack(false);
- 	addarg("default-header",'H',"Add a default header, with the name of the page to the left, and the page number to the right, this is short for: --header-left='[webpage]' --header-right='[page]/[toPage]' --top 2cm --header-line", new Caller<DefaultHeaderFunc>());
+ 	addarg("default-header",0,"Add a default header, with the name of the page to the left, and the page number to the right, this is short for: --header-left='[webpage]' --header-right='[page]/[toPage]' --top 2cm --header-line", new Caller<DefaultHeaderFunc>());
 	addarg("proxy",'p',"Use a proxy", new ProxySetter(od.proxy, "proxy"));
  	addarg("username",0,"HTTP Authentication username", new QStrSetter(od.username, "username"));
  	addarg("password",0,"HTTP Authentication password", new QStrSetter(od.password, "password"));
