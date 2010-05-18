@@ -49,7 +49,7 @@ OutlineItem::~OutlineItem() {
 */
 
 OutlinePrivate::OutlinePrivate(const settings::Global & s):
-	settings(s), pageCount(s.pageOffset-1), anchorCounter(0) {
+	settings(s), pageCount(0), anchorCounter(0) {
 }
 
 OutlinePrivate::~OutlinePrivate() {
@@ -207,10 +207,9 @@ void Outline::fillHeaderFooterParms(int page, QHash<QString, QString> & parms, c
 		parms[rep.first] = rep.second;
 		
 	parms["frompage"] = QString::number(off);
-	parms["topage"] = QString::number(off+d->pageCount-1);
-	parms["page" ] = QString::number(page+off-1);
-	parms["webpage"] = "foobar";
-
+	parms["topage"] = QString::number(off+d->pageCount);
+	parms["page" ] = QString::number(page+off);
+	parms["webpage"] = ps.page;
 	parms["section" ] = d->hfCache[0][page]?d->hfCache[0][page]->value:QString("");
 	parms["subsection" ] = d->hfCache[1][page]?d->hfCache[1][page]->value:QString("");
 	parms["subsubsection" ] = d->hfCache[2][page]?d->hfCache[2][page]->value:QString("");
