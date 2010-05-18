@@ -29,20 +29,48 @@
 #include <QWaitCondition>
 #include <QWebPage>
 #include <qnetworkreply.h>
+#include "settings.hh"
 #ifdef __EXTENSIVE_WKHTMLTOPDF_QT_HACK__
 #include <QWebElement>
 #endif
 
+namespace wkhtmltopdf {
+
+class PageObject {
+public:
+	static QMap<QWebPage *, PageObject *> webPageToObject;
+	
+	settings::Page settings;
+	QWebPage * page;
+
+	QHash<QString, QWebElement> anchors;
+	QVector< QPair<QWebElement,QString> > localLinks;
+	QVector< QPair<QWebElement,QString> > externalLinks;
+
+	int firstPageNumber;
+	QList<QWebPage *> headers;
+	QList<QWebPage *> footers;
+	int pageCount;
+
+	PageObject(const settings::Page & set): settings(set), page(0) {};
+
+	~PageObject() {
+		if (page) webPageToObject.remove(page);
+	}
+	
+};
+
 class PageConverterPrivate: public QObject {
 	Q_OBJECT
 public:
-	PageConverterPrivate(Settings & s, PageConverter & o);
+	PageConverterPrivate(settings::Global & s, PageConverter & o);
 	~PageConverterPrivate();
 	void copyFile(QFile & src, QFile & dst);
 
 	QList<QString> phaseDescriptions;
 	int currentPhase;
-	Settings & settings;
+	
+	settings::Global & settings;
 
 	MultiPageLoader pageLoader;
 	QString progressString;
@@ -51,35 +79,36 @@ private:
 	void clearResources();
 	TempFile tempOut;
 	bool error;
-	QList<QWebPage *> pages;
+
+
+	QList<PageObject> objects;
+
 	QPrinter * printer;
 	QPainter * painter;
 	QString lout;
-	int logicalPages;
-	int logicalPage;
+
+	//int logicalPages;
+	//int logicalPage;
 	int actualPages;
-	
+	int pageCount;
+
 	int tocPages;
 
 	bool convertionDone;
 
 #ifdef __EXTENSIVE_WKHTMLTOPDF_QT_HACK__
 	MultiPageLoader hfLoader;
-	QHash<int, QHash<QString, QWebElement> > anchors;
-	QHash<int, QVector< QPair<QWebElement,QString> > > localLinks;
-	QHash<int, QVector< QPair<QWebElement,QString> > > externalLinks;
 
-	QHash<QString, int> urlToDoc;
-	QList<QWebPage *> headers;
-	QList<QWebPage *> footers;
+	QHash<QString, PageObject *> urlToPageObj;
+
 	Outline * outline;
 	TocPrinter * tocPrinter;
 	void findLinks(QWebFrame * frame, QVector<QPair<QWebElement, QString> > & local, QVector<QPair<QWebElement, QString> > & external);
-	void beginPage(int & actualPage, bool & first);
-	void endPage(bool actual, bool hasHeaderFooter);
-	void fillParms(QHash<QString, QString> & parms, int page);
+	void beginPage(int actualPage);
+	void endPage(PageObject & object, bool hasHeaderFooter, int objectPage,  int pageNumber);
+	void fillParms(QHash<QString, QString> & parms, int page, const settings::Page & ps);
 	QString hfreplace(const QString & q, const QHash<QString, QString> & parms);
-	QWebPage * loadHeaderFooter(QString url, const QHash<QString, QString> & parms);
+	QWebPage * loadHeaderFooter(QString url, const QHash<QString, QString> & parms, const settings::Page & ps);
 #endif
 
 	void fail();
@@ -92,6 +121,9 @@ public slots:
 	bool convert();
 	void forwardError(QString error);
 	void forwardWarning(QString warning);
+
+	friend class PageConverter;
 };
 
+}
 #endif //__TEXTUALFEEDBACK_P_HH__

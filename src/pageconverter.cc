@@ -30,6 +30,12 @@
 #include <io.h>
 #include <fcntl.h>
 #endif
+
+using namespace wkhtmltopdf;
+using namespace wkhtmltopdf::settings;
+
+QMap<QWebPage *, PageObject *> PageObject::webPageToObject;
+
  
 /*!
   \file pageconverter.hh
@@ -46,7 +52,7 @@ bool looksLikeHtmlAndNotAUrl(QString str) {
 	return s.count('<') > 0 || s.count('<') > 0;
 }
 
-PageConverterPrivate::PageConverterPrivate(Settings & s, PageConverter & o) :
+PageConverterPrivate::PageConverterPrivate(Global & s, PageConverter & o) :
 	settings(s), pageLoader(s),
 	outer(o), printer(0), painter(0)
 #ifdef __EXTENSIVE_WKHTMLTOPDF_QT_HACK__
@@ -59,33 +65,11 @@ PageConverterPrivate::PageConverterPrivate(Settings & s, PageConverter & o) :
 	phaseDescriptions.push_back("Resolving links");
 	phaseDescriptions.push_back("Counting pages");
 	phaseDescriptions.push_back("Loading headers and footers");
-	if (!settings.defaultEncoding.isEmpty())
-		QWebSettings::globalSettings()->setDefaultTextEncoding(settings.defaultEncoding);
-	if (!settings.enableIntelligentShrinking) {
-		QWebSettings::globalSettings()->setPrintingMaximumShrinkFactor(1.0);
-		QWebSettings::globalSettings()->setPrintingMinimumShrinkFactor(1.0);
-	}
-	QWebSettings::globalSettings()->setPrintingMediaType(settings.printMediaType?"print":"screen");
 #else
 	phaseDescriptions.push_back("Loading page");
 #endif
 	phaseDescriptions.push_back("Printing pages");
 	phaseDescriptions.push_back("Done");
-
-	QWebSettings::globalSettings()->setAttribute(QWebSettings::JavaEnabled, settings.enablePlugins);
-	QWebSettings::globalSettings()->setAttribute(QWebSettings::JavascriptEnabled, settings.enableJavascript);
-	QWebSettings::globalSettings()->setAttribute(QWebSettings::JavascriptCanOpenWindows, false);
-	QWebSettings::globalSettings()->setAttribute(QWebSettings::JavascriptCanAccessClipboard, false);
-
-	QWebSettings::globalSettings()->setFontSize(QWebSettings::MinimumFontSize, s.minimumFontSize);
-
-#if QT_VERSION >= 0x040500
-	//Newer vertions of QT have even more settings to change
-	QWebSettings::globalSettings()->setAttribute(QWebSettings::PrintElementBackgrounds, settings.background);
-	QWebSettings::globalSettings()->setAttribute(QWebSettings::PluginsEnabled, settings.enablePlugins);
-	if (!settings.userStyleSheet.isEmpty())
-		QWebSettings::globalSettings()->setUserStyleSheetUrl(MultiPageLoader::guessUrlFromString(settings.userStyleSheet));
-#endif
 
 	connect(&pageLoader, SIGNAL(loadProgress(int)), this, SLOT(loadProgress(int)));
 	connect(&pageLoader, SIGNAL(loadFinished(bool)), this, SLOT(preparePrint(bool)));
@@ -128,32 +112,58 @@ void PageConverterPrivate::beginConvert() {
 	error=false;
 	progressString = "0%";
 	currentPhase=0;
-
-  	if (!settings.cover.isEmpty())
-		settings.in.push_front(settings.cover);
-
-	if (!settings.header.htmlUrl.isEmpty() && looksLikeHtmlAndNotAUrl(settings.header.htmlUrl)) {
-		emit outer.error("--header-html should be a URL and not a string containing HTML code.");
-		fail();
-		return;
-	}
-
-	if (!settings.footer.htmlUrl.isEmpty() && looksLikeHtmlAndNotAUrl(settings.footer.htmlUrl)) {
-		emit outer.error("--header-html should be a URL and not a string containing HTML code.");
-		fail();
-		return;
-	}
 	
 #ifndef __EXTENSIVE_WKHTMLTOPDF_QT_HACK__	
-	if (settings.in.size() > 1) {
+	if (pages.size() > 1) {
 		emit outer.error("This version of wkhtmltopdf is build against an unpatched version of QT, and does not support more then one input document.");
 		fail();
 		return;
 	}
 #endif
-	
-	foreach(QString url, settings.in)
-		pages.push_back(pageLoader.addResource(url));
+
+	for (QList<PageObject>::iterator i=objects.begin(); i != objects.end(); ++i) {
+		PageObject & o=*i;
+		settings::Page & s = o.settings;		
+		
+		if (!s.header.htmlUrl.isEmpty() && looksLikeHtmlAndNotAUrl(s.header.htmlUrl)) {
+			emit outer.error("--header-html should be a URL and not a string containing HTML code.");
+			fail();
+			return;
+		}
+
+		if (!s.footer.htmlUrl.isEmpty() && looksLikeHtmlAndNotAUrl(s.footer.htmlUrl)) {
+			emit outer.error("--header-html should be a URL and not a string containing HTML code.");
+			fail();
+			return;
+		}
+
+		o.page = pageLoader.addResource(s.page, s);
+		PageObject::webPageToObject[o.page] = &o;
+		QWebSettings * ws = o.page->settings();
+
+#ifdef  __EXTENSIVE_WKHTMLTOPDF_QT_HACK__
+		if (!s.defaultEncoding.isEmpty())
+			ws->setDefaultTextEncoding(s.defaultEncoding);
+		if (!s.enableIntelligentShrinking) {
+			ws->setPrintingMaximumShrinkFactor(1.0);
+			ws->setPrintingMinimumShrinkFactor(1.0);
+		}
+		ws->setPrintingMediaType(s.printMediaType?"print":"screen");
+#endif
+		ws->setAttribute(QWebSettings::JavaEnabled, s.enablePlugins);
+		ws->setAttribute(QWebSettings::JavascriptEnabled, s.enableJavascript);
+		ws->setAttribute(QWebSettings::JavascriptCanOpenWindows, false);
+		ws->setAttribute(QWebSettings::JavascriptCanAccessClipboard, false);
+		ws->setFontSize(QWebSettings::MinimumFontSize, s.minimumFontSize);
+#if QT_VERSION >= 0x040500
+		//Newer vertions of QT have even more settings to change
+		ws->setAttribute(QWebSettings::PrintElementBackgrounds, s.background);
+		ws->setAttribute(QWebSettings::PluginsEnabled, s.enablePlugins);
+		if (!s.userStyleSheet.isEmpty())
+			ws->setUserStyleSheetUrl(MultiPageLoader::guessUrlFromString(s.userStyleSheet));
+#endif
+	}
+
 	
 	emit outer.phaseChanged();
 	loadProgress(0);
@@ -172,30 +182,35 @@ void PageConverterPrivate::fail() {
 
 
 void PageConverterPrivate::findLinks(QWebFrame * frame, QVector<QPair<QWebElement, QString> > & local, QVector<QPair<QWebElement, QString> > & external) {
-	if (!settings.useLocalLinks && !settings.useExternalLinks) return;
+	bool ulocal=true, uexternal=true;
+	if (PageObject::webPageToObject.contains(frame->page())) {
+		ulocal = PageObject::webPageToObject[frame->page()]->settings.useLocalLinks;
+		uexternal  = PageObject::webPageToObject[frame->page()]->settings.useExternalLinks;
+	}
+	if (!ulocal && !uexternal) return;
 	foreach (const QWebElement & elm, frame->findAllElements("a")) {
 		QUrl href=QUrl(elm.attribute("href"));
 		if (href.isEmpty()) continue;
 		href=frame->url().resolved(href);
-		if (urlToDoc.contains(href.toString(QUrl::RemoveFragment))) {
-			if (settings.useLocalLinks) {
-				int t = urlToDoc[href.toString(QUrl::RemoveFragment)];
+		if (urlToPageObj.contains(href.toString(QUrl::RemoveFragment))) {
+			if (ulocal) {
+				PageObject * p = urlToPageObj[href.toString(QUrl::RemoveFragment)];
 				QWebElement e;
 				if (!href.hasFragment()) 
-					e = pages[t]->mainFrame()->findFirstElement("body");
+					e = p->page->mainFrame()->findFirstElement("body");
 				else {
-					e = pages[t]->mainFrame()->findFirstElement("a[name=\""+href.fragment()+"\"]");
+					e = p->page->mainFrame()->findFirstElement("a[name=\""+href.fragment()+"\"]");
 					if(e.isNull()) 
-						e = pages[t]->mainFrame()->findFirstElement("*[id=\""+href.fragment()+"\"]");
+						e = p->page->mainFrame()->findFirstElement("*[id=\""+href.fragment()+"\"]");
 				}
 				if (e.isNull())
 					qDebug() << "Unable to find target for local link " << href; 
 				else {
-					anchors[t][href.toString()] = e;
+					p->anchors[href.toString()] = e;
 					local.push_back( qMakePair(elm, href.toString()) );
 				}
 			}
-		} else if (settings.useExternalLinks)
+		} else if (uexternal)
 			external.push_back( qMakePair(elm, href.toString() ) );
 	}
 }
@@ -273,7 +288,7 @@ void PageConverterPrivate::preparePrint(bool ok) {
 	
 	QString title = settings.documentTitle;
 	if (title == "") 
-		title = pages[0]->mainFrame()->title();
+		title = objects[0].page->mainFrame()->title();
 	printer->setDocName(title);
 	if (!painter->begin(printer)) {
 		emit outer.error("Unable to write to destination");
@@ -281,24 +296,18 @@ void PageConverterPrivate::preparePrint(bool ok) {
 		return;
 	}
 	
-	logicalPages = 0;
-	actualPages = 0;
-	tocPages = 0;
-	
 	//Find and resolve all local links
-	if(settings.useLocalLinks || settings.useExternalLinks) {
-		currentPhase = 1;
-		emit outer.phaseChanged();
-		
-		QHash<QString, int> urlToDoc;
-		for(int d=0; d < pages.size(); ++d) 
-			urlToDoc[ pages[d]->mainFrame()->url().toString(QUrl::RemoveFragment) ]  = d;
-		
-		for(int d=0; d < pages.size(); ++d) {
-			progressString = QString("Page ")+QString::number(d+1)+QString(" of ")+QString::number(pages.size());
-			emit outer.progressChanged((d+1)*100 / pages.size());
-			findLinks(pages[d]->mainFrame(), localLinks[d], externalLinks[d]);
-		}
+	currentPhase = 1;
+	emit outer.phaseChanged();
+	
+	QHash<QString, int> urlToDoc;
+	for(int d=0; d < objects.size(); ++d) 
+		urlToPageObj[ objects[d].page->mainFrame()->url().toString(QUrl::RemoveFragment) ] = &objects[d];
+	
+	for(int d=0; d < objects.size(); ++d) {
+		progressString = QString("Object ")+QString::number(d+1)+QString(" of ")+QString::number(objects.size());
+		emit outer.progressChanged((d+1)*100 / objects.size());
+		findLinks(objects[d].page->mainFrame(), objects[d].localLinks, objects[d].externalLinks);
 	}
 
 	currentPhase = 2;
@@ -308,85 +317,88 @@ void PageConverterPrivate::preparePrint(bool ok) {
 	// * The number of pages of each document
 	// * A visual ordering of the header element
 	// * The location and page number of each header
-	for(int d=0; d < pages.size(); ++d) {
-		int tot = pages.size()+(settings.printToc?1:0);
-		progressString = QString("Page ")+QString::number(d+1)+QString(" of ")+QString::number(tot);
+	pageCount = 0;
+	for(int d=0; d < objects.size(); ++d) {
+		int tot = objects.size();
+		progressString = QString("Object ")+QString::number(d+1)+QString(" of ")+QString::number(tot);
 		emit outer.progressChanged((d+1)*100 / tot);
 
 		painter->save();
-		QWebPrinter wp(pages[d]->mainFrame(), printer, *painter);
-		int count = wp.pageCount();
-		//pageCount.push_back(count);
-		actualPages += count;
-		if (settings.cover.isEmpty() || d != 0) {
-			outline->addWebPage("", wp, pages[d]->mainFrame());
-			logicalPages += count;
-		} 
+		QWebPrinter wp(objects[d].page->mainFrame(), printer, *painter);
+		objects[d].pageCount = objects[d].settings.pagesCount? wp.pageCount(): 0;
+		pageCount += objects[d].pageCount;
+		
+		outline->addWebPage("", wp, objects[d].page->mainFrame(), objects[d].settings );
 		painter->restore();
 	}
 
-
 	//Now that we know the ordering of the headers in each document we
 	//can calculate the number of pages in the table of content
-	tocPrinter = NULL;
-	if (settings.printToc) {
-		int k=pages.size()+1;
-		progressString = QString("Page ")+QString::number(k)+QString(" of ")+QString::number(k);
-		emit outer.progressChanged(100);
+	// tocPrinter = NULL;
+	// if (settings.printToc) {
+	// 	int k=pages.size()+1;
+	// 	progressString = QString("Page ")+QString::number(k)+QString(" of ")+QString::number(k);
+	// 	emit outer.progressChanged(100);
 		
-		tocPrinter = new TocPrinter(outline, printer, *painter);
-		actualPages += tocPrinter->pageCount();
-		logicalPages += tocPrinter->pageCount();
-   	}
-	actualPages *= settings.copies;
-	int page=1;
+	// 	tocPrinter = new TocPrinter(outline, printer, *painter);
+	// 	actualPages += tocPrinter->pageCount();
+	// 	logicalPages += tocPrinter->pageCount();
+   	// }
+	actualPages = pageCount * settings.copies;
 
-	headers.clear();
-	footers.clear();
-	if(!settings.header.htmlUrl.isEmpty() || !settings.footer.htmlUrl.isEmpty()) {
-		QWebSettings::globalSettings()->setAttribute(QWebSettings::JavascriptEnabled, true);
-		currentPhase = 3;
-		emit outer.phaseChanged();
-		for(int p=0; p < outline->pageCount(); ++p) {
-			QHash<QString, QString> parms;
-			fillParms(parms, page);
-			
-			if(!settings.header.htmlUrl.isEmpty())
-				headers.push_back(loadHeaderFooter(settings.header.htmlUrl, parms) );
-			if(!settings.footer.htmlUrl.isEmpty())
-				footers.push_back(loadHeaderFooter(settings.footer.htmlUrl, parms) );
-			++page;
+	
+	//if(!settings.header.htmlUrl.isEmpty() || !settings.footer.htmlUrl.isEmpty()) {
+	//	QWebSettings::globalSettings()->setAttribute(QWebSettings::JavascriptEnabled, true);
+	
+	currentPhase = 3;
+	emit outer.phaseChanged();
+	bool hf=false;
+
+	int pageNumber=1;
+	for(int d=0; d < objects.size(); ++d) {
+		PageObject & obj = objects[d];
+		settings::Page & ps = obj.settings;
+		QHash<QString, QString> parms;
+	 	fillParms(parms, pageNumber, ps);
+
+		for (int op=0; op < obj.pageCount; ++op) {
+			if(!ps.header.htmlUrl.isEmpty())
+				obj.headers.push_back(loadHeaderFooter(ps.header.htmlUrl, parms, ps) );
+			if(!ps.footer.htmlUrl.isEmpty())
+				obj.footers.push_back(loadHeaderFooter(ps.footer.htmlUrl, parms, ps) );
+			if (ps.pagesCount) ++pageNumber;
 		}
+	}
+
+
+	if (hf)
 		hfLoader.load();
-	} else 
+	else 
 		printPage(true);
 #endif
 }
 
 #ifdef __EXTENSIVE_WKHTMLTOPDF_QT_HACK__
-void PageConverterPrivate::fillParms(QHash<QString, QString> & parms, int page) {
-	outline->fillHeaderFooterParms(page, parms);
+void PageConverterPrivate::fillParms(QHash<QString, QString> & parms, int page, const settings::Page & ps) {
+	outline->fillHeaderFooterParms(page, parms, ps);
 	QDateTime t(QDateTime::currentDateTime());
 	parms["time"] = t.time().toString(Qt::SystemLocaleShortDate);
 	parms["date"] = t.date().toString(Qt::SystemLocaleShortDate);
 }
 
-void PageConverterPrivate::beginPage(int & actualPage, bool & first) {
+void PageConverterPrivate::beginPage(int actualPage) {
 	progressString = QString("Page ") + QString::number(actualPage) + QString(" of ") + QString::number(actualPages);
 	emit outer.progressChanged(actualPage * 100 / actualPages);
-	if(first)
-		first=false;
-	else
+	if (actualPage != 1)
 		printer->newPage();
-	actualPage++;
 }
 
-void PageConverterPrivate::endPage(bool actual, bool hasHeaderFooter) {
+void PageConverterPrivate::endPage(PageObject & object, bool hasHeaderFooter, int objectPage, int pageNumber) {
 	typedef QPair<QWebElement, QString> p_t;		
-		
-	if(hasHeaderFooter && actual) {
+	settings::Page & s = object.settings;
+	if(hasHeaderFooter) {
 		QHash<QString, QString> parms;
-		fillParms(parms, logicalPage);
+		fillParms(parms, pageNumber, s);
 
 		//Webkit used all kinds of crazy coordinate transformation, and font setup
 		//We save it here and restore some sane defaults
@@ -396,75 +408,75 @@ void PageConverterPrivate::endPage(bool actual, bool hasHeaderFooter) {
 		int h=printer->height();
 		int w=printer->width();
 						
-		double spacing = settings.header.spacing * printer->height() / printer->heightMM();
+		double spacing = s.header.spacing * printer->height() / printer->heightMM();
 		//If needed draw the header line
-		if (settings.header.line) painter->drawLine(0, -spacing, w, -spacing);
+		if (s.header.line) painter->drawLine(0, -spacing, w, -spacing);
 		//Guess the height of the header text
-		painter->setFont(QFont(settings.header.fontName, settings.header.fontSize));
+		painter->setFont(QFont(s.header.fontName, s.header.fontSize));
 		int dy = painter->boundingRect(0, 0, w, h, Qt::AlignTop, "M").height();
 		//Draw the header text
 		QRect r=QRect(0, 0-dy-spacing, w, h);
-		painter->drawText(r, Qt::AlignTop | Qt::AlignLeft, hfreplace(settings.header.left, parms));
-		painter->drawText(r, Qt::AlignTop | Qt::AlignHCenter, hfreplace(settings.header.center, parms));
-		painter->drawText(r, Qt::AlignTop | Qt::AlignRight, hfreplace(settings.header.right, parms));
+		painter->drawText(r, Qt::AlignTop | Qt::AlignLeft, hfreplace(s.header.left, parms));
+		painter->drawText(r, Qt::AlignTop | Qt::AlignHCenter, hfreplace(s.header.center, parms));
+		painter->drawText(r, Qt::AlignTop | Qt::AlignRight, hfreplace(s.header.right, parms));
 		
-		spacing = settings.footer.spacing * printer->height() / printer->heightMM();
+		spacing = s.footer.spacing * printer->height() / printer->heightMM();
 		//IF needed draw the footer line
-		if (settings.footer.line) painter->drawLine(0, h + spacing, w, h + spacing);
+		if (s.footer.line) painter->drawLine(0, h + spacing, w, h + spacing);
 		//Guess the height of the footer text
-		painter->setFont(QFont(settings.footer.fontName, settings.footer.fontSize));
+		painter->setFont(QFont(s.footer.fontName, s.footer.fontSize));
 		dy = painter->boundingRect(0, 0, w, h, Qt::AlignTop, "M").height();
 		//Draw the footer text
 		r=QRect(0,0,w,h+dy+ spacing);
-		painter->drawText(r, Qt::AlignBottom | Qt::AlignLeft, hfreplace(settings.footer.left, parms));
-		painter->drawText(r, Qt::AlignBottom | Qt::AlignHCenter, hfreplace(settings.footer.center, parms));
-		painter->drawText(r, Qt::AlignBottom | Qt::AlignRight, hfreplace(settings.footer.right, parms));
+		painter->drawText(r, Qt::AlignBottom | Qt::AlignLeft, hfreplace(s.footer.left, parms));
+		painter->drawText(r, Qt::AlignBottom | Qt::AlignHCenter, hfreplace(s.footer.center, parms));
+		painter->drawText(r, Qt::AlignBottom | Qt::AlignRight, hfreplace(s.footer.right, parms));
 		
 		//Restore Webkit's crazy scaling and font settings
 		painter->restore();
 	}
 
-	if(actual && logicalPage <= headers.size()) {
+	if (!object.headers.empty()) {
+		QWebPage * header = object.headers[objectPage];
 		painter->save();
 		painter->resetTransform();
-		double spacing = settings.header.spacing * printer->height() / printer->heightMM();
+		double spacing = s.header.spacing * printer->height() / printer->heightMM();
 		painter->translate(0, -spacing);
-		QWebPrinter wp(headers[logicalPage-1]->mainFrame(), printer, *painter);
-		painter->translate(0,-wp.elementLocation(headers[logicalPage-1]->mainFrame()->findFirstElement("body")).second.height());
+		QWebPrinter wp(header->mainFrame(), printer, *painter);
+		painter->translate(0,-wp.elementLocation(header->mainFrame()->findFirstElement("body")).second.height());
 
 		QVector<p_t> local;
 		QVector<p_t> external;
-		findLinks(headers[logicalPage-1]->mainFrame(), local, external);
+		findLinks(header->mainFrame(), local, external);
 		foreach(const p_t & p, local) {
 			QRectF r = wp.elementLocation(p.first).second;
 			painter->addLink(r, p.second);
 		}
 		foreach(const p_t & p, external) {
 			QRectF r = wp.elementLocation(p.first).second;
-			qDebug() << p.second;
 			painter->addHyperlink(r, QUrl(p.second));
 		}
 		wp.spoolPage(1);
 		painter->restore();
- 	}
+}
 
-	if(actual && logicalPage <= footers.size()) {
+	if (!object.footers.empty()) {
+		QWebPage * footer = object.footers[objectPage];
 		painter->save();
 		painter->resetTransform();
-		double spacing = settings.footer.spacing * printer->height() / printer->heightMM();
+		double spacing = s.footer.spacing * printer->height() / printer->heightMM();
 		painter->translate(0, printer->height()+ spacing);
-		QWebPrinter wp(footers[logicalPage-1]->mainFrame(), printer, *painter);
+		QWebPrinter wp(footer->mainFrame(), printer, *painter);
 		
 		QVector<p_t> local;
 		QVector<p_t> external;
-		findLinks(footers[logicalPage-1]->mainFrame(), local, external);
+		findLinks(footer->mainFrame(), local, external);
 		foreach(const p_t & p, local) {
 			QRectF r = wp.elementLocation(p.first).second;
 			painter->addLink(r, p.second);
 		}
 		foreach(const p_t & p, external) {
 			QRectF r = wp.elementLocation(p.first).second;
-			qDebug() << p.second;
 			painter->addHyperlink(r, QUrl(p.second));
 		}
 		wp.spoolPage(1);
@@ -488,80 +500,67 @@ void PageConverterPrivate::printPage(bool ok) {
 	progressString = "";
 	emit outer.progressChanged(-1);
 #else
- 	bool first=true;
  	int actualPage=1;
+		
  	int cc=settings.collate?settings.copies:1;
  	int pc=settings.collate?1:settings.copies;
-	
-	bool hasHeaderFooter = 
-		settings.header.line || settings.footer.line ||
-		!settings.header.left.isEmpty() || !settings.footer.left.isEmpty() ||
-		!settings.header.center.isEmpty() || !settings.footer.center.isEmpty() ||
-		!settings.header.right.isEmpty() || !settings.footer.right.isEmpty();
 
 	currentPhase = 4;
 	emit outer.phaseChanged();
 
 	progressString = "Preparing";
 	emit outer.progressChanged(0);
-			
+
 	for(int cc_=0; cc_ < cc; ++cc_) {
-		logicalPage=1;
-		for(int d=0; d < pages.size(); ++d) {
-			//Output the table of content now
-			if(tocPrinter && d == (settings.cover.isEmpty()?0:1)) {
-				painter->save();
-				for(int p=0; p < tocPrinter->pageCount(); ++p) {
-					for(int pc_=0; pc_ < pc; ++pc_) {
-						beginPage(actualPage,first);
-						tocPrinter->spoolPage(p);
-						endPage(true, hasHeaderFooter);
-					}
-					++logicalPage;
-				}
-				painter->restore();
-			}
+		int pageNumber=1;
+		for(int d=0; d < objects.size(); ++d) {
+			PageObject & obj = objects[d];
+			const settings::Page & ps = obj.settings;
+			bool hasHeaderFooter = ps.header.line || ps.footer.line ||
+				!ps.header.left.isEmpty() || !ps.footer.left.isEmpty() ||
+				!ps.header.center.isEmpty() || !ps.footer.center.isEmpty() ||
+				!ps.header.right.isEmpty() || !ps.footer.right.isEmpty();
+
 			painter->save();
-
 			//output 
-			QWebPrinter wp(pages[d]->mainFrame(), printer, *painter);
-			QString l1=pages[d]->mainFrame()->url().path().split("/").back()+"#";
-			QString l2=pages[d]->mainFrame()->url().toString() + "#";
+			QWebPrinter wp(obj.page->mainFrame(), printer, *painter);
+			QString l1=obj.page->mainFrame()->url().path().split("/").back()+"#";
+			QString l2=obj.page->mainFrame()->url().toString() + "#";
 
-			if (settings.cover.isEmpty() || d != 0) {
-				//The toc printer adds an extra TOC document to the beginning of the outline
-				//Using a cover does not add anything to cover
-				int delta = (tocPrinter?1:0) - (settings.cover.isEmpty()?0:1);
-				if(tocPrinter) tocPrinter->fillLinks(d+delta, localLinks[d]);
-				outline->fillAnchors(d+delta, anchors[d]);				
-			}
+			// if (settings.cover.isEmpty() || d != 0) {
+			// 	//The toc printer adds an extra TOC document to the beginning of the outline
+			// 	//Using a cover does not add anything to cover
+			// 	int delta = (tocPrinter?1:0) - (settings.cover.isEmpty()?0:1);
+			// 	if(tocPrinter) tocPrinter->fillLinks(d+delta, localLinks[d]);
+			outline->fillAnchors(d, obj.anchors);				
+			// }
 
 			//Sort anchors and links by page
 			QHash<int, QHash<QString, QWebElement> > myAnchors;
 			QHash<int, QVector< QPair<QWebElement,QString> > > myLocalLinks;
 			QHash<int, QVector< QPair<QWebElement,QString> > > myExternalLinks;
-			for(QHash<QString, QWebElement>::iterator i=anchors[d].begin();
-				i != anchors[d].end(); ++i)
+			for(QHash<QString, QWebElement>::iterator i=obj.anchors.begin();
+				i != obj.anchors.end(); ++i)
 				myAnchors[ wp.elementLocation(i.value()).first][i.key()] = i.value();
 
-			for(QVector< QPair<QWebElement,QString> >::iterator i=localLinks[d].begin();
-				i != localLinks[d].end(); ++i)
+			for(QVector< QPair<QWebElement,QString> >::iterator i=obj.localLinks.begin();
+				i != obj.localLinks.end(); ++i)
 				myLocalLinks[wp.elementLocation(i->first).first].push_back(*i);
 
-			for(QVector< QPair<QWebElement,QString> >::iterator i=externalLinks[d].begin();
-				i != externalLinks[d].end(); ++i)
+			for(QVector< QPair<QWebElement,QString> >::iterator i=obj.externalLinks.begin();
+				i != obj.externalLinks.end(); ++i)
 				myExternalLinks[wp.elementLocation(i->first).first].push_back(*i);
 
 			QHash<int, QVector<QWebElement> > myFormElements;
-			if (settings.produceForms) {
-				foreach(const QWebElement & elm,pages[d]->mainFrame()->findAllElements("input")) 
+			if (ps.produceForms) {
+				foreach(const QWebElement & elm, obj.page->mainFrame()->findAllElements("input")) 
 					myFormElements[wp.elementLocation(elm).first].push_back(elm);
-				foreach(const QWebElement & elm,pages[d]->mainFrame()->findAllElements("textarea")) 
+				foreach(const QWebElement & elm, obj.page->mainFrame()->findAllElements("textarea")) 
 					myFormElements[wp.elementLocation(elm).first].push_back(elm);
 			}
 			for(int p=0; p < wp.pageCount(); ++p) {
 				for(int pc_=0; pc_ < pc; ++pc_) {
-					beginPage(actualPage,first);
+					beginPage(actualPage);
 					wp.spoolPage(p+1);
 
 					foreach(const QWebElement & elm, myFormElements[p+1]) {
@@ -602,9 +601,10 @@ void PageConverterPrivate::printPage(bool ok) {
 						QRectF r = wp.elementLocation(i->first).second;
 						painter->addHyperlink(r, QUrl(i->second));
 					}
-					endPage(settings.cover.isEmpty() || d != 0, hasHeaderFooter);
+					endPage(obj, hasHeaderFooter, p, pageNumber);
+					actualPage++;
 				}
-				if (settings.cover.isEmpty() || d != 0) ++logicalPage;
+				if (ps.pagesCount) ++pageNumber;
 			}
 			painter->restore();
 		}
@@ -641,13 +641,14 @@ void PageConverterPrivate::printPage(bool ok) {
 }
 
 #ifdef __EXTENSIVE_WKHTMLTOPDF_QT_HACK__
-QWebPage * PageConverterPrivate::loadHeaderFooter(QString url, const QHash<QString, QString> & parms) {
+QWebPage * PageConverterPrivate::loadHeaderFooter(QString url, const QHash<QString, QString> & parms, const settings::Page & ps) {
 	QUrl u = MultiPageLoader::guessUrlFromString(url);
 
 	for(QHash<QString, QString>::const_iterator i=parms.begin(); i != parms.end(); ++i)
 		u.addQueryItem(i.key(), i.value());
-	
-	return hfLoader.addResource(u);
+
+	return hfLoader.addResource(u, ps);
+
 }
 
 /*!
@@ -681,24 +682,19 @@ void PageConverterPrivate::clearResources() {
 		delete outline;
 	outline = NULL;
 
-	if (tocPrinter)
-		delete tocPrinter;
+	//if (tocPrinter)
+	//	delete tocPrinter;
 	tocPrinter = NULL;
-	anchors.clear();
-	localLinks.clear();
-	externalLinks.clear();
+	
+	//foreach (QWebPage * page, headers)
+	//	delete page;
+	//headers.clear();
 
-	foreach (QWebPage * page, headers)
-		delete page;
-	headers.clear();
-
-	foreach (QWebPage * page, footers)
-		delete page;
-	footers.clear();
+	//foreach (QWebPage * page, footers)
+	//	delete page;
+	//footers.clear();
 #endif
-	foreach(QWebPage * page, pages)
-		delete page;
-	pages.clear();
+
 	if (printer) 
 		delete printer;
 	printer = NULL;
@@ -722,7 +718,7 @@ void PageConverterPrivate::cancel() {
   \brief Create a page converter object based on the supplied settings
   \param settings Settings for the conversion
 */
-PageConverter::PageConverter(Settings & settings):
+PageConverter::PageConverter(settings::Global & settings):
 	d(new PageConverterPrivate(settings, *this)) {
 }
 
@@ -775,8 +771,8 @@ int PageConverter::httpErrorCode() {
   \brief add a resource we want to convert
   \param url The url of the object we want to convert
 */
-void PageConverter::addResource(const QString & url) {
-	d->settings.in.push_back(url);
+void PageConverter::addResource(const settings::Page & page) {
+	d->objects.push_back( PageObject(page) );
 }
 
 /*!
@@ -804,7 +800,7 @@ void PageConverter::cancel() {
 /*!
   \brief Returns the settings object associated with the page converter
 */
-const Settings & PageConverter::settings() const {
+const settings::Global & PageConverter::globalSettings() const {
 	return d->settings;
 }
 
