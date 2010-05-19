@@ -74,32 +74,38 @@ void OutlinePrivate::outlineChildren(OutlineItem * item, QPrinter * printer, int
 	}
 }
 
-/* dump outline */
-void OutlinePrivate::dumpOutlineChildren(OutlineItem * item, ofstream &dumpfile, int level) {
-	if (level){
-		dumpfile << "Level: " << level << "  ";
-		dumpfile << "Page: "  << item->page << "  ";
-		dumpfile << "Title: " << item->value.toUtf8().toPercentEncoding().data();
-		//dumpfile << item->anchor.toUtf8().toPercentEncoding() << " ";
-		dumpfile << "\n";
-	}
-	if (level + 1 <= settings.outlineDepth){
-		foreach (OutlineItem * i, item->children) {
-			dumpOutlineChildren(i, dumpfile, level + 1);
+QString escape(QString & str) {
+	return str.replace('&',"&amp;")
+		.replace('<',"&lt;")
+		.replace('>',"&gt;")
+		.replace('"',"&quot;")
+		.replace('\'',"&apos;");
+}
+
+void OutlinePrivate::dumpChildren(QTextStream & stream, const QList<OutlineItem *> & items, int level) const {
+	foreach(OutlineItem * item, items) {
+		for(int i=0; i < level; ++i) stream << "  ";
+		stream << "<item title=\"" << escape(item->value) << "\" page=\"" << item->page << "\"";
+
+		if (item->children.empty())
+			stream << "/>" << endl;
+		else {
+			stream << ">" << endl;
+			dumpChildren(stream, item->children, level+1);
+			for(int i=0; i < level; ++i) stream << "  ";
+			stream << "</item>" << endl;
 		}
 	}
 }
 
-
-void Outline::dumpOutline() {
-	if (d->settings.dumpOutline.isEmpty()) return;
-	char * filename = d->settings.dumpOutline.toUtf8().data();
-	ofstream dumpfile(filename, ios::out);
-	dumpfile << "Pages: " << pageCount() << "\n";
-	foreach(OutlineItem * i, d->documentOutlines){
-		d->dumpOutlineChildren(i, dumpfile, 0);
-	}
-	dumpfile.close();
+void Outline::dump(QTextStream & stream, const QString & xsl) const {
+	stream << "<?xml version=\"1.0\" encoding=\"UTF-8-\"?>" << endl;
+	QString x = xsl;
+	if (!x.isEmpty())
+		stream << "<?xml-stylesheet type=\"text/xsl\" href=\"" << escape(x) << "\"?>" << endl;
+	stream << "<outline xmlns=\"http://code.google.com/p/wkhtmltopdf/outline\">" << endl;
+	d->dumpChildren(stream, d->documentOutlines, 1);
+	stream << "</outline>" << endl;
 }
 
 
@@ -149,7 +155,7 @@ void Outline::addWebPage(const QString & name, QWebPrinter & wp, QWebFrame * fra
 		uint level = element.tagName().mid(1).toInt();
 		OutlineItem * item = new OutlineItem();
 		item->page = d->pageCount + i.key().first;
-		item->value = element.toPlainText().replace("\n", " ");
+		item->value = element.toPlainText().replace("\n", " ").trimmed();
 		item->element = element;
 		item->display = ps.includeInOutline;
 		item->anchor = QString("__WKANCHOR_")+QString::number(d->anchorCounter++,36);

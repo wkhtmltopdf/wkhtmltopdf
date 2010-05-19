@@ -16,7 +16,6 @@
 // along with wkhtmltopdf.  If not, see <http://www.gnu.org/licenses/>.
 #ifndef __OUTLINE_P_HH
 #define __OUTLINE_P_HH
-#include <fstream>
 #include "outline.hh"
 #ifdef __EXTENSIVE_WKHTMLTOPDF_QT_HACK__
 namespace wkhtmltopdf {
@@ -48,7 +47,7 @@ public:
 	void fillChildAnchors(OutlineItem * item, QHash<QString, QWebElement> & anchors);
 	void outlineChildren(OutlineItem * item, QPrinter * printer, int level);
 	void buildHFCache(OutlineItem * i, int level);
-	void dumpOutlineChildren(OutlineItem * item, std::ofstream &dumpfile, int level);
+	void dumpChildren(QTextStream & stream, const QList<OutlineItem *> & items, int level) const;
 };
 
 }

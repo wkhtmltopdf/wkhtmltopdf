@@ -34,7 +34,8 @@ public:
 	void fillAnchors(int d, QHash<QString, QWebElement> & anchors);
 	int pageCount();
 	void printOutline(QPrinter * printer);
-	void dumpOutline();
+
+	void dump(QTextStream & stream, const QString & xsl) const;
 private:
 	OutlinePrivate * d;
 	friend class TocPrinter;

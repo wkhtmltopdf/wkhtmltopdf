@@ -610,7 +610,16 @@ void PageConverterPrivate::printPage(bool ok) {
 		}
  	}
 	outline->printOutline(printer);
-	outline->dumpOutline();
+
+
+	if (!settings.dumpOutline.isEmpty()) {
+		QFile out(settings.dumpOutline);
+		out.open(QIODevice::WriteOnly | QIODevice::Truncate | QIODevice::Text);
+		QTextStream stream(&out);
+		stream.setCodec("UTF-8");
+		outline->dump(stream, "");
+	}
+
  	painter->end();
 #endif
 	if (settings.out == "-" && lout != "/dev/stdout") {
