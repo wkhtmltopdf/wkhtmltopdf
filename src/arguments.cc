@@ -15,6 +15,8 @@
 // along with wkhtmltopdf.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "commandlineparser_p.hh"
+#include <QFile>
+#include "pageconverter.hh"
 #include <qglobal.h>
 
 /*!
@@ -357,6 +359,17 @@ struct HelpFunc {
 	}
 };
 
+
+struct DefaultTocFunc {
+	bool operator()(const char **, CommandLineParserPrivate & p, Page &) {
+		QFile file;
+		file.open(0, QIODevice::WriteOnly | QIODevice::Truncate | QIODevice::Text);
+		QTextStream stream(&file);
+		wkhtmltopdf::dumbDefaultTOCStyleSheet(stream);
+		exit(0);
+	}
+};
+
 /*!
   Lambda: Call the man method
 */
@@ -517,8 +530,6 @@ CommandLineParserPrivate::CommandLineParserPrivate(Global & s, QList<Page> & ps)
  	addarg("page-width", 0, "Page width", new UnitRealSetter(s.size.width,"unitreal"));
 
 // 	addarg("book",'b',"Set the options one would usually set when printing a book", new Caller<BookFunc>());
-// 	addarg("cover",0,"Use html document as cover. It will be inserted before the toc with no headers and footers",new QStrSetter(s.cover,"url",""));
-	
 	addarg("cookie-jar", 0, "Read and write cookies from and to the supplied cookie jar file", new QStrSetter(s.cookieJar, "path") );
 
 
@@ -537,7 +548,7 @@ CommandLineParserPrivate::CommandLineParserPrivate(Global & s, QList<Page> & ps)
  	addarg("no-outline",0,"Do not put an outline into the pdf", new ConstSetter<bool>(s.outline,false));
  	addarg("outline-depth",0,"Set the depth of the outline", new IntSetter(s.outlineDepth,"level"));
  	addarg("dump-outline",0,"Dump the outline to a file",new QStrSetter(s.dumpOutline,"file"));
-
+	addarg("dump-default-toc-xsl",0,"Dump the default TOC xsl style sheet to stdout", new Caller<DefaultTocFunc>());
 
 	section("Page options");
 	mode(page);

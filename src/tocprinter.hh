@@ -21,6 +21,8 @@
 #include <QPainter>
 #include <QPrinter>
 
+namespace wkhtmltopdf {
+
 class TocPrinterPrivate;
 
 class TocPrinter {
@@ -34,5 +36,6 @@ private:
 	TocPrinterPrivate * d;
 };
 
+}
 #endif //__EXTENSIVE_WKHTMLTOPDF_QT_HACK__
 #endif //__TOCPRINTER_HH

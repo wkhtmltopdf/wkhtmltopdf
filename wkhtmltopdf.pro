@@ -40,7 +40,7 @@ readme.target=README
 readme.commands=./wkhtmltopdf --readme > README
 readme.depends=wkhtmltopdf
 
-QMAKE_EXTRA_UNIX_TARGETS += readme
+QMAKE_EXTRA_TARGETS += readme
 
 unix {
     man.target=wkhtmltopdf.1.gz
@@ -52,7 +52,7 @@ unix {
     manins.files=wkhtmltopdf.1.gz
     manins.path=$$INSTALLBASE/share/man/man1
 
-    QMAKE_EXTRA_UNIX_TARGETS += manins man
+    QMAKE_EXTRA_TARGETS += manins man
     INSTALLS += manins
 }
 
@@ -66,12 +66,18 @@ target.path=$$INSTALLBASE/bin
 
 QT += webkit network
 
-# Input
-HEADERS += src/pageconverter_p.hh src/pageconverter.hh \
-           src/multipageloader_p.hh src/multipageloader.hh src/progressfeedback.hh
+#Libaray part
+HEADERS += src/pageconverter.hh src/pageconverter_p.hh \
+           src/multipageloader_p.hh src/multipageloader.hh
+
+SOURCES += src/tempfile.cc src/settings.cc src/pageconverter.cc \
+           src/multipageloader.cc src/outline.cc src/tocstylesheet.cc
+
+#Application part
+
+HEADERS += src/progressfeedback.hh
 
 SOURCES += src/wkhtmltopdf.cc src/arguments.cc src/commandlineparser.cc \
-           src/docparts.cc src/outputter.cc src/manoutputter.cc src/settings.cc \
-           src/htmloutputter.cc src/textoutputter.cc src/tempfile.cc \
-           src/multipageloader.cc src/pageconverter.cc src/progressfeedback.cc \
-           src/outline.cc src/tocprinter.cc
+           src/docparts.cc src/outputter.cc src/manoutputter.cc \
+           src/htmloutputter.cc src/textoutputter.cc src/progressfeedback.cc
+           

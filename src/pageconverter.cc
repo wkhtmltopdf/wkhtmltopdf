@@ -36,6 +36,16 @@ using namespace wkhtmltopdf::settings;
 
 QMap<QWebPage *, PageObject *> PageObject::webPageToObject;
 
+
+struct StreamDumper {
+	QFile out;
+	QTextStream stream;
+
+	StreamDumper(const QString & path): out(path), stream(&out) {
+		out.open(QIODevice::WriteOnly | QIODevice::Truncate | QIODevice::Text);
+		stream.setCodec("UTF-8");
+	}
+};
  
 /*!
   \file pageconverter.hh
@@ -585,7 +595,6 @@ void PageConverterPrivate::printPage(bool ok) {
 								elm.attribute("readonly") == "readonly");
 						}
 					}
-
 					for(QHash<QString, QWebElement>::iterator i=myAnchors[p+1].begin();
 						i != myAnchors[p+1].end(); ++i) {
 						QRectF r = wp.elementLocation(i.value()).second;
@@ -611,13 +620,9 @@ void PageConverterPrivate::printPage(bool ok) {
  	}
 	outline->printOutline(printer);
 
-
 	if (!settings.dumpOutline.isEmpty()) {
-		QFile out(settings.dumpOutline);
-		out.open(QIODevice::WriteOnly | QIODevice::Truncate | QIODevice::Text);
-		QTextStream stream(&out);
-		stream.setCodec("UTF-8");
-		outline->dump(stream, "");
+		StreamDumper sd(settings.dumpOutline);
+		outline->dump(sd.stream, "");
 	}
 
  	painter->end();
