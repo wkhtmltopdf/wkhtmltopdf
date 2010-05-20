@@ -273,6 +273,10 @@ struct Page {
 	bool includeInOutline;
 
 	bool pagesCount;
+
+	bool isTableOfContent;
+
+	QString tocXsl;
 };
 
 QPrinter::PageSize strToPageSize(const char * s, bool * ok=0);

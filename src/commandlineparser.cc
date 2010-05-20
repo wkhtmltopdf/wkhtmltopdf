@@ -354,8 +354,9 @@ void CommandLineParser::parseArguments(int argc, const char ** argv, bool fromSt
 			//Setup varius cover settings her
 			++arg;
 		} else if (!strcmp(argv[arg],"toc")) {
-			sections = d->page | d->toc;
 			++arg;
+			sections = d->page | d->toc;
+			ps.isTableOfContent = true;
 		} else {
 			if (!strcmp(argv[arg],"page")) {
 				++arg;

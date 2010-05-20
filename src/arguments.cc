@@ -615,8 +615,6 @@ CommandLineParserPrivate::CommandLineParserPrivate(Global & s, QList<Page> & ps)
 #endif
  	addarg("encoding", 0, "Set the default text encoding, for input", new QStrSetter(od.defaultEncoding,"encoding"));
 
-
-
 	section("Headers And Footer Options");
  	qthack(true);
  	extended(true);
@@ -640,4 +638,9 @@ CommandLineParserPrivate::CommandLineParserPrivate(Global & s, QList<Page> & ps)
 	
 	addarg("replace",0, "Replace [name] with value in header and footer (repeatable)", new MapSetter<>(od.replacements, "name", "value"));
 
+	section("TOC Options");
+	mode(toc);
+ 	extended(true);
+ 	qthack(true);
+ 	addarg("xsl-style-sheet",0,"Use the supplied xsl style sheet for printing the table of content", new QStrSetter(od.tocXsl,"file"));
 }
