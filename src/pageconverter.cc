@@ -334,19 +334,20 @@ void PageConverterPrivate::preparePrint(bool ok) {
 	for(int d=0; d < objects.size(); ++d) {
 		PageObject & obj = objects[d];
 		settings::Page & ps = obj.settings;
-		QHash<QString, QString> parms;
-	 	fillParms(parms, pageNumber, ps);
-
 		for (int op=0; op < obj.pageCount; ++op) {
-			if(!ps.header.htmlUrl.isEmpty())
-				obj.headers.push_back(loadHeaderFooter(ps.header.htmlUrl, parms, ps) );
-			if(!ps.footer.htmlUrl.isEmpty())
-				obj.footers.push_back(loadHeaderFooter(ps.footer.htmlUrl, parms, ps) );
+			if (!ps.header.htmlUrl.isEmpty() || !ps.footer.htmlUrl.isEmpty()) {
+				QHash<QString, QString> parms;
+				fillParms(parms, pageNumber, ps);
+				hf = true;
+				if (!ps.header.htmlUrl.isEmpty())
+					obj.headers.push_back(loadHeaderFooter(ps.header.htmlUrl, parms, ps) );
+				if (!ps.footer.htmlUrl.isEmpty()) {
+					obj.footers.push_back(loadHeaderFooter(ps.footer.htmlUrl, parms, ps) );
+				}
+			}
 			if (ps.pagesCount) ++pageNumber;
 		}
 	}
-
-
 	if (hf)
 		hfLoader.load();
 	else 
@@ -454,7 +455,6 @@ void PageConverterPrivate::endPage(PageObject & object, bool hasHeaderFooter, in
 		painter->translate(0, -spacing);
 		QWebPrinter wp(header->mainFrame(), printer, *painter);
 		painter->translate(0,-wp.elementLocation(header->mainFrame()->findFirstElement("body")).second.height());
-
 		QVector<p_t> local;
 		QVector<p_t> external;
 		findLinks(header->mainFrame(), local, external);
@@ -468,7 +468,7 @@ void PageConverterPrivate::endPage(PageObject & object, bool hasHeaderFooter, in
 		}
 		wp.spoolPage(1);
 		painter->restore();
-}
+	}
 
 	if (!object.footers.empty()) {
 		QWebPage * footer = object.footers[objectPage];
@@ -657,10 +657,8 @@ void PageConverterPrivate::printPage(bool ok) {
 #ifdef __EXTENSIVE_WKHTMLTOPDF_QT_HACK__
 QWebPage * PageConverterPrivate::loadHeaderFooter(QString url, const QHash<QString, QString> & parms, const settings::Page & ps) {
 	QUrl u = MultiPageLoader::guessUrlFromString(url);
-
 	for(QHash<QString, QString>::const_iterator i=parms.begin(); i != parms.end(); ++i)
 		u.addQueryItem(i.key(), i.value());
-
 	return hfLoader.addResource(u, ps);
 
 }
