@@ -173,6 +173,12 @@ void Outline::addWebPage(const QString & name, QWebPrinter & wp, QWebFrame * fra
 }
 
 
+void Outline::addEmptyWebPage() {
+	OutlineItem * root = new OutlineItem();
+	d->documentOutlines.push_back(root);
+	d->pageCount += 1;
+}
+
 void OutlinePrivate::buildHFCache(OutlineItem * i, int level) {
 	if (level >= hfCache.size()) return;
 	foreach (OutlineItem * j, i->children) {

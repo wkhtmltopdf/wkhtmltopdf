@@ -19,12 +19,15 @@
 
 namespace wkhtmltopdf {
 
-void dumbDefaultTOCStyleSheet(QTextStream & stream) {
+void dumpDefaultTOCStyleSheet(QTextStream & stream) {
     stream << "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" << endl
 		   << "<xsl:stylesheet version=\"1.0\"" << endl
-		   << "	        xmlns:xsl=\"http://www.w3.org/1999/XSL/Transform\"" << endl
+		   << "	               xmlns:xsl=\"http://www.w3.org/1999/XSL/Transform\"" << endl
 		   << "                xmlns:outline=\"http://code.google.com/p/wkhtmltopdf/outline\"" << endl
 		   << "                xmlns=\"http://www.w3.org/1999/xhtml\">" << endl
+		   << "  <xsl:output doctype-public=\"-//W3C//DTD XHTML 1.0 Strict//EN\"" << endl
+	       << "              doctype-system=\"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd\"" << endl
+		   << "              indent=\"yes\" />\"" << endl
 		   << "  <xsl:template match=\"outline:outline\">" << endl
 		   << "    <html>" << endl
 		   << "      <head>" << endl
@@ -49,8 +52,8 @@ void dumbDefaultTOCStyleSheet(QTextStream & stream) {
 		   << "        </style>" << endl
 		   << "      </head>" << endl
 		   << "      <body>" << endl
-		   << "        <h1><xsl:value-of select=\"@title\" /></h1>" << endl
-		   << "        <ul><xsl:apply-templates select=\"outline:item\"/></ul>" << endl
+		   << "        <h1><xsl:value-of select=\"@title\" > </xsl:value-of> </h1>" << endl
+		   << "        <ul><xsl:apply-templates select=\"outline:item/outline:item\"/></ul>" << endl
 		   << "      </body>" << endl
 		   << "    </html>" << endl
 		   << "  </xsl:template>" << endl

@@ -20,7 +20,7 @@
 #include <QObject>
 namespace wkhtmltopdf {
 
-void dumbDefaultTOCStyleSheet(QTextStream & stream);
+void dumpDefaultTOCStyleSheet(QTextStream & stream);
 
 class PageConverterPrivate;
 class PageConverter: public QObject {

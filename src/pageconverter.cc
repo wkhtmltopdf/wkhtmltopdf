@@ -67,7 +67,7 @@ PageConverterPrivate::PageConverterPrivate(Global & s, PageConverter & o) :
 	settings(s), pageLoader(s),
 	outer(o), printer(0), painter(0)
 #ifdef __EXTENSIVE_WKHTMLTOPDF_QT_HACK__
-	, hfLoader(s), outline(0), tocPrinter(0)
+	, hfLoader(s), tocLoader(s), outline(0), tocPrinter(0)
 #endif
 {
 		
@@ -83,15 +83,20 @@ PageConverterPrivate::PageConverterPrivate(Global & s, PageConverter & o) :
 	phaseDescriptions.push_back("Done");
 
 	connect(&pageLoader, SIGNAL(loadProgress(int)), this, SLOT(loadProgress(int)));
-	connect(&pageLoader, SIGNAL(loadFinished(bool)), this, SLOT(preparePrint(bool)));
+	connect(&pageLoader, SIGNAL(loadFinished(bool)), this, SLOT(pagesLoaded(bool)));
 	connect(&pageLoader, SIGNAL(error(QString)), this, SLOT(forwardError(QString)));
 	connect(&pageLoader, SIGNAL(warning(QString)), this, SLOT(forwardWarning(QString)));
 
 #ifdef __EXTENSIVE_WKHTMLTOPDF_QT_HACK__	
 	connect(&hfLoader, SIGNAL(loadProgress(int)), this, SLOT(loadProgress(int)));
-	connect(&hfLoader, SIGNAL(loadFinished(bool)), this, SLOT(printPage(bool)));
+	connect(&hfLoader, SIGNAL(loadFinished(bool)), this, SLOT(headersLoaded(bool)));
 	connect(&hfLoader, SIGNAL(error(QString)), this, SLOT(forwardError(QString)));
 	connect(&hfLoader, SIGNAL(warning(QString)), this, SLOT(forwardWarning(QString)));
+
+	connect(&tocLoader, SIGNAL(loadProgress(int)), this, SLOT(loadProgress(int)));
+	connect(&tocLoader, SIGNAL(loadFinished(bool)), this, SLOT(tocLoaded(bool)));
+	connect(&tocLoader, SIGNAL(error(QString)), this, SLOT(forwardError(QString)));
+	connect(&tocLoader, SIGNAL(warning(QString)), this, SLOT(forwardWarning(QString)));
 #endif
 }
 
@@ -117,6 +122,29 @@ void PageConverterPrivate::loadProgress(int progress) {
 	emit outer.progressChanged(progress);
 }
 
+void PageConverterPrivate::updateWebSettings(QWebSettings * ws, const settings::Page & s) const {
+#ifdef  __EXTENSIVE_WKHTMLTOPDF_QT_HACK__
+	if (!s.defaultEncoding.isEmpty())
+		ws->setDefaultTextEncoding(s.defaultEncoding);
+	if (!s.enableIntelligentShrinking) {
+		ws->setPrintingMaximumShrinkFactor(1.0);
+		ws->setPrintingMinimumShrinkFactor(1.0);
+	}
+	ws->setPrintingMediaType(s.printMediaType?"print":"screen");
+#endif
+	ws->setAttribute(QWebSettings::JavaEnabled, s.enablePlugins);
+	ws->setAttribute(QWebSettings::JavascriptEnabled, s.enableJavascript);
+	ws->setAttribute(QWebSettings::JavascriptCanOpenWindows, false);
+	ws->setAttribute(QWebSettings::JavascriptCanAccessClipboard, false);
+	ws->setFontSize(QWebSettings::MinimumFontSize, s.minimumFontSize);
+#if QT_VERSION >= 0x040500
+	//Newer vertions of QT have even more settings to change
+	ws->setAttribute(QWebSettings::PrintElementBackgrounds, s.background);
+	ws->setAttribute(QWebSettings::PluginsEnabled, s.enablePlugins);
+	if (!s.userStyleSheet.isEmpty())
+		ws->setUserStyleSheetUrl(MultiPageLoader::guessUrlFromString(s.userStyleSheet));
+#endif
+}
 
 void PageConverterPrivate::beginConvert() {
 	clearResources();
@@ -148,31 +176,11 @@ void PageConverterPrivate::beginConvert() {
 			return;
 		}
 
-		o.page = pageLoader.addResource(s.page, s);
-		PageObject::webPageToObject[o.page] = &o;
-		QWebSettings * ws = o.page->settings();
-
-#ifdef  __EXTENSIVE_WKHTMLTOPDF_QT_HACK__
-		if (!s.defaultEncoding.isEmpty())
-			ws->setDefaultTextEncoding(s.defaultEncoding);
-		if (!s.enableIntelligentShrinking) {
-			ws->setPrintingMaximumShrinkFactor(1.0);
-			ws->setPrintingMinimumShrinkFactor(1.0);
+		if (!s.isTableOfContent) {
+			o.page = pageLoader.addResource(s.page, s);
+			PageObject::webPageToObject[o.page] = &o;
+			updateWebSettings(o.page->settings(), s);
 		}
-		ws->setPrintingMediaType(s.printMediaType?"print":"screen");
-#endif
-		ws->setAttribute(QWebSettings::JavaEnabled, s.enablePlugins);
-		ws->setAttribute(QWebSettings::JavascriptEnabled, s.enableJavascript);
-		ws->setAttribute(QWebSettings::JavascriptCanOpenWindows, false);
-		ws->setAttribute(QWebSettings::JavascriptCanAccessClipboard, false);
-		ws->setFontSize(QWebSettings::MinimumFontSize, s.minimumFontSize);
-#if QT_VERSION >= 0x040500
-		//Newer vertions of QT have even more settings to change
-		ws->setAttribute(QWebSettings::PrintElementBackgrounds, s.background);
-		ws->setAttribute(QWebSettings::PluginsEnabled, s.enablePlugins);
-		if (!s.userStyleSheet.isEmpty())
-			ws->setUserStyleSheetUrl(MultiPageLoader::guessUrlFromString(s.userStyleSheet));
-#endif
 	}
 
 	
@@ -191,15 +199,17 @@ void PageConverterPrivate::fail() {
 	qApp->exit(0); // quit qt's event handling
 }
 
+
+
 /*!
  * Prepares printing out the document to the pdf file
  */
-void PageConverterPrivate::preparePrint(bool ok) {
+void PageConverterPrivate::pagesLoaded(bool ok) {
 	if (!ok) {
 		fail(); 
 		return;
 	}
-
+	
 	lout = settings.out;
 	if (settings.out == "-") {
 #ifndef Q_OS_WIN32
@@ -253,9 +263,11 @@ void PageConverterPrivate::preparePrint(bool ok) {
 
 #ifndef __EXTENSIVE_WKHTMLTOPDF_QT_HACK__
 	//If you do not have the hacks you get this crappy solution
-
 	printer->setCollateCopies(settings.copies);
 	printer->setCollateCopies(settings.collate);
+	
+	printPage();
+	
 	printPage(true);
 #else
 	printer->printEngine()->setProperty(QPrintEngine::PKK_UseCompression, settings.useCompression);
@@ -263,8 +275,9 @@ void PageConverterPrivate::preparePrint(bool ok) {
 	painter = new QPainter();
 	
 	QString title = settings.documentTitle;
-	if (title == "") 
-		title = objects[0].page->mainFrame()->title();
+	//if (title == "") 
+	//	title = objects[0].page->mainFrame()->title();
+	qDebug() << "FIX ME";
 	printer->setDocName(title);
 	if (!painter->begin(printer)) {
 		emit outer.error("Unable to write to destination");
@@ -277,12 +290,15 @@ void PageConverterPrivate::preparePrint(bool ok) {
 	emit outer.phaseChanged();
 	
 	QHash<QString, int> urlToDoc;
-	for(int d=0; d < objects.size(); ++d) 
+	for(int d=0; d < objects.size(); ++d) {
+		if (objects[d].settings.isTableOfContent) continue;
 		urlToPageObj[ objects[d].page->mainFrame()->url().toString(QUrl::RemoveFragment) ] = &objects[d];
-	
+	}
+
 	for(int d=0; d < objects.size(); ++d) {
 		progressString = QString("Object ")+QString::number(d+1)+QString(" of ")+QString::number(objects.size());
 		emit outer.progressChanged((d+1)*100 / objects.size());
+		if (objects[d].settings.isTableOfContent) continue;
 		findLinks(objects[d].page->mainFrame(), objects[d].localLinks, objects[d].externalLinks);
 	}
 
@@ -295,6 +311,13 @@ void PageConverterPrivate::preparePrint(bool ok) {
 	// * The location and page number of each header
 	pageCount = 0;
 	for(int d=0; d < objects.size(); ++d) {
+		if (objects[d].settings.isTableOfContent) {
+			objects[d].pageCount = 1;
+			pageCount += 1;
+			outline->addEmptyWebPage();
+			continue;
+		}
+		
 		int tot = objects.size();
 		progressString = QString("Object ")+QString::number(d+1)+QString(" of ")+QString::number(tot);
 		emit outer.progressChanged((d+1)*100 / tot);
@@ -308,24 +331,14 @@ void PageConverterPrivate::preparePrint(bool ok) {
 		painter->restore();
 	}
 
-	//Now that we know the ordering of the headers in each document we
-	//can calculate the number of pages in the table of content
-	// tocPrinter = NULL;
-	// if (settings.printToc) {
-	// 	int k=pages.size()+1;
-	// 	progressString = QString("Page ")+QString::number(k)+QString(" of ")+QString::number(k);
-	// 	emit outer.progressChanged(100);
-		
-	// 	tocPrinter = new TocPrinter(outline, printer, *painter);
-	// 	actualPages += tocPrinter->pageCount();
-	// 	logicalPages += tocPrinter->pageCount();
-   	// }
 	actualPages = pageCount * settings.copies;
+	
+	loadTocs();
+#endif
+}
 
-	
-	//if(!settings.header.htmlUrl.isEmpty() || !settings.footer.htmlUrl.isEmpty()) {
-	//	QWebSettings::globalSettings()->setAttribute(QWebSettings::JavascriptEnabled, true);
-	
+void PageConverterPrivate::loadHeaders() {
+#ifdef __EXTENSIVE_WKHTMLTOPDF_QT_HACK__
 	currentPhase = 3;
 	emit outer.phaseChanged();
 	bool hf=false;
@@ -351,7 +364,39 @@ void PageConverterPrivate::preparePrint(bool ok) {
 	if (hf)
 		hfLoader.load();
 	else 
-		printPage(true);
+		printDocument();
+#endif	
+}
+
+TempFile tocFile;
+TempFile tocStyleFile;
+
+void PageConverterPrivate::loadTocs() {
+#ifdef __EXTENSIVE_WKHTMLTOPDF_QT_HACK__
+	bool toc=false;
+	qDebug() << "a";
+	for(int d=0; d < objects.size(); ++d) {
+		PageObject & obj = objects[d];
+		settings::Page & ps = obj.settings;
+		if (!ps.isTableOfContent) continue;
+		QString style = "toc.xsl"; //tocStyleFile.create(".xsl");
+		StreamDumper styleDump(style);
+		dumpDefaultTOCStyleSheet(styleDump.stream);
+		
+		QString path = "toc.xml"; //tocFile.create(".xml");
+		StreamDumper sd(path);
+		outline->dump(sd.stream, style);
+
+				
+		obj.page = tocLoader.addResource(path, ps);
+		PageObject::webPageToObject[obj.page] = &obj;
+		updateWebSettings(obj.page->settings(), ps);
+		toc= true;
+	}
+	if (toc) 
+		tocLoader.load();
+	else
+		loadHeaders();
 #endif
 }
 
@@ -496,12 +541,23 @@ void PageConverterPrivate::endPage(PageObject & object, bool hasHeaderFooter, in
 }
 #endif
 
-
-void PageConverterPrivate::printPage(bool ok) {
+void PageConverterPrivate::tocLoaded(bool ok) {
 	if (!ok) {
 		fail();
 		return;
 	}
+	loadHeaders();
+}
+
+void PageConverterPrivate::headersLoaded(bool ok) {
+	if (!ok) {
+		fail();
+		return;
+	}
+	printDocument();
+}
+
+void PageConverterPrivate::printDocument() {
 
 #ifndef __EXTENSIVE_WKHTMLTOPDF_QT_HACK__
 	currentPhase = 1;

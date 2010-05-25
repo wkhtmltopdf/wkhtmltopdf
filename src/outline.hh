@@ -29,7 +29,11 @@ class Outline {
 public:
 	Outline(const settings::Global & settings);
 	~Outline();
+	void addEmptyWebPage();
+	void replaceWebPage(int d, const QString & name, QWebPrinter & wp, QWebFrame * frame, const settings::Page & ps);
 	void addWebPage(const QString & name, QWebPrinter & wp, QWebFrame * frame, const settings::Page & ps);
+
+
 	void fillHeaderFooterParms(int page, QHash<QString, QString> & parms, const settings::Page & ps);
 	void fillAnchors(int d, QHash<QString, QWebElement> & anchors);
 	int pageCount();

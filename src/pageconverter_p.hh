@@ -98,6 +98,7 @@ private:
 
 #ifdef __EXTENSIVE_WKHTMLTOPDF_QT_HACK__
 	MultiPageLoader hfLoader;
+	MultiPageLoader tocLoader;
 
 	QHash<QString, PageObject *> urlToPageObj;
 
@@ -111,11 +112,20 @@ private:
 	QWebPage * loadHeaderFooter(QString url, const QHash<QString, QString> & parms, const settings::Page & ps);
 #endif
 
+	void loadTocs();
+	void loadHeaders();
+	void updateWebSettings(QWebSettings * ws, const settings::Page & s) const;
+
 	void fail();
 public slots:
 	void loadProgress(int progress);
-	void preparePrint(bool ok);
-	void printPage(bool ok);
+	void pagesLoaded(bool ok);
+	void tocLoaded(bool ok);
+	void headersLoaded(bool ok);
+	
+	
+	void printDocument();
+
 	void beginConvert();
 	void cancel();
 	bool convert();

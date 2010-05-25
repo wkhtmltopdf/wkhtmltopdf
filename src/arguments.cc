@@ -365,7 +365,7 @@ struct DefaultTocFunc {
 		QFile file;
 		file.open(0, QIODevice::WriteOnly | QIODevice::Truncate | QIODevice::Text);
 		QTextStream stream(&file);
-		wkhtmltopdf::dumbDefaultTOCStyleSheet(stream);
+		wkhtmltopdf::dumpDefaultTOCStyleSheet(stream);
 		exit(0);
 	}
 };

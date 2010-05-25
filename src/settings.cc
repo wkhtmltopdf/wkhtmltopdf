@@ -279,7 +279,8 @@ Page::Page():
 	ignoreLoadErrors(false),
 	enablePlugins(false),
 	includeInOutline(true),
-	pagesCount(true)
- {}
+	pagesCount(true),
+	isTableOfContent(false),
+	tocXsl("") {};
 }
 }
