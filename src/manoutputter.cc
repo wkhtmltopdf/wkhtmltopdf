@@ -97,7 +97,7 @@ public:
 		for(QVector<QString>::const_iterator i = h->argn.constBegin(); i != h->argn.constEnd(); ++i)
 			fprintf(fd," \\fI<%s>\\fR", S(*i));
 		
-		fprintf(fd, "\n%s\n",S(h->desc));
+		fprintf(fd, "\n%s\n", S(QString(h->desc).replace("-", "\\-")));
 	}
 	
 	void endSwitch() {

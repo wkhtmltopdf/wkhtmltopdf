@@ -1,4 +1,4 @@
-//-*- mode: c++; tab-width: 4; indent-tabs-mode: t; c-file-style: "stroustrup"; -*-
+
 // This file is part of wkhtmltopdf.
 //
 // wkhtmltopdf is free software: you can redistribute it and/or modify
@@ -190,41 +190,6 @@ void PageConverterPrivate::fail() {
 	qApp->exit(0); // quit qt's event handling
 }
 
-
-void PageConverterPrivate::findLinks(QWebFrame * frame, QVector<QPair<QWebElement, QString> > & local, QVector<QPair<QWebElement, QString> > & external) {
-	bool ulocal=true, uexternal=true;
-	if (PageObject::webPageToObject.contains(frame->page())) {
-		ulocal = PageObject::webPageToObject[frame->page()]->settings.useLocalLinks;
-		uexternal  = PageObject::webPageToObject[frame->page()]->settings.useExternalLinks;
-	}
-	if (!ulocal && !uexternal) return;
-	foreach (const QWebElement & elm, frame->findAllElements("a")) {
-		QUrl href=QUrl(elm.attribute("href"));
-		if (href.isEmpty()) continue;
-		href=frame->url().resolved(href);
-		if (urlToPageObj.contains(href.toString(QUrl::RemoveFragment))) {
-			if (ulocal) {
-				PageObject * p = urlToPageObj[href.toString(QUrl::RemoveFragment)];
-				QWebElement e;
-				if (!href.hasFragment()) 
-					e = p->page->mainFrame()->findFirstElement("body");
-				else {
-					e = p->page->mainFrame()->findFirstElement("a[name=\""+href.fragment()+"\"]");
-					if(e.isNull()) 
-						e = p->page->mainFrame()->findFirstElement("*[id=\""+href.fragment()+"\"]");
-				}
-				if (e.isNull())
-					qDebug() << "Unable to find target for local link " << href; 
-				else {
-					p->anchors[href.toString()] = e;
-					local.push_back( qMakePair(elm, href.toString()) );
-				}
-			}
-		} else if (uexternal)
-			external.push_back( qMakePair(elm, href.toString() ) );
-	}
-}
-
 /*!
  * Prepares printing out the document to the pdf file
  */
@@ -389,8 +354,37 @@ void PageConverterPrivate::preparePrint(bool ok) {
 }
 
 #ifdef __EXTENSIVE_WKHTMLTOPDF_QT_HACK__
-void PageConverterPrivate::fillParms(QHash<QString, QString> & parms, int page, const settings::Page & ps) {
-	outline->fillHeaderFooterParms(page, parms, ps);
+void PageConverterPrivate::findLinks(QWebFrame * frame, QVector<QPair<QWebElement, QString> > & local, QVector<QPair<QWebElement, QString> > & external) {
+	if (!settings.useLocalLinks && !settings.useExternalLinks) return;
+	foreach (const QWebElement & elm, frame->findAllElements("a")) {
+		QUrl href=QUrl(elm.attribute("href"));
+		if (href.isEmpty()) continue;
+		href=frame->url().resolved(href);
+		if (urlToDoc.contains(href.toString(QUrl::RemoveFragment))) {
+			if (settings.useLocalLinks) {
+				int t = urlToDoc[href.toString(QUrl::RemoveFragment)];
+				QWebElement e;
+				if (!href.hasFragment()) 
+					e = pages[t]->mainFrame()->findFirstElement("body");
+				else {
+					e = pages[t]->mainFrame()->findFirstElement("a[name=\""+href.fragment()+"\"]");
+					if(e.isNull()) 
+						e = pages[t]->mainFrame()->findFirstElement("*[id=\""+href.fragment()+"\"]");
+				}
+				if (e.isNull())
+					qDebug() << "Unable to find target for local link " << href; 
+				else {
+					anchors[t][href.toString()] = e;
+					local.push_back( qMakePair(elm, href.toString()) );
+				}
+			}
+		} else if (settings.useExternalLinks)
+			external.push_back( qMakePair(elm, href.toString() ) );
+	}
+}
+
+void PageConverterPrivate::fillParms(QHash<QString, QString> & parms, int page) {
+	outline->fillHeaderFooterParms(page, parms);
 	QDateTime t(QDateTime::currentDateTime());
 	parms["time"] = t.time().toString(Qt::SystemLocaleShortDate);
 	parms["date"] = t.date().toString(Qt::SystemLocaleShortDate);

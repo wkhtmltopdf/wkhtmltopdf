@@ -85,6 +85,8 @@ wkhtmltopdf [OPTIONS]... <input file> [More input files] <output file>
 -g, --grayscale                       PDF will be generated in grayscale
 -h, --help                            Display help
     --htmldoc                         Output program html help
+    --ignore-load-errors              Ignore pages that claimes to have
+                                      encountered an error during loading
 -l, --lowquality                      Generates lower quality pdf/ps. Useful to
                                       shrink the result document space
     --manpage                         Output program man page
@@ -225,6 +227,8 @@ arguments respectfully.  In header and footer text string supplied to e.g.
  * [webpage]    Replaced by the URL of the page being printed
  * [section]    Replaced by the name of the current section
  * [subsection] Replaced by the name of the current subsection
+ * [date]       Replaced by the current date in system local format
+ * [time]       Replaced by the current time in system local format
 
 
 As an example specifying --header-right "Page [page] of [toPage]", will result
