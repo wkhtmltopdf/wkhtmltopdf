@@ -576,7 +576,7 @@ CommandLineParserPrivate::CommandLineParserPrivate(Global & s, QList<Page> & ps)
  	addarg("zoom",0,"Use this zoom factor", new FloatSetter(od.zoomFactor,"float",1.0));
  	addarg("cookie",0,"Set an additional cookie (repeatable)", new MapSetter<>(od.cookies, "name", "value"));
  	addarg("post", 0, "Add an additional post field (repeatable)", new MapSetter<PostItemCreator<false> >(od.post, "name", "value"));
- 	addarg("post-file", 0, "Post an aditional file (repeatable)", new MapSetter<PostItemCreator<true> >(od.post, "name", "path"));
+ 	addarg("post-file", 0, "Post an additional file (repeatable)", new MapSetter<PostItemCreator<true> >(od.post, "name", "path"));
 	
 	addarg("disable-local-file-access", 0, "Do not allowed conversion of a local file to read in other local files, unless explecitily allowed with --allow", new ConstSetter<bool>(od.blockLocalFileAccess, true));
 	addarg("enable-local-file-access", 0, "Allowed conversion of a local file to read in other local files.", new ConstSetter<bool>(od.blockLocalFileAccess, false));
