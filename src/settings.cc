@@ -272,6 +272,7 @@ Page::Page():
 	zoomFactor(1.0),
 	minimumFontSize(-1),
 	printMediaType(false),
+	repeatCustomHeaders(false),
 	blockLocalFileAccess(false),
 	stopSlowScripts(true),
 	debugJavascript(false),

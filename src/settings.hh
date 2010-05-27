@@ -235,6 +235,9 @@ struct Page {
 	//! Map of custum header valiabels
 	QList< QPair<QString, QString> > customHeaders;
 	
+	//! Set if the custom header should be repeated for each resource request
+	bool repeatCustomHeaders;
+	
 	//! Map of cookies
 	QList< QPair<QString, QString> > cookies;
 	

@@ -562,6 +562,8 @@ CommandLineParserPrivate::CommandLineParserPrivate(Global & s, QList<Page> & ps)
 	addarg("no-ignore-load-errors", 0, "Do not ignore pages that claimes to have encountered an error during loading"
 , new ConstSetter<bool>(od.ignoreLoadErrors, false));
 	addarg("custom-header",0,"Set an additional HTTP header (repeatable)", new MapSetter<>(od.customHeaders, "name", "value"));
+	addarg("custom-header-propagate",0,"Add HTTP headers specified by --custom-header for each resource request.", new ConstSetter<bool>(od.repeatCustomHeaders, true));
+	addarg("no-custom-header-propagate",0,"Do not add HTTP headers specified by --custom-header for each resource request.", new ConstSetter<bool>(od.repeatCustomHeaders, true));
 
 	addarg("disable-javascript",'n',"Do not allow web pages to run javascript", new ConstSetter<bool>(od.enableJavascript,false));
 	addarg("enable-javascript",'n',"Do allow web pages to run javascript", new ConstSetter<bool>(od.enableJavascript,true));

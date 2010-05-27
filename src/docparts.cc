@@ -65,7 +65,7 @@ void CommandLineParserPrivate::outputAuthors(Outputter * o) const {
 	o->paragraph(
 		QString::fromUtf8(
 			"Written by Jakob Truelsen. "
-			"Patches by Mário Silva, Benoit Garret and Emmanuel Bouthenot."));
+			"Patches by Mehdi Abbad, Lyes Amazouz, Emmanuel Bouthenot, Benoit Garret and Mário Silva."));
 	o->endSection();
 }
 

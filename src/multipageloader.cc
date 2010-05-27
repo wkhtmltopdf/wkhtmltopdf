@@ -33,7 +33,7 @@ namespace wkhtmltopdf {
 */
 
 
-MyNetworkAccessManager::MyNetworkAccessManager(bool block): blockAccess(block) {}
+MyNetworkAccessManager::MyNetworkAccessManager(const settings::Page & s): settings(s) {}
 
 void MyNetworkAccessManager::allow(QString path) {
 	QString x = QFileInfo(path).canonicalFilePath();
@@ -42,7 +42,7 @@ void MyNetworkAccessManager::allow(QString path) {
 }
 
 QNetworkReply * MyNetworkAccessManager::createRequest(Operation op, const QNetworkRequest & req, QIODevice * outgoingData) {
-	if (req.url().scheme() == "file" && blockAccess) { 
+	if (req.url().scheme() == "file" && settings.blockLocalFileAccess) { 
 		bool ok=false;
 		QString path = QFileInfo(req.url().toLocalFile()).canonicalFilePath();
 		QString old = "";
@@ -61,7 +61,13 @@ QNetworkReply * MyNetworkAccessManager::createRequest(Operation op, const QNetwo
 			return QNetworkAccessManager::createRequest(op, r2, outgoingData);
 		}
 	}
-	return QNetworkAccessManager::createRequest(op, req, outgoingData);
+	QNetworkRequest r3 = req;
+	if (settings.repeatCustomHeaders) {
+		typedef QPair<QString, QString> HT;
+		foreach (const HT & j, settings.customHeaders)
+			r3.setRawHeader(j.first.toAscii(), j.second.toAscii());
+	}
+	return QNetworkAccessManager::createRequest(op, r3, outgoingData);	
 }
 
 
@@ -97,7 +103,7 @@ bool MyQWebPage::shouldInterruptJavaScript() {
 
 
 ResourceObject::ResourceObject(MultiPageLoaderPrivate & mpl, const QUrl & u, const settings::Page & s): 
-	networkAccessManager(s.blockLocalFileAccess),
+	networkAccessManager(s),
 	webPage(*this),
 	url(u),
 	loginTry(0), 

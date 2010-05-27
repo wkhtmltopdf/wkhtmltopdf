@@ -29,11 +29,11 @@ namespace wkhtmltopdf {
 class MyNetworkAccessManager: public QNetworkAccessManager {
 	Q_OBJECT
 private:
-	bool blockAccess;
 	QSet<QString> allowed;
+	const settings::Page & settings;
 public:
 	void allow(QString path);
-	MyNetworkAccessManager(bool block);
+	MyNetworkAccessManager(const settings::Page & s);
 	QNetworkReply * createRequest(Operation op, const QNetworkRequest & req, QIODevice * outgoingData = 0);
 signals:
 	void warning(const QString & text);
