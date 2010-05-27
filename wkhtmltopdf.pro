@@ -64,7 +64,7 @@ win32 {
 INSTALLS += target
 target.path=$$INSTALLBASE/bin
 
-QT += webkit network
+QT += webkit network xmlpatterns
 
 #Libaray part
 HEADERS += src/pageconverter.hh src/pageconverter_p.hh \

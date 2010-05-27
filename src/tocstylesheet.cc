@@ -27,7 +27,7 @@ void dumpDefaultTOCStyleSheet(QTextStream & stream) {
 		   << "                xmlns=\"http://www.w3.org/1999/xhtml\">" << endl
 		   << "  <xsl:output doctype-public=\"-//W3C//DTD XHTML 1.0 Strict//EN\"" << endl
 	       << "              doctype-system=\"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd\"" << endl
-		   << "              indent=\"yes\" />\"" << endl
+		   << "              indent=\"yes\" />" << endl
 		   << "  <xsl:template match=\"outline:outline\">" << endl
 		   << "    <html>" << endl
 		   << "      <head>" << endl
@@ -52,25 +52,27 @@ void dumpDefaultTOCStyleSheet(QTextStream & stream) {
 		   << "        </style>" << endl
 		   << "      </head>" << endl
 		   << "      <body>" << endl
-		   << "        <h1><xsl:value-of select=\"@title\" > </xsl:value-of> </h1>" << endl
+		   << "        <h1>Table of Content</h1>" << endl
 		   << "        <ul><xsl:apply-templates select=\"outline:item/outline:item\"/></ul>" << endl
 		   << "      </body>" << endl
 		   << "    </html>" << endl
 		   << "  </xsl:template>" << endl
 		   << "  <xsl:template match=\"outline:item\">" << endl
 		   << "    <li>" << endl
-		   << "      <div>" << endl
-		   << "        <a>" << endl
-		   << "          <xsl:if test=\"@link\">" << endl
-		   << "            <xsl:attribute name=\"href\"><xsl:value-of select=\"@link\"/></xsl:attribute>" << endl
-		   << "          </xsl:if>" << endl
-		   << "          <xsl:if test=\"@backLink\">" << endl
-		   << "            <xsl:attribute name=\"name\"><xsl:value-of select=\"@backLink\"/></xsl:attribute>" << endl
-		   << "          </xsl:if>" << endl
-		   << "          <xsl:value-of select=\"@title\" /> " << endl
-		   << "        </a>" << endl
-		   << "        <span> <xsl:value-of select=\"@page\" /> </span>" << endl
-		   << "      </div>" << endl
+		   << "      <xsl:if test=\"@title!=''\">" << endl
+		   << "        <div>" << endl
+		   << "          <a>" << endl
+		   << "            <xsl:if test=\"@link\">" << endl
+		   << "              <xsl:attribute name=\"href\"><xsl:value-of select=\"@link\"/></xsl:attribute>" << endl
+		   << "            </xsl:if>" << endl
+		   << "            <xsl:if test=\"@backLink\">" << endl
+		   << "              <xsl:attribute name=\"name\"><xsl:value-of select=\"@backLink\"/></xsl:attribute>" << endl
+		   << "            </xsl:if>" << endl
+		   << "            <xsl:value-of select=\"@title\" /> " << endl
+		   << "          </a>" << endl
+		   << "          <span> <xsl:value-of select=\"@page\" /> </span>" << endl
+		   << "        </div>" << endl
+		   << "      </xsl:if>" << endl
 		   << "      <ul>" << endl
 		   << "        <xsl:apply-templates select=\"outline:item\"/>" << endl
 		   << "      </ul>" << endl
