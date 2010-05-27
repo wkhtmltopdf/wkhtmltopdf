@@ -85,7 +85,7 @@ wkhtmltopdf [OPTIONS]... <input file> [More input files] <output file>
 -g, --grayscale                       PDF will be generated in grayscale
 -h, --help                            Display help
     --htmldoc                         Output program html help
-    --ignore-load-errors              Ignore pages that claimes to have
+    --ignore-load-errors              Ignore pages that claim to have
                                       encountered an error during loading
 -l, --lowquality                      Generates lower quality pdf/ps. Useful to
                                       shrink the result document space
