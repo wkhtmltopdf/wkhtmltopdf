@@ -558,7 +558,7 @@ CommandLineParserPrivate::CommandLineParserPrivate(Global & s, QList<Page> & ps)
 	addarg("proxy",'p',"Use a proxy", new ProxySetter(od.proxy, "proxy"));
  	addarg("username",0,"HTTP Authentication username", new QStrSetter(od.username, "username"));
  	addarg("password",0,"HTTP Authentication password", new QStrSetter(od.password, "password"));
-	addarg("ignore-load-errors", 0, "Ignore pages that claimes to have encountered an error during loading", new ConstSetter<bool>(od.ignoreLoadErrors, true));
+	addarg("ignore-load-errors", 0, "Ignore pages that claim to have encountered an error during loading", new ConstSetter<bool>(od.ignoreLoadErrors, true));
 	addarg("no-ignore-load-errors", 0, "Do not ignore pages that claimes to have encountered an error during loading"
 , new ConstSetter<bool>(od.ignoreLoadErrors, false));
 	addarg("custom-header",0,"Set an additional HTTP header (repeatable)", new MapSetter<>(od.customHeaders, "name", "value"));
