@@ -15,7 +15,7 @@
 -release
 -static
 -fast
--no-exceptions
+-exceptions
 -no-accessibility
 -no-stl
 -no-sql-ibase
@@ -25,7 +25,7 @@
 -no-sql-sqlite
 -no-sql-sqlite2
 -no-qt3support
--no-xmlpatterns
+-xmlpatterns
 -no-phonon
 -no-phonon-backend
 -webkit
@@ -50,5 +50,7 @@
 -no-opengl
 -no-dbus
 -no-multimedia
--fast
 -openssl
+-no-audio-backend
+-no-mediaservices
+-no-media-backend
