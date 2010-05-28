@@ -165,7 +165,7 @@ int main(int argc, char * argv[]) {
 
 	//Construct QApplication required for printing
 	bool use_graphics=true;
-#ifdef Q_WS_X11
+#if defined(Q_WS_X11) || defined(Q_WS_MACX)
 #ifdef __EXTENSIVE_WKHTMLTOPDF_QT_HACK__
 	use_graphics=globalSettings.useGraphics;
 	if (!use_graphics) QApplication::setGraphicsSystem("raster");
