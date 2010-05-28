@@ -599,9 +599,9 @@ CommandLineParserPrivate::CommandLineParserPrivate(Global & s, QList<Page> & ps)
  	qthack(true);
 	addarg("enable-forms", 0, "Turn HTML form fields into pdf form fields", new ConstSetter<bool>(od.produceForms, true));
 	addarg("disable-forms", 0, "Do not turn HTML form fields into pdf form fields", new ConstSetter<bool>(od.produceForms, false));
- 	addarg("disable-internal-links",0,"Do no make local links", new ConstSetter<bool>(od.useLocalLinks, false));
+ 	addarg("disable-internal-links",0,"Do not make local links", new ConstSetter<bool>(od.useLocalLinks, false));
  	addarg("enable-internal-links",0,"Make local links", new ConstSetter<bool>(od.useLocalLinks, true));
- 	addarg("disable-external-links",0,"Do no make links to remote web pages", new ConstSetter<bool>(od.useExternalLinks, false));
+ 	addarg("disable-external-links",0,"Do not make links to remote web pages", new ConstSetter<bool>(od.useExternalLinks, false));
  	addarg("enable-external-links",0,"Make links to remote web pages", new ConstSetter<bool>(od.useExternalLinks, true));
 	
 	addarg("print-media-type",0,"Use print media-type instead of screen", new ConstSetter<bool>(od.printMediaType,true));
