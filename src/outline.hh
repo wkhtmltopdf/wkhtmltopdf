@@ -1,4 +1,4 @@
-// -*- mode: c++; tab-width: 4; indent-tabs-mode: t; eval: (progn (c-set-style "stroustrup") (c-set-offset 'innamespace 0)); -*-
+o// -*- mode: c++; tab-width: 4; indent-tabs-mode: t; eval: (progn (c-set-style "stroustrup") (c-set-offset 'innamespace 0)); -*-
 // vi:set ts=4 sts=4 sw=4 noet :
 // This file is part of wkhtmltopdf.
 //
@@ -30,9 +30,8 @@ public:
 	Outline(const settings::Global & settings);
 	~Outline();
 	void addEmptyWebPage();
-	void replaceWebPage(int d, const QString & name, QWebPrinter & wp, QWebFrame * frame, const settings::Page & ps);
+	bool replaceWebPage(int d, const QString & name, QWebPrinter & wp, QWebFrame * f, const settings::Page & ps);
 	void addWebPage(const QString & name, QWebPrinter & wp, QWebFrame * frame, const settings::Page & ps);
-
 
 	void fillHeaderFooterParms(int page, QHash<QString, QString> & parms, const settings::Page & ps);
 	void fillAnchors(int d, QHash<QString, QWebElement> & anchors);

@@ -43,6 +43,20 @@ OutlineItem::~OutlineItem() {
 		delete i;
 }
 
+bool OutlineItem::differentFrom(OutlineItem * other) const {
+	if (other->children.size() != children.size() ||
+		other->page != page ||
+		other->document != document ||
+		other->value != value ||
+		other->display != display) return true;
+	
+	for(int i=0; i < children.size(); ++i) 
+		if (children[i]->differentFrom(other->children[i])) 
+			return true;
+	return false;
+}
+
+
 /*!
   \class OutlinePrivate
   \brief Class providing implemenation details of Outline
@@ -85,8 +99,7 @@ QString escape(QString & str) {
 void OutlinePrivate::dumpChildren(QTextStream & stream, const QList<OutlineItem *> & items, int level) const {
 	foreach(OutlineItem * item, items) {
 		for(int i=0; i < level; ++i) stream << "  ";
-		stream << "<item title=\"" << escape(item->value) << "\" page=\"" << item->page << "\"";
-
+		stream << "<item title=\"" << escape(item->value) << "\" page=\"" << (item->page + prefixSum[item->document]) << "\" link=\"" << escape(item->anchor) << "\" backLink=\"" << escape(item->tocAnchor) << "\"";
 		if (item->children.empty())
 			stream << "/>" << endl;
 		else {
@@ -99,7 +112,12 @@ void OutlinePrivate::dumpChildren(QTextStream & stream, const QList<OutlineItem 
 }
 
 void Outline::dump(QTextStream & stream, const QString & xsl) const {
-	stream << "<?xml version=\"1.0\" encoding=\"UTF-8-\"?>" << endl;
+	d->prefixSum.clear();
+	d->prefixSum.push_back(0);
+	foreach(int x, d->documentPages)
+		d->prefixSum.push_back( d->prefixSum.back() + x );
+	
+	stream << "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" << endl;
 	QString x = xsl;
 	if (!x.isEmpty())
 		stream << "<?xml-stylesheet type=\"text/xsl\" href=\"" << escape(x) << "\"?>" << endl;
@@ -107,7 +125,6 @@ void Outline::dump(QTextStream & stream, const QString & xsl) const {
 	d->dumpChildren(stream, d->documentOutlines, 1);
 	stream << "</outline>" << endl;
 }
-
 
 /*!
   \file outline.hh
@@ -126,21 +143,26 @@ void Outline::dump(QTextStream & stream, const QString & xsl) const {
 Outline::Outline(const settings::Global & settings): d(new OutlinePrivate(settings)) {}
 Outline::~Outline() {delete d;}
 
+
 /*!
-  \brief Add a new webpage to the outline
+  \brief Replace a webpage in the outline
+  \param document The number of the webpage
   \param name The name of the webpage
   \param wp A webprinter for the page
   \param frame The frame containing the webpage
 */
-void Outline::addWebPage(const QString & name, QWebPrinter & wp, QWebFrame * frame, const settings::Page & ps) {
-	Q_UNUSED(name);
+bool Outline::replaceWebPage(int document, 
+							 const QString & name, 
+							 QWebPrinter & wp, 
+							 QWebFrame * frame, 
+							 const settings::Page 
+							 & ps) {
 	QMap< QPair<int, QPair<qreal,qreal> >, QWebElement> headings;
-	
 	foreach(const QWebElement & e, frame->findAllElements("h1,h2,h3,h4,h5,h6,h7,h8,h9")) {
 		QPair<int, QRectF> location = wp.elementLocation(e);
 		headings[ qMakePair(location.first, qMakePair(location.second.y(), location.second.x()) ) ] = e;
 	}
-
+	
 	//This huristic is a little strange, it tries to create a real tree,
 	//even though someone puts a h5 below a h1 or stuff like that
 	//The way this is handled is having a level stack, indicating what h-tags
@@ -148,17 +170,26 @@ void Outline::addWebPage(const QString & name, QWebPrinter & wp, QWebFrame * fra
 	QVector<uint> levelStack;
 	levelStack.push_back(0);
 	OutlineItem * root = new OutlineItem();
+	root->page = 0;
+	root->document = document;
+	root->value = name;
+	root->display = true;
+
 	OutlineItem * old = root;
-	for(QMap< QPair<int, QPair<qreal,qreal> >, QWebElement>::iterator i = headings.begin(); i != headings.end(); ++i) {
+	for(QMap< QPair<int, QPair<qreal,qreal> >, QWebElement>::iterator i = headings.begin(); 
+		i != headings.end(); ++i) {
 		const QWebElement & element = i.value();
-		
 		uint level = element.tagName().mid(1).toInt();
+		QString value = element.toPlainText().replace("\n", " ").trimmed();
+		if (i.key().first == -1 || value == "") continue;
 		OutlineItem * item = new OutlineItem();
-		item->page = d->pageCount + i.key().first;
-		item->value = element.toPlainText().replace("\n", " ").trimmed();
+		item->page = i.key().first;
+		item->document = document;
+		item->value = value;
 		item->element = element;
 		item->display = ps.includeInOutline;
 		item->anchor = QString("__WKANCHOR_")+QString::number(d->anchorCounter++,36);
+		item->tocAnchor = QString("__WKANCHOR_")+QString::number(d->anchorCounter++,36);
 		while(levelStack.back() >= level) {
 			old = old->parent;
 			levelStack.pop_back();
@@ -168,15 +199,42 @@ void Outline::addWebPage(const QString & name, QWebPrinter & wp, QWebFrame * fra
 		old = item;
 		levelStack.push_back(level);
 	}
-	d->documentOutlines.push_back(root);
-	d->pageCount += wp.pageCount();
+
+	bool changed=d->documentOutlines[document]->differentFrom(root);
+	delete d->documentOutlines[document];
+	d->documentOutlines[document] = root; 
+
+	if (d->documentPages[document] != wp.pageCount()) {
+		d->pageCount -= d->documentPages[document];
+		d->documentPages[document] = wp.pageCount();
+		d->pageCount += d->documentPages[document];
+		changed=true;
+	}
+	return changed;
+}
+
+/*!
+  \brief Add a new webpage to the outline
+  \param name The name of the webpage
+  \param wp A webprinter for the page
+  \param frame The frame containing the webpage
+*/
+void Outline::addWebPage(const QString & name, QWebPrinter & wp, QWebFrame * frame, const settings::Page & ps) {
+	Q_UNUSED(name);
+	addEmptyWebPage();
+	replaceWebPage(d->documentOutlines.size()-1, name, wp, frame, ps);
 }
 
 
 void Outline::addEmptyWebPage() {
 	OutlineItem * root = new OutlineItem();
+	root->page = 0;
+	root->document = d->documentPages.size();
+	root->value = "";
+	root->display = true;
 	d->documentOutlines.push_back(root);
 	d->pageCount += 1;
+	d->documentPages.push_back(1);
 }
 
 void OutlinePrivate::buildHFCache(OutlineItem * i, int level) {
@@ -190,7 +248,6 @@ void OutlinePrivate::buildHFCache(OutlineItem * i, int level) {
 		buildHFCache(j, level+1);
 	}
 }
-
 
 
 /*!

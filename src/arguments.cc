@@ -363,7 +363,7 @@ struct HelpFunc {
 struct DefaultTocFunc {
 	bool operator()(const char **, CommandLineParserPrivate & p, Page &) {
 		QFile file;
-		file.open(0, QIODevice::WriteOnly | QIODevice::Truncate | QIODevice::Text);
+		file.open(stdout, QIODevice::WriteOnly | QIODevice::Text);
 		QTextStream stream(&file);
 		wkhtmltopdf::dumpDefaultTOCStyleSheet(stream);
 		exit(0);

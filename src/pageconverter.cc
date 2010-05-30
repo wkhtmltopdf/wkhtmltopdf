@@ -16,17 +16,18 @@
 // along with wkhtmltopdf.  If not, see <http://www.gnu.org/licenses/>.
 #include "pageconverter_p.hh"
 #include <QAuthenticator>
+#include <QDateTime>
 #include <QDir>
 #include <QFile>
 #include <QPair>
-#include <QTimer>
 #include <QPrintEngine>
+#include <QTimer>
 #include <QWebFrame>
 #include <QWebPage>
 #include <QWebSettings>
+#include <algorithm>
 #include <qapplication.h>
 #include <qfileinfo.h>
-#include <QDateTime>
 #ifdef Q_OS_WIN32
 #include <io.h>
 #include <fcntl.h>
@@ -67,7 +68,9 @@ PageConverterPrivate::PageConverterPrivate(Global & s, PageConverter & o) :
 	settings(s), pageLoader(s),
 	outer(o), printer(0), painter(0)
 #ifdef __EXTENSIVE_WKHTMLTOPDF_QT_HACK__
-	, hfLoader(s), tocLoader(s), outline(0), tocPrinter(0)
+	, hfLoader(s), tocLoader1(s), tocLoader2(s)
+	, tocLoader(&tocLoader1), tocLoaderOld(&tocLoader2)
+	, outline(0), tocPrinter(0)
 #endif
 {
 		
@@ -93,10 +96,15 @@ PageConverterPrivate::PageConverterPrivate(Global & s, PageConverter & o) :
 	connect(&hfLoader, SIGNAL(error(QString)), this, SLOT(forwardError(QString)));
 	connect(&hfLoader, SIGNAL(warning(QString)), this, SLOT(forwardWarning(QString)));
 
-	connect(&tocLoader, SIGNAL(loadProgress(int)), this, SLOT(loadProgress(int)));
-	connect(&tocLoader, SIGNAL(loadFinished(bool)), this, SLOT(tocLoaded(bool)));
-	connect(&tocLoader, SIGNAL(error(QString)), this, SLOT(forwardError(QString)));
-	connect(&tocLoader, SIGNAL(warning(QString)), this, SLOT(forwardWarning(QString)));
+	connect(&tocLoader1, SIGNAL(loadProgress(int)), this, SLOT(loadProgress(int)));
+	connect(&tocLoader1, SIGNAL(loadFinished(bool)), this, SLOT(tocLoaded(bool)));
+	connect(&tocLoader1, SIGNAL(error(QString)), this, SLOT(forwardError(QString)));
+	connect(&tocLoader1, SIGNAL(warning(QString)), this, SLOT(forwardWarning(QString)));
+
+	connect(&tocLoader2, SIGNAL(loadProgress(int)), this, SLOT(loadProgress(int)));
+	connect(&tocLoader2, SIGNAL(loadFinished(bool)), this, SLOT(tocLoaded(bool)));
+	connect(&tocLoader2, SIGNAL(error(QString)), this, SLOT(forwardError(QString)));
+	connect(&tocLoader2, SIGNAL(warning(QString)), this, SLOT(forwardWarning(QString)));
 #endif
 }
 
@@ -147,7 +155,6 @@ void PageConverterPrivate::updateWebSettings(QWebSettings * ws, const settings::
 }
 
 void PageConverterPrivate::beginConvert() {
-	clearResources();
 	error=false;
 	progressString = "0%";
 	currentPhase=0;
@@ -275,9 +282,11 @@ void PageConverterPrivate::pagesLoaded(bool ok) {
 	painter = new QPainter();
 	
 	QString title = settings.documentTitle;
-	//if (title == "") 
-	//	title = objects[0].page->mainFrame()->title();
-	qDebug() << "FIX ME";
+	for(int d=0; d < objects.size(); ++d) {
+		if (title != "") break;
+		if (objects[d].settings.isTableOfContent) continue;
+		title = objects[d].page->mainFrame()->title();
+	}
 	printer->setDocName(title);
 	if (!painter->begin(printer)) {
 		emit outer.error("Unable to write to destination");
@@ -285,23 +294,6 @@ void PageConverterPrivate::pagesLoaded(bool ok) {
 		return;
 	}
 	
-	//Find and resolve all local links
-	currentPhase = 1;
-	emit outer.phaseChanged();
-	
-	QHash<QString, int> urlToDoc;
-	for(int d=0; d < objects.size(); ++d) {
-		if (objects[d].settings.isTableOfContent) continue;
-		urlToPageObj[ objects[d].page->mainFrame()->url().toString(QUrl::RemoveFragment) ] = &objects[d];
-	}
-
-	for(int d=0; d < objects.size(); ++d) {
-		progressString = QString("Object ")+QString::number(d+1)+QString(" of ")+QString::number(objects.size());
-		emit outer.progressChanged((d+1)*100 / objects.size());
-		if (objects[d].settings.isTableOfContent) continue;
-		findLinks(objects[d].page->mainFrame(), objects[d].localLinks, objects[d].externalLinks);
-	}
-
 	currentPhase = 2;
 	emit outer.phaseChanged();
 	outline = new Outline(settings);
@@ -317,7 +309,7 @@ void PageConverterPrivate::pagesLoaded(bool ok) {
 			outline->addEmptyWebPage();
 			continue;
 		}
-		
+			
 		int tot = objects.size();
 		progressString = QString("Object ")+QString::number(d+1)+QString(" of ")+QString::number(tot);
 		emit outer.progressChanged((d+1)*100 / tot);
@@ -368,35 +360,37 @@ void PageConverterPrivate::loadHeaders() {
 #endif	
 }
 
-TempFile tocFile;
-TempFile tocStyleFile;
 
 void PageConverterPrivate::loadTocs() {
+	std::swap(tocLoaderOld, tocLoader);
+	//tocLoader->clearResources();
+	
 #ifdef __EXTENSIVE_WKHTMLTOPDF_QT_HACK__
 	bool toc=false;
-	qDebug() << "a";
 	for(int d=0; d < objects.size(); ++d) {
 		PageObject & obj = objects[d];
 		settings::Page & ps = obj.settings;
 		if (!ps.isTableOfContent) continue;
-		QString style = "toc.xsl"; //tocStyleFile.create(".xsl");
+		obj.clear();
+
+		QString style = obj.tocStyleFile.create(".xsl");
 		StreamDumper styleDump(style);
 		dumpDefaultTOCStyleSheet(styleDump.stream);
 		
-		QString path = "toc.xml"; //tocFile.create(".xml");
+		QString path = obj.tocFile.create(".xml");
 		StreamDumper sd(path);
 		outline->dump(sd.stream, style);
-
-				
-		obj.page = tocLoader.addResource(path, ps);
+		
+		obj.page = tocLoader->addResource(path, ps);
 		PageObject::webPageToObject[obj.page] = &obj;
 		updateWebSettings(obj.page->settings(), ps);
 		toc= true;
 	}
+
 	if (toc) 
-		tocLoader.load();
-	else
-		loadHeaders();
+		tocLoader->load();
+	else 
+		tocLoaded(true);
 #endif
 }
 
@@ -546,7 +540,54 @@ void PageConverterPrivate::tocLoaded(bool ok) {
 		fail();
 		return;
 	}
-	loadHeaders();
+
+	bool changed=false;
+	pageCount = 0;
+	for(int d=0; d < objects.size(); ++d) {
+		if (!objects[d].settings.isTableOfContent) {
+			pageCount += objects[d].pageCount;
+			continue;
+		}
+			
+		//int tot = objects.size();
+		//progressString = QString("Object ")+QString::number(d+1)+QString(" of ")+QString::number(tot);
+		//emit outer.progressChanged((d+1)*100 / tot);
+
+		painter->save();
+		QWebPrinter wp(objects[d].page->mainFrame(), printer, *painter);
+		int pc = objects[d].settings.pagesCount? wp.pageCount(): 0;
+		if (pc != objects[d].pageCount) {
+			objects[d].pageCount = true;
+			changed=true;
+		}
+		pageCount += objects[d].pageCount;
+		changed = outline->replaceWebPage(d, "Table Of Content", wp, objects[d].page->mainFrame(), objects[d].settings) || changed;
+		painter->restore();
+	}
+
+	actualPages = pageCount * settings.copies;
+	if (changed)
+		loadTocs();
+	else {
+				//Find and resolve all local links
+		currentPhase = 1;
+		emit outer.phaseChanged();
+		
+		QHash<QString, int> urlToDoc;
+		for(int d=0; d < objects.size(); ++d) {
+			if (objects[d].settings.isTableOfContent) continue;
+			urlToPageObj[ objects[d].page->mainFrame()->url().toString(QUrl::RemoveFragment) ] = &objects[d];
+		}
+		
+		for(int d=0; d < objects.size(); ++d) {
+			progressString = QString("Object ")+QString::number(d+1)+QString(" of ")+QString::number(objects.size());
+			emit outer.progressChanged((d+1)*100 / objects.size());
+			findLinks(objects[d].page->mainFrame(), objects[d].localLinks, objects[d].externalLinks);
+		}
+
+
+		loadHeaders();
+	}
 }
 
 void PageConverterPrivate::headersLoaded(bool ok) {
@@ -735,41 +776,31 @@ bool PageConverterPrivate::convert() {
 	convertionDone=false;
 	beginConvert();
 	while(!convertionDone) {
-    qApp->exec();
+		qApp->exec();
 	  //qApp->processEvents(QEventLoop::WaitForMoreEvents | QEventLoop::AllEvents);
 	}
 	return !error;
 }
 
 void PageConverterPrivate::clearResources() {
+	objects.clear();
 	pageLoader.clearResources();
 #ifdef __EXTENSIVE_WKHTMLTOPDF_QT_HACK__
 	hfLoader.clearResources();
+	tocLoader1.clearResources();
+	tocLoader2.clearResources();
 
-	if (outline)
-		delete outline;
-	outline = NULL;
-
-	//if (tocPrinter)
-	//	delete tocPrinter;
-	tocPrinter = NULL;
+	if (outline) delete outline;
+	outline=0;
 	
-	//foreach (QWebPage * page, headers)
-	//	delete page;
-	//headers.clear();
-
-	//foreach (QWebPage * page, footers)
-	//	delete page;
-	//footers.clear();
+	tocPrinter = 0;
 #endif
 
-	if (printer) 
-		delete printer;
-	printer = NULL;
+	if (printer) delete printer;
+	printer = 0;
 	
-	if (painter)
-		delete painter;
-	painter = NULL;
+	if (painter) delete painter;
+	painter = 0;
 }
 
 void PageConverterPrivate::cancel() {

@@ -51,11 +51,26 @@ public:
 	QList<QWebPage *> headers;
 	QList<QWebPage *> footers;
 	int pageCount;
+	TempFile tocStyleFile;
+	TempFile tocFile;
+
+	void clear() {
+		anchors.clear();
+		localLinks.clear();
+		externalLinks.clear();
+
+		headers.clear();
+		footers.clear();
+		webPageToObject.remove(page);
+ 		page=0;
+		tocStyleFile.remove();
+		tocFile.remove();
+	}
 
 	PageObject(const settings::Page & set): settings(set), page(0) {};
 
 	~PageObject() {
-		if (page) webPageToObject.remove(page);
+		clear();
 	}
 	
 };
@@ -98,7 +113,12 @@ private:
 
 #ifdef __EXTENSIVE_WKHTMLTOPDF_QT_HACK__
 	MultiPageLoader hfLoader;
-	MultiPageLoader tocLoader;
+	MultiPageLoader tocLoader1;
+	MultiPageLoader tocLoader2;
+	
+	MultiPageLoader * tocLoader;
+	MultiPageLoader * tocLoaderOld;
+	
 
 	QHash<QString, PageObject *> urlToPageObj;
 

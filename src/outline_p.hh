@@ -25,10 +25,13 @@ public:
 	QList<OutlineItem *> children;
 	OutlineItem * parent;
 	uint page;
+	uint document;
 	QString value;
 	QWebElement element;
 	QString anchor;
+	QString tocAnchor;
 	bool display;
+	bool differentFrom(OutlineItem * other) const;
 	OutlineItem();
 	~OutlineItem();
 };
@@ -37,6 +40,8 @@ class OutlinePrivate {
 public:
 	const settings::Global & settings;
 	QList<OutlineItem *> documentOutlines;
+	QList<int> documentPages;
+	QList<int> prefixSum;
 	int pageCount;
 	int anchorCounter;
 
