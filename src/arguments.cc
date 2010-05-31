@@ -608,6 +608,10 @@ CommandLineParserPrivate::CommandLineParserPrivate(Global & s, QList<Page> & ps)
 	addarg("print-media-type",0,"Use print media-type instead of screen", new ConstSetter<bool>(od.printMediaType,true));
 	addarg("no-print-media-type",0,"Do not use print media-type instead of screen", new ConstSetter<bool>(od.printMediaType, false));
 
+	addarg("enable-toc-back-links",0,"Do not link from section header to toc", new ConstSetter<bool>(od.toc.backLinks,true));
+	addarg("disable-toc-back-links",0,"Do not link from section header to toc", new ConstSetter<bool>(od.toc.backLinks,true));
+
+
 // 	addarg("page-offset",0,"Set the starting page number", new IntSetter(s.pageOffset,"offset",1));
 
  	addarg("disable-smart-shrinking", 0, "Disable the intelligent shrinking strategy used by WebKit that makes the pixel/dpi ratio none constant",new ConstSetter<bool>(od.enableIntelligentShrinking, false));
@@ -649,7 +653,6 @@ CommandLineParserPrivate::CommandLineParserPrivate(Global & s, QList<Page> & ps)
 
 	addarg("toc-header-text",0,"The header text of the toc", new QStrSetter(od.toc.captionText, "text"));
 	addarg("disable-toc-links",0,"Do not link from toc to sections", new ConstSetter<bool>(od.toc.forwardLinks, false));
-	addarg("enable-toc-back-links",0,"Do not link from section header to toc", new ConstSetter<bool>(od.toc.backLinks,true));
 	addarg("disable-dotted-lines",0,"Do not use dottet lines in the toc", new ConstSetter<bool>(od.toc.useDottedLines,false));
 	addarg("toc-text-size-shrink",0,"For each level of headings in the toc the font is scaled by this facter", new FloatSetter(od.toc.fontScale, "real"));
 	addarg("toc-level-indentation",0,"For each level of headings in the toc indent by this length", new QStrSetter(od.toc.indentation, "width"));

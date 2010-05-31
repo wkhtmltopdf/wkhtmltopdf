@@ -42,6 +42,8 @@ public:
 	QList<OutlineItem *> documentOutlines;
 	QList<int> documentPages;
 	QList<int> prefixSum;
+	QList<QHash<QString, QString> > linkNames;
+	QList<QHash<QString, QString> > backLinkNames;
 	int pageCount;
 	int anchorCounter;
 

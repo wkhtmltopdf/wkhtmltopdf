@@ -155,8 +155,9 @@ bool Outline::replaceWebPage(int document,
 							 const QString & name, 
 							 QWebPrinter & wp, 
 							 QWebFrame * frame, 
-							 const settings::Page 
-							 & ps) {
+							 const settings::Page & ps, 
+							 QVector<QPair<QWebElement, QString> > & local, 
+							 QHash<QString, QWebElement> & anchors) {
 	QMap< QPair<int, QPair<qreal,qreal> >, QWebElement> headings;
 	foreach(const QWebElement & e, frame->findAllElements("h1,h2,h3,h4,h5,h6,h7,h8,h9")) {
 		QPair<int, QRectF> location = wp.elementLocation(e);
@@ -188,8 +189,20 @@ bool Outline::replaceWebPage(int document,
 		item->value = value;
 		item->element = element;
 		item->display = ps.includeInOutline;
-		item->anchor = QString("__WKANCHOR_")+QString::number(d->anchorCounter++,36);
-		item->tocAnchor = QString("__WKANCHOR_")+QString::number(d->anchorCounter++,36);
+
+		if (!d->linkNames[document].contains(value))
+			d->linkNames[document][value] = QString("__WKANCHOR_")+QString::number(d->anchorCounter++,36);
+		
+		if (!d->backLinkNames[document].contains(value))
+			d->backLinkNames[document][value] = QString("__WKANCHOR_")+QString::number(d->anchorCounter++,36);
+
+		item->anchor = d->linkNames[document][value];
+		item->tocAnchor = d->backLinkNames[document][value];
+		if (ps.toc.forwardLinks)
+			anchors[item->anchor] = element;
+		if (ps.toc.backLinks) 
+			local.push_back( QPair<QWebElement, QString>(element, item->tocAnchor) );
+
 		while(levelStack.back() >= level) {
 			old = old->parent;
 			levelStack.pop_back();
@@ -219,10 +232,12 @@ bool Outline::replaceWebPage(int document,
   \param wp A webprinter for the page
   \param frame The frame containing the webpage
 */
-void Outline::addWebPage(const QString & name, QWebPrinter & wp, QWebFrame * frame, const settings::Page & ps) {
+void Outline::addWebPage(const QString & name, QWebPrinter & wp, QWebFrame * frame, const settings::Page & ps,
+						 QVector<QPair<QWebElement, QString> > & local, 
+						 QHash<QString, QWebElement> & anchors) {
 	Q_UNUSED(name);
 	addEmptyWebPage();
-	replaceWebPage(d->documentOutlines.size()-1, name, wp, frame, ps);
+	replaceWebPage(d->documentOutlines.size()-1, name, wp, frame, ps, local, anchors);
 }
 
 
@@ -235,6 +250,9 @@ void Outline::addEmptyWebPage() {
 	d->documentOutlines.push_back(root);
 	d->pageCount += 1;
 	d->documentPages.push_back(1);
+
+	d->linkNames.push_back( QHash<QString, QString>() );
+	d->backLinkNames.push_back( QHash<QString, QString>() );
 }
 
 void OutlinePrivate::buildHFCache(OutlineItem * i, int level) {

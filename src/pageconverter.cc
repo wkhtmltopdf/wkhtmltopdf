@@ -319,7 +319,7 @@ void PageConverterPrivate::pagesLoaded(bool ok) {
 		objects[d].pageCount = objects[d].settings.pagesCount? wp.pageCount(): 0;
 		pageCount += objects[d].pageCount;
 		
-		outline->addWebPage("", wp, objects[d].page->mainFrame(), objects[d].settings );
+		outline->addWebPage("", wp, objects[d].page->mainFrame(), objects[d].settings, objects[d].localLinks, objects[d].anchors );
 		painter->restore();
 	}
 
@@ -395,7 +395,7 @@ void PageConverterPrivate::loadTocs() {
 }
 
 #ifdef __EXTENSIVE_WKHTMLTOPDF_QT_HACK__
-void PageConverterPrivate::findLinks(QWebFrame * frame, QVector<QPair<QWebElement, QString> > & local, QVector<QPair<QWebElement, QString> > & external) {
+void PageConverterPrivate::findLinks(QWebFrame * frame, QVector<QPair<QWebElement, QString> > & local, QVector<QPair<QWebElement, QString> > & external, QHash<QString, QWebElement> & anchors) {
 	bool ulocal=true, uexternal=true;
 	if (PageObject::webPageToObject.contains(frame->page())) {
 		ulocal = PageObject::webPageToObject[frame->page()]->settings.useLocalLinks;
@@ -403,29 +403,37 @@ void PageConverterPrivate::findLinks(QWebFrame * frame, QVector<QPair<QWebElemen
 	}
 	if (!ulocal && !uexternal) return;
 	foreach (const QWebElement & elm, frame->findAllElements("a")) {
-		QUrl href=QUrl(elm.attribute("href"));
-		if (href.isEmpty()) continue;
-		href=frame->url().resolved(href);
-		if (urlToPageObj.contains(href.toString(QUrl::RemoveFragment))) {
-			if (ulocal) {
-				PageObject * p = urlToPageObj[href.toString(QUrl::RemoveFragment)];
-				QWebElement e;
-				if (!href.hasFragment()) 
-					e = p->page->mainFrame()->findFirstElement("body");
-				else {
-					e = p->page->mainFrame()->findFirstElement("a[name=\""+href.fragment()+"\"]");
-					if(e.isNull()) 
-						e = p->page->mainFrame()->findFirstElement("*[id=\""+href.fragment()+"\"]");
+		QString n=elm.attribute("name");
+		if (n.startsWith("__WKANCHOR_")) anchors[n] = elm;
+
+		QString h=elm.attribute("href");
+		if (h.startsWith("__WKANCHOR_")) {
+			local.push_back( qMakePair(elm, h) );
+		} else {
+			QUrl href(h);
+			if (href.isEmpty()) continue;
+			href=frame->url().resolved(href);
+			if (urlToPageObj.contains(href.toString(QUrl::RemoveFragment))) {
+				if (ulocal) {
+					PageObject * p = urlToPageObj[href.toString(QUrl::RemoveFragment)];
+					QWebElement e;
+					if (!href.hasFragment()) 
+						e = p->page->mainFrame()->findFirstElement("body");
+					else {
+						e = p->page->mainFrame()->findFirstElement("a[name=\""+href.fragment()+"\"]");
+						if(e.isNull()) 
+							e = p->page->mainFrame()->findFirstElement("*[id=\""+href.fragment()+"\"]");
+					}
+					if (e.isNull())
+						qDebug() << "Unable to find target for local link " << href; 
+					else {
+						p->anchors[href.toString()] = e;
+						local.push_back( qMakePair(elm, href.toString()) );
+					}
 				}
-				if (e.isNull())
-					qDebug() << "Unable to find target for local link " << href; 
-				else {
-					p->anchors[href.toString()] = e;
-					local.push_back( qMakePair(elm, href.toString()) );
-				}
-			}
-		} else if (uexternal)
-			external.push_back( qMakePair(elm, href.toString() ) );
+			} else if (uexternal)
+				external.push_back( qMakePair(elm, href.toString() ) );
+		}
 	}
 }
 
@@ -496,7 +504,8 @@ void PageConverterPrivate::endPage(PageObject & object, bool hasHeaderFooter, in
 		painter->translate(0,-wp.elementLocation(header->mainFrame()->findFirstElement("body")).second.height());
 		QVector<p_t> local;
 		QVector<p_t> external;
-		findLinks(header->mainFrame(), local, external);
+		QHash<QString, QWebElement> anchors;
+		findLinks(header->mainFrame(), local, external, anchors);
 		foreach(const p_t & p, local) {
 			QRectF r = wp.elementLocation(p.first).second;
 			painter->addLink(r, p.second);
@@ -519,7 +528,8 @@ void PageConverterPrivate::endPage(PageObject & object, bool hasHeaderFooter, in
 		
 		QVector<p_t> local;
 		QVector<p_t> external;
-		findLinks(footer->mainFrame(), local, external);
+		QHash<QString, QWebElement> anchors;
+		findLinks(footer->mainFrame(), local, external, anchors);
 		foreach(const p_t & p, local) {
 			QRectF r = wp.elementLocation(p.first).second;
 			painter->addLink(r, p.second);
@@ -561,7 +571,7 @@ void PageConverterPrivate::tocLoaded(bool ok) {
 			changed=true;
 		}
 		pageCount += objects[d].pageCount;
-		changed = outline->replaceWebPage(d, "Table Of Content", wp, objects[d].page->mainFrame(), objects[d].settings) || changed;
+		changed = outline->replaceWebPage(d, objects[d].settings.toc.captionText, wp, objects[d].page->mainFrame(), objects[d].settings, objects[d].localLinks, objects[d].anchors) || changed;
 		painter->restore();
 	}
 
@@ -582,7 +592,7 @@ void PageConverterPrivate::tocLoaded(bool ok) {
 		for(int d=0; d < objects.size(); ++d) {
 			progressString = QString("Object ")+QString::number(d+1)+QString(" of ")+QString::number(objects.size());
 			emit outer.progressChanged((d+1)*100 / objects.size());
-			findLinks(objects[d].page->mainFrame(), objects[d].localLinks, objects[d].externalLinks);
+			findLinks(objects[d].page->mainFrame(), objects[d].localLinks, objects[d].externalLinks, objects[d].anchors );
 		}
 
 

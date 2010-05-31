@@ -30,8 +30,8 @@ public:
 	Outline(const settings::Global & settings);
 	~Outline();
 	void addEmptyWebPage();
-	bool replaceWebPage(int d, const QString & name, QWebPrinter & wp, QWebFrame * f, const settings::Page & ps);
-	void addWebPage(const QString & name, QWebPrinter & wp, QWebFrame * frame, const settings::Page & ps);
+	bool replaceWebPage(int d, const QString & name, QWebPrinter & wp, QWebFrame * f, const settings::Page & ps, QVector<QPair<QWebElement, QString> > & local, QHash<QString, QWebElement> & anchors);
+	void addWebPage(const QString & name, QWebPrinter & wp, QWebFrame * frame, const settings::Page & ps, QVector<QPair<QWebElement, QString> > & local, QHash<QString, QWebElement> & external);
 
 	void fillHeaderFooterParms(int page, QHash<QString, QString> & parms, const settings::Page & ps);
 	void fillAnchors(int d, QHash<QString, QWebElement> & anchors);
