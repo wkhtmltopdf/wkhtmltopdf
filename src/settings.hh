@@ -69,6 +69,22 @@ struct Size {
 	UnitReal width;
 };
 
+/*! \brief Settings considdirng the table of content */
+struct TableOfContent {
+	TableOfContent();
+	//! Should we print dots between the name and the page number?
+	bool useDottedLines;
+	//! Name af the TOC
+	QString captionText;
+	//! Link from TOC to section headers
+	bool forwardLinks;
+	//! Link from section headers to TOC
+	bool backLinks;
+	//! How fare should we indent on every level
+	QString indentation;
+	//! Factor we should scale the font with on every level
+	float fontScale;
+};
 
 /*! \brief Class holding all user setting.
 
@@ -78,32 +94,6 @@ struct Size {
 */
 struct Global {
 	Global();
-
-	/*! \brief Settings considdirng the table of content */
-// 	struct TOCSettings {
-// 		TOCSettings();
-// 		static const uint levels = 7;
-// 		//! Should we print dots between the name and the page number?
-// 		bool useDots;
-// 		//! Maximal depth used in the table of content
-// 		int depth;
-// 		//! Font used for printing the TOC
-// 		QString fontName;
-// 		//! Font used for printing the TOC caption
-// 		QString captionFontName;
-// 		//! Indentation used on a given level
-// 		int indentation[levels];
-// 		//! Font size used on a given level
-// 		int fontSize[levels];
-// 		//! Font size used for print the TOC caption
-// 		int captionFontSize;
-// 		//! Name af the TOC
-// 		QString captionText;
-// 		//! Link from TOC to section headers
-// 		bool forwardLinks;
-// 		//! Link from section headers to TOC
-// 		bool backLinks;
-// 	};
 
 	//! Size related settings
 	Size size;
@@ -183,10 +173,7 @@ struct HeaderFooter {
 struct Page {
 	Page();
 	//! Settings regarding the TOC
-	//TOCSettings toc;
-	
-	//! Should we print a table of content
-	//bool printToc;
+	TableOfContent toc;
 	
 	QString page;
 	

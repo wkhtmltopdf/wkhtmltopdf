@@ -19,7 +19,7 @@
 
 namespace wkhtmltopdf {
 
-void dumpDefaultTOCStyleSheet(QTextStream & stream) {
+void dumpDefaultTOCStyleSheet(QTextStream & stream, settings::TableOfContent & s) {
     stream << "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" << endl
 		   << "<xsl:stylesheet version=\"1.0\"" << endl
 		   << "	               xmlns:xsl=\"http://www.w3.org/1999/XSL/Transform\"" << endl
@@ -31,28 +31,29 @@ void dumpDefaultTOCStyleSheet(QTextStream & stream) {
 		   << "  <xsl:template match=\"outline:outline\">" << endl
 		   << "    <html>" << endl
 		   << "      <head>" << endl
-		   << "        <title><xsl:value-of select=\"@title\" /></title>" << endl
+		   << "        <title>" << s.captionText << "</title>" << endl
 		   << "        <style>" << endl
 		   << "          h1 {" << endl
 		   << "            text-align: center;" << endl
 		   << "            font-size: 20px;" << endl
 		   << "            font-family: ariel;" << endl
-		   << "          }" << endl
-		   << "          div {border-bottom: 1px dashed rgb(200,200,200);}" << endl
-		   << "          span {float: right;}" << endl
+		   << "          }" << endl;
+	if (s.useDottedLines)
+		stream << "          div {border-bottom: 1px dashed rgb(200,200,200);}" << endl;
+	stream << "          span {float: right;}" << endl
 		   << "          li {list-style: none;}" << endl
 		   << "          ul {" << endl
 		   << "            font-size: 20px;" << endl
 		   << "            font-family: ariel;" << endl
 		   << "          }" << endl
-		   << "          ul ul {font-size: 80%; }" << endl
+		   << "          ul ul {font-size: " << (s.fontScale*100.0) << "%; }" << endl
 		   << "          ul {padding-left: 0em;}" << endl
-		   << "          ul ul {padding-left: 1em;}" << endl
+		   << "          ul ul {padding-left: " << s.indentation << ";}" << endl
 		   << "          a {text-decoration:none; color: black;}" << endl
 		   << "        </style>" << endl
 		   << "      </head>" << endl
 		   << "      <body>" << endl
-		   << "        <h1>Table of Content</h1>" << endl
+		   << "        <h1>" << s.captionText << "</h1>" << endl
 		   << "        <ul><xsl:apply-templates select=\"outline:item/outline:item\"/></ul>" << endl
 		   << "      </body>" << endl
 		   << "    </html>" << endl
@@ -61,11 +62,12 @@ void dumpDefaultTOCStyleSheet(QTextStream & stream) {
 		   << "    <li>" << endl
 		   << "      <xsl:if test=\"@title!=''\">" << endl
 		   << "        <div>" << endl
-		   << "          <a>" << endl
-		   << "            <xsl:if test=\"@link\">" << endl
-		   << "              <xsl:attribute name=\"href\"><xsl:value-of select=\"@link\"/></xsl:attribute>" << endl
-		   << "            </xsl:if>" << endl
-		   << "            <xsl:if test=\"@backLink\">" << endl
+		   << "          <a>" << endl;
+	if (s.forwardLinks)
+		stream << "            <xsl:if test=\"@link\">" << endl
+			   << "              <xsl:attribute name=\"href\"><xsl:value-of select=\"@link\"/></xsl:attribute>" << endl
+			   << "            </xsl:if>" << endl;	
+	stream << "            <xsl:if test=\"@backLink\">" << endl
 		   << "              <xsl:attribute name=\"name\"><xsl:value-of select=\"@backLink\"/></xsl:attribute>" << endl
 		   << "            </xsl:if>" << endl
 		   << "            <xsl:value-of select=\"@title\" /> " << endl

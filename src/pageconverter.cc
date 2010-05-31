@@ -375,7 +375,7 @@ void PageConverterPrivate::loadTocs() {
 
 		QString style = obj.tocStyleFile.create(".xsl");
 		StreamDumper styleDump(style);
-		dumpDefaultTOCStyleSheet(styleDump.stream);
+		dumpDefaultTOCStyleSheet(styleDump.stream, ps.toc);
 		
 		QString path = obj.tocFile.create(".xml");
 		StreamDumper sd(path);

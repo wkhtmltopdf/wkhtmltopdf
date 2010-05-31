@@ -262,6 +262,15 @@ Global::Global():
 	documentTitle(""),
 	useCompression(true) {};
 
+TableOfContent::TableOfContent():
+	useDottedLines(true),
+	captionText("Table of Content"),
+	forwardLinks(true),
+	backLinks(false),
+	indentation("1em"),
+	fontScale(0.8)
+{}
+
 Page::Page():
 	background(true),
 	useExternalLinks(true),
