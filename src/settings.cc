@@ -273,6 +273,7 @@ TableOfContent::TableOfContent():
 
 Page::Page():
 	background(true),
+	loadImages(true),
 	useExternalLinks(true),
 	useLocalLinks(true),
 	enableJavascript(true),

@@ -148,6 +148,7 @@ void PageConverterPrivate::updateWebSettings(QWebSettings * ws, const settings::
 #if QT_VERSION >= 0x040500
 	//Newer vertions of QT have even more settings to change
 	ws->setAttribute(QWebSettings::PrintElementBackgrounds, s.background);
+	ws->setAttribute(QWebSettings::AutoLoadImages, s.loadImages);
 	ws->setAttribute(QWebSettings::PluginsEnabled, s.enablePlugins);
 	if (!s.userStyleSheet.isEmpty())
 		ws->setUserStyleSheetUrl(MultiPageLoader::guessUrlFromString(s.userStyleSheet));

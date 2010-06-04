@@ -192,6 +192,9 @@ struct Page {
 	//! Should we print background images
 	bool background;
 	
+	//! Should we load images all
+	bool loadImages;
+	
 	//! Should external links be links in the PDF
 	bool useExternalLinks;
 	
