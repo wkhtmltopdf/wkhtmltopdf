@@ -585,7 +585,7 @@ CommandLineParserPrivate::CommandLineParserPrivate(Global & s, QList<Page> & ps)
 
 #if QT_VERSION >= 0x040500 //Not printing the background was added in QT4.5
  	addarg("no-background",0,"Do not print background", new ConstSetter<bool>(od.background, false));
- 	addarg("background",0,"Do not print background", new ConstSetter<bool>(od.background, true));
+ 	addarg("background",0,"Do print background", new ConstSetter<bool>(od.background, true));
  	addarg("user-style-sheet",0,"Specify a user style sheet, to load with every page", new QStrSetter(od.userStyleSheet,"url"));
 #endif
    	
@@ -595,6 +595,7 @@ CommandLineParserPrivate::CommandLineParserPrivate(Global & s, QList<Page> & ps)
  	addarg("stop-slow-scripts", 0, "Stop slow running javascripts", new ConstSetter<bool>(od.stopSlowScripts, true));
  	addarg("no-stop-slow-scripts", 0, "Do not Stop slow running javascripts", new ConstSetter<bool>(od.stopSlowScripts, true));
  	addarg("no-images",0,"Do not load or print images", new ConstSetter<bool>(od.loadImages, false));
+ 	addarg("images",0,"Do load or print images", new ConstSetter<bool>(od.loadImages, true));
 #endif	
 
  	extended(true);
