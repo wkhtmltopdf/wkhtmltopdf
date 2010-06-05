@@ -192,7 +192,7 @@ struct Page {
 	//! Should we print background images
 	bool background;
 	
-	//! Should we load images all
+	//! Should we load images
 	bool loadImages;
 	
 	//! Should external links be links in the PDF
@@ -201,28 +201,28 @@ struct Page {
 	//! Should internal links be links in the PDF
 	bool useLocalLinks;
 	
-	//! Should we enable Java Script
+	//! Should we enable Javascript
 	bool enableJavascript; 
 	
-	//! Should the horrible intelligent shrking feature be enabled?
+	//! Should the horrible intelligent shrinking feature be enabled?
 	bool enableIntelligentShrinking;
 	
-	//! How many milliseconds should we wait for a javascrit redirect
+	//! How many milliseconds should we wait for a Javascript redirect
 	int jsdelay;
 	
-	//! What zoom fator should we apply when printing
+	//! What zoom factor should we apply when printing
 	float zoomFactor;
 	
 	//! Minimum font size
 	int minimumFontSize;
 	
-	//! Should we used the print or the screen mediatype
+	//! Should we use the print or the screen media type
 	bool printMediaType;
 	
 	//! Encoding used to enterpit a document with do supplied encoding
 	QString defaultEncoding;
 	
-	//! Map of custum header valiabels
+	//! Map of custum header variables
 	QList< QPair<QString, QString> > customHeaders;
 	
 	//! Set if the custom header should be repeated for each resource request
@@ -239,16 +239,16 @@ struct Page {
 	//! Block access to local files for the given page
 	bool blockLocalFileAccess;
 	
-	//! If access to local files is not allowed in general, alow it for these files
+	//! If access to local files is not allowed in general, allow it for these files
 	QList< QString > allowed;
 	
-	//! Stop javascript from running too long
+	//! Stop Javascript from running too long
 	bool stopSlowScripts;		
 	
-	//! Output javascript debug messages
+	//! Output Javascript debug messages
 	bool debugJavascript;
 	
-	//! Convert forms on the pages into pdf forms
+	//! Convert forms on the pages into PDF forms
 	bool produceForms;
 	
 	//! If loading of the page fails continue as if nothing happened
