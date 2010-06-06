@@ -225,7 +225,7 @@ void PageConverterPrivate::pagesLoaded(bool ok) {
  			lout = "/dev/stdout";
 		 else
 #endif
-			 lout = tempOut.create(".pdf");
+			 lout = tempOut.create(settings.outputFormat == "ps"?".ps":".pdf");
 	}
 
 	printer = new QPrinter(settings.resolution);
