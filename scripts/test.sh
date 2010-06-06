@@ -66,7 +66,7 @@ function testLocalFile() {
 function testUserStyleSheet() {
     echo "<html><head><title>Local Test</title></head><body><p>.</p></body></html>" > tmp.html
     echo "p:before {content: \"Hello \"}" > tmp.css
-    wk tmp.html tmp.pdf --user-style-sheet tmp.css 2>$LEVEL2 >$LEVEL1
+    wk tmp.html --user-style-sheet tmp.css tmp.pdf 2>$LEVEL2 >$LEVEL1
     ([ -f tmp.pdf ] && pdftotext tmp.pdf /dev/stdout | grep -q Hello) && good $1 || bad $1 false
 }
 
@@ -95,7 +95,7 @@ function testSSL() {
 
 function testHeaderFooter() {
     echo "<html><head><title>Local Test</title></head><body><h1>monster</h1></body></html>" > tmp.html
-    wk tmp.html tmp.pdf --footer-left hat --header-right emacs 2>$LEVEL2 >$LEVEL1
+    wk tmp.html --footer-left hat --header-right emacs tmp.pdf 2>$LEVEL2 >$LEVEL1
     ([ -f tmp.pdf ] && 
 	pdftotext tmp.pdf /dev/stdout | grep -q monster &&
 	pdftotext tmp.pdf /dev/stdout | grep -q emacs &&
