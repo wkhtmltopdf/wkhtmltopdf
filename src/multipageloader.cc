@@ -104,13 +104,13 @@ bool MyQWebPage::shouldInterruptJavaScript() {
 
 ResourceObject::ResourceObject(MultiPageLoaderPrivate & mpl, const QUrl & u, const settings::Page & s): 
 	networkAccessManager(s),
-	webPage(*this),
 	url(u),
 	loginTry(0), 
 	progress(0), 
 	finished(false),
 	signalPrint(false),
 	multiPageLoader(mpl), 
+	webPage(*this),
 	httpErrorCode(false),
 	settings(s) {
 	

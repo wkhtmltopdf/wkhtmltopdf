@@ -161,7 +161,7 @@ void PageConverterPrivate::beginConvert() {
 	currentPhase=0;
 	
 #ifndef __EXTENSIVE_WKHTMLTOPDF_QT_HACK__	
-	if (pages.size() > 1) {
+	if (objects.size() > 1) {
 		emit outer.error("This version of wkhtmltopdf is build against an unpatched version of QT, and does not support more then one input document.");
 		fail();
 		return;
@@ -261,8 +261,6 @@ void PageConverterPrivate::pagesLoaded(bool ok) {
 	printer->setOrientation(settings.orientation);
 	printer->setColorMode(settings.colorMode);
 
-	printer->printEngine()->setProperty(QPrintEngine::PKK_UseCompression, settings.useCompression);
-
 	if (!printer->isValid()) {
 		emit outer.error("Unable to write to destination");
 		fail();
@@ -273,10 +271,8 @@ void PageConverterPrivate::pagesLoaded(bool ok) {
 	//If you do not have the hacks you get this crappy solution
 	printer->setCollateCopies(settings.copies);
 	printer->setCollateCopies(settings.collate);
-	
-	printPage();
-	
-	printPage(true);
+
+	printDocument();
 #else
 	printer->printEngine()->setProperty(QPrintEngine::PKK_UseCompression, settings.useCompression);
 
@@ -363,10 +359,10 @@ void PageConverterPrivate::loadHeaders() {
 
 
 void PageConverterPrivate::loadTocs() {
+#ifdef __EXTENSIVE_WKHTMLTOPDF_QT_HACK__
 	std::swap(tocLoaderOld, tocLoader);
 	//tocLoader->clearResources();
 	
-#ifdef __EXTENSIVE_WKHTMLTOPDF_QT_HACK__
 	bool toc=false;
 	for(int d=0; d < objects.size(); ++d) {
 		PageObject & obj = objects[d];
@@ -551,7 +547,7 @@ void PageConverterPrivate::tocLoaded(bool ok) {
 		fail();
 		return;
 	}
-
+#ifdef __EXTENSIVE_WKHTMLTOPDF_QT_HACK__
 	bool changed=false;
 	pageCount = 0;
 	for(int d=0; d < objects.size(); ++d) {
@@ -599,6 +595,7 @@ void PageConverterPrivate::tocLoaded(bool ok) {
 
 		loadHeaders();
 	}
+#endif
 }
 
 void PageConverterPrivate::headersLoaded(bool ok) {
@@ -614,7 +611,7 @@ void PageConverterPrivate::printDocument() {
 #ifndef __EXTENSIVE_WKHTMLTOPDF_QT_HACK__
 	currentPhase = 1;
 	emit outer.phaseChanged();
-	pages[0]->mainFrame()->print(printer);
+	objects[0].page->mainFrame()->print(printer);
 	progressString = "";
 	emit outer.progressChanged(-1);
 #else

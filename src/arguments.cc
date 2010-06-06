@@ -361,7 +361,7 @@ struct HelpFunc {
 
 
 struct DefaultTocFunc {
-	bool operator()(const char **, CommandLineParserPrivate & p, Page &) {
+	bool operator()(const char **, CommandLineParserPrivate &, Page &) {
 		QFile file;
 		file.open(stdout, QIODevice::WriteOnly | QIODevice::Text);
 		QTextStream stream(&file);
@@ -419,7 +419,7 @@ struct DefaultHeaderFunc {
   Setup default book mode
 */
 struct BookFunc {
-	bool operator()(const char **, CommandLineParserPrivate & p) {
+	bool operator()(const char **, CommandLineParserPrivate &) {
 		//p.settings.header.left="[section]";
 		//p.settings.header.right="[page]/[toPage]";
 		//p.settings.header.line=true;

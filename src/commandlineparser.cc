@@ -267,7 +267,7 @@ void CommandLineParserPrivate::parseArg(int sections, const int argc, const char
 		}
 #ifndef __EXTENSIVE_WKHTMLTOPDF_QT_HACK__
 		if (j.value()->qthack)
-			fprintf(stderr, "The switch %s, is not support using unpatched qt, and will be ignored.", argv[i]);
+			fprintf(stderr, "The switch %s, is not support using unpatched qt, and will be ignored.", argv[arg]);
 #endif
 		//Skip allredy handled switch arguments
 		arg += j.value()->argn.size();

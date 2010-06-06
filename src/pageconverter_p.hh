@@ -43,9 +43,11 @@ public:
 	settings::Page settings;
 	QWebPage * page;
 
+#ifdef __EXTENSIVE_WKHTMLTOPDF_QT_HACK__
 	QHash<QString, QWebElement> anchors;
 	QVector< QPair<QWebElement,QString> > localLinks;
 	QVector< QPair<QWebElement,QString> > externalLinks;
+#endif
 
 	int firstPageNumber;
 	QList<QWebPage *> headers;
@@ -55,10 +57,11 @@ public:
 	TempFile tocFile;
 
 	void clear() {
+#ifdef __EXTENSIVE_WKHTMLTOPDF_QT_HACK__
 		anchors.clear();
 		localLinks.clear();
 		externalLinks.clear();
-
+#endif
 		headers.clear();
 		footers.clear();
 		webPageToObject.remove(page);

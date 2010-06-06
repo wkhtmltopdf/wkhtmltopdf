@@ -63,7 +63,7 @@ function testLocalFile() {
     ([ -f tmp.pdf ] && pdftotext tmp.pdf /dev/stdout | grep -q Hello) && good $1 || bad $1
 }
 
-function testUserStyleSheet {
+function testUserStyleSheet() {
     echo "<html><head><title>Local Test</title></head><body><p>.</p></body></html>" > tmp.html
     echo "p:before {content: \"Hello \"}" > tmp.css
     wk tmp.html tmp.pdf --user-style-sheet tmp.css 2>$LEVEL2 >$LEVEL1
@@ -104,17 +104,16 @@ function testHeaderFooter() {
 
 function testToc() {
     echo "<html><head></head><body><h1>foo</h1><h2>bar</h2><h3>baz</h3></body>" > tmp.html
-    wk tmp.html tmp.pdf --toc --toc-depth 2 2>$LEVEL2 >$LEVEL1
+    wk toc tmp.html tmp.pdf 2>$LEVEL2 >$LEVEL1
     ([ -f tmp.pdf ] && 
 	[ "$(pdftotext tmp.pdf /dev/stdout | grep -c foo)" == 2 ] &&
-	[ "$(pdftotext tmp.pdf /dev/stdout | grep -c bar)" == 2 ] &&
-	[ "$(pdftotext tmp.pdf /dev/stdout | grep -c baz)" == 1 ]) && good $1 || bad $1
+	[ "$(pdftotext tmp.pdf /dev/stdout | grep -c bar)" == 2 ]) && good $1 || bad $1
 }
 
 
 function testOutline() {
     echo "<html><head></head><body><h1>foo</h1><h2>bar</h2><h3>baz</h3></body>" > tmp.html
-    wk tmp.html tmp.pdf --outline --outline-depth 2 2>$LEVEL2 >$LEVEL1
+    wk --outline --outline-depth 2 tmp.html tmp.pdf 2>$LEVEL2 >$LEVEL1
     ([ -f tmp.pdf ] && 
 	cat tmp.pdf | grep -q ".f.o.o" &&
 	cat tmp.pdf | grep -q ".b.a.r" &&
@@ -183,7 +182,7 @@ function testCookies() {
 
 function testTitle() {
     title="\()fooæøåおさか おかみ"
-    wk http://google.com --title "$title" tmp.pdf 2>$LEVEL2 >$LEVEL1
+    wk  --title "$title" http://google.com tmp.pdf 2>$LEVEL2 >$LEVEL1
     ([ -f tmp.pdf ] && [[ "$(pdfinfo tmp.pdf  | sed -nre 's/Title:[\t ]*//p')" == "$title" ]]) && good $1 || bad $1
 }
 
