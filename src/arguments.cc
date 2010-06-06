@@ -518,6 +518,8 @@ CommandLineParserPrivate::CommandLineParserPrivate(Global & s, QList<Page> & ps)
 
 	extended(true);
  	qthack(false);
+	addarg("output-format",0, "Specify an output format to use pdf or ps, instead of looking at the extention of the output filename", new QStrSetter(s.outputFormat, "format"));
+
 	addarg("margin-bottom",'B',"Set the page bottom margin", new UnitRealSetter(s.margin.bottom,"unitreal"));
  	addarg("margin-left",'L',"Set the page left margin", new UnitRealSetter(s.margin.left,"unitreal"));
  	addarg("margin-right",'R',"Set the page right margin", new UnitRealSetter(s.margin.right,"unitreal"));

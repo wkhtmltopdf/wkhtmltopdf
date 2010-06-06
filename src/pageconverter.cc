@@ -231,8 +231,9 @@ void PageConverterPrivate::pagesLoaded(bool ok) {
 	printer = new QPrinter(settings.resolution);
 	if (settings.dpi != -1) printer->setResolution(settings.dpi);
 	//Tell the printer object to print the file <out>
+	
 	printer->setOutputFormat(
-		settings.out.endsWith(".ps", Qt::CaseInsensitive)?
+		(settings.outputFormat == "ps" || (settings.outputFormat == "" && settings.out.endsWith(".ps", Qt::CaseInsensitive)))?
 	    QPrinter::PostScriptFormat : QPrinter::PdfFormat
 		);
 	printer->setOutputFileName(lout);

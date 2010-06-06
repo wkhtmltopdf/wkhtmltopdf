@@ -146,6 +146,9 @@ struct Global {
 
 	//! Margin related settings
 	Margin margin;	
+
+	//! Specify the output format we should use
+	QString outputFormat;
 };
 
 /*! \brief Settings considering headers and footers */
