@@ -98,15 +98,13 @@ private:
 	TempFile tempOut;
 	bool error;
 
-
+	int errorCode;
 	QList<PageObject> objects;
 
 	QPrinter * printer;
 	QPainter * painter;
 	QString lout;
 
-	//int logicalPages;
-	//int logicalPage;
 	int actualPages;
 	int pageCount;
 

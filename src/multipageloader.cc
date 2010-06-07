@@ -111,7 +111,7 @@ ResourceObject::ResourceObject(MultiPageLoaderPrivate & mpl, const QUrl & u, con
 	signalPrint(false),
 	multiPageLoader(mpl), 
 	webPage(*this),
-	httpErrorCode(false),
+	httpErrorCode(0),
 	settings(s) {
 	
 	connect(&networkAccessManager, SIGNAL(authenticationRequired(QNetworkReply*, QAuthenticator *)),this,
@@ -262,8 +262,6 @@ void ResourceObject::sslErrors(QNetworkReply *reply, const QList<QSslError> &) {
 	reply->ignoreSslErrors();
 	warning("SSL error ignored");
 }
-
-
 
 void ResourceObject::load() {
 	finished=false;
@@ -530,7 +528,7 @@ QUrl MultiPageLoader::guessUrlFromString(const QString &string) {
  */
 int MultiPageLoader::httpErrorCode() {
 	int res=0;
-	foreach (const ResourceObject * ro, d->resources)
+	foreach (const ResourceObject * ro, d->resources) 
 		if (ro->httpErrorCode > res) res = ro->httpErrorCode;
 	return res;
 }

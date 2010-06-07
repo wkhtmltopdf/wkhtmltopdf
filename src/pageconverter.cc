@@ -159,7 +159,8 @@ void PageConverterPrivate::beginConvert() {
 	error=false;
 	progressString = "0%";
 	currentPhase=0;
-	
+	errorCode=0;
+
 #ifndef __EXTENSIVE_WKHTMLTOPDF_QT_HACK__	
 	if (objects.size() > 1) {
 		emit outer.error("This version of wkhtmltopdf is build against an unpatched version of QT, and does not support more then one input document.");
@@ -213,11 +214,12 @@ void PageConverterPrivate::fail() {
  * Prepares printing out the document to the pdf file
  */
 void PageConverterPrivate::pagesLoaded(bool ok) {
+	if (errorCode == 0) errorCode = pageLoader.httpErrorCode();
 	if (!ok) {
 		fail(); 
 		return;
 	}
-	
+
 	lout = settings.out;
 	if (settings.out == "-") {
 #ifndef Q_OS_WIN32
@@ -544,6 +546,7 @@ void PageConverterPrivate::endPage(PageObject & object, bool hasHeaderFooter, in
 #endif
 
 void PageConverterPrivate::tocLoaded(bool ok) {
+	if (errorCode == 0) errorCode = pageLoader.httpErrorCode();
 	if (!ok) {
 		fail();
 		return;
@@ -600,6 +603,7 @@ void PageConverterPrivate::tocLoaded(bool ok) {
 }
 
 void PageConverterPrivate::headersLoaded(bool ok) {
+	if (errorCode == 0) errorCode = pageLoader.httpErrorCode();
 	if (!ok) {
 		fail();
 		return;
@@ -757,7 +761,7 @@ void PageConverterPrivate::printDocument() {
 	convertionDone = true;
 	emit outer.finished(true);
 	
-  qApp->exit(0); // quit qt's event handling
+	qApp->exit(0); // quit qt's event handling
 }
 
 #ifdef __EXTENSIVE_WKHTMLTOPDF_QT_HACK__
@@ -872,7 +876,7 @@ QString PageConverter::progressString() {
   \brief return the HTTP return code, of the converted page
 */
 int PageConverter::httpErrorCode() {
-	return d->pageLoader.httpErrorCode();
+	return d->errorCode;
 }
 
 /*!
