@@ -266,6 +266,7 @@ void ResourceObject::sslErrors(QNetworkReply *reply, const QList<QSslError> &) {
 void ResourceObject::load() {
 	finished=false;
 	++multiPageLoader.loading;
+
 	QString boundary = QUuid::createUuid().toString().remove('-').remove('{').remove('}');
 	QByteArray postData;
 	foreach (const settings::PostItem & pi, settings.post) {
@@ -298,6 +299,11 @@ void ResourceObject::load() {
 		postData.append("--\n");
 	}
 
+
+	typedef QPair<QString, QString> SSP;
+ 	foreach (const SSP & pair, settings.cookies)
+		multiPageLoader.cookieJar->useCookie(url, pair.first, pair.second);
+
 	QNetworkRequest r = QNetworkRequest(url);
 	typedef QPair<QString, QString> HT;
 	foreach (const HT & j, settings.customHeaders)
@@ -311,13 +317,13 @@ void ResourceObject::load() {
 	}
 }
 
-void MyCookieJar::addGlobalCookie(const QString & name, const QString & value) {
-	globalCookies.append(QNetworkCookie(name.toUtf8(), value.toUtf8()));
+void MyCookieJar::useCookie(const QUrl & url, const QString & name, const QString & value) {
+	extraCookies[url.toString()].append(QNetworkCookie(name.toUtf8(), value.toUtf8()));
 }
 
 QList<QNetworkCookie> MyCookieJar::cookiesForUrl(const QUrl & url) const {
 	QList<QNetworkCookie> list = QNetworkCookieJar::cookiesForUrl(url);
-	list.append(globalCookies);
+	list.append(extraCookies[url.toString()]);
 	return list;
 }
 
@@ -377,10 +383,6 @@ MultiPageLoaderPrivate::MultiPageLoaderPrivate(settings::Global & s, MultiPageLo
 
 	if (!settings.cookieJar.isEmpty()) 
 		cookieJar->loadFromFile(settings.cookieJar);
-	
-	//typedef QPair<QString, QString> SSP;
-	//foreach (const SSP & pair, settings.cookies)
-	//cookieJar->addGlobalCookie(pair.first, pair.second);
 }
 
 MultiPageLoaderPrivate::~MultiPageLoaderPrivate() {

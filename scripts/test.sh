@@ -191,7 +191,7 @@ function testQMakeBuild() {
     (cd .. && git checkout-index --prefix=./test/wkhtmltopdf/ -a) || (bad "$1 (1)" && return 1)
     cd wkhtmltopdf
     qmake 2>$LEVEL2 >$LEVEL1 || (bad "$1 (2)" && return 1)
-    make -j2 2>$LEVEL2 >$LEVEL1 || good $1 || bad $1
+    make -j2 2>$LEVEL2 >$LEVEL1 && good $1 || bad $1
     cd ..
 }
 

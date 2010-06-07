@@ -89,9 +89,9 @@ public slots:
 
 class MyCookieJar: public QNetworkCookieJar {
 private:
-	QList<QNetworkCookie> globalCookies;
+	QHash<QString, QList<QNetworkCookie> > extraCookies;
 public:
-	void addGlobalCookie(const QString & name, const QString & value);
+	void useCookie(const QUrl & url, const QString & name, const QString & value);
 	QList<QNetworkCookie> cookiesForUrl(const QUrl & url) const;
 	void loadFromFile(const QString & path);
 	void saveToFile(const QString & path);
@@ -106,21 +106,13 @@ public:
 	MultiPageLoader & outer;
 	settings::Global & settings;
 
-	
-	//QList<QWebPage *> pages;
-	//QList<QUrl> urls;
 	QList<ResourceObject *> resources;
-	
-	//QList<std::auto_ptr<MyNetworkAccessManager> > networkAccessManagers;
-	//QHash<QObject *, int> pageToIndex;
+
 	int loading;
-	//int signalPrintSum;
 	int progressSum;
-	//int finishedSum;
 	bool loadStartedEmitted;
 	bool hasError;
 	bool finishedEmitted;
-	//int loadingPages;
 	TempFile tempIn;
 
 	MultiPageLoaderPrivate(settings::Global & s, MultiPageLoader & o);

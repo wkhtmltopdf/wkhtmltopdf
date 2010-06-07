@@ -180,7 +180,6 @@ int main(int argc, char * argv[]) {
 		nargv[0] = argv[0];
 		for (int i=0; i < argc; ++i) nargv[i] = argv[i];
 		while (fgets(buff,20398,stdin)) {
-			//x.resetPages();
 			int nargc=argc;
 			parseString(buff,nargc,nargv);
 
