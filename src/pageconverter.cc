@@ -362,7 +362,7 @@ void PageConverterPrivate::loadHeaders() {
 void PageConverterPrivate::loadTocs() {
 #ifdef __EXTENSIVE_WKHTMLTOPDF_QT_HACK__
 	std::swap(tocLoaderOld, tocLoader);
-	//tocLoader->clearResources();
+	tocLoader->clearResources();
 	
 	bool toc=false;
 	for(int d=0; d < objects.size(); ++d) {
