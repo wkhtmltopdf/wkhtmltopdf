@@ -64,7 +64,7 @@ void CommandLineParserPrivate::outputAuthors(Outputter * o) const {
 	o->beginSection("Authors");
 	o->paragraph(
 		QString::fromUtf8(
-			"Written by Jakob Truelsen. "
+			"Written by Jan Habermann and Jakob Truelsen. "
 			"Patches by Mehdi Abbad, Lyes Amazouz, Emmanuel Bouthenot, Benoit Garret and Mário Silva."));
 	o->endSection();
 }
@@ -75,9 +75,51 @@ void CommandLineParserPrivate::outputAuthors(Outputter * o) const {
 */
 void CommandLineParserPrivate::outputSynopsis(Outputter * o) const {
 	o->beginSection("Synopsis");
-	o->verbatim("wkhtmltopdf [GLOBAL OPTION]... (<input file> [FILE OPTION]...)... <output file>\n");
+	o->verbatim("wkhtmltopdf [GLOBAL OPTION]... [OBJECT]... <output file>\n");
+	o->endSection();
+
+	o->beginSection("Document objects");
+	o->beginParagraph();
+	o->text("wkhtmltopdf is able to put several objecs into the output file, an object is either "
+			"a single webpage, a cover webpage or a table of content.  The objects are put into "
+			"the output document in the order they are specified on the commandline, options can "
+			"be specified on a per object basis or in the global options area. Options from the ");
+	o->sectionLink("Global Options");
+	o->text(" section can only be placed in the global options area");
+	o->endParagraph();
+
+	o->paragraph("A page objects puts the content of a singe webpage into the output document.");
+	o->verbatim("(page)? <input url/file name> [PAGE OPTION]...");
+	o->beginParagraph();
+	o->text("Options for the page object can be placed in the global options and the page "
+			"options areas. The applicable options can be found in the ");
+	o->sectionLink("Page Options");
+	o->text(" and ");
+	o->sectionLink("Headers And Footer Options");
+	o->text(" sections.");
+	o->endParagraph();
+
+	o->paragraph("A cover objects puts the content of a singe webpage into the output document, "
+				 "the page does not appear in the table of content, and does not have headers and footers.");
+	o->verbatim("cover <input url/file name> [PAGE OPTION]...");
+	o->paragraph("All options that can be specified for a page object can also be specified for a cover.");
+	
+	o->paragraph("A table of content object inserts a table of content into the output document.");
+	o->verbatim("toc [TOC OPTION]...");
+	o->beginParagraph();
+	o->text("All options that can be specified for a page object can also be specified for a toc, "
+			"further more the options from the ");
+	o->sectionLink("TOC Options");
+	o->text(" section can also be applied. The table of content is generated via xslt which means "
+			"that it can be styled to look however you want it to look. To get an idear of how to "
+			"do this you can dump the default xslt document by supplying the --dump-default-toc-xsl, and the outline it works on by supplying --dump-outline, see the ");
+	o->sectionLink("Outline Options");
+	o->text(" section.");
+	o->endParagraph();
+
 	o->endSection();
 }
+
 
 /*!
   Explain what the program does
@@ -238,13 +280,17 @@ void CommandLineParserPrivate::outputHeaderFooterDoc(Outputter * o) const {
 */
 void CommandLineParserPrivate::outputOutlineDoc(Outputter * o) const {
 	o->beginSection("Outlines");
-	o->paragraph(
+	o->beginParagraph();
+	o->text(
 		"Wkhtmltopdf with patched qt has support for PDF outlines also known as "
 		"book marks, this can be enabled by specifying the --outline switch. "
 		"The outlines are generated based on the <h?> tags, for a in-depth "
-		"description of how this is done see the \"Table Of Contest\" section. ");
+		"description of how this is done see the ");
+	o->sectionLink("Table Of Conte");
+	o->text(" section. ");
+	o->endParagraph();
 	o->paragraph(
-		"The outline tree can sometimes be very deep, if the <h?> tags where "
+		"The outlin etree can sometimes be very deep, if the <h?> tags where "
 		"spread to generous in the HTML document.  The --outline-depth switch can "
 		"be used to bound this.");
 	o->endSection();
@@ -393,7 +439,9 @@ void CommandLineParserPrivate::outputExampels(Outputter * o) const {
 	o->paragraph("You can also convert to PS files if you like:");
 	o->verbatim("wkhtmltopdf my.html my.ps\n");
 	o->paragraph("Produce the eler2.pdf sample file:");
-	o->verbatim("wkhtmltopdf http://geekz.co.uk/lovesraymond/archive/eler-highlights-2008 eler2.pdf -H --outline\n");
+	o->verbatim("wkhtmltopdf -H  http://geekz.co.uk/lovesraymond/archive/eler-highlights-2008 eler2.pdf\n");
+	o->paragraph("Printing a book with a table of content:");
+	o->verbatim("wkhtmltopdf -H cover cover.html toc chapter1.html chapter2.html chapter3.html book.pdf\n");
 	o->endSection();
 }
 

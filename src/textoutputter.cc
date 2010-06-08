@@ -80,6 +80,10 @@ public:
 		}
 	}
 	
+	void sectionLink(const QString & t) {
+		text(t);
+	}
+	
 	void bold(const QString & t) {
 		text("*"+t+"*");
 	}

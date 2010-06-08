@@ -553,7 +553,7 @@ CommandLineParserPrivate::CommandLineParserPrivate(Global & s, QList<Page> & ps)
  	addarg("dump-outline",0,"Dump the outline to a file",new QStrSetter(s.dumpOutline,"file"));
 	addarg("dump-default-toc-xsl",0,"Dump the default TOC xsl style sheet to stdout", new Caller<DefaultTocFunc>());
 
-	section("Page options");
+	section("Page Options");
 	mode(page);
  	extended(true);
  	qthack(false);

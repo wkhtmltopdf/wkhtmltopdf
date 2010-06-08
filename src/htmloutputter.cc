@@ -45,7 +45,7 @@ public:
 	}
 
 	void beginSection(const QString & name) {
-		fprintf(fd, "<h1>%s</h1>\n", S(name));
+		fprintf(fd, "<a name=\"%s\"><h1>%s</h1></a>\n", S(name), S(name));
 	}
 
 	void endSection() {
@@ -61,6 +61,10 @@ public:
 
 	void text(const QString & t) {
 		fprintf(fd, "%s", S(t));
+	}
+	
+	void sectionLink(const QString & s) {
+		fprintf(fd, "<a href=\"#%s\">%s</a>", S(s), S(s));
 	}
 	
 	void bold(const QString & t) {

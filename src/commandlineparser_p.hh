@@ -51,6 +51,7 @@ public:
 	virtual void bold(const QString & t) =  0;
 	virtual void italic(const QString & t) = 0;
 	virtual void link(const QString & l) = 0;
+	virtual void sectionLink(const QString & s) = 0;
 	virtual void endParagraph() = 0;
 	virtual void verbatim(const QString & t) = 0;
  	virtual void beginList(bool ordered=false) = 0;

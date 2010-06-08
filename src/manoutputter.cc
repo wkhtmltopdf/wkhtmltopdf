@@ -45,6 +45,10 @@ public:
 		QString str = QString(t).replace("-", "\\-");
 		fprintf(fd, "%s", S(str));
 	}
+
+	void sectionLink(const QString & t) {
+		text(t);
+	}
 	
 	void bold(const QString & t) {
 		fprintf(fd, "\\fB%s\\fP", S(t));
