@@ -108,15 +108,16 @@ function git_fetch_and_update() {
 function checkout() {
     #Create static build directory
     mkdir -p $BUILD
-
     cd ${BUILD}
+
+    #Fetch and unpack upx
+    get http://upx.sourceforge.net/download/${UPX}.tar.bz2 ${UPX}.tar.bz2 || exit 1
+    unpack ${UPX}.tar.bz2 || exit 1
+
     #Fetch most recent version of qt
     echo "Updating qt from remote"
 	git_fetch_and_update qt git://gitorious.org/+wkhtml2pdf/qt/wkhtmltopdf-qt.git "$QTBRANCH" || exit 1
 	cd qt
-    #Fetch and unpack upx
-    get http://upx.sourceforge.net/download/${UPX}.tar.bz2 ${UPX}.tar.bz2 || exit 1
-    unpack ${UPX}.tar.bz2 || exit 1
 }
 
 function setup_build() {
