@@ -107,7 +107,7 @@ function testHeaderFooter() {
 }
 
 function testLoadError() {
-    wk about:blank http://a.nstld --load-error-handling abort tmp.pdf 2>$LEVEL2 >$LEVEL1 && (bad $1 && return)
+    wk about:blank http://a.nstld --load-error-handling abort tmp.pdf 2>$LEVEL1 >$LEVEL1 && (bad $1 && return)
     wk about:blank http://a.nstld --load-error-handling skip tmp1.pdf 2>$LEVEL2 >$LEVEL1 || (bad $1 && return)
     wk about:blank http://a.nstld --load-error-handling ignore tmp2.pdf 2>$LEVEL2 >$LEVEL1 || (bad $1 && return)
     ([ -f tmp1.pdf ] && [ -f tmp2.pdf ] &&
@@ -122,7 +122,6 @@ function testToc() {
 	[ "$(pdftotext tmp.pdf /dev/stdout | grep -c foo)" == 2 ] &&
 	[ "$(pdftotext tmp.pdf /dev/stdout | grep -c bar)" == 2 ]) && good $1 || bad $1
 }
-
 
 function testOutline() {
     echo "<html><head></head><body><h1>foo</h1><h2>bar</h2><h3>baz</h3></body>" > tmp.html
