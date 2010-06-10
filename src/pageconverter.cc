@@ -76,8 +76,9 @@ PageConverterPrivate::PageConverterPrivate(Global & s, PageConverter & o) :
 		
 #ifdef  __EXTENSIVE_WKHTMLTOPDF_QT_HACK__
 	phaseDescriptions.push_back("Loading pages");
-	phaseDescriptions.push_back("Resolving links");
 	phaseDescriptions.push_back("Counting pages");
+	phaseDescriptions.push_back("Loading TOC");
+	phaseDescriptions.push_back("Resolving links");	
 	phaseDescriptions.push_back("Loading headers and footers");
 #else
 	phaseDescriptions.push_back("Loading page");
@@ -295,7 +296,7 @@ void PageConverterPrivate::pagesLoaded(bool ok) {
 		return;
 	}
 	
-	currentPhase = 2;
+	currentPhase = 1;
 	emit outer.phaseChanged();
 	outline = new Outline(settings);
 	//This is the first render face, it is done to calculate:
@@ -333,7 +334,7 @@ void PageConverterPrivate::pagesLoaded(bool ok) {
 
 void PageConverterPrivate::loadHeaders() {
 #ifdef __EXTENSIVE_WKHTMLTOPDF_QT_HACK__
-	currentPhase = 3;
+	currentPhase = 4;
 	emit outer.phaseChanged();
 	bool hf=false;
 
@@ -373,7 +374,6 @@ void PageConverterPrivate::loadTocs() {
 	bool toc=false;
 	for(int d=0; d < objects.size(); ++d) {
 		PageObject & obj = objects[d];
-		if (obj.loaderObject->skip) continue;
 		settings::Page & ps = obj.settings;
 		if (!ps.isTableOfContent) continue;
 		obj.clear();
@@ -393,9 +393,13 @@ void PageConverterPrivate::loadTocs() {
 		toc= true;
 	}
 
-	if (toc) 
+	if (toc) {
+		if (currentPhase != 2) {
+			currentPhase = 2;
+			emit outer.phaseChanged();
+		}
 		tocLoader->load();
-	else 
+	} else 
 		tocLoaded(true);
 #endif
 }
@@ -430,9 +434,7 @@ void PageConverterPrivate::findLinks(QWebFrame * frame, QVector<QPair<QWebElemen
 						if(e.isNull()) 
 							e = p->page->mainFrame()->findFirstElement("*[id=\""+href.fragment()+"\"]");
 					}
-					if (e.isNull())
-						qDebug() << "Unable to find target for local link " << href; 
-					else {
+					if (!e.isNull()) {
 						p->anchors[href.toString()] = e;
 						local.push_back( qMakePair(elm, href.toString()) );
 					}
@@ -568,10 +570,6 @@ void PageConverterPrivate::tocLoaded(bool ok) {
 			continue;
 		}
 			
-		//int tot = objects.size();
-		//progressString = QString("Object ")+QString::number(d+1)+QString(" of ")+QString::number(tot);
-		//emit outer.progressChanged((d+1)*100 / tot);
-
 		painter->save();
 		QWebPrinter wp(objects[d].page->mainFrame(), printer, *painter);
 		int pc = objects[d].settings.pagesCount? wp.pageCount(): 0;
@@ -589,7 +587,7 @@ void PageConverterPrivate::tocLoaded(bool ok) {
 		loadTocs();
 	else {
 		//Find and resolve all local links
-		currentPhase = 1;
+		currentPhase = 3;
 		emit outer.phaseChanged();
 		
 		QHash<QString, int> urlToDoc;
@@ -605,7 +603,6 @@ void PageConverterPrivate::tocLoaded(bool ok) {
 			emit outer.progressChanged((d+1)*100 / objects.size());
 			findLinks(objects[d].page->mainFrame(), objects[d].localLinks, objects[d].externalLinks, objects[d].anchors );
 		}
-
 
 		loadHeaders();
 	}
@@ -635,7 +632,7 @@ void PageConverterPrivate::printDocument() {
  	int cc=settings.collate?settings.copies:1;
  	int pc=settings.collate?1:settings.copies;
 
-	currentPhase = 4;
+	currentPhase = 5;
 	emit outer.phaseChanged();
 
 	progressString = "Preparing";
@@ -764,7 +761,7 @@ void PageConverterPrivate::printDocument() {
 	}
 	clearResources();
 #ifdef __EXTENSIVE_WKHTMLTOPDF_QT_HACK__
-	currentPhase = 5;
+	currentPhase = 6;
 #else
 	currentPhase = 2;
 #endif
