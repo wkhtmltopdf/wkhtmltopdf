@@ -22,6 +22,10 @@ function bad() { result "$1" "Fail"; [ "$2" != "false" ] && export failed=$(($fa
 function fs() { du -b "$1" | sed -re 's/([0-9]*).*/\1/';}
 function wk() { $WK -q "$@"; }
 
+function pages() {
+    pdfinfo $1 | sed -nre 's/Pages:[\n ]*//p'
+}
+
 function testTest() {
     (which pdftotext > $LEVEL1 && which pdfinfo > $LEVEL1) && good $1 || bad $1
 }
@@ -102,6 +106,15 @@ function testHeaderFooter() {
 	pdftotext tmp.pdf /dev/stdout | grep -q hat) && good $1 || bad $1
 }
 
+function testLoadError() {
+    wk about:blank http://a.nstld --load-error-handling abort tmp.pdf 2>$LEVEL2 >$LEVEL1 && (bad $1 && return)
+    wk about:blank http://a.nstld --load-error-handling skip tmp1.pdf 2>$LEVEL2 >$LEVEL1 || (bad $1 && return)
+    wk about:blank http://a.nstld --load-error-handling ignore tmp2.pdf 2>$LEVEL2 >$LEVEL1 || (bad $1 && return)
+    ([ -f tmp1.pdf ] && [ -f tmp2.pdf ] &&
+	[ "$(pages tmp1.pdf)" == 1 ] &&
+	[ "$(pages tmp2.pdf)" == 2 ] ) && good $1 || bad $1
+}
+
 function testToc() {
     echo "<html><head></head><body><h1>foo</h1><h2>bar</h2><h3>baz</h3></body>" > tmp.html
     wk toc tmp.html tmp.pdf 2>$LEVEL2 >$LEVEL1
@@ -139,10 +152,6 @@ function test404() {
 function testBadDest() {
     echo "<html><head></head><body><h1>foo</h1><h2>bar</h2><h3>baz</h3></body>" > tmp.html
     (! wk tmp.html /proc/cpuinfo 2> tmp.out >$LEVEL1 && grep -q "Error" tmp.out) && good $1 || bad $1
-}
-
-function testBadSource() {
-    (! wk http://nosuchdomain.nosuchtld tmp.pdf 2> tmp.out && grep -q "Error" tmp.out) && good $1 || bad $1
 }
 
 function testMultipleInputDocuments() {

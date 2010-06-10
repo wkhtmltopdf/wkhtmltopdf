@@ -25,7 +25,14 @@
 namespace wkhtmltopdf {
 
 class MyQWebPage;
-class ResourceObject;
+
+class LoaderObject {
+public:
+	QWebPage & page;
+	bool skip;
+
+	LoaderObject(QWebPage & page);
+};
 
 class MultiPageLoaderPrivate;
 class MultiPageLoader: public QObject {
@@ -33,8 +40,8 @@ class MultiPageLoader: public QObject {
 public:
 	MultiPageLoader(settings::Global & s);
 	~MultiPageLoader();
-	QWebPage * addResource(const QString & url, const settings::Page & pageSettings);
-	QWebPage * addResource(const QUrl & url, const settings::Page & pageSettingns);
+	LoaderObject * addResource(const QString & url, const settings::Page & pageSettings);
+	LoaderObject * addResource(const QUrl & url, const settings::Page & pageSettingns);
 	static QUrl guessUrlFromString(const QString &string);
 	int httpErrorCode();
 	static bool copyFile(QFile & src, QFile & dst);

@@ -186,7 +186,8 @@ void PageConverterPrivate::beginConvert() {
 		}
 
 		if (!s.isTableOfContent) {
-			o.page = pageLoader.addResource(s.page, s);
+			o.loaderObject = pageLoader.addResource(s.page, s);
+			o.page = &o.loaderObject->page;
 			PageObject::webPageToObject[o.page] = &o;
 			updateWebSettings(o.page->settings(), s);
 		}
@@ -224,7 +225,7 @@ void PageConverterPrivate::pagesLoaded(bool ok) {
 	if (settings.out == "-") {
 #ifndef Q_OS_WIN32
 		 if (QFile::exists("/dev/stdout"))
- 			lout = "/dev/stdout";
+			 lout = "/dev/stdout";
 		 else
 #endif
 			 lout = tempOut.create(settings.outputFormat == "ps"?".ps":".pdf");
@@ -284,7 +285,7 @@ void PageConverterPrivate::pagesLoaded(bool ok) {
 	QString title = settings.documentTitle;
 	for(int d=0; d < objects.size(); ++d) {
 		if (title != "") break;
-		if (objects[d].settings.isTableOfContent) continue;
+		if (objects[d].loaderObject->skip || objects[d].settings.isTableOfContent) continue;
 		title = objects[d].page->mainFrame()->title();
 	}
 	printer->setDocName(title);
@@ -303,6 +304,7 @@ void PageConverterPrivate::pagesLoaded(bool ok) {
 	// * The location and page number of each header
 	pageCount = 0;
 	for(int d=0; d < objects.size(); ++d) {
+		if (objects[d].loaderObject->skip) continue;
 		if (objects[d].settings.isTableOfContent) {
 			objects[d].pageCount = 1;
 			pageCount += 1;
@@ -338,6 +340,8 @@ void PageConverterPrivate::loadHeaders() {
 	int pageNumber=1;
 	for(int d=0; d < objects.size(); ++d) {
 		PageObject & obj = objects[d];
+		if (obj.loaderObject->skip) continue;
+				
 		settings::Page & ps = obj.settings;
 		for (int op=0; op < obj.pageCount; ++op) {
 			if (!ps.header.htmlUrl.isEmpty() || !ps.footer.htmlUrl.isEmpty()) {
@@ -369,6 +373,7 @@ void PageConverterPrivate::loadTocs() {
 	bool toc=false;
 	for(int d=0; d < objects.size(); ++d) {
 		PageObject & obj = objects[d];
+		if (obj.loaderObject->skip) continue;
 		settings::Page & ps = obj.settings;
 		if (!ps.isTableOfContent) continue;
 		obj.clear();
@@ -381,7 +386,8 @@ void PageConverterPrivate::loadTocs() {
 		StreamDumper sd(path);
 		outline->dump(sd.stream, style);
 		
-		obj.page = tocLoader->addResource(path, ps);
+		obj.loaderObject = pageLoader.addResource(path, ps);
+		obj.page = &obj.loaderObject->page;
 		PageObject::webPageToObject[obj.page] = &obj;
 		updateWebSettings(obj.page->settings(), ps);
 		toc= true;
@@ -555,6 +561,8 @@ void PageConverterPrivate::tocLoaded(bool ok) {
 	bool changed=false;
 	pageCount = 0;
 	for(int d=0; d < objects.size(); ++d) {
+		if (objects[d].loaderObject->skip) continue;
+
 		if (!objects[d].settings.isTableOfContent) {
 			pageCount += objects[d].pageCount;
 			continue;
@@ -580,17 +588,19 @@ void PageConverterPrivate::tocLoaded(bool ok) {
 	if (changed)
 		loadTocs();
 	else {
-				//Find and resolve all local links
+		//Find and resolve all local links
 		currentPhase = 1;
 		emit outer.phaseChanged();
 		
 		QHash<QString, int> urlToDoc;
 		for(int d=0; d < objects.size(); ++d) {
+			if (objects[d].loaderObject->skip) continue;
 			if (objects[d].settings.isTableOfContent) continue;
 			urlToPageObj[ objects[d].page->mainFrame()->url().toString(QUrl::RemoveFragment) ] = &objects[d];
 		}
 		
 		for(int d=0; d < objects.size(); ++d) {
+			if (objects[d].loaderObject->skip) continue;
 			progressString = QString("Object ")+QString::number(d+1)+QString(" of ")+QString::number(objects.size());
 			emit outer.progressChanged((d+1)*100 / objects.size());
 			findLinks(objects[d].page->mainFrame(), objects[d].localLinks, objects[d].externalLinks, objects[d].anchors );
@@ -635,6 +645,7 @@ void PageConverterPrivate::printDocument() {
 		int pageNumber=1;
 		for(int d=0; d < objects.size(); ++d) {
 			PageObject & obj = objects[d];
+			if (obj.loaderObject->skip) continue;
 			const settings::Page & ps = obj.settings;
 			bool hasHeaderFooter = ps.header.line || ps.footer.line ||
 				!ps.header.left.isEmpty() || !ps.footer.left.isEmpty() ||
@@ -769,7 +780,7 @@ QWebPage * PageConverterPrivate::loadHeaderFooter(QString url, const QHash<QStri
 	QUrl u = MultiPageLoader::guessUrlFromString(url);
 	for(QHash<QString, QString>::const_iterator i=parms.begin(); i != parms.end(); ++i)
 		u.addQueryItem(i.key(), i.value());
-	return hfLoader.addResource(u, ps);
+	return &hfLoader.addResource(u, ps)->page;
 
 }
 

@@ -41,6 +41,7 @@ public:
 	static QMap<QWebPage *, PageObject *> webPageToObject;
 	
 	settings::Page settings;
+	LoaderObject * loaderObject;
 	QWebPage * page;
 
 #ifdef __EXTENSIVE_WKHTMLTOPDF_QT_HACK__

@@ -16,8 +16,10 @@
 // along with wkhtmltopdf.  If not, see <http://www.gnu.org/licenses/>.
 #include <settings.hh>
 #include <QMap>
+#include <stdexcept>
 namespace wkhtmltopdf {
 namespace settings {
+
 /*!
   \file settings.hh
   \brief Defines the Settings class
@@ -82,6 +84,26 @@ QString pageSizeToStr(QPrinter::PageSize ps) {
 	}
 	return "";
 }
+
+
+Page::LoadErrorHandling strToLoadErrorHandling(const char * s, bool * ok) {
+	if (ok) *ok = true;
+	if (!strcasecmp(s, "abort")) return Page::abort;
+	if (!strcasecmp(s, "skip")) return Page::skip;
+	if (!strcasecmp(s, "ignore")) return Page::ignore;
+	*ok = false;
+	return Page::abort;
+}
+
+QString loadErrorHandlingToStr(Page::LoadErrorHandling leh) {
+	switch(leh) {
+	case Page::abort: return "abort";
+	case Page::skip: return "skip";
+	case Page::ignore: return "ignore";
+	}
+	throw std::logic_error("Internal error in loadErrorHandlingToStr");
+}
+
 
 /*!
   Read orientation from a string, possible values are landscape and portrait (case insensitive)
@@ -287,7 +309,7 @@ Page::Page():
 	stopSlowScripts(true),
 	debugJavascript(false),
 	produceForms(false),
-	ignoreLoadErrors(false),
+	loadErrorHandling(abort),
 	enablePlugins(false),
 	includeInOutline(true),
 	pagesCount(true),

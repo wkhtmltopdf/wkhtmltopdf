@@ -33,6 +33,8 @@ namespace wkhtmltopdf {
 */
 
 
+LoaderObject::LoaderObject(QWebPage & p): page(p), skip(false) {};
+
 MyNetworkAccessManager::MyNetworkAccessManager(const settings::Page & s): settings(s) {}
 
 void MyNetworkAccessManager::allow(QString path) {
@@ -111,6 +113,7 @@ ResourceObject::ResourceObject(MultiPageLoaderPrivate & mpl, const QUrl & u, con
 	signalPrint(false),
 	multiPageLoader(mpl), 
 	webPage(*this),
+	lo(webPage),
 	httpErrorCode(0),
 	settings(s) {
 	
@@ -189,11 +192,14 @@ void ResourceObject::loadProgress(int p) {
 
 
 void ResourceObject::loadFinished(bool ok) {
-	multiPageLoader.hasError = multiPageLoader.hasError || (!ok && !settings.ignoreLoadErrors);
+	multiPageLoader.hasError = multiPageLoader.hasError || (!ok && settings.loadErrorHandling == settings::Page::abort);
 	if (!ok) {
-		if (!settings.ignoreLoadErrors)
-			error(QString("Failed loading page ") + url.toString() + " (sometimes it will work just to ignore this error with --ignore-load-errors)");
-		else
+		if (settings.loadErrorHandling == settings::Page::abort)
+			error(QString("Failed loading page ") + url.toString() + " (sometimes it will work just to ignore this error with --load-error-handling ignore)");
+		else if (settings.loadErrorHandling == settings::Page::skip) {
+			warning(QString("Failed loading page ") + url.toString() + " (skipped)");
+			lo.skip = true;
+		} else
 			warning(QString("Failed loading page ") + url.toString() + " (ignored)");
 	}
 	if (signalPrint || settings.jsdelay == 0) loadDone();
@@ -389,10 +395,10 @@ MultiPageLoaderPrivate::~MultiPageLoaderPrivate() {
 	clearResources();
 }
 
-QWebPage * MultiPageLoaderPrivate::addResource(const QUrl & url, const settings::Page & page) {
+LoaderObject * MultiPageLoaderPrivate::addResource(const QUrl & url, const settings::Page & page) {
 	ResourceObject * ro = new ResourceObject(*this, url, page);
 	resources.push_back(ro);
-	return &ro->webPage;
+	return &ro->lo;
 }
 	
 void MultiPageLoaderPrivate::load() {
@@ -439,7 +445,7 @@ MultiPageLoader::~MultiPageLoader() {
   \brief Add a resource, to be loaded described by a string
   @param string Url describing the resource to load
 */
-QWebPage * MultiPageLoader::addResource(const QString & string, const settings::Page & s) {
+LoaderObject * MultiPageLoader::addResource(const QString & string, const settings::Page & s) {
 	QString url=string;
 	if (url == "-") {
 		QFile in;
@@ -458,7 +464,7 @@ QWebPage * MultiPageLoader::addResource(const QString & string, const settings::
   \brief Add a page to be loaded
   @param url Url of the page to load
 */
-QWebPage * MultiPageLoader::addResource(const QUrl & url, const settings::Page & s) {
+LoaderObject * MultiPageLoader::addResource(const QUrl & url, const settings::Page & s) {
 	return d->addResource(url, s);
 }
 

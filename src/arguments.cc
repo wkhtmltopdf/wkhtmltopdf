@@ -333,6 +333,18 @@ struct OrientationTM: public SomeSetterTM<QPrinter::Orientation> {
 typedef SomeSetter<OrientationTM> OrientationSetter;
 
 
+struct LoadErrorHandlingTM: public SomeSetterTM<Page::LoadErrorHandling> {
+	static Page::LoadErrorHandling strToT(const char * val, bool &ok) {
+		return strToLoadErrorHandling(val, &ok);
+	}
+	static QString TToStr(const Page::LoadErrorHandling & o, bool & ok) {
+		ok=true;
+		return loadErrorHandlingToStr(o);
+	}
+};
+typedef SomeSetter<LoadErrorHandlingTM> LoadErrorHandlingSetting;
+
+
 /*!
   Argument handler responsible for calling a function
 */
@@ -561,9 +573,7 @@ CommandLineParserPrivate::CommandLineParserPrivate(Global & s, QList<Page> & ps)
 	addarg("proxy",'p',"Use a proxy", new ProxySetter(od.proxy, "proxy"));
  	addarg("username",0,"HTTP Authentication username", new QStrSetter(od.username, "username"));
  	addarg("password",0,"HTTP Authentication password", new QStrSetter(od.password, "password"));
-	addarg("ignore-load-errors", 0, "Ignore pages that claim to have encountered an error during loading", new ConstSetter<bool>(od.ignoreLoadErrors, true));
-	addarg("no-ignore-load-errors", 0, "Do not ignore pages that claimes to have encountered an error during loading"
-, new ConstSetter<bool>(od.ignoreLoadErrors, false));
+	addarg("load-error-handling", 0, "Specify how to handle pages that fail to load: abort, ignore or skip", new LoadErrorHandlingSetting(od.loadErrorHandling, "handler"));
 	addarg("custom-header",0,"Set an additional HTTP header (repeatable)", new MapSetter<>(od.customHeaders, "name", "value"));
 	addarg("custom-header-propagate",0,"Add HTTP headers specified by --custom-header for each resource request.", new ConstSetter<bool>(od.repeatCustomHeaders, true));
 	addarg("no-custom-header-propagate",0,"Do not add HTTP headers specified by --custom-header for each resource request.", new ConstSetter<bool>(od.repeatCustomHeaders, true));

@@ -174,6 +174,12 @@ struct HeaderFooter {
 
 
 struct Page {
+	enum LoadErrorHandling {
+		abort,
+		skip,
+		ignore
+	};
+
 	Page();
 	//! Settings regarding the TOC
 	TableOfContent toc;
@@ -254,8 +260,8 @@ struct Page {
 	//! Convert forms on the pages into PDF forms
 	bool produceForms;
 	
-	//! If loading of the page fails continue as if nothing happened
-	bool ignoreLoadErrors;
+	//! What should we do about load errors
+	LoadErrorHandling loadErrorHandling;
 	
 	//! Stylesheet supplied by the user
 	QString userStyleSheet;
@@ -274,6 +280,9 @@ struct Page {
 
 	QString tocXsl;
 };
+
+Page::LoadErrorHandling strToLoadErrorHandling(const char * s, bool * ok=0);
+QString loadErrorHandlingToStr(Page::LoadErrorHandling leh);
 
 QPrinter::PageSize strToPageSize(const char * s, bool * ok=0);
 QString pageSizeToStr(QPrinter::PageSize ps);

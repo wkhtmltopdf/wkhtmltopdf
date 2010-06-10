@@ -65,11 +65,11 @@ private:
 	int progress;
 	bool finished;
 	bool signalPrint;
-
 	MultiPageLoaderPrivate & multiPageLoader;
 public:
 	ResourceObject(MultiPageLoaderPrivate & mpl, const QUrl & u, const settings::Page & s);
 	MyQWebPage webPage;
+	LoaderObject lo;
 	int httpErrorCode;
 	const settings::Page settings;	
 public slots:
@@ -117,7 +117,7 @@ public:
 
 	MultiPageLoaderPrivate(settings::Global & s, MultiPageLoader & o);
 	~MultiPageLoaderPrivate(); 
-	QWebPage * addResource(const QUrl & url, const settings::Page & settings);
+	LoaderObject * addResource(const QUrl & url, const settings::Page & settings);
 	void load();
 	void clearResources();
 	void cancel();
