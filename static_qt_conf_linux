@@ -35,4 +35,4 @@
 -no-opengl
 -no-xsync
 -no-svg
-
+-no-audio-backend
