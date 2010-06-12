@@ -575,8 +575,8 @@ CommandLineParserPrivate::CommandLineParserPrivate(Global & s, QList<Page> & ps)
  	addarg("password",0,"HTTP Authentication password", new QStrSetter(od.password, "password"));
 	addarg("load-error-handling", 0, "Specify how to handle pages that fail to load: abort, ignore or skip", new LoadErrorHandlingSetting(od.loadErrorHandling, "handler"));
 	addarg("custom-header",0,"Set an additional HTTP header (repeatable)", new MapSetter<>(od.customHeaders, "name", "value"));
-	addarg("custom-header-propagate",0,"Add HTTP headers specified by --custom-header for each resource request.", new ConstSetter<bool>(od.repeatCustomHeaders, true));
-	addarg("no-custom-header-propagate",0,"Do not add HTTP headers specified by --custom-header for each resource request.", new ConstSetter<bool>(od.repeatCustomHeaders, true));
+	addarg("custom-header-propagation",0,"Add HTTP headers specified by --custom-header for each resource request.", new ConstSetter<bool>(od.repeatCustomHeaders, true));
+	addarg("no-custom-header-propagation",0,"Do not add HTTP headers specified by --custom-header for each resource request.", new ConstSetter<bool>(od.repeatCustomHeaders, true));
 
 	addarg("disable-javascript",'n',"Do not allow web pages to run javascript", new ConstSetter<bool>(od.enableJavascript,false));
 	addarg("enable-javascript",'n',"Do allow web pages to run javascript", new ConstSetter<bool>(od.enableJavascript,true));
