@@ -64,12 +64,8 @@ public:
 
 	//docparts.cc
 	void outputManName(Outputter * o) const;
-	void outputName(Outputter * o) const;
-	void outputLicense(Outputter * o) const;
-	void outputAuthors(Outputter * o) const;
 	void outputSynopsis(Outputter * o) const;
 	void outputDescripton(Outputter * o) const;
-	void outputProxyDoc(Outputter * o) const;
 	void outputPageSizes(Outputter * o) const;
 	void outputArgsFromStdin(Outputter * o) const;
 	void outputHeaderFooterDoc(Outputter * o) const;
@@ -81,7 +77,6 @@ public:
 	void outputCompilation(Outputter * o) const;
 	void outputInstallation(Outputter * o) const;
 	void outputExampels(Outputter * o) const;
-	void outputStaticProblems(Outputter * o) const;
 	//commandlineparser.cc
 	void outputSwitches(Outputter * o, bool extended, bool doc) const;
 	void version(FILE * fd) const;

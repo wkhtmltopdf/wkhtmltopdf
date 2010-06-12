@@ -14,7 +14,7 @@
  *   You should have received a copy of the GNU General Public License
  *   along with wkhtmltoimage.  If not, see <http://www.gnu.org/licenses/>.
  */
-
+#include "commondocparts.hh"
 #include "commandlineparser_p.hh"
 #include <qwebframe.h>
 
@@ -73,7 +73,7 @@ void CommandLineParserPrivate::manpage(FILE * fd) const {
  	outputDescripton(o);
 	outputSwitches(o, true, false);
  	outputContact(o);
- 	outputAuthors(o);
+	commonDocParts::outputAuthors(o);
 	delete o;
 }
 
@@ -84,12 +84,12 @@ void CommandLineParserPrivate::manpage(FILE * fd) const {
 */
 void CommandLineParserPrivate::usage(FILE * fd, bool extended) const {
 	Outputter * o = Outputter::text(fd,false);
-	outputName(o);
+	commonDocParts::outputName(o, "wkhtmltoimage");
 	outputSynopsis(o);
  	outputDescripton(o);
 	outputSwitches(o, extended, false);
 	if (extended) {
-		outputProxyDoc(o);
+	  commonDocParts::outputProxyDoc(o);
 	}
  	outputContact(o);
 	delete o;
@@ -101,9 +101,9 @@ void CommandLineParserPrivate::usage(FILE * fd, bool extended) const {
 */
 void CommandLineParserPrivate::version(FILE * fd) const {
  	Outputter * o = Outputter::text(fd,false);
-  	outputName(o);
-  	outputLicense(o);
-  	outputAuthors(o);
+  	commonDocParts::outputName(o, "wkhtmltoimage");
+  	commonDocParts::outputLicense(o);
+  	commonDocParts::outputAuthors(o);
 	delete o;
 }
 
@@ -116,12 +116,12 @@ void CommandLineParserPrivate::readme(FILE * fd, bool html) const {
 	Outputter * o = html?Outputter::html(fd):Outputter::text(fd, true);
 	outputDocStart(o);
 	outputContact(o);
-	outputLicense(o);
-	outputAuthors(o);
+	commonDocParts::outputLicense(o);
+	commonDocParts::outputAuthors(o);
 	outputSynopsis(o);
 	outputSwitches(o, true, true);
- 	outputProxyDoc(o);
-	outputStaticProblems(o);
+ 	commonDocParts::outputProxyDoc(o);
+	commonDocParts::outputStaticProblems(o);
 	outputCompilation(o);
 	outputInstallation(o);
 	outputExamples(o);

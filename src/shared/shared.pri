@@ -1,3 +1,3 @@
 
 SOURCES += ../shared/outputter.cc ../shared/manoutputter.cc ../shared/htmloutputter.cc \
-           ../shared/textoutputter.cc ../shared/arghandler.cc
+           ../shared/textoutputter.cc ../shared/arghandler.cc commondocparts.cc

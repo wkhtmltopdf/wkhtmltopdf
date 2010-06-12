@@ -14,6 +14,7 @@
 // You should have received a copy of the GNU General Public License
 // along with wkhtmltopdf.  If not, see <http://www.gnu.org/licenses/>.
 #include "commandlineparser_p.hh"
+#include "commondocparts.hh"
 #include <qwebframe.h>
 
 /*!
@@ -86,8 +87,8 @@ void CommandLineParserPrivate::manpage(FILE * fd) const {
  	outputSynopsis(o);
  	outputDescripton(o);
 	outputSwitches(o, true, false);
+	commonDocParts::outputProxyDoc(o);
 #ifdef __EXTENSIVE_WKHTMLTOPDF_QT_HACK__
- 	outputProxyDoc(o);
  	outputHeaderFooterDoc(o);
  	outputOutlineDoc(o);
 #else
@@ -97,7 +98,7 @@ void CommandLineParserPrivate::manpage(FILE * fd) const {
 	outputArgsFromStdin(o);
  	outputPageBreakDoc(o);
  	outputContact(o);
- 	outputAuthors(o);
+ 	commonDocParts::outputAuthors(o);
 	delete o;
 }
 
@@ -108,7 +109,7 @@ void CommandLineParserPrivate::manpage(FILE * fd) const {
 */
 void CommandLineParserPrivate::usage(FILE * fd, bool extended) const {
 	Outputter * o = Outputter::text(fd,false);
-	outputName(o);
+	commonDocParts::outputName(o, "wkhtmltopdf");
 	outputSynopsis(o);
  	outputDescripton(o);
 	outputSwitches(o, extended, false);
@@ -118,7 +119,7 @@ void CommandLineParserPrivate::usage(FILE * fd, bool extended) const {
 	if (extended) {
 		outputPageSizes(o);
 		outputArgsFromStdin(o);
-		outputProxyDoc(o);
+		commonDocParts::outputProxyDoc(o);
 		outputHeaderFooterDoc(o);
 		outputOutlineDoc(o);
 	}
@@ -132,9 +133,9 @@ void CommandLineParserPrivate::usage(FILE * fd, bool extended) const {
 */
 void CommandLineParserPrivate::version(FILE * fd) const {
  	Outputter * o = Outputter::text(fd,false);
-  	outputName(o);
-  	outputLicense(o);
-  	outputAuthors(o);
+  	commonDocParts::outputName(o, "wkhtmltopdf");
+  	commonDocParts::outputLicense(o);
+  	commonDocParts::outputAuthors(o);
 	delete o;
 }
 
@@ -148,17 +149,17 @@ void CommandLineParserPrivate::readme(FILE * fd, bool html) const {
 	outputDocStart(o);
 	outputContact(o);
 	outputNotPatched(o, false);
-	outputLicense(o);
-	outputAuthors(o);
+	commonDocParts::outputLicense(o);
+	commonDocParts::outputAuthors(o);
 	outputSynopsis(o);
 	outputSwitches(o, true, true);
- 	outputProxyDoc(o);
+ 	commonDocParts::outputProxyDoc(o);
  	outputHeaderFooterDoc(o);
  	outputOutlineDoc(o);
  	outputPageBreakDoc(o);
 	outputPageSizes(o);
 	outputArgsFromStdin(o);
-	outputStaticProblems(o);
+	commonDocParts::outputStaticProblems(o);
 	outputCompilation(o);
 	outputInstallation(o);
 	outputExampels(o);

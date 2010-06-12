@@ -20,52 +20,12 @@
 #define STRINGIZE(x) STRINGIZE_(x)
 
 /*!
-  Output the name and version of the program, and also whether we are using a patched qt
-  \param o The outputter to output to
-*/
-void CommandLineParserPrivate::outputName(Outputter * o) const {
-	o->beginSection("Name");
-	o->paragraph(QString("wkhtmltopdf ")+QString::number(MAJOR_VERSION)+"."+QString::number(MINOR_VERSION)+"."+QString::number(PATCH_VERSION)+(QString(STRINGIZE(BUILD)).isEmpty()?"":" ")+STRINGIZE(BUILD));
-	o->endSection();
-}
-
-
-/*!
   Output name and a short description
   \param o The outputter to output to
 */
 void CommandLineParserPrivate::outputManName(Outputter * o) const {
 	o->beginSection("Name");
 	o->paragraph("wkhtmltopdf - html to pdf converter");
-	o->endSection();
-}
-
-/*!
-  Output copyright stuff
-  \param o The outputter to output to
-*/
-void CommandLineParserPrivate::outputLicense(Outputter * o) const {
-	o->beginSection("License");
-	o->paragraph("Copyright (C) 2008,2009 Wkhtmltopdf Authors.");
-	o->endParagraph();
-	o->beginParagraph();
-	o->text("License GPLv3+: GNU GPL version 3 or later ");
-	o->link("http://gnu.org/licenses/gpl.html");
-	o->text(". This is free software: you are free to change and redistribute it. "
-			"There is NO WARRANTY, to the extent permitted by law.");
-	o->endParagraph();
-}
-
-/*!
-  Output list of authors
-  \param o The outputter to output to
-*/
-void CommandLineParserPrivate::outputAuthors(Outputter * o) const {
-	o->beginSection("Authors");
-	o->paragraph(
-		QString::fromUtf8(
-			"Written by Jan Habermann and Jakob Truelsen. "
-			"Patches by Mehdi Abbad, Lyes Amazouz, Emmanuel Bouthenot, Benoit Garret and Mário Silva."));
 	o->endSection();
 }
 
@@ -196,27 +156,6 @@ void CommandLineParserPrivate::outputPageBreakDoc(Outputter * o) const {
 	o->link("http://code.google.com/p/wkhtmltopdf/issues/detail?id=57");
 	o->text(".");
 	o->endParagraph();
-	o->endSection();
-}
-
-/*!
-  Output documentation about the proxy settings
-  \param o The outputter to output to
-*/
-void CommandLineParserPrivate::outputProxyDoc(Outputter * o) const {
-	o->beginSection("Specifying A Proxy");
-	o->paragraph(
-		"By default proxy information will be read from the environment"
-		" variables: proxy, all_proxy and http_proxy, proxy options can"
-		" also by specified with the -p switch");
-	o->verbatim(
-		"<type> := \"http://\" | \"socks5://\"\n"
-		"<serif> := <username> (\":\" <password>)? \"@\"\n"
-		"<proxy> := \"None\" | <type>? <sering>? <host> (\":\" <port>)?\n");
-	o->paragraph("Here are some examples (In case you are unfamiliar with the BNF):");
-	o->verbatim("http://user:password@myproxyserver:8080\n"
-				"socks5://myproxyserver\n"
-				"None\n");
 	o->endSection();
 }
 
@@ -444,30 +383,6 @@ void CommandLineParserPrivate::outputExampels(Outputter * o) const {
 	o->verbatim("wkhtmltopdf -H cover cover.html toc chapter1.html chapter2.html chapter3.html book.pdf\n");
 	o->endSection();
 }
-
-/*!
-  Output information on the problems with the static version
-  \param o The outputter to output to
-*/
-void CommandLineParserPrivate::outputStaticProblems(Outputter * o) const {
-	o->beginSection("Static version");
-	o->beginParagraph();
-	o->text("On the wkhtmltopdf website you can download a static version of wkhtmltopdf ");
-	o->link("http://code.google.com/p/wkhtmltopdf/downloads/list");
-	o->text(". This static binary will work on most systems and comes with a build in patched QT.");
-	o->endParagraph();
-
-	o->beginParagraph();
-	o->text("Unfortunately the static binary is not particularly static, on Linux it depends "
-			"on both glibc and openssl, furthermore you will need to have an xserver installed "
-			"but not necessary running. You will need to have different fonts install including "
-			"xfonts-scalable (Type1), and msttcorefonts.  See ");
-	o->link("http://code.google.com/p/wkhtmltopdf/wiki/static");
-	o->text(" for trouble shouting.");
-	o->endParagraph();
-	o->endSection();
-}
-
 
 //  LocalWords:  webkit bool unpatched beginList listItem endList WebKit http
 //  LocalWords:  stroustrup wkhtmltopdf commandlineparser hh QWebFrame param px
