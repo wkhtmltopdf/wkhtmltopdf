@@ -1,21 +1,19 @@
-/*
- * File:   manoutputter.cc
- * Author: Christian Sciberras
- * Created: 20 May 2010
- *   This file is part of wkhtmltoimage.
- *   wkhtmltoimage is free software: you can redistribute it and/or modify
- *   it under the terms of the GNU General Public License as published by
- *   the Free Software Foundation, either version 3 of the License, or
- *   (at your option) any later version.
- *   wkhtmltoimage is distributed in the hope that it will be useful,
- *   but WITHOUT ANY WARRANTY; without even the implied warranty of
- *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *   GNU General Public License for more details.
- *   You should have received a copy of the GNU General Public License
- *   along with wkhtmltoimage.  If not, see <http://www.gnu.org/licenses/>.
- */
-
-#include "commandlineparser_p.hh"
+//-*- mode: c++; tab-width: 4; indent-tabs-mode: t; c-file-style: "stroustrup"; -*-
+// This file is part of wkhtmltopdf.
+//
+// wkhtmltopdf is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// wkhtmltopdf is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with wkhtmltopdf.  If not, see <http://www.gnu.org/licenses/>.
+#include "outputter.hh"
 #include <QStringList>
 #define S(x) ((x).toUtf8().constData())
 
@@ -25,7 +23,7 @@ private:
 	int order;
 public:
 	ManOutputter(FILE * _): fd(_) {
-		fprintf(fd,".TH wkhtmltoimage 1 \"2010 May 21\"\n\n");
+		fprintf(fd,".TH WKHTMLTOPDF 1 \"2009 February 23\"\n\n");
 	}
 
 	void beginSection(const QString & name) {
@@ -46,6 +44,10 @@ public:
 	void text(const QString & t) {
 		QString str = QString(t).replace("-", "\\-");
 		fprintf(fd, "%s", S(str));
+	}
+
+	void sectionLink(const QString & t) {
+		text(t);
 	}
 	
 	void bold(const QString & t) {
@@ -87,7 +89,7 @@ public:
 		fprintf(fd,"%s\n",S(s));
 	}
 	
-	void cswitch(const ArgHandler * h) {
+	void cswitch(const ArgHandlerBase * h) {
 		fprintf(fd, ".TP\n");
 		fprintf(fd, "\\fB");
 		if(h->shortSwitch != 0)
@@ -99,7 +101,7 @@ public:
 		for(QVector<QString>::const_iterator i = h->argn.constBegin(); i != h->argn.constEnd(); ++i)
 			fprintf(fd," \\fI<%s>\\fR", S(*i));
 		
-		fprintf(fd, "\n%s\n",S(h->desc));
+		fprintf(fd, "\n%s\n", S(QString(h->desc).replace("-", "\\-")));
 	}
 	
 	void endSwitch() {

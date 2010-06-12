@@ -3,8 +3,8 @@ include(../../common.pri)
 TEMPLATE = app
 DESTDIR = ../../bin
 TARGET = wkhtmltopdf
-DEPENDPATH += . src
-INCLUDEPATH += . src
+DEPENDPATH += . ../shared
+INCLUDEPATH += . ../shared
 
 readme.target=README
 readme.commands=./wkhtmltopdf --readme > README
@@ -41,6 +41,6 @@ SOURCES += tempfile.cc settings.cc pageconverter.cc \
 HEADERS += progressfeedback.hh
 
 SOURCES += wkhtmltopdf.cc arguments.cc commandlineparser.cc \
-           docparts.cc outputter.cc manoutputter.cc \
-           htmloutputter.cc textoutputter.cc progressfeedback.cc
+           docparts.cc  progressfeedback.cc
            
+include(../shared/shared.pri)

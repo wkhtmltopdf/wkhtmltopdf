@@ -13,7 +13,7 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with wkhtmltopdf.  If not, see <http://www.gnu.org/licenses/>.
-#include <commandlineparser_p.hh>
+#include "outputter.hh"
 
 /*!
   \class Outputter

@@ -1,21 +1,19 @@
-/*
- * File:   textoutputter.cc
- * Author: Christian Sciberras
- * Created: 20 May 2010
- *   This file is part of wkhtmltoimage.
- *   wkhtmltoimage is free software: you can redistribute it and/or modify
- *   it under the terms of the GNU General Public License as published by
- *   the Free Software Foundation, either version 3 of the License, or
- *   (at your option) any later version.
- *   wkhtmltoimage is distributed in the hope that it will be useful,
- *   but WITHOUT ANY WARRANTY; without even the implied warranty of
- *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *   GNU General Public License for more details.
- *   You should have received a copy of the GNU General Public License
- *   along with wkhtmltoimage.  If not, see <http://www.gnu.org/licenses/>.
- */
-
-#include "commandlineparser_p.hh"
+//-*- mode: c++; tab-width: 4; indent-tabs-mode: t; c-file-style: "stroustrup"; -*-
+// This file is part of wkhtmltopdf.
+//
+// wkhtmltopdf is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// wkhtmltopdf is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with wkhtmltopdf.  If not, see <http://www.gnu.org/licenses/>.
+#include "outputter.hh"
 #include <qstringlist.h>
 
 #define S(t) (doc?(t).toUtf8().constData():(t).toLocal8Bit().constData())
@@ -82,6 +80,10 @@ public:
 		}
 	}
 	
+	void sectionLink(const QString & t) {
+		text(t);
+	}
+	
 	void bold(const QString & t) {
 		text("*"+t+"*");
 	}
@@ -121,7 +123,7 @@ public:
 	
 	void beginSwitch() {}
 
-	void cswitch(const ArgHandler * h) {
+	void cswitch(const ArgHandlerBase * h) {
 		w=0;
 		if(!doc) {fprintf(fd,"  "); w=2;}
 		if(h->shortSwitch != 0)

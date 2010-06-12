@@ -20,50 +20,16 @@
 #include <QString>
 #include "commandlineparser.hh"
 #include "settings.hh"
+#include "outputter.hh"
+
 using namespace wkhtmltopdf::settings;
 
 class CommandLineParserPrivate;
 
-class ArgHandler {
+class ArgHandler: public ArgHandlerBase {
 public:
-	QString longName;
-	QString desc;
-	char shortSwitch;
-	QVector<QString> argn;
-	bool display;
-	bool extended;
-	bool qthack;
 	int section;
 	virtual bool operator() (const char ** args, CommandLineParserPrivate & parser, Page & page) = 0;
-	//virtual void useDefault(CommandLineParserPrivate & parser, Settings::PageSettings & page);
-	virtual QString getDesc() const;
-	virtual ~ArgHandler();
-};
- 
-
-class Outputter {
-public:
-	virtual ~Outputter() {}
-	virtual void beginSection(const QString & name) = 0;
-	virtual void endSection() = 0;
-	virtual void beginParagraph() = 0;
-	virtual void text(const QString & t) = 0;
-	virtual void bold(const QString & t) =  0;
-	virtual void italic(const QString & t) = 0;
-	virtual void link(const QString & l) = 0;
-	virtual void sectionLink(const QString & s) = 0;
-	virtual void endParagraph() = 0;
-	virtual void verbatim(const QString & t) = 0;
- 	virtual void beginList(bool ordered=false) = 0;
- 	virtual void endList() = 0;
- 	virtual void listItem(const QString & t) = 0;
-	virtual void beginSwitch() = 0;
-	virtual void cswitch(const ArgHandler * h) = 0;
-	virtual void endSwitch() = 0;
-	void paragraph(const QString & t);
-	static Outputter * text(FILE * fd, bool doc=false, bool extended=false);
-	static Outputter * man(FILE * fd);
-	static Outputter * html(FILE * fd);
 };
 
 class CommandLineParserPrivate {

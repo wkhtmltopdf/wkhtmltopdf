@@ -13,7 +13,7 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with wkhtmltopdf.  If not, see <http://www.gnu.org/licenses/>.
-#include "commandlineparser_p.hh"
+#include "outputter.hh"
 #include <QTextDocument>
 
 #define S(x) Qt::escape(x).toUtf8().constData()
@@ -100,7 +100,7 @@ public:
 		fprintf(fd, "<table>\n");
 	}
 
-	void cswitch(const ArgHandler * h) {
+	void cswitch(const ArgHandlerBase * h) {
 		fprintf(fd, "<tr><td class=\"short\">");
 		if(h->shortSwitch)
 			fprintf(fd, "-%c,",h->shortSwitch);

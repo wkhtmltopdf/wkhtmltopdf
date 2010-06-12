@@ -7,8 +7,8 @@ UI_DIR = ../../build/image
 TEMPLATE = app
 TARGET = wkhtmltoimage
 DESTDIR = ../../bin
-DEPENDPATH += . src
-INCLUDEPATH += . src
+DEPENDPATH += . ../shared
+INCLUDEPATH += . ../shared
 
 readme.target=README_WKHTMLTOIMAGE
 readme.commands=./wkhtmltoimage --readme > README_WKHTMLTOIMAGE
@@ -35,6 +35,7 @@ target.path=$$INSTALLBASE/bin
 
 # Input
 HEADERS += pageloader.hh settings.hh
-SOURCES += wkhtmltoimage.cc arguments.cc commandlineparser.cc docparts.cc      \
-           textoutputter.cc outputter.cc manoutputter.cc pageloader.cc         \
-           settings.cc utilities.cc htmloutputter.cc
+SOURCES += wkhtmltoimage.cc arguments.cc commandlineparser.cc docparts.cc \
+           pageloader.cc settings.cc utilities.cc \
+
+include(../shared/shared.pri)

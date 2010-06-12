@@ -76,19 +76,6 @@ void ArgHandler::useDefault(CommandLineParserPrivate & parser) {
 	Q_UNUSED(parser);
 } 
 
-/*!
-  \fn ArgHandler::getDesc() const
-  Get the description of this switch
-*/  
-QString ArgHandler::getDesc() const {
-	return desc;
-}
-
-/*!
-  \fn ArgHandler::~ArgHandler()
-  Dummy virtual destructor
-*/  
-ArgHandler::~ArgHandler() {}
 
 /*!
   \class CommandLineParserPrivate

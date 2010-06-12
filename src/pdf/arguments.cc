@@ -66,30 +66,6 @@
   \param settings The settings to store the information in
 */
 
-/*!
-  \fn ArgHandler::useDefault(CommandLineParserPrivate & parser)
-  Set give settings its default value
-
-  This is a NOOP for ArgHandler
-  \param parser The parser giving the request
-*/
-//void ArgHandler::useDefault(CommandLineParserPrivate & parser) {
-//	Q_UNUSED(parser);
-//} 
-
-/*!
-  \fn ArgHandler::getDesc() const
-  Get the description of this switch
-*/  
-QString ArgHandler::getDesc() const {
-	return desc;
-}
-
-/*!
-  \fn ArgHandler::~ArgHandler()
-  Dummy virtual destructor
-*/  
-ArgHandler::~ArgHandler() {}
 
 /*!
   \class CommandLineParserPrivate
