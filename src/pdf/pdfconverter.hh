@@ -14,11 +14,30 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with wkhtmltopdf.  If not, see <http://www.gnu.org/licenses/>.
-#include <settings.hh>
+#ifndef __PAGECONVERTER_HH__
+#define __PAGECONVERTER_HH__
+#include "settings.hh"
+#include "converter.hh"
 
-Global::Global():
-  quiet(false),
-  useGraphics(false),
-  in(""),
-  out(""),
-  fmt("") {}
+namespace wkhtmltopdf {
+
+void dumpDefaultTOCStyleSheet(QTextStream & stream, settings::TableOfContent & s);
+
+class PdfConverterPrivate;
+
+class PdfConverter: public Converter {
+	Q_OBJECT
+public:
+	PdfConverter(settings::Global & globalSettings);
+	~PdfConverter();
+	int pageCount();
+	void addResource(const settings::Page & pageSettings);
+	const settings::Global & globalSettings() const;
+private:
+	PdfConverterPrivate * d;
+	virtual ConverterPrivate & priv();
+	friend class PdfConverterPrivate;
+};
+
+}
+#endif //__PAGECONVERTER_HH__

@@ -14,11 +14,44 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with wkhtmltopdf.  If not, see <http://www.gnu.org/licenses/>.
-#include <settings.hh>
+#ifndef __WEBSETTINGS_HH__
+#define __WEBSETTINGS_HH__
+#include <QString>
+#include <QNetworkProxy>
+namespace wkhtmltopdf {
+namespace settings {
 
-Global::Global():
-  quiet(false),
-  useGraphics(false),
-  in(""),
-  out(""),
-  fmt("") {}
+struct Web {
+	Web();
+
+	//! Should we print background images
+	bool background;
+	
+	//! Should we load images
+	bool loadImages;
+
+	//! Should we enable Javascript
+	bool enableJavascript; 
+	
+	//! Should the horrible intelligent shrinking feature be enabled?
+	bool enableIntelligentShrinking;
+		
+	//! Minimum font size
+	int minimumFontSize;
+	
+	//! Should we use the print or the screen media type
+	bool printMediaType;
+	
+	//! Encoding used to enterpit a document with do supplied encoding
+	QString defaultEncoding;
+	
+	//! Stylesheet supplied by the user
+	QString userStyleSheet;
+
+	//! Should plugins be allowed
+	bool enablePlugins;
+};
+
+}
+}
+#endif //__WEBSETTINGS_HH__

@@ -15,8 +15,8 @@
 // along with wkhtmltopdf.  If not, see <http://www.gnu.org/licenses/>.
 #include "commandlineparser.hh"
 #include "settings.hh"
-#include "utilities.cc"
-#include "converter.hh"
+#include "utilities.hh"
+#include "imageconverter.hh"
 #include <QApplication>
 
 int main(int argc, char** argv) {
@@ -34,11 +34,11 @@ int main(int argc, char** argv) {
 	a.setStyle(new MyLooksStyle());
 
 	//Create the actual page converter to convert the pages
-	Converter converter(settings);
+	wkhtmltopdf::ImageConverter converter(settings);
 
 	if (!converter.convert()) return EXIT_FAILURE;
 
-	switch(converter.httpErrorCode) {
+	switch(converter.httpErrorCode()) {
 
 		case 401:
 			return 3;

@@ -14,7 +14,7 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with wkhtmltopdf.  If not, see <http://www.gnu.org/licenses/>.
-#include "pageconverter_p.hh"
+#include "pdfconverter_p.hh"
 #include <QAuthenticator>
 #include <QDateTime>
 #include <QDir>
@@ -51,12 +51,12 @@ struct StreamDumper {
  
 /*!
   \file pageconverter.hh
-  \brief Defines the PageConverter class
+  \brief Defines the PdfConverter class
 */
 
 /*!
   \file pageconverter_p.hh
-  \brief Defines the PageConverterPrivate class
+  \brief Defines the PdfConverterPrivate class
 */
 
 bool looksLikeHtmlAndNotAUrl(QString str) {
@@ -64,9 +64,9 @@ bool looksLikeHtmlAndNotAUrl(QString str) {
 	return s.count('<') > 0 || s.count('<') > 0;
 }
 
-PageConverterPrivate::PageConverterPrivate(Global & s, PageConverter & o) :
+PdfConverterPrivate::PdfConverterPrivate(Global & s, PdfConverter & o) :
 	settings(s), pageLoader(s.load),
-	outer(o), printer(0), painter(0)
+	out(o), printer(0), painter(0)
 #ifdef __EXTENSIVE_WKHTMLTOPDF_QT_HACK__
 	, hfLoader(s.load), tocLoader1(s.load), tocLoader2(s.load)
 	, tocLoader(&tocLoader1), tocLoaderOld(&tocLoader2)
@@ -109,54 +109,12 @@ PageConverterPrivate::PageConverterPrivate(Global & s, PageConverter & o) :
 #endif
 }
 
-PageConverterPrivate::~PageConverterPrivate() {
+PdfConverterPrivate::~PdfConverterPrivate() {
 	clearResources();
 }
 
-void PageConverterPrivate::forwardError(QString error) {
-	emit outer.error(error);
-}
 
-void PageConverterPrivate::forwardWarning(QString warning) {
-	emit outer.warning(warning);
-}
-
-
-/*!
- * Called when the page is loading, display some progress to the using
- * \param progress the loading progress in percent
- */
-void PageConverterPrivate::loadProgress(int progress) {
-	progressString = QString::number(progress) + "%";
-	emit outer.progressChanged(progress);
-}
-
-void PageConverterPrivate::updateWebSettings(QWebSettings * ws, const settings::Page & s) const {
-#ifdef  __EXTENSIVE_WKHTMLTOPDF_QT_HACK__
-	if (!s.defaultEncoding.isEmpty())
-		ws->setDefaultTextEncoding(s.defaultEncoding);
-	if (!s.enableIntelligentShrinking) {
-		ws->setPrintingMaximumShrinkFactor(1.0);
-		ws->setPrintingMinimumShrinkFactor(1.0);
-	}
-	ws->setPrintingMediaType(s.printMediaType?"print":"screen");
-#endif
-	ws->setAttribute(QWebSettings::JavaEnabled, s.enablePlugins);
-	ws->setAttribute(QWebSettings::JavascriptEnabled, s.enableJavascript);
-	ws->setAttribute(QWebSettings::JavascriptCanOpenWindows, false);
-	ws->setAttribute(QWebSettings::JavascriptCanAccessClipboard, false);
-	ws->setFontSize(QWebSettings::MinimumFontSize, s.minimumFontSize);
-#if QT_VERSION >= 0x040500
-	//Newer vertions of QT have even more settings to change
-	ws->setAttribute(QWebSettings::PrintElementBackgrounds, s.background);
-	ws->setAttribute(QWebSettings::AutoLoadImages, s.loadImages);
-	ws->setAttribute(QWebSettings::PluginsEnabled, s.enablePlugins);
-	if (!s.userStyleSheet.isEmpty())
-		ws->setUserStyleSheetUrl(MultiPageLoader::guessUrlFromString(s.userStyleSheet));
-#endif
-}
-
-void PageConverterPrivate::beginConvert() {
+void PdfConverterPrivate::beginConvert() {
 	error=false;
 	progressString = "0%";
 	currentPhase=0;
@@ -164,7 +122,7 @@ void PageConverterPrivate::beginConvert() {
 
 #ifndef __EXTENSIVE_WKHTMLTOPDF_QT_HACK__	
 	if (objects.size() > 1) {
-		emit outer.error("This version of wkhtmltopdf is build against an unpatched version of QT, and does not support more then one input document.");
+		emit out.error("This version of wkhtmltopdf is build against an unpatched version of QT, and does not support more then one input document.");
 		fail();
 		return;
 	}
@@ -175,13 +133,13 @@ void PageConverterPrivate::beginConvert() {
 		settings::Page & s = o.settings;		
 		
 		if (!s.header.htmlUrl.isEmpty() && looksLikeHtmlAndNotAUrl(s.header.htmlUrl)) {
-			emit outer.error("--header-html should be a URL and not a string containing HTML code.");
+			emit out.error("--header-html should be a URL and not a string containing HTML code.");
 			fail();
 			return;
 		}
 
 		if (!s.footer.htmlUrl.isEmpty() && looksLikeHtmlAndNotAUrl(s.footer.htmlUrl)) {
-			emit outer.error("--header-html should be a URL and not a string containing HTML code.");
+			emit out.error("--header-html should be a URL and not a string containing HTML code.");
 			fail();
 			return;
 		}
@@ -190,24 +148,15 @@ void PageConverterPrivate::beginConvert() {
 			o.loaderObject = pageLoader.addResource(s.page, s.load);
 			o.page = &o.loaderObject->page;
 			PageObject::webPageToObject[o.page] = &o;
-			updateWebSettings(o.page->settings(), s);
+			updateWebSettings(o.page->settings(), s.web);
 		}
 	}
 
 	
-	emit outer.phaseChanged();
+	emit out.phaseChanged();
 	loadProgress(0);
 
 	pageLoader.load();
-}
-
-void PageConverterPrivate::fail() {
-	error = true;
-	convertionDone = true;
-	clearResources();
-	emit outer.finished(false);
-	
-	qApp->exit(0); // quit qt's event handling
 }
 
 
@@ -215,7 +164,7 @@ void PageConverterPrivate::fail() {
 /*!
  * Prepares printing out the document to the pdf file
  */
-void PageConverterPrivate::pagesLoaded(bool ok) {
+void PdfConverterPrivate::pagesLoaded(bool ok) {
 	if (errorCode == 0) errorCode = pageLoader.httpErrorCode();
 	if (!ok) {
 		fail(); 
@@ -246,7 +195,7 @@ void PageConverterPrivate::pagesLoaded(bool ok) {
 	if (settings.margin.left.second != settings.margin.right.second ||
 		settings.margin.left.second != settings.margin.top.second ||
 		settings.margin.left.second != settings.margin.bottom.second) {
-		emit outer.error("Currently all margin units must be the same!");
+		emit out.error("Currently all margin units must be the same!");
 		fail();
 		return;
 	}
@@ -267,7 +216,7 @@ void PageConverterPrivate::pagesLoaded(bool ok) {
 	printer->setColorMode(settings.colorMode);
 
 	if (!printer->isValid()) {
-		emit outer.error("Unable to write to destination");
+		emit out.error("Unable to write to destination");
 		fail();
 		return;
 	}
@@ -291,13 +240,13 @@ void PageConverterPrivate::pagesLoaded(bool ok) {
 	}
 	printer->setDocName(title);
 	if (!painter->begin(printer)) {
-		emit outer.error("Unable to write to destination");
+		emit out.error("Unable to write to destination");
 		fail();
 		return;
 	}
 	
 	currentPhase = 1;
-	emit outer.phaseChanged();
+	emit out.phaseChanged();
 	outline = new Outline(settings);
 	//This is the first render face, it is done to calculate:
 	// * The number of pages of each document
@@ -315,7 +264,7 @@ void PageConverterPrivate::pagesLoaded(bool ok) {
 			
 		int tot = objects.size();
 		progressString = QString("Object ")+QString::number(d+1)+QString(" of ")+QString::number(tot);
-		emit outer.progressChanged((d+1)*100 / tot);
+		emit out.progressChanged((d+1)*100 / tot);
 
 		painter->save();
 		QWebPrinter wp(objects[d].page->mainFrame(), printer, *painter);
@@ -332,10 +281,10 @@ void PageConverterPrivate::pagesLoaded(bool ok) {
 #endif
 }
 
-void PageConverterPrivate::loadHeaders() {
+void PdfConverterPrivate::loadHeaders() {
 #ifdef __EXTENSIVE_WKHTMLTOPDF_QT_HACK__
 	currentPhase = 4;
-	emit outer.phaseChanged();
+	emit out.phaseChanged();
 	bool hf=false;
 
 	int pageNumber=1;
@@ -366,7 +315,7 @@ void PageConverterPrivate::loadHeaders() {
 }
 
 
-void PageConverterPrivate::loadTocs() {
+void PdfConverterPrivate::loadTocs() {
 #ifdef __EXTENSIVE_WKHTMLTOPDF_QT_HACK__
 	std::swap(tocLoaderOld, tocLoader);
 	tocLoader->clearResources();
@@ -389,14 +338,14 @@ void PageConverterPrivate::loadTocs() {
 		obj.loaderObject = pageLoader.addResource(path, ps.load);
 		obj.page = &obj.loaderObject->page;
 		PageObject::webPageToObject[obj.page] = &obj;
-		updateWebSettings(obj.page->settings(), ps);
+		updateWebSettings(obj.page->settings(), ps.web);
 		toc= true;
 	}
 
 	if (toc) {
 		if (currentPhase != 2) {
 			currentPhase = 2;
-			emit outer.phaseChanged();
+			emit out.phaseChanged();
 		}
 		tocLoader->load();
 	} else 
@@ -405,7 +354,7 @@ void PageConverterPrivate::loadTocs() {
 }
 
 #ifdef __EXTENSIVE_WKHTMLTOPDF_QT_HACK__
-void PageConverterPrivate::findLinks(QWebFrame * frame, QVector<QPair<QWebElement, QString> > & local, QVector<QPair<QWebElement, QString> > & external, QHash<QString, QWebElement> & anchors) {
+void PdfConverterPrivate::findLinks(QWebFrame * frame, QVector<QPair<QWebElement, QString> > & local, QVector<QPair<QWebElement, QString> > & external, QHash<QString, QWebElement> & anchors) {
 	bool ulocal=true, uexternal=true;
 	if (PageObject::webPageToObject.contains(frame->page())) {
 		ulocal = PageObject::webPageToObject[frame->page()]->settings.useLocalLinks;
@@ -445,21 +394,21 @@ void PageConverterPrivate::findLinks(QWebFrame * frame, QVector<QPair<QWebElemen
 	}
 }
 
-void PageConverterPrivate::fillParms(QHash<QString, QString> & parms, int page, const settings::Page & ps) {
+void PdfConverterPrivate::fillParms(QHash<QString, QString> & parms, int page, const settings::Page & ps) {
 	outline->fillHeaderFooterParms(page, parms, ps);
 	QDateTime t(QDateTime::currentDateTime());
 	parms["time"] = t.time().toString(Qt::SystemLocaleShortDate);
 	parms["date"] = t.date().toString(Qt::SystemLocaleShortDate);
 }
 
-void PageConverterPrivate::beginPage(int actualPage) {
+void PdfConverterPrivate::beginPage(int actualPage) {
 	progressString = QString("Page ") + QString::number(actualPage) + QString(" of ") + QString::number(actualPages);
-	emit outer.progressChanged(actualPage * 100 / actualPages);
+	emit out.progressChanged(actualPage * 100 / actualPages);
 	if (actualPage != 1)
 		printer->newPage();
 }
 
-void PageConverterPrivate::endPage(PageObject & object, bool hasHeaderFooter, int objectPage, int pageNumber) {
+void PdfConverterPrivate::endPage(PageObject & object, bool hasHeaderFooter, int objectPage, int pageNumber) {
 	typedef QPair<QWebElement, QString> p_t;		
 	settings::Page & s = object.settings;
 	if(hasHeaderFooter) {
@@ -553,7 +502,7 @@ void PageConverterPrivate::endPage(PageObject & object, bool hasHeaderFooter, in
 }
 #endif
 
-void PageConverterPrivate::tocLoaded(bool ok) {
+void PdfConverterPrivate::tocLoaded(bool ok) {
 	if (errorCode == 0) errorCode = pageLoader.httpErrorCode();
 	if (!ok) {
 		fail();
@@ -588,7 +537,7 @@ void PageConverterPrivate::tocLoaded(bool ok) {
 	else {
 		//Find and resolve all local links
 		currentPhase = 3;
-		emit outer.phaseChanged();
+		emit out.phaseChanged();
 		
 		QHash<QString, int> urlToDoc;
 		for(int d=0; d < objects.size(); ++d) {
@@ -600,7 +549,7 @@ void PageConverterPrivate::tocLoaded(bool ok) {
 		for(int d=0; d < objects.size(); ++d) {
 			if (objects[d].loaderObject->skip) continue;
 			progressString = QString("Object ")+QString::number(d+1)+QString(" of ")+QString::number(objects.size());
-			emit outer.progressChanged((d+1)*100 / objects.size());
+			emit out.progressChanged((d+1)*100 / objects.size());
 			findLinks(objects[d].page->mainFrame(), objects[d].localLinks, objects[d].externalLinks, objects[d].anchors );
 		}
 
@@ -609,7 +558,7 @@ void PageConverterPrivate::tocLoaded(bool ok) {
 #endif
 }
 
-void PageConverterPrivate::headersLoaded(bool ok) {
+void PdfConverterPrivate::headersLoaded(bool ok) {
 	if (errorCode == 0) errorCode = pageLoader.httpErrorCode();
 	if (!ok) {
 		fail();
@@ -618,14 +567,14 @@ void PageConverterPrivate::headersLoaded(bool ok) {
 	printDocument();
 }
 
-void PageConverterPrivate::printDocument() {
+void PdfConverterPrivate::printDocument() {
 
 #ifndef __EXTENSIVE_WKHTMLTOPDF_QT_HACK__
 	currentPhase = 1;
-	emit outer.phaseChanged();
+	emit out.phaseChanged();
 	objects[0].page->mainFrame()->print(printer);
 	progressString = "";
-	emit outer.progressChanged(-1);
+	emit out.progressChanged(-1);
 #else
  	int actualPage=1;
 		
@@ -633,10 +582,10 @@ void PageConverterPrivate::printDocument() {
  	int pc=settings.collate?1:settings.copies;
 
 	currentPhase = 5;
-	emit outer.phaseChanged();
+	emit out.phaseChanged();
 
 	progressString = "Preparing";
-	emit outer.progressChanged(0);
+	emit out.progressChanged(0);
 
 	for(int cc_=0; cc_ < cc; ++cc_) {
 		int pageNumber=1;
@@ -754,7 +703,7 @@ void PageConverterPrivate::printDocument() {
 		if( !i.open(QIODevice::ReadOnly) || 
 			!o.open(stdout,QIODevice::WriteOnly) ||
 			!MultiPageLoader::copyFile(i,o) ) {
-			emit outer.error("Count not write to stdout");
+			emit out.error("Count not write to stdout");
 			fail();
 			return;
 		}
@@ -765,15 +714,15 @@ void PageConverterPrivate::printDocument() {
 #else
 	currentPhase = 2;
 #endif
-	emit outer.phaseChanged();
+	emit out.phaseChanged();
 	convertionDone = true;
-	emit outer.finished(true);
+	emit out.finished(true);
 	
 	qApp->exit(0); // quit qt's event handling
 }
 
 #ifdef __EXTENSIVE_WKHTMLTOPDF_QT_HACK__
-QWebPage * PageConverterPrivate::loadHeaderFooter(QString url, const QHash<QString, QString> & parms, const settings::Page & ps) {
+QWebPage * PdfConverterPrivate::loadHeaderFooter(QString url, const QHash<QString, QString> & parms, const settings::Page & ps) {
 	QUrl u = MultiPageLoader::guessUrlFromString(url);
 	for(QHash<QString, QString>::const_iterator i=parms.begin(); i != parms.end(); ++i)
 		u.addQueryItem(i.key(), i.value());
@@ -785,7 +734,7 @@ QWebPage * PageConverterPrivate::loadHeaderFooter(QString url, const QHash<QStri
  * Replace some variables in a string used in a header or footer
  * \param q the string to substitute in
  */
-QString PageConverterPrivate::hfreplace(const QString & q, const QHash<QString, QString> & parms) {
+QString PdfConverterPrivate::hfreplace(const QString & q, const QHash<QString, QString> & parms) {
 	QString r=q;
 	for(QHash<QString, QString>::const_iterator i=parms.begin(); i != parms.end(); ++i)
 		r=r.replace("["+i.key()+"]", i.value(), Qt::CaseInsensitive);
@@ -793,17 +742,7 @@ QString PageConverterPrivate::hfreplace(const QString & q, const QHash<QString, 
 }
 #endif
 
-bool PageConverterPrivate::convert() {
-	convertionDone=false;
-	beginConvert();
-	while(!convertionDone) {
-		qApp->exec();
-	  //qApp->processEvents(QEventLoop::WaitForMoreEvents | QEventLoop::AllEvents);
-	}
-	return !error;
-}
-
-void PageConverterPrivate::clearResources() {
+void PdfConverterPrivate::clearResources() {
 	objects.clear();
 	pageLoader.clearResources();
 #ifdef __EXTENSIVE_WKHTMLTOPDF_QT_HACK__
@@ -824,12 +763,12 @@ void PageConverterPrivate::clearResources() {
 	painter = 0;
 }
 
-void PageConverterPrivate::cancel() {
-	error=true;
+Converter & PdfConverterPrivate::outer() {
+	return out;
 }
 
 /*!
-  \class PageConverter
+  \class PdfConverter
   \brief Class responsible for converting html pages to pdf
   \todo explain something about the conversion process here, and mention stages
 */
@@ -838,119 +777,62 @@ void PageConverterPrivate::cancel() {
   \brief Create a page converter object based on the supplied settings
   \param settings Settings for the conversion
 */
-PageConverter::PageConverter(settings::Global & settings):
-	d(new PageConverterPrivate(settings, *this)) {
+PdfConverter::PdfConverter(settings::Global & settings):
+	d(new PdfConverterPrivate(settings, *this)) {
 }
 
 /*!
   \brief The destructor for the page converter object
 */
-PageConverter::~PageConverter() {
+PdfConverter::~PdfConverter() {
 	delete d;
-}
-
-/*!
-  \brief Count the number of phases that the conversion process goes though
-*/
-int PageConverter::phaseCount() {
-	return d->phaseDescriptions.size();
-}
-
-/*!
-  \brief return the current phase of conversion
-*/
-int PageConverter::currentPhase() {
-	return d->currentPhase;
-}
-
-/*!
-  \brief return a textual description of some phase
-  \param phase the phase to get a description of, -1 for current phase
-*/
-QString PageConverter::phaseDescription(int phase) {
-	if (phase < 0 || d->phaseDescriptions.size() <= phase) phase=d->currentPhase;
-	if (phase < 0 || d->phaseDescriptions.size() <= phase) return "Invalid";
-	return d->phaseDescriptions[phase];
-}
-
-/*!
-  \brief return a textual description of progress in the current phase
-*/
-QString PageConverter::progressString() {
-	return d->progressString;
-}
-
-/*!
-  \brief return the HTTP return code, of the converted page
-*/
-int PageConverter::httpErrorCode() {
-	return d->errorCode;
 }
 
 /*!
   \brief add a resource we want to convert
   \param url The url of the object we want to convert
 */
-void PageConverter::addResource(const settings::Page & page) {
+void PdfConverter::addResource(const settings::Page & page) {
 	d->objects.push_back( PageObject(page) );
 }
 
-/*!
-  \brief Start a asynchronous conversion of html pages to a pdf document.
-  Once conversion is done an finished signal will be emitted
-*/
-void PageConverter::beginConvertion() {
-	d->beginConvert();
-}
-
-/*!
-  \brief Synchronous convert html pages to a pdf document.
-*/
-bool PageConverter::convert() {
-	return d->convert();
-}
-
-/*!
-  \brief Cancel a running conversion
-*/
-void PageConverter::cancel() {
-	d->cancel();
-}
 
 /*!
   \brief Returns the settings object associated with the page converter
 */
-const settings::Global & PageConverter::globalSettings() const {
+const settings::Global & PdfConverter::globalSettings() const {
 	return d->settings;
 }
 
+
 /*!
-  \fn PageConverter::warning(const QString & message)
+  \fn PdfConverter::warning(const QString & message)
   \brief Signal emitted when some non fatal warning occurs during conversion
   \param message The warning message
 */
 
 /*!
-  \fn PageConverter::error(const QString & message)
+  \fn PdfConverter::error(const QString & message)
   \brief Signal emitted when a fatal error has occurred during conversion
   \param message A message describing the fatal error
 */
 
 /*!
-  \fn PageConverter::phaseChanged()
+  \fn PdfConverter::phaseChanged()
   \brief Signal emitted when the converter has reached a new phase
 */
 
 /*!
-  \fn PageConverter::progressChanged()
+  \fn PdfConverter::progressChanged()
   \brief Signal emitted when some progress has been done in the conversion phase
 */
 
 /*!
-  \fn PageConverter::finised()
+  \fn PdfConverter::finised()
   \brief Signal emitted when conversion has finished.
 */
 
 
-
-
+ConverterPrivate & PdfConverter::priv() {
+	return *d;
+}

@@ -160,6 +160,48 @@ void CommandLineParserBase::addGlobalLoadArgs(LoadGlobal & s) {
     addarg("cookie-jar", 0, "Read and write cookies from and to the supplied cookie jar file", new QStrSetter(s.cookieJar, "path") );
 }
 
+void CommandLineParserBase::addWebArgs(Web & s) {
+	extended(true);
+ 	qthack(false);
+	
+	addarg("enable-plugins",0,"Enable installed plugins (plugins will likely not work)", new ConstSetter<bool>(s.enablePlugins,true));
+ 	addarg("disable-plugins",0,"Disable installed plugins", new ConstSetter<bool>(s.enablePlugins,false));
+	
+	addarg("minimum-font-size",0,"Minimum font size", new IntSetter(s.minimumFontSize,"int"));
+	
+#if QT_VERSION >= 0x040500 //Not printing the background was added in QT4.5
+ 	addarg("no-background",0,"Do not print background", new ConstSetter<bool>(s.background, false));
+ 	addarg("background",0,"Do print background", new ConstSetter<bool>(s.background, true));
+ 	addarg("user-style-sheet",0,"Specify a user style sheet, to load with every page", new QStrSetter(s.userStyleSheet,"url"));
+#endif
+
+#if QT_VERSION >= 0x040600
+	addarg("no-images",0,"Do not load or print images", new ConstSetter<bool>(s.loadImages, false));
+	addarg("images",0,"Do load or print images", new ConstSetter<bool>(s.loadImages, true));
+#endif	
+
+	addarg("disable-javascript",'n',"Do not allow web pages to run javascript", new ConstSetter<bool>(s.enableJavascript,false));
+	addarg("enable-javascript",'n',"Do allow web pages to run javascript", new ConstSetter<bool>(s.enableJavascript,true));
+	
+	extended(true);
+ 	qthack(false);
+	
+	addarg("disable-smart-shrinking", 0, "Disable the intelligent shrinking strategy used by WebKit that makes the pixel/dpi ratio none constant",new ConstSetter<bool>(s.enableIntelligentShrinking, false));
+ 	addarg("enable-smart-shrinking", 0, "Enable the intelligent shrinking strategy used by WebKit that makes the pixel/dpi ratio none constant",new ConstSetter<bool>(s.enableIntelligentShrinking, true));
+	
+	
+	addarg("print-media-type",0,"Use print media-type instead of screen", new ConstSetter<bool>(s.printMediaType,true));
+	addarg("no-print-media-type",0,"Do not use print media-type instead of screen", new ConstSetter<bool>(s.printMediaType, false));
+
+	
+#if QT_VERSION >= 0x040600
+ 	qthack(false);
+#endif
+ 	addarg("encoding", 0, "Set the default text encoding, for input", new QStrSetter(s.defaultEncoding,"encoding"));
+
+
+}
+
 void CommandLineParserBase::addPageLoadArgs(LoadPage & s) {
 	extended(true);
 	qthack(false);

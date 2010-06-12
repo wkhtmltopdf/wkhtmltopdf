@@ -17,7 +17,8 @@
 #define __TEXTUALFEEDBACK_P_HH__
 #include "multipageloader.hh"
 #include "outline.hh"
-#include "pageconverter.hh"
+#include "pdfconverter.hh"
+#include "converter_p.hh"
 #include "tempfile.hh"
 #include "tocprinter.hh"
 #include <QAtomicInt>
@@ -79,27 +80,21 @@ public:
 	
 };
 
-class PageConverterPrivate: public QObject {
+class PdfConverterPrivate: public ConverterPrivate {
 	Q_OBJECT
 public:
-	PageConverterPrivate(settings::Global & s, PageConverter & o);
-	~PageConverterPrivate();
-	void copyFile(QFile & src, QFile & dst);
+	PdfConverterPrivate(settings::Global & s, PdfConverter & o);
+	~PdfConverterPrivate();
 
-	QList<QString> phaseDescriptions;
-	int currentPhase;
-	
 	settings::Global & settings;
 
 	MultiPageLoader pageLoader;
-	QString progressString;
+
 private:
-	PageConverter & outer;
+	PdfConverter & out;
 	void clearResources();
 	TempFile tempOut;
-	bool error;
 
-	int errorCode;
 	QList<PageObject> objects;
 
 	QPrinter * printer;
@@ -111,8 +106,6 @@ private:
 
 	int tocPages;
 
-	bool convertionDone;
-
 #ifdef __EXTENSIVE_WKHTMLTOPDF_QT_HACK__
 	MultiPageLoader hfLoader;
 	MultiPageLoader tocLoader1;
@@ -120,7 +113,6 @@ private:
 	
 	MultiPageLoader * tocLoader;
 	MultiPageLoader * tocLoaderOld;
-	
 
 	QHash<QString, PageObject *> urlToPageObj;
 
@@ -136,25 +128,18 @@ private:
 
 	void loadTocs();
 	void loadHeaders();
-	void updateWebSettings(QWebSettings * ws, const settings::Page & s) const;
-
-	void fail();
 public slots:
-	void loadProgress(int progress);
 	void pagesLoaded(bool ok);
 	void tocLoaded(bool ok);
 	void headersLoaded(bool ok);
 	
-	
 	void printDocument();
 
 	void beginConvert();
-	void cancel();
-	bool convert();
-	void forwardError(QString error);
-	void forwardWarning(QString warning);
 
-	friend class PageConverter;
+	friend class PdfConverter;
+
+	virtual Converter & outer();
 };
 
 }

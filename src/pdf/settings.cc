@@ -214,16 +214,9 @@ TableOfContent::TableOfContent():
 {}
 
 Page::Page():
-	background(true),
-	loadImages(true),
 	useExternalLinks(true),
 	useLocalLinks(true),
-	enableJavascript(true),
-	enableIntelligentShrinking(true),
-	minimumFontSize(-1),
-	printMediaType(false),
 	produceForms(false),
-	enablePlugins(false),
 	includeInOutline(true),
 	pagesCount(true),
 	isTableOfContent(false),

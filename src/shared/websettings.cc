@@ -1,4 +1,5 @@
-//-*- mode: c++; tab-width: 4; indent-tabs-mode: t; c-file-style: "stroustrup"; -*-
+// -*- mode: c++; tab-width: 4; indent-tabs-mode: t; eval: (progn (c-set-style "stroustrup") (c-set-offset 'innamespace 0)); -*-
+// vi:set ts=4 sts=4 sw=4 noet :
 // This file is part of wkhtmltopdf.
 //
 // wkhtmltopdf is free software: you can redistribute it and/or modify
@@ -13,19 +14,20 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with wkhtmltopdf.  If not, see <http://www.gnu.org/licenses/>.
-#include <QObject>
-#include <QWebPage>
-#include "settings.hh"
+#include "websettings.hh"
+namespace wkhtmltopdf {
+namespace settings {
 
-class Converter: public QObject {
-	Q_OBJECT
-public:
-	Converter(wkhtmltopdf::settings::Global & s);
-	~Converter();
-	int httpErrorCode;
-	wkhtmltopdf::settings::Global settings;
-	bool convert();
-public slots:
-	void loaded(bool ok);
-};
+Web::Web() :
+	background(true),
+	loadImages(true),
+	enableJavascript(true),
+	enableIntelligentShrinking(true),
+	minimumFontSize(-1),
+	printMediaType(false),
+	defaultEncoding(""),
+	userStyleSheet(""),
+	enablePlugins(false) {}
 
+}
+}

@@ -1,4 +1,5 @@
-//-*- mode: c++; tab-width: 4; indent-tabs-mode: t; c-file-style: "stroustrup"; -*-
+// -*- mode: c++; tab-width: 4; indent-tabs-mode: t; eval: (progn (c-set-style "stroustrup") (c-set-offset 'innamespace 0)); -*-
+// vi:set ts=4 sts=4 sw=4 noet :
 // This file is part of wkhtmltopdf.
 //
 // wkhtmltopdf is free software: you can redistribute it and/or modify
@@ -13,8 +14,8 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with wkhtmltopdf.  If not, see <http://www.gnu.org/licenses/>.
-#include "converter.hh"
-
+#include "imageconverter_p.hh"
+#include "settings.hh"
 #include <QObject>
 #include <QWebPage>
 #include <QWebFrame>
@@ -25,24 +26,45 @@
 #include <QEventLoop>
 #include <QFileInfo>
 #include <QDebug>
+#include <qapplication.h>
 
-void Converter::loaded(bool ok) {
+namespace wkhtmltopdf {
 
+ImageConverterPrivate::ImageConverterPrivate(ImageConverter & o, wkhtmltopdf::settings::Global & s):
+	settings(s),
+	loader(s.loadGlobal),
+	out(o) {
+	
+	phaseDescriptions.push_back("Loading page");
+	phaseDescriptions.push_back("Rendering");
+	phaseDescriptions.push_back("Done");
+
+	connect(&loader, SIGNAL(loadProgress(int)), this, SLOT(loadProgress(int)));
+	connect(&loader, SIGNAL(loadFinished(bool)), this, SLOT(pagesLoaded(bool)));
+	connect(&loader, SIGNAL(error(QString)), this, SLOT(forwardError(QString)));
+	connect(&loader, SIGNAL(warning(QString)), this, SLOT(forwardWarning(QString)));
+};
+
+void ImageConverterPrivate::beginConvert() {
+	error = false;
+	convertionDone = false;
+	progressString = "0%";
+	currentPhase=0;
+	loaderObject = loader.addResource(settings.in, settings.loadPage);
+	
+	emit out. phaseChanged();
+	loadProgress(0);
+	loader.load();
 }
 
-Converter::Converter(wkhtmltopdf::settings::Global & s){
-  httpErrorCode=0;
-	settings=s;
+
+void ImageConverterPrivate::clearResources() {
+	loader.clearResources();
 }
 
-Converter::~Converter() {
-}
+void ImageConverterPrivate::pagesLoaded(bool ok) {
+	//TODO theck ok
 
-bool Converter::convert() {
-	// init error code
-	httpErrorCode=0;
-	// quickfix; if out is "-", set quiet to ON
-	if(settings.out=="-")settings.quiet=true;
 	// if fmt is empty try to get it from file extension in out
 	if(settings.fmt==""){
 		QFileInfo fi(settings.out);
@@ -57,28 +79,21 @@ bool Converter::convert() {
 //		return false;
 //	}
 	// create webkit frame and load website
-	QWebPage page;
-	if(settings.in!="-"){
-		// get html from url/file
-		if(!settings.quiet)printf("loading from url...\n");
-		page.mainFrame()->load(settings.in);
-	}else{
-		// get html from stdin
-		// TODO: grab from stdin
-	}
+	
 	// begin looping till loadFinished is encountered
-	QEventLoop loop;
-	QObject::connect(&page, SIGNAL(loadFinished(bool)), &loop, SLOT( quit( )));
-	loop.exec( );
+	//QEventLoop loop;
+	//QObject::connect(&page, SIGNAL(loadFinished(bool)), &loop, SLOT( quit( )));
+	//loop.exec( );
 	// paint image
-	if(!settings.quiet)printf("downloading complete, converting...\n");
-	page.setViewportSize(page.mainFrame()->contentsSize());
+	//if(!settings.quiet)printf("downloading complete, converting...\n");
+
+	loaderObject->page.setViewportSize(loaderObject->page.mainFrame()->contentsSize());
 
 	
-	QImage image(page.viewportSize(), QImage::Format_ARGB32_Premultiplied);
+	QImage image(loaderObject->page.viewportSize(), QImage::Format_ARGB32_Premultiplied);
 	QPainter painter(&image);
-	//painter.begin();
-	page.mainFrame()->render(&painter);
+
+	loaderObject->page.mainFrame()->render(&painter);
 	painter.end();
 	// perform filter(s)
 	if(settings.crop.width!=-1 && settings.crop.height!=-1){
@@ -98,16 +113,37 @@ bool Converter::convert() {
 		if(!settings.quiet)printf("saving image...\n");
 		QByteArray ba=settings.fmt.toLatin1();
 		if(!image.save(QString(settings.out),ba.data(),-1)){
-			if(!settings.quiet)printf("error: couldn't save image\n");
-			httpErrorCode=402; //EACCES; // file could not be written
-			return false;
-		}else{
-			if(!settings.quiet)printf("finished.\n");
-			return true;
-		}
+			emit out.error("could'nt save image");
+			fail();
+		} 
 	}else{
 		// save to stdout
 		// TODO: print to stdout
 	}
-	return false;
+
+	currentPhase = 2;
+	emit out.phaseChanged();
+	convertionDone = true;
+	emit out.finished(true);
+
+	qApp->exit(0); // quit qt's event handling
+}
+
+Converter & ImageConverterPrivate::outer() {
+	return out;
+}
+
+ImageConverter::~ImageConverter() {
+	delete d;
+}
+
+ConverterPrivate & ImageConverter::priv() {
+	return *d;
+}
+
+
+ImageConverter::ImageConverter(wkhtmltopdf::settings::Global & s) {
+	d = new ImageConverterPrivate(*this, s);
+}
+
 }

@@ -15,6 +15,7 @@
 // You should have received a copy of the GNU General Public License
 // along with wkhtmltopdf.  If not, see <http://www.gnu.org/licenses/>.
 #include "progressfeedback.hh"
+#include <cstdio>
 namespace wkhtmltopdf {
 /*!
   \file progressfeedback.hh
@@ -33,7 +34,7 @@ namespace wkhtmltopdf {
   \param message The warning message
 */
 void ProgressFeedback::warning(const QString &message) {
-	if (pageConverter.globalSettings().quiet) return;
+	if (quiet) return;
 	fprintf(stderr, "Warning: %s",S(message));
 	for(int l = 9 + message.size(); l < lw; ++l) 
 		fprintf(stderr, " ");
@@ -57,13 +58,13 @@ void ProgressFeedback::error(const QString &message) {
   \brief Write out the name of the next phase
 */
 void ProgressFeedback::phaseChanged() {
-	if (pageConverter.globalSettings().quiet) return;
-	QString desc=pageConverter.phaseDescription();
+	if (quiet) return;
+	QString desc=converter.phaseDescription();
 	fprintf(stderr, "%s", S(desc));
 	
 	int l = desc.size();
-	if(pageConverter.currentPhase() < pageConverter.phaseCount() -1)
-		l += fprintf(stderr," (%d/%d)",pageConverter.currentPhase()+1,pageConverter.phaseCount()-1);
+	if(converter.currentPhase() < converter.phaseCount() -1)
+		l += fprintf(stderr," (%d/%d)",converter.currentPhase()+1,converter.phaseCount()-1);
 	for(; l < lw; ++l) 
 		fprintf(stderr, " ");
 	fprintf(stderr, "\n");
@@ -74,7 +75,7 @@ void ProgressFeedback::phaseChanged() {
   \brief Update progress bar
 */
 void ProgressFeedback::progressChanged(int progress) {
-	if (pageConverter.globalSettings().quiet) return;
+	if (quiet) return;
 	fprintf(stderr, "[");
 	int w=60;
 	progress *= w;
@@ -85,19 +86,19 @@ void ProgressFeedback::progressChanged(int progress) {
 		else fprintf(stderr, " ");
 	}
 	fprintf(stderr, "]");
-	fprintf(stderr, " %s", S(pageConverter.progressString()));
-	int l=1+w+2+pageConverter.progressString().size();
+	fprintf(stderr, " %s", S(converter.progressString()));
+	int l=1+w+2+converter.progressString().size();
 	for(int i=l; i < lw; ++i) fprintf(stderr, " ");
 	lw = l;
 	fprintf(stderr, "\r");
 }
 
-ProgressFeedback::ProgressFeedback(PageConverter & _):
-    pageConverter(_), lw(0) {
-    connect(&pageConverter, SIGNAL(warning(const QString &)), this, SLOT(warning(const QString &)));
-	connect(&pageConverter, SIGNAL(error(const QString &)), this, SLOT(error(const QString &)));
-	connect(&pageConverter, SIGNAL(phaseChanged()), this, SLOT(phaseChanged()));
-	connect(&pageConverter, SIGNAL(progressChanged(int)), this, SLOT(progressChanged(int)));
+ProgressFeedback::ProgressFeedback(bool q, Converter & _):
+    quiet(q), converter(_), lw(0) {
+    connect(&converter, SIGNAL(warning(const QString &)), this, SLOT(warning(const QString &)));
+	connect(&converter, SIGNAL(error(const QString &)), this, SLOT(error(const QString &)));
+	connect(&converter, SIGNAL(phaseChanged()), this, SLOT(phaseChanged()));
+	connect(&converter, SIGNAL(progressChanged(int)), this, SLOT(progressChanged(int)));
 }
 
 }

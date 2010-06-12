@@ -17,9 +17,8 @@
 #ifndef __SETTINGS_HH__
 #define __SETTINGS_HH__
 #include "loadsettings.hh"
+#include "websettings.hh"
 #include <QString>
-#include <qnetworkproxy.h>
-#include <QPrinter>
 
 namespace wkhtmltopdf {
 namespace settings {
@@ -59,28 +58,14 @@ struct Global {
 	
 	LoadGlobal loadGlobal;
 	LoadPage loadPage;
+	Web web;
 
 	//! Be less verbose
 	bool quiet; 
-	//! Should we print background images
-	bool background;
-	//! Should plugins be allowed
-	bool enablePlugins;
+
 	//! Should we use the graphics system
 	bool useGraphics;
-	//! Should we enable Java Script
-	bool enableJavascript; 
-	//! Should the horrible intelligent shrking feature be enabled?
-	bool enableIntelligentShrinking;
-	//! How many milliseconds should we wait for a javascrit redirect
 
-	QPrinter::ColorMode colorMode;
-	//! Minimum font size
-	int minimumFontSize;
-	//! Encoding used to enterpit a document which doesn't supply encoding
-	
-	QString userStyleSheet;
-	//! The file/url for input
 	QString in;
 	//! The file for output
 	QString out;

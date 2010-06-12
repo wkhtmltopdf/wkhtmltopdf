@@ -1,5 +1,4 @@
-// -*- mode: c++; tab-width: 4; indent-tabs-mode: t; eval: (progn (c-set-style "stroustrup") (c-set-offset 'innamespace 0)); -*-
-// vi:set ts=4 sts=4 sw=4 noet :
+//-*- mode: c++; tab-width: 4; indent-tabs-mode: t; c-file-style: "stroustrup"; -*-
 // This file is part of wkhtmltopdf.
 //
 // wkhtmltopdf is free software: you can redistribute it and/or modify
@@ -14,11 +13,27 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with wkhtmltopdf.  If not, see <http://www.gnu.org/licenses/>.
-#include <settings.hh>
+#ifndef __UTILITIES_HH__
+#define __UTILITIES_HH__
 
-Global::Global():
-  quiet(false),
-  useGraphics(false),
-  in(""),
-  out(""),
-  fmt("") {}
+#include <QCleanlooksStyle>
+#include <QCommonStyle>
+#include <QPainter>
+#include <QStyleOption>
+#include <QUrl>
+#include <QFile>
+#include <QFileInfo>
+#include <QImageWriter>
+
+/**
+ * Custom simplistic style
+ */
+class MyLooksStyle: public QCleanlooksStyle {
+public:
+  typedef QCleanlooksStyle parent_t;
+  void drawPrimitive( PrimitiveElement element, const QStyleOption * option, QPainter * painter, const QWidget * widget = 0 ) const;
+};
+
+int handleError(bool success, int errorCode);
+
+#endif //__UTILITIES_HH__

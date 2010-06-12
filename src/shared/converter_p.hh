@@ -14,11 +14,46 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with wkhtmltopdf.  If not, see <http://www.gnu.org/licenses/>.
-#include <settings.hh>
+#ifndef __CONVERTER_P_HH__
+#define __CONVERTER_P_HH__
+#include <QFile>
+#include "converter.hh"
+#include "websettings.hh"
+#include <QWebSettings>
 
-Global::Global():
-  quiet(false),
-  useGraphics(false),
-  in(""),
-  out(""),
-  fmt("") {}
+namespace wkhtmltopdf {
+
+class ConverterPrivate: public QObject {
+	Q_OBJECT
+public:
+	void copyFile(QFile & src, QFile & dst);
+	
+	QList<QString> phaseDescriptions;
+	int currentPhase;
+	
+	QString progressString;
+protected:
+	bool error;
+	virtual void clearResources() = 0;
+	virtual Converter & outer() = 0;
+	int errorCode;
+	
+	bool convertionDone;
+	
+	void updateWebSettings(QWebSettings * ws, const settings::Web & s) const;
+public slots:
+	void fail();
+	void loadProgress(int progress);
+	
+	virtual void beginConvert() = 0;
+	void cancel();
+	bool convert();
+	void forwardError(QString error);
+	void forwardWarning(QString warning);
+private:
+  friend class Converter;
+};
+
+}
+#endif //__CONVERTER_P__HH__
+

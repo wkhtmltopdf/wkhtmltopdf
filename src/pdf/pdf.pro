@@ -29,17 +29,17 @@ unix {
 INSTALLS += target
 target.path=$$INSTALLBASE/bin
 
-#Libaray part
-HEADERS += pageconverter.hh pageconverter_p.hh
+include(../shared/shared.pri)
 
-SOURCES += settings.cc pageconverter.cc \
+#Libaray part
+HEADERS += pdfconverter.hh pdfconverter_p.hh
+
+SOURCES += settings.cc pdfconverter.cc \
            outline.cc tocstylesheet.cc
 
 #Application part
 
-HEADERS += progressfeedback.hh
-
 SOURCES += wkhtmltopdf.cc arguments.cc commandlineparser.cc \
-           docparts.cc  progressfeedback.cc
+           docparts.cc
            
-include(../shared/shared.pri)
+

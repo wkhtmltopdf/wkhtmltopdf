@@ -16,6 +16,7 @@
 #ifndef __COMMANDLINEPARSER_BASE_HH__
 #define __COMMANDLINEPARSER_BASE_HH__
 #include "loadsettings.hh"
+#include "websettings.hh"
 class Outputter;
 class CommandLineParserBase;
 
@@ -55,6 +56,7 @@ public:
 	
 	void addarg(QString, char, QString, ArgHandler * h, bool display=true);
 	void addDocArgs();
+	void addWebArgs(wkhtmltopdf::settings::Web & s);
 	void addGlobalLoadArgs(wkhtmltopdf::settings::LoadGlobal & s);
 	void addPageLoadArgs(wkhtmltopdf::settings::LoadPage & s);
 	

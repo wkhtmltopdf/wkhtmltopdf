@@ -14,7 +14,7 @@
 // You should have received a copy of the GNU General Public License
 // along with wkhtmltopdf.  If not, see <http://www.gnu.org/licenses/>.
 #include "commandlineparser.hh"
-#include "pageconverter.hh"
+#include "pdfconverter.hh"
 #include "progressfeedback.hh"
 #include "settings.hh"
 #include <QCleanlooksStyle>
@@ -28,17 +28,10 @@
 #include <qapplication.h>
 #include <qglobal.h>
 #include <string.h>
+#include "utilities.hh"
 
 using namespace wkhtmltopdf::settings;
 using namespace wkhtmltopdf;
-
-#ifdef QT_STATIC
-//When doing a static build, we need to load the plugins to make images work
-Q_IMPORT_PLUGIN(qjpeg)
-Q_IMPORT_PLUGIN(qgif)
-Q_IMPORT_PLUGIN(qtiff)
-Q_IMPORT_PLUGIN(qmng)
-#endif
 
 /*!
  * State mashine driven, shell like parser. This is used for
@@ -115,68 +108,6 @@ void parseString(char * buff, int &nargc, char **nargv) {
 	nargv[nargc]=NULL;
 }
 
-class MyLooksStyle: public QCleanlooksStyle {
-public:
-	//Settings & settings;
-	
-	typedef QCleanlooksStyle parent_t;
-	
-	//MyLooksStyle(Settings & s): settings(s) {}
-	
-	void drawPrimitive( PrimitiveElement element, const QStyleOption * option, QPainter * painter, const QWidget * widget = 0 ) const {
-		painter->setBrush(Qt::white);
-		painter->setPen(QPen(Qt::black, 0.7));
-		QRect r = option->rect;
-		if (element == QStyle::PE_PanelLineEdit) {
-			painter->drawRect(r);
-		} else if(element == QStyle::PE_IndicatorCheckBox) {
-			painter->drawRect(r);
-			if (true) { //(!settings.produceForms && (option->state & QStyle::State_On)) {
-				r.translate(r.width()*0.075, r.width()*0.075);
-				painter->drawLine(r.topLeft(), r.bottomRight());
-				painter->drawLine(r.topRight(), r.bottomLeft());
-			}
-		} else if(element == QStyle::PE_IndicatorRadioButton) {
-			painter->drawEllipse(r);
-			if (true) { //!settings.produceForms && (option->state & QStyle::State_On)) {
-				r.translate(r.width()*0.20, r.width()*0.20);
-				r.setWidth(r.width()*0.70);
-				r.setHeight(r.height()*0.70);
-				painter->setBrush(Qt::black);
-				painter->drawEllipse(r);
-			}
-		} else {
-			parent_t::drawPrimitive(element, option, painter, widget);
-		}
-	}
-};
-
-int handleError(bool success, int errorCode) {
-	QHash<int, const char *> cm;
-	cm[400] = "Bad Request";
-	cm[401] = "Unauthorized";
-	cm[402] = "Payment Required";
-	cm[403] = "Forbidden";
-	cm[404] = "Page not found";
-	cm[405] = "Method Not Allowed";
-	cm[500] = "Internal Server Error";
-	cm[501] = "Not Implemented";
-	cm[503] = "Service Unavailable";
-	cm[505] = "HTTP Version Not Supported";
-	QHash<int, int> ce;
-	ce[404] = 2;
-	ce[401] = 3;
-	if (errorCode) {
-		int c = EXIT_FAILURE;
-		if (ce.contains(errorCode)) c = ce[errorCode];
-		const char * m = "";
-		if (cm.contains(errorCode)) m = cm[errorCode];
-		fprintf(stderr, "Exit with code %d do to http error: %d %s\n", c, errorCode, m);
-		return c;
-	}
-	return success?EXIT_SUCCESS:EXIT_FAILURE;
-}
-
 int main(int argc, char * argv[]) {
 	//This will store all our settings
 	Global globalSettings;
@@ -219,8 +150,8 @@ int main(int argc, char * argv[]) {
 			//Parse the arguments
 			parser.parseArguments(nargc, (const char**)nargv, true);
 			
-			PageConverter converter(globalSettings);
-			ProgressFeedback feedback(converter);
+			PdfConverter converter(globalSettings);
+			ProgressFeedback feedback(globalSettings.quiet, converter);
 			foreach(const Page & page, pageSettings) 
 				converter.addResource(page);
 
@@ -230,8 +161,8 @@ int main(int argc, char * argv[]) {
 		exit(EXIT_SUCCESS);
 	}
 	//Create the actual page converter to convert the pages
-	PageConverter converter(globalSettings);
-	ProgressFeedback feedback(converter);
+	PdfConverter converter(globalSettings);
+	ProgressFeedback feedback(globalSettings.quiet, converter);
 	foreach(const Page & page, pageSettings) 
 		converter.addResource(page);
 

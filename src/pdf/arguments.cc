@@ -17,7 +17,7 @@
 #include "commandlineparser.hh"
 #include "arghandler.inl"
 #include <QFile>
-#include "pageconverter.hh"
+#include "pdfconverter.hh"
 #include <qglobal.h>
 
 /*!
@@ -225,20 +225,9 @@ CommandLineParser::CommandLineParser(Global & s, QList<Page> & ps):
 
 	section("Page Options");
 	mode(page);
- 	extended(true);
- 	qthack(false);
  	addarg("default-header",0,"Add a default header, with the name of the page to the left, and the page number to the right, this is short for: --header-left='[webpage]' --header-right='[page]/[toPage]' --top 2cm --header-line", new Caller<DefaultHeaderFunc>());
 
- 	addarg("enable-plugins",0,"Enable installed plugins (plugins will likely not work)", new ConstSetter<bool>(od.enablePlugins,true));
- 	addarg("disable-plugins",0,"Disable installed plugins", new ConstSetter<bool>(od.enablePlugins,false));
-
-	addarg("minimum-font-size",0,"Minimum font size", new IntSetter(od.minimumFontSize,"int"));
-
-#if QT_VERSION >= 0x040500 //Not printing the background was added in QT4.5
- 	addarg("no-background",0,"Do not print background", new ConstSetter<bool>(od.background, false));
- 	addarg("background",0,"Do print background", new ConstSetter<bool>(od.background, true));
- 	addarg("user-style-sheet",0,"Specify a user style sheet, to load with every page", new QStrSetter(od.userStyleSheet,"url"));
-#endif
+	addWebArgs(od.web);
    	
  	extended(true);
  	qthack(true);
@@ -248,32 +237,14 @@ CommandLineParser::CommandLineParser(Global & s, QList<Page> & ps):
  	addarg("enable-internal-links",0,"Make local links", new ConstSetter<bool>(od.useLocalLinks, true));
  	addarg("disable-external-links",0,"Do not make links to remote web pages", new ConstSetter<bool>(od.useExternalLinks, false));
  	addarg("enable-external-links",0,"Make links to remote web pages", new ConstSetter<bool>(od.useExternalLinks, true));
-	
-	addarg("print-media-type",0,"Use print media-type instead of screen", new ConstSetter<bool>(od.printMediaType,true));
-	addarg("no-print-media-type",0,"Do not use print media-type instead of screen", new ConstSetter<bool>(od.printMediaType, false));
 
 	addarg("enable-toc-back-links",0,"Do not link from section header to toc", new ConstSetter<bool>(od.toc.backLinks,true));
 	addarg("disable-toc-back-links",0,"Do not link from section header to toc", new ConstSetter<bool>(od.toc.backLinks,true));
 
-	addarg("disable-javascript",'n',"Do not allow web pages to run javascript", new ConstSetter<bool>(od.enableJavascript,false));
-	addarg("enable-javascript",'n',"Do allow web pages to run javascript", new ConstSetter<bool>(od.enableJavascript,true));
-
 	addPageLoadArgs(od.load);
-#if QT_VERSION >= 0x040600
-	addarg("no-images",0,"Do not load or print images", new ConstSetter<bool>(od.loadImages, false));
-	addarg("images",0,"Do load or print images", new ConstSetter<bool>(od.loadImages, true));
-#endif	
-
 
 // 	addarg("page-offset",0,"Set the starting page number", new IntSetter(s.pageOffset,"offset",1));
 
- 	addarg("disable-smart-shrinking", 0, "Disable the intelligent shrinking strategy used by WebKit that makes the pixel/dpi ratio none constant",new ConstSetter<bool>(od.enableIntelligentShrinking, false));
- 	addarg("enable-smart-shrinking", 0, "Enable the intelligent shrinking strategy used by WebKit that makes the pixel/dpi ratio none constant",new ConstSetter<bool>(od.enableIntelligentShrinking, true));
-
-#if QT_VERSION >= 0x040600
- 	qthack(false);
-#endif
- 	addarg("encoding", 0, "Set the default text encoding, for input", new QStrSetter(od.defaultEncoding,"encoding"));
 
 	section("Headers And Footer Options");
  	qthack(true);

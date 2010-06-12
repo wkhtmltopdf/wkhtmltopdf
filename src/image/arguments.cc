@@ -22,15 +22,11 @@ CommandLineParser::CommandLineParser(wkhtmltopdf::settings::Global & s):
 {
 	mode(global);
 	section("General Options");
-	extended(false);
 	addDocArgs();
-	
+	addWebArgs(s.web);
+
 	extended(false);
 	qthack(false);
-	addarg("disable-javascript",'n',"Do not allow web pages to run javascript", new ConstSetter<bool>(s.enableJavascript,false));
-	addarg("grayscale",'g',"Image will be generated in grayscale", new ConstSetter<QPrinter::ColorMode>(s.colorMode,QPrinter::GrayScale));
-	addarg("enable-plugins",0,"Enable installed plugins (such as flash)", new ConstSetter<bool>(s.enablePlugins,true));
-
 	addarg("scale-w",0,"Set width for resizing", new IntSetter(s.scale.width,"int"));
 	addarg("scale-h",0,"Set height for resizing", new IntSetter(s.scale.height,"int"));
 
@@ -39,18 +35,12 @@ CommandLineParser::CommandLineParser(wkhtmltopdf::settings::Global & s):
 	addarg("crop-w",0,"Set width for croping", new IntSetter(s.crop.width,"int"));
 	addarg("crop-h",0,"Set height for croping", new IntSetter(s.crop.height,"int"));
 
-	addarg("minimum-font-size",0,"Minimum font size", new IntSetter(s.minimumFontSize,"int"));
-	
-	addarg("disable-smart-shrinking", 0, "Disable the intelligent shrinking strategy used by WebKit that makes the pixel/dpi ratio none constant",new ConstSetter<bool>(s.enableIntelligentShrinking, false));
+	extended(false);
+	qthack(false);
+
 #ifdef Q_WS_X11
 	addarg("use-xserver",0,"Use the X server (some plugins and other stuff might not work without X11)", new ConstSetter<bool>(s.useGraphics,true));
 #endif
-
-	//addarg("encoding",0,"Set the default text encoding, for input", new QStrSetter(s.defaultEncoding,"encoding",""));
-	
-	addarg("no-background",0,"Do not print background", new ConstSetter<bool>(s.background,false));
-	addarg("user-style-sheet",0,"Specify a user style sheet, to load with every page", new QStrSetter(s.userStyleSheet,"url"));
-
 	addGlobalLoadArgs(s.loadGlobal);
 	addPageLoadArgs(s.loadPage);
 }

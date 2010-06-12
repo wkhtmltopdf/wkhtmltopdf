@@ -20,6 +20,7 @@
 #include <QNetworkProxy>
 #include <QPrinter>
 #include "loadsettings.hh"
+#include "websettings.hh"
 
 namespace wkhtmltopdf {
 namespace settings {
@@ -153,7 +154,6 @@ struct HeaderFooter {
 };
 
 struct Page {
-
 	Page();
 	//! Settings regarding the TOC
 	TableOfContent toc;
@@ -166,32 +166,11 @@ struct Page {
 	//! Header related settings
 	HeaderFooter footer;
 	
-	//! Should we print background images
-	bool background;
-	
-	//! Should we load images
-	bool loadImages;
-	
 	//! Should external links be links in the PDF
 	bool useExternalLinks;
 	
 	//! Should internal links be links in the PDF
 	bool useLocalLinks;
-	
-	//! Should we enable Javascript
-	bool enableJavascript; 
-	
-	//! Should the horrible intelligent shrinking feature be enabled?
-	bool enableIntelligentShrinking;
-		
-	//! Minimum font size
-	int minimumFontSize;
-	
-	//! Should we use the print or the screen media type
-	bool printMediaType;
-	
-	//! Encoding used to enterpit a document with do supplied encoding
-	QString defaultEncoding;
 			
 	//! Replacements
 	QList< QPair<QString, QString> > replacements;
@@ -199,13 +178,9 @@ struct Page {
 	//! Convert forms on the pages into PDF forms
 	bool produceForms;
 	
-	//! Stylesheet supplied by the user
-	QString userStyleSheet;
-
 	LoadPage load;
 	
-	//! Should plugins be allowed
-	bool enablePlugins;
+	Web web;
 
 	bool includeInOutline;
 

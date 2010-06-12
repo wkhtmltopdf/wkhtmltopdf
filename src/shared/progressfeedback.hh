@@ -16,13 +16,14 @@
 // along with wkhtmltopdf.  If not, see <http://www.gnu.org/licenses/>.
 #ifndef __PROGRESSFEEDBACK_HH__
 #define __PROGRESSFEEDBACK_HH__
-#include "pageconverter.hh"
+#include "converter.hh"
 namespace wkhtmltopdf {
 
 class ProgressFeedback: public QObject {
 	Q_OBJECT
-public:
-	PageConverter & pageConverter;
+private:
+	bool quiet;
+	Converter & converter;
 	int lw;
 public slots:
 	void warning(const QString &message);
@@ -30,7 +31,7 @@ public slots:
 	void phaseChanged();
 	void progressChanged(int progress);
 public:
-	ProgressFeedback(PageConverter & _);
+	ProgressFeedback(bool quiet, Converter & _);
 };
 
 }

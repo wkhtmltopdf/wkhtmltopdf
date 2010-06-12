@@ -33,9 +33,11 @@ unix {
 INSTALLS += target
 target.path=$$INSTALLBASE/bin
 
-# Input
-HEADERS += pageloader.hh settings.hh converter.hh
-SOURCES += wkhtmltoimage.cc arguments.cc commandlineparser.cc docparts.cc \
-           converter.cc utilities.cc \
-
 include(../shared/shared.pri)
+
+# Input
+HEADERS += imageconverter.hh imageconverter_p.hh settings.hh converter.hh
+SOURCES += wkhtmltoimage.cc arguments.cc commandlineparser.cc docparts.cc \
+           imageconverter.cc
+
+

@@ -14,41 +14,25 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with wkhtmltopdf.  If not, see <http://www.gnu.org/licenses/>.
-#ifndef __PAGECONVERTER_HH__
-#define __PAGECONVERTER_HH__
+#ifndef __IMAGECONVERTER_HH__
+#define __IMAGECONVERTER_HH__
 #include "settings.hh"
-#include <QObject>
+#include "converter.hh"
+
 namespace wkhtmltopdf {
 
-void dumpDefaultTOCStyleSheet(QTextStream & stream, settings::TableOfContent & s);
+class ImageConverterPrivate;
 
-class PageConverterPrivate;
-class PageConverter: public QObject {
+class ImageConverter: public Converter {
 	Q_OBJECT
 public:
-	PageConverter(settings::Global & globalSettings);
-	~PageConverter();
-	int phaseCount();
-	int currentPhase();
-	QString phaseDescription(int phase=-1);
-	QString progressString();
-	int httpErrorCode();
-	void addResource(const settings::Page & pageSettings);
-	const settings::Global & globalSettings() const;
-signals:
-	void warning(const QString & message);
-	void error(const QString & message);
-	void phaseChanged();
-	void progressChanged(int progress);
-	void finished(bool ok);
-public slots:
-	void beginConvertion();
-	bool convert();
-	void cancel();
+	ImageConverter(settings::Global & settings);
+	~ImageConverter();
 private:
-	PageConverterPrivate * d;
-	friend class PageConverterPrivate;
+	ImageConverterPrivate * d;
+	virtual ConverterPrivate & priv();
+	friend class ImageConverterPrivate;
 };
 
 }
-#endif //__PAGECONVERTER_HH__
+#endif //__IMAGECONVERTER_HH__
