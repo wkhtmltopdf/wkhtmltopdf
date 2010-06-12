@@ -1,0 +1,46 @@
+include(../../common.pri)
+
+TEMPLATE = app
+DESTDIR = ../../bin
+TARGET = wkhtmltopdf
+DEPENDPATH += . src
+INCLUDEPATH += . src
+
+readme.target=README
+readme.commands=./wkhtmltopdf --readme > README
+readme.depends=wkhtmltopdf
+
+QMAKE_EXTRA_TARGETS += readme
+
+unix {
+    man.target=wkhtmltopdf.1.gz
+    man.commands=./wkhtmltopdf --manpage | gzip > $@
+    man.depends=wkhtmltopdf
+
+    manins.target=manins
+    manins.depends=man
+    manins.files=wkhtmltopdf.1.gz
+    manins.path=$$INSTALLBASE/share/man/man1
+
+    QMAKE_EXTRA_TARGETS += manins man
+    INSTALLS += manins
+}
+
+INSTALLS += target
+target.path=$$INSTALLBASE/bin
+
+#Libaray part
+HEADERS += pageconverter.hh pageconverter_p.hh \
+           multipageloader_p.hh multipageloader.hh
+
+SOURCES += tempfile.cc settings.cc pageconverter.cc \
+           multipageloader.cc outline.cc tocstylesheet.cc
+
+#Application part
+
+HEADERS += progressfeedback.hh
+
+SOURCES += wkhtmltopdf.cc arguments.cc commandlineparser.cc \
+           docparts.cc outputter.cc manoutputter.cc \
+           htmloutputter.cc textoutputter.cc progressfeedback.cc
+           

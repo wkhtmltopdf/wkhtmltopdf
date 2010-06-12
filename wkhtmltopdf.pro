@@ -13,71 +13,8 @@
 # You should have received a copy of the GNU General Public License
 # along with wkhtmltopdf.  If not, see <http:#www.gnu.org/licenses/>.
 
-DEFINES += MAJOR_VERSION=0 MINOR_VERSION=9 PATCH_VERSION=9 BUILD=""
+# src/shared /src/image
+TEMPLATE = subdirs
 
-TEMP = $$[QT_INSTALL_LIBS] libQtGui.prl
-PRL  = $$[QT_INSTALL_LIBS] QtGui.framework/QtGui.prl
-include($$join(TEMP, "/"))
-include($$join(PRL, "/"))
-
-contains(QMAKE_PRL_CONFIG, shared) {
-    DEFINES += QT_SHARED
-} else {
-    DEFINES += QT_STATIC
-    QTPLUGIN += qjpeg qgif qtiff qmng
-}
-
-TEMPLATE = app
-TARGET = 
-DEPENDPATH += . src
-INCLUDEPATH += . src
-
-MOC_DIR = build
-OBJECTS_DIR = build
-UI_DIR = build
-
-readme.target=README
-readme.commands=./wkhtmltopdf --readme > README
-readme.depends=wkhtmltopdf
-
-QMAKE_EXTRA_TARGETS += readme
-
-unix {
-    man.target=wkhtmltopdf.1.gz
-    man.commands=./wkhtmltopdf --manpage | gzip > $@
-    man.depends=wkhtmltopdf
-
-    manins.target=manins
-    manins.depends=man
-    manins.files=wkhtmltopdf.1.gz
-    manins.path=$$INSTALLBASE/share/man/man1
-
-    QMAKE_EXTRA_TARGETS += manins man
-    INSTALLS += manins
-}
-
-
-win32 {
-    CONFIG += console
-}
-
-INSTALLS += target
-target.path=$$INSTALLBASE/bin
-
-QT += webkit network xmlpatterns
-
-#Libaray part
-HEADERS += src/pageconverter.hh src/pageconverter_p.hh \
-           src/multipageloader_p.hh src/multipageloader.hh
-
-SOURCES += src/tempfile.cc src/settings.cc src/pageconverter.cc \
-           src/multipageloader.cc src/outline.cc src/tocstylesheet.cc
-
-#Application part
-
-HEADERS += src/progressfeedback.hh
-
-SOURCES += src/wkhtmltopdf.cc src/arguments.cc src/commandlineparser.cc \
-           src/docparts.cc src/outputter.cc src/manoutputter.cc \
-           src/htmloutputter.cc src/textoutputter.cc src/progressfeedback.cc
-           
+CONFIG += ordered
+SUBDIRS = src/pdf src/image
