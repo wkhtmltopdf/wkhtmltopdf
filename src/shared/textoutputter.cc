@@ -124,7 +124,7 @@ public:
 	
 	void beginSwitch() {}
 
-	void cswitch(const ArgHandlerBase * h) {
+	void cswitch(const ArgHandler * h) {
 		w=0;
 		if(!doc) {fprintf(fd,"  "); w=2;}
 		if(h->shortSwitch != 0)

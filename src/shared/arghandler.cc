@@ -17,10 +17,10 @@
 #include "outputter.hh"
 
 /*!
-  \fn ArgHandlerBase::getDesc() const
+  \fn ArgHandler::getDesc() const
   Get the description of this switch
 */  
-QString ArgHandlerBase::getDesc() const {
+QString ArgHandler::getDesc() const {
 	return desc;
 }
 
@@ -28,4 +28,4 @@ QString ArgHandlerBase::getDesc() const {
   \fn ArgHandlerBase::~ArgHandlerBase()
   Dummy virtual destructor
 */  
-ArgHandlerBase::~ArgHandlerBase() {}
+ArgHandler::~ArgHandler() {}

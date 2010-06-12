@@ -19,19 +19,7 @@
 #include <QString>
 #include <QVector>
 #include <stdio.h>
-
-class ArgHandlerBase {
-public:
-	QString longName;
-	QString desc;
-	char shortSwitch;
-	QVector<QString> argn;
-	bool display;
-	bool extended;
-	bool qthack;
-	virtual QString getDesc() const;
-	virtual ~ArgHandlerBase();
-};
+#include "commandlineparserbase.hh"
 
 class Outputter {
 public:
@@ -50,7 +38,7 @@ public:
  	virtual void endList() = 0;
  	virtual void listItem(const QString & t) = 0;
 	virtual void beginSwitch() = 0;
-	virtual void cswitch(const ArgHandlerBase * h) = 0;
+	virtual void cswitch(const ArgHandler * h) = 0;
 	virtual void endSwitch() = 0;
 	void paragraph(const QString & t);
 	static Outputter * text(FILE * fd, bool doc=false, bool extended=false);

@@ -19,11 +19,11 @@
  */
 class MyLooksStyle: public QCleanlooksStyle {
 public:
-	Settings & settings;
+  //	Settings & settings;
 
 	typedef QCleanlooksStyle parent_t;
 
-	MyLooksStyle(Settings & s): settings(s) {}
+  //MyLooksStyle(Settings & s): settings(s) {}
 
 	void drawPrimitive( PrimitiveElement element, const QStyleOption * option, QPainter * painter, const QWidget * widget = 0 ) const {
 		painter->setBrush(Qt::white);
@@ -33,20 +33,20 @@ public:
 			painter->drawRect(r);
 		} else if(element == QStyle::PE_IndicatorCheckBox) {
 			painter->drawRect(r);
-			if (!settings.produceForms && (option->state & QStyle::State_On)) {
-				r.translate(int(r.width()*0.075), int(r.width()*0.075));
-				painter->drawLine(r.topLeft(), r.bottomRight());
-				painter->drawLine(r.topRight(), r.bottomLeft());
-			}
+			//if (!settings.produceForms && (option->state & QStyle::State_On)) {
+			r.translate(int(r.width()*0.075), int(r.width()*0.075));
+			painter->drawLine(r.topLeft(), r.bottomRight());
+			painter->drawLine(r.topRight(), r.bottomLeft());
+			//}
 		} else if(element == QStyle::PE_IndicatorRadioButton) {
 			painter->drawEllipse(r);
-			if (!settings.produceForms && (option->state & QStyle::State_On)) {
-				r.translate(int(r.width()*0.20), int(r.width()*0.20));
-				r.setWidth(int(r.width()*0.70));
-				r.setHeight(int(r.height()*0.70));
-				painter->setBrush(Qt::black);
-				painter->drawEllipse(r);
-			}
+			//if (!settings.produceForms && (option->state & QStyle::State_On)) {
+			r.translate(int(r.width()*0.20), int(r.width()*0.20));
+			r.setWidth(int(r.width()*0.70));
+			r.setHeight(int(r.height()*0.70));
+			painter->setBrush(Qt::black);
+			painter->drawEllipse(r);
+			//}
 		} else {
 			parent_t::drawPrimitive(element, option, painter, widget);
 		}

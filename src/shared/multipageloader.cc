@@ -35,7 +35,7 @@ namespace wkhtmltopdf {
 
 LoaderObject::LoaderObject(QWebPage & p): page(p), skip(false) {};
 
-MyNetworkAccessManager::MyNetworkAccessManager(const settings::Page & s): settings(s) {}
+MyNetworkAccessManager::MyNetworkAccessManager(const settings::LoadPage & s): settings(s) {}
 
 void MyNetworkAccessManager::allow(QString path) {
 	QString x = QFileInfo(path).canonicalFilePath();
@@ -103,8 +103,7 @@ bool MyQWebPage::shouldInterruptJavaScript() {
 	return false;
 }
 
-
-ResourceObject::ResourceObject(MultiPageLoaderPrivate & mpl, const QUrl & u, const settings::Page & s): 
+ResourceObject::ResourceObject(MultiPageLoaderPrivate & mpl, const QUrl & u, const settings::LoadPage & s): 
 	networkAccessManager(s),
 	url(u),
 	loginTry(0), 
@@ -192,11 +191,11 @@ void ResourceObject::loadProgress(int p) {
 
 
 void ResourceObject::loadFinished(bool ok) {
-	multiPageLoader.hasError = multiPageLoader.hasError || (!ok && settings.loadErrorHandling == settings::Page::abort);
+	multiPageLoader.hasError = multiPageLoader.hasError || (!ok && settings.loadErrorHandling == settings::LoadPage::abort);
 	if (!ok) {
-		if (settings.loadErrorHandling == settings::Page::abort)
+		if (settings.loadErrorHandling == settings::LoadPage::abort)
 			error(QString("Failed loading page ") + url.toString() + " (sometimes it will work just to ignore this error with --load-error-handling ignore)");
-		else if (settings.loadErrorHandling == settings::Page::skip) {
+		else if (settings.loadErrorHandling == settings::LoadPage::skip) {
 			warning(QString("Failed loading page ") + url.toString() + " (skipped)");
 			lo.skip = true;
 		} else
@@ -382,7 +381,7 @@ bool MultiPageLoader::copyFile(QFile & src, QFile & dst) {
 	return true;
 }
 
-MultiPageLoaderPrivate::MultiPageLoaderPrivate(settings::Global & s, MultiPageLoader & o): 
+MultiPageLoaderPrivate::MultiPageLoaderPrivate(const settings::LoadGlobal & s, MultiPageLoader & o): 
 	outer(o), settings(s) {
 
 	cookieJar = new MyCookieJar();
@@ -395,7 +394,7 @@ MultiPageLoaderPrivate::~MultiPageLoaderPrivate() {
 	clearResources();
 }
 
-LoaderObject * MultiPageLoaderPrivate::addResource(const QUrl & url, const settings::Page & page) {
+LoaderObject * MultiPageLoaderPrivate::addResource(const QUrl & url, const settings::LoadPage & page) {
 	ResourceObject * ro = new ResourceObject(*this, url, page);
 	resources.push_back(ro);
 	return &ro->lo;
@@ -433,7 +432,7 @@ void MultiPageLoaderPrivate::fail() {
   \brief Construct a multipage loader object, load settings read from the supplied settings
   \param s The settings to be used while loading pages
 */
-MultiPageLoader::MultiPageLoader(settings::Global & s):
+MultiPageLoader::MultiPageLoader(settings::LoadGlobal & s):
 	d(new MultiPageLoaderPrivate(s, *this)) {
 }
 
@@ -445,7 +444,7 @@ MultiPageLoader::~MultiPageLoader() {
   \brief Add a resource, to be loaded described by a string
   @param string Url describing the resource to load
 */
-LoaderObject * MultiPageLoader::addResource(const QString & string, const settings::Page & s) {
+LoaderObject * MultiPageLoader::addResource(const QString & string, const settings::LoadPage & s) {
 	QString url=string;
 	if (url == "-") {
 		QFile in;
@@ -464,7 +463,7 @@ LoaderObject * MultiPageLoader::addResource(const QString & string, const settin
   \brief Add a page to be loaded
   @param url Url of the page to load
 */
-LoaderObject * MultiPageLoader::addResource(const QUrl & url, const settings::Page & s) {
+LoaderObject * MultiPageLoader::addResource(const QUrl & url, const settings::LoadPage & s) {
 	return d->addResource(url, s);
 }
 

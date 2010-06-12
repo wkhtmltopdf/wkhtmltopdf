@@ -183,8 +183,10 @@ int main(int argc, char * argv[]) {
 	QList<Page> pageSettings;
 	//Create a command line parser to parse commandline arguments
 	CommandLineParser parser(globalSettings, pageSettings);
+
 	//Setup default values in settings
-	parser.loadDefaults();
+	//parser.loadDefaults();
+
 	//Parse the arguments
 	parser.parseArguments(argc, (const char**)argv);
 
@@ -199,7 +201,7 @@ int main(int argc, char * argv[]) {
 	QApplication a(argc, argv, use_graphics);
 	a.setStyle(new MyLooksStyle());
 
-	if (parser.readArgsFromStdin()) {
+	if (parser.readArgsFromStdin) {
 		char buff[20400];
 		char *nargv[1000];
 		nargv[0] = argv[0];
@@ -213,7 +215,7 @@ int main(int argc, char * argv[]) {
 			//Create a command line parser to parse commandline arguments
 			CommandLineParser parser(globalSettings, pageSettings);
 			//Setup default values in settings
-			parser.loadDefaults();
+			//parser.loadDefaults();
 			//Parse the arguments
 			parser.parseArguments(nargc, (const char**)nargv, true);
 			

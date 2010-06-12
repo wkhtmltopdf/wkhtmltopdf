@@ -30,11 +30,10 @@ INSTALLS += target
 target.path=$$INSTALLBASE/bin
 
 #Libaray part
-HEADERS += pageconverter.hh pageconverter_p.hh \
-           multipageloader_p.hh multipageloader.hh
+HEADERS += pageconverter.hh pageconverter_p.hh
 
-SOURCES += tempfile.cc settings.cc pageconverter.cc \
-           multipageloader.cc outline.cc tocstylesheet.cc
+SOURCES += settings.cc pageconverter.cc \
+           outline.cc tocstylesheet.cc
 
 #Application part
 

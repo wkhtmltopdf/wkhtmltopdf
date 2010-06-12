@@ -86,25 +86,6 @@ QString pageSizeToStr(QPrinter::PageSize ps) {
 }
 
 
-Page::LoadErrorHandling strToLoadErrorHandling(const char * s, bool * ok) {
-	if (ok) *ok = true;
-	if (!strcasecmp(s, "abort")) return Page::abort;
-	if (!strcasecmp(s, "skip")) return Page::skip;
-	if (!strcasecmp(s, "ignore")) return Page::ignore;
-	*ok = false;
-	return Page::abort;
-}
-
-QString loadErrorHandlingToStr(Page::LoadErrorHandling leh) {
-	switch(leh) {
-	case Page::abort: return "abort";
-	case Page::skip: return "skip";
-	case Page::ignore: return "ignore";
-	}
-	throw std::logic_error("Internal error in loadErrorHandlingToStr");
-}
-
-
 /*!
   Read orientation from a string, possible values are landscape and portrait (case insensitive)
   \param s The string containing the orientation
@@ -186,66 +167,6 @@ QString unitRealToStr(const UnitReal & ur, bool * ok) {
 }
 
 
-/*!
-  Read proxy settings from a string, the grammar is described in the manual
-  \param proxy the proxy string to parse
-  \param ok If supplied indicates whether the proxy was valid
-*/
-Proxy strToProxy(const char * proxy, bool * ok) {
-	Proxy p;
-	if(ok) *ok=true;
-	//Allow users to use no proxy, even if one is specified in the env
-	if (!strcmp(proxy,"none")) {
-		p.host = "";
-		return p;
-	}
-	
-	p.type = QNetworkProxy::HttpProxy;
-	//Read proxy type bit "http://" or "socks5://"
-	if (!strncmp(proxy,"http://",7)) {
-		proxy += 7;
-	} else if (!strncmp(proxy,"socks5://",9)) {
-		p.type = QNetworkProxy::Socks5Proxy;
-		proxy += 9;
-	}
-
-	//Read username and password
-	char * val = (char *) strchr(proxy,'@');
-	p.user = p.password = "";
-	if (val != NULL) {
-		p.user = QString(proxy).left(val-proxy);
-		proxy = val+1;
-		
-		int idx = p.user.indexOf(':');
-		if(idx != -1) {
-			p.password = p.user.mid(idx+1);
-			p.user = p.user.left(idx);
-		}
-	}
-
- 	//Read hostname and port
- 	val = (char *) strchr(proxy,':');
- 	p.port = 1080; //Default proxy port
- 	if (val == NULL) p.host = proxy;
- 	else {
-		p.port = QString(val+1).toInt(ok);
-		if(p.port < 0 || p.port > 65535) {
-			p.port = 1080;
-			*ok = false;
-		}
-		p.host = QString(proxy).left(val-proxy);
- 	}
-	if(ok && p.host.size() == 0) *ok = false;
-	return p;
-}
-
-Proxy::Proxy():
-    type(QNetworkProxy::NoProxy),
-	port(-1),
-	host(),
-	user(),
-	password() {}
-
 Size::Size():
 	pageSize(QPrinter::A4), 
 	height(UnitReal(-1,QPrinter::Millimeter)),
@@ -280,7 +201,6 @@ Global::Global():
 	outlineDepth(4),
 	dumpOutline(""),
 	out("-"),
-	cookieJar(""),
 	documentTitle(""),
 	useCompression(true) {};
 
@@ -300,16 +220,9 @@ Page::Page():
 	useLocalLinks(true),
 	enableJavascript(true),
 	enableIntelligentShrinking(true),
-	jsdelay(200),
-	zoomFactor(1.0),
 	minimumFontSize(-1),
 	printMediaType(false),
-	repeatCustomHeaders(false),
-	blockLocalFileAccess(false),
-	stopSlowScripts(true),
-	debugJavascript(false),
 	produceForms(false),
-	loadErrorHandling(abort),
 	enablePlugins(false),
 	includeInOutline(true),
 	pagesCount(true),

@@ -19,32 +19,13 @@
 #include <QString>
 #include <QNetworkProxy>
 #include <QPrinter>
+#include "loadsettings.hh"
+
 namespace wkhtmltopdf {
 namespace settings {
 
 typedef QPair<qreal, QPrinter::Unit> UnitReal;
 
-/*! \brief Settings consdering proxy */
-struct Proxy {
-	Proxy();
-	//! Type of proxy to use
-	QNetworkProxy::ProxyType type; 
-	//! The port of the proxy to use
-	int port; 
-	//! The host name of the proxy to use or NULL
-	QString host; 
-	//! Username for the said proxy or NULL
-	QString user; 
-	//! Password for the said proxy or NULL
-	QString password; 
-};
-
-struct PostItem {
-	QString name;
-	QString value;
-	bool file;
-};
-	
 /*! \brief Settings consdering margins */
 struct Margin {
 	Margin();
@@ -86,8 +67,8 @@ struct TableOfContent {
 	float fontScale;
 };
 
-/*! \brief Class holding all user setting.
 
+/*! \brief Class holding all user setting.
     This class holds all the user settings, settings can be filled in by hand,
     or with other methods. 
     \sa CommandLineParser::parse()
@@ -136,9 +117,6 @@ struct Global {
 
 	//! The file where in to store the output
 	QString out;
-
-	//! Path of the cookie jar file
-	QString cookieJar;
 	
 	QString documentTitle;
 
@@ -149,6 +127,8 @@ struct Global {
 
 	//! Specify the output format we should use
 	QString outputFormat;
+
+	LoadGlobal load;
 };
 
 /*! \brief Settings considering headers and footers */
@@ -172,13 +152,7 @@ struct HeaderFooter {
 	float spacing;
 };
 
-
 struct Page {
-	enum LoadErrorHandling {
-		abort,
-		skip,
-		ignore
-	};
 
 	Page();
 	//! Settings regarding the TOC
@@ -191,12 +165,6 @@ struct Page {
 	
 	//! Header related settings
 	HeaderFooter footer;
-	
-	//! Username used for http auth login
-	QString username;
-	
-	//! Password used for http auth login
-	QString password;
 	
 	//! Should we print background images
 	bool background;
@@ -215,13 +183,7 @@ struct Page {
 	
 	//! Should the horrible intelligent shrinking feature be enabled?
 	bool enableIntelligentShrinking;
-	
-	//! How many milliseconds should we wait for a Javascript redirect
-	int jsdelay;
-	
-	//! What zoom factor should we apply when printing
-	float zoomFactor;
-	
+		
 	//! Minimum font size
 	int minimumFontSize;
 	
@@ -230,47 +192,20 @@ struct Page {
 	
 	//! Encoding used to enterpit a document with do supplied encoding
 	QString defaultEncoding;
-	
-	//! Map of custum header variables
-	QList< QPair<QString, QString> > customHeaders;
-	
-	//! Set if the custom header should be repeated for each resource request
-	bool repeatCustomHeaders;
-	
-	//! Map of cookies
-	QList< QPair<QString, QString> > cookies;
-	
+			
 	//! Replacements
 	QList< QPair<QString, QString> > replacements;
-	
-	QList< PostItem > post;
-	
-	//! Block access to local files for the given page
-	bool blockLocalFileAccess;
-	
-	//! If access to local files is not allowed in general, allow it for these files
-	QList< QString > allowed;
-	
-	//! Stop Javascript from running too long
-	bool stopSlowScripts;		
-	
-	//! Output Javascript debug messages
-	bool debugJavascript;
 	
 	//! Convert forms on the pages into PDF forms
 	bool produceForms;
 	
-	//! What should we do about load errors
-	LoadErrorHandling loadErrorHandling;
-	
 	//! Stylesheet supplied by the user
 	QString userStyleSheet;
+
+	LoadPage load;
 	
 	//! Should plugins be allowed
 	bool enablePlugins;
-
-	//! Proxy related settings
-	Proxy proxy;
 
 	bool includeInOutline;
 
@@ -281,16 +216,11 @@ struct Page {
 	QString tocXsl;
 };
 
-Page::LoadErrorHandling strToLoadErrorHandling(const char * s, bool * ok=0);
-QString loadErrorHandlingToStr(Page::LoadErrorHandling leh);
-
 QPrinter::PageSize strToPageSize(const char * s, bool * ok=0);
 QString pageSizeToStr(QPrinter::PageSize ps);
 
 UnitReal strToUnitReal(const char * s, bool * ok=0);
 QString unitRealToStr(const UnitReal & ur, bool * ok);
-	
-Proxy strToProxy(const char * s, bool * ok=0);
 
 QPrinter::Orientation strToOrientation(const char * s, bool * ok=0);
 QString orientationToStr(QPrinter::Orientation o);

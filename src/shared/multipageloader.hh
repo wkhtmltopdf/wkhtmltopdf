@@ -16,7 +16,7 @@
 // along with wkhtmltopdf.  If not, see <http://www.gnu.org/licenses/>.
 #ifndef __MULTIPAGELOADER_HH__
 #define __MULTIPAGELOADER_HH__
-#include "settings.hh"
+#include "loadsettings.hh"
 #include <QFile>
 #include <QObject>
 #include <QUrl>
@@ -38,10 +38,10 @@ class MultiPageLoaderPrivate;
 class MultiPageLoader: public QObject {
 	Q_OBJECT
 public:
-	MultiPageLoader(settings::Global & s);
+	MultiPageLoader(settings::LoadGlobal & s);
 	~MultiPageLoader();
-	LoaderObject * addResource(const QString & url, const settings::Page & pageSettings);
-	LoaderObject * addResource(const QUrl & url, const settings::Page & pageSettingns);
+	LoaderObject * addResource(const QString & url, const settings::LoadPage & settings);
+	LoaderObject * addResource(const QUrl & url, const settings::LoadPage & settings);
 	static QUrl guessUrlFromString(const QString &string);
 	int httpErrorCode();
 	static bool copyFile(QFile & src, QFile & dst);

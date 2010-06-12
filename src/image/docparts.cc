@@ -13,7 +13,8 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with wkhtmltopdf.  If not, see <http://www.gnu.org/licenses/>.
-#include "commandlineparser_p.hh"
+#include "commandlineparser.hh"
+#include "outputter.hh"
 #include <QWebFrame>
 
 #define STRINGIZE_(x) #x
@@ -23,7 +24,7 @@
   Output name and a short description
   \param o The outputter to output to
 */
-void CommandLineParserPrivate::outputManName(Outputter * o) const {
+void CommandLineParser::outputManName(Outputter * o) const {
 	o->beginSection("Name");
 	o->paragraph("wkhtmltoimage - html to image converter");
 	o->endSection();
@@ -33,7 +34,7 @@ void CommandLineParserPrivate::outputManName(Outputter * o) const {
   Output a short synopsis on how to call the command line program
   \param o The outputter to output to
 */
-void CommandLineParserPrivate::outputSynopsis(Outputter * o) const {
+void CommandLineParser::outputSynopsis(Outputter * o) const {
 	o->beginSection("Synopsis");
 	o->verbatim("wkhtmltoimage [OPTIONS]... <input file> <output file>\n");
 	o->endSection();
@@ -43,7 +44,7 @@ void CommandLineParserPrivate::outputSynopsis(Outputter * o) const {
   Explain what the program does
   \param o The outputter to output to
 */
-void CommandLineParserPrivate::outputDescripton(Outputter * o) const {
+void CommandLineParser::outputDescripton(Outputter * o) const {
 	o->beginSection("Description");
 	o->beginParagraph();
 	o->text("Converts an HTML page into an image, ");
@@ -56,7 +57,7 @@ void CommandLineParserPrivate::outputDescripton(Outputter * o) const {
   Output contact information
   \param o The outputter to output to
 */
-void CommandLineParserPrivate::outputContact(Outputter * o) const {
+void CommandLineParser::outputContact(Outputter * o) const {
 	o->beginSection("Contact");
 	o->beginParagraph();
 	o->text("If you experience bugs or want to request new features please visit ");
@@ -71,7 +72,7 @@ void CommandLineParserPrivate::outputContact(Outputter * o) const {
   Output beginning of the readme
   \param o The outputter to output to
 */
-void CommandLineParserPrivate::outputDocStart(Outputter * o) const {
+void CommandLineParser::outputDocStart(Outputter * o) const {
 	o->beginSection(QString("wkhtmltoimage ")+QString::number(MAJOR_VERSION)+"."+QString::number(MINOR_VERSION)+"."+QString::number(PATCH_VERSION)+(QString(STRINGIZE(BUILD)).isEmpty()?"":" ")+STRINGIZE(BUILD) + " Manual");
 	o->paragraph("This file documents wkhtmltoimage, a program capable of converting HTML "
 				 "documents into images.");
@@ -82,7 +83,7 @@ void CommandLineParserPrivate::outputDocStart(Outputter * o) const {
   Output information on how to compile
   \param o The outputter to output to
 */
-void CommandLineParserPrivate::outputCompilation(Outputter * o) const {
+void CommandLineParser::outputCompilation(Outputter * o) const {
 	o->beginSection("Compilation");
 	o->paragraph("It can happen that the static binary does not work for your system "
 		     "for one reason or the other, in that case you might need to compile "
@@ -95,7 +96,7 @@ void CommandLineParserPrivate::outputCompilation(Outputter * o) const {
   Output information on how to install
   \param o The outputter to output to
 */
-void CommandLineParserPrivate::outputInstallation(Outputter * o) const {
+void CommandLineParser::outputInstallation(Outputter * o) const {
 	o->beginSection("Installation");
 	o->paragraph(
 		"There are several ways to install wkhtmltoimage.  You can download a "
@@ -107,7 +108,7 @@ void CommandLineParserPrivate::outputInstallation(Outputter * o) const {
   Output examples on how to use wkhtmltoimage
   \param o The outputter to output to
 */
-void CommandLineParserPrivate::outputExamples(Outputter * o) const {
+void CommandLineParser::outputExamples(Outputter * o) const {
 	o->beginSection("Examples");
 	o->paragraph("This section presents a number of examples of how to invoke wkhtmltoimage.");
 	o->paragraph("To convert a remote HTML file to PNG:");

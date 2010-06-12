@@ -65,10 +65,10 @@ bool looksLikeHtmlAndNotAUrl(QString str) {
 }
 
 PageConverterPrivate::PageConverterPrivate(Global & s, PageConverter & o) :
-	settings(s), pageLoader(s),
+	settings(s), pageLoader(s.load),
 	outer(o), printer(0), painter(0)
 #ifdef __EXTENSIVE_WKHTMLTOPDF_QT_HACK__
-	, hfLoader(s), tocLoader1(s), tocLoader2(s)
+	, hfLoader(s.load), tocLoader1(s.load), tocLoader2(s.load)
 	, tocLoader(&tocLoader1), tocLoaderOld(&tocLoader2)
 	, outline(0), tocPrinter(0)
 #endif
@@ -187,7 +187,7 @@ void PageConverterPrivate::beginConvert() {
 		}
 
 		if (!s.isTableOfContent) {
-			o.loaderObject = pageLoader.addResource(s.page, s);
+			o.loaderObject = pageLoader.addResource(s.page, s.load);
 			o.page = &o.loaderObject->page;
 			PageObject::webPageToObject[o.page] = &o;
 			updateWebSettings(o.page->settings(), s);
@@ -386,7 +386,7 @@ void PageConverterPrivate::loadTocs() {
 		StreamDumper sd(path);
 		outline->dump(sd.stream, style);
 		
-		obj.loaderObject = pageLoader.addResource(path, ps);
+		obj.loaderObject = pageLoader.addResource(path, ps.load);
 		obj.page = &obj.loaderObject->page;
 		PageObject::webPageToObject[obj.page] = &obj;
 		updateWebSettings(obj.page->settings(), ps);
@@ -777,7 +777,7 @@ QWebPage * PageConverterPrivate::loadHeaderFooter(QString url, const QHash<QStri
 	QUrl u = MultiPageLoader::guessUrlFromString(url);
 	for(QHash<QString, QString>::const_iterator i=parms.begin(); i != parms.end(); ++i)
 		u.addQueryItem(i.key(), i.value());
-	return &hfLoader.addResource(u, ps)->page;
+	return &hfLoader.addResource(u, ps.load)->page;
 
 }
 

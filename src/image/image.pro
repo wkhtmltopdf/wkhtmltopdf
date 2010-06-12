@@ -34,8 +34,8 @@ INSTALLS += target
 target.path=$$INSTALLBASE/bin
 
 # Input
-HEADERS += pageloader.hh settings.hh
+HEADERS += pageloader.hh settings.hh converter.hh
 SOURCES += wkhtmltoimage.cc arguments.cc commandlineparser.cc docparts.cc \
-           pageloader.cc settings.cc utilities.cc \
+           converter.cc utilities.cc \
 
 include(../shared/shared.pri)

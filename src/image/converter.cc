@@ -1,11 +1,19 @@
-/* 
- * File:   pageloader.cpp
- * Author: Christian Sciberras
- * 
- * Created on 20 ta’ Mejju 2010, 00:21
- */
-
-#include "pageloader.hh"
+//-*- mode: c++; tab-width: 4; indent-tabs-mode: t; c-file-style: "stroustrup"; -*-
+// This file is part of wkhtmltopdf.
+//
+// wkhtmltopdf is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// wkhtmltopdf is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with wkhtmltopdf.  If not, see <http://www.gnu.org/licenses/>.
+#include "converter.hh"
 
 #include <QObject>
 #include <QWebPage>
@@ -18,19 +26,19 @@
 #include <QFileInfo>
 #include <QDebug>
 
-void PageLoader::loaded(bool ok) {
+void Converter::loaded(bool ok) {
 
 }
 
-PageLoader::PageLoader(Settings & s){
-	httpErrorCode=0;
+Converter::Converter(wkhtmltopdf::settings::Global & s){
+  httpErrorCode=0;
 	settings=s;
 }
 
-PageLoader::~PageLoader() {
+Converter::~Converter() {
 }
 
-bool PageLoader::convert() {
+bool Converter::convert() {
 	// init error code
 	httpErrorCode=0;
 	// quickfix; if out is "-", set quiet to ON

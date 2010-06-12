@@ -90,7 +90,7 @@ public:
 		fprintf(fd,"%s\n",S(s));
 	}
 	
-	void cswitch(const ArgHandlerBase * h) {
+	void cswitch(const ArgHandler * h) {
 		fprintf(fd, ".TP\n");
 		fprintf(fd, "\\fB");
 		if(h->shortSwitch != 0)

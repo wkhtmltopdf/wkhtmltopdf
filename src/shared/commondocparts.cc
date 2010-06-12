@@ -14,8 +14,8 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with wkhtmltopdf.  If not, see <http://www.gnu.org/licenses/>.
-#include "commondocparts.hh"
-namespace commonDocParts {
+#include "commandlineparserbase.hh"
+#include "outputter.hh"
 
 #define STRINGIZE_(x) #x
 #define STRINGIZE(x) STRINGIZE_(x)
@@ -24,9 +24,9 @@ namespace commonDocParts {
   Output the name and version of the program, and also whether we are using a patched qt
   \param o The outputter to output to
 */
-void outputName(Outputter * o, QString app) {
+void CommandLineParserBase::outputName(Outputter * o) const {
 	o->beginSection("Name");
-	o->paragraph(app+" "+QString::number(MAJOR_VERSION)+"."+QString::number(MINOR_VERSION)+"."+QString::number(PATCH_VERSION)+(QString(STRINGIZE(BUILD)).isEmpty()?"":" ")+STRINGIZE(BUILD));
+	o->paragraph(appName()+" "+QString::number(MAJOR_VERSION)+"."+QString::number(MINOR_VERSION)+"."+QString::number(PATCH_VERSION)+(QString(STRINGIZE(BUILD)).isEmpty()?"":" ")+STRINGIZE(BUILD));
 	o->endSection();
 
 }
@@ -35,7 +35,7 @@ void outputName(Outputter * o, QString app) {
   Output copyright stuff
   \param o The outputter to output to
 */
-void outputLicense(Outputter * o) {
+void CommandLineParserBase::outputLicense(Outputter * o) const {
 	o->beginSection("License");
 	o->paragraph("Copyright (C) 2010 wkhtmltopdf/wkhtmltoimage Authors.");
 	o->endParagraph();
@@ -51,7 +51,7 @@ void outputLicense(Outputter * o) {
   Output list of authors
   \param o The outputter to output to
 */
-void outputAuthors(Outputter * o) {
+void CommandLineParserBase::outputAuthors(Outputter * o) const {
 	o->beginSection("Authors");
 	o->paragraph(
 		QString::fromUtf8(
@@ -64,7 +64,7 @@ void outputAuthors(Outputter * o) {
   Output information on the problems with the static version
   \param o The outputter to output to
 */
-void outputStaticProblems(Outputter * o) {
+void CommandLineParserBase::outputStaticProblems(Outputter * o) const {
 	o->beginSection("Static version");
 	o->beginParagraph();
 	o->text("On the wkhtmltopdf website you can download a static version of wkhtmltopdf ");
@@ -87,7 +87,7 @@ void outputStaticProblems(Outputter * o) {
   Output documentation about the proxy settings
   \param o The outputter to output to
 */
-void outputProxyDoc(Outputter * o) {
+void CommandLineParserBase::outputProxyDoc(Outputter * o) const {
 	o->beginSection("Specifying A Proxy");
 	o->paragraph(
 		"By default proxy information will be read from the environment"
@@ -103,5 +103,3 @@ void outputProxyDoc(Outputter * o) {
 				"None\n");
 	o->endSection();
 }
-
-};

@@ -30,17 +30,17 @@ class MyNetworkAccessManager: public QNetworkAccessManager {
 	Q_OBJECT
 private:
 	QSet<QString> allowed;
-	const settings::Page & settings;
+	const settings::LoadPage & settings;
 public:
 	void allow(QString path);
-	MyNetworkAccessManager(const settings::Page & s);
+	MyNetworkAccessManager(const settings::LoadPage & s);
 	QNetworkReply * createRequest(Operation op, const QNetworkRequest & req, QIODevice * outgoingData = 0);
 signals:
 	void warning(const QString & text);
 };
 
-class ResourceObject;
 class MultiPageLoaderPrivate;
+class ResourceObject;
 
 class MyQWebPage: public QWebPage {
 	Q_OBJECT ;
@@ -67,11 +67,11 @@ private:
 	bool signalPrint;
 	MultiPageLoaderPrivate & multiPageLoader;
 public:
-	ResourceObject(MultiPageLoaderPrivate & mpl, const QUrl & u, const settings::Page & s);
+	ResourceObject(MultiPageLoaderPrivate & mpl, const QUrl & u, const settings::LoadPage & s);
 	MyQWebPage webPage;
 	LoaderObject lo;
 	int httpErrorCode;
-	const settings::Page settings;	
+	const settings::LoadPage settings;	
 public slots:
 	void load();
 	void loadStarted();
@@ -104,7 +104,7 @@ public:
 	MyCookieJar * cookieJar;
 
 	MultiPageLoader & outer;
-	settings::Global & settings;
+	const settings::LoadGlobal settings;
 
 	QList<ResourceObject *> resources;
 
@@ -115,9 +115,9 @@ public:
 	bool finishedEmitted;
 	TempFile tempIn;
 
-	MultiPageLoaderPrivate(settings::Global & s, MultiPageLoader & o);
+	MultiPageLoaderPrivate(const settings::LoadGlobal & settings, MultiPageLoader & o);
 	~MultiPageLoaderPrivate(); 
-	LoaderObject * addResource(const QUrl & url, const settings::Page & settings);
+	LoaderObject * addResource(const QUrl & url, const settings::LoadPage & settings);
 	void load();
 	void clearResources();
 	void cancel();

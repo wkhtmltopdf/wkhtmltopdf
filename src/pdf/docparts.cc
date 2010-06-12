@@ -13,7 +13,8 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with wkhtmltopdf.  If not, see <http://www.gnu.org/licenses/>.
-#include "commandlineparser_p.hh"
+#include "commandlineparser.hh"
+#include "outputter.hh"
 #include <QWebFrame>
 
 #define STRINGIZE_(x) #x
@@ -23,7 +24,7 @@
   Output name and a short description
   \param o The outputter to output to
 */
-void CommandLineParserPrivate::outputManName(Outputter * o) const {
+void CommandLineParser::outputManName(Outputter * o) const {
 	o->beginSection("Name");
 	o->paragraph("wkhtmltopdf - html to pdf converter");
 	o->endSection();
@@ -33,7 +34,7 @@ void CommandLineParserPrivate::outputManName(Outputter * o) const {
   Output a short synopsis on how to call the command line program
   \param o The outputter to output to
 */
-void CommandLineParserPrivate::outputSynopsis(Outputter * o) const {
+void CommandLineParser::outputSynopsis(Outputter * o) const {
 	o->beginSection("Synopsis");
 	o->verbatim("wkhtmltopdf [GLOBAL OPTION]... [OBJECT]... <output file>\n");
 	o->endSection();
@@ -85,7 +86,7 @@ void CommandLineParserPrivate::outputSynopsis(Outputter * o) const {
   Explain what the program does
   \param o The outputter to output to
 */
-void CommandLineParserPrivate::outputDescripton(Outputter * o) const {
+void CommandLineParser::outputDescripton(Outputter * o) const {
 	o->beginSection("Description");
 	o->beginParagraph();
 	o->text("Converts one or more HTML pages into a PDF document, ");
@@ -104,7 +105,7 @@ void CommandLineParserPrivate::outputDescripton(Outputter * o) const {
   \param o The outputter to output to
   \param sure Is the functionality restricted in this wkhtmltopdf
 */
-void CommandLineParserPrivate::outputNotPatched(Outputter * o, bool sure) const {
+void CommandLineParser::outputNotPatched(Outputter * o, bool sure) const {
 	o->beginSection("Reduced Functionality");
 	if (sure) 
 		o->paragraph("This version of wkhtmltopdf has been compiled against a version of "
@@ -134,7 +135,7 @@ void CommandLineParserPrivate::outputNotPatched(Outputter * o, bool sure) const 
   Explain the page breaking is somewhat broken
   \param o The outputter to output to
 */
-void CommandLineParserPrivate::outputPageBreakDoc(Outputter * o) const {
+void CommandLineParser::outputPageBreakDoc(Outputter * o) const {
 	o->beginSection("Page Breaking");
 	o->paragraph(
 		"The current page breaking algorithm of WebKit leaves much to be desired. "
@@ -163,7 +164,7 @@ void CommandLineParserPrivate::outputPageBreakDoc(Outputter * o) const {
   Output documentation about headers and footers
   \param o The outputter to output to
 */
-void CommandLineParserPrivate::outputHeaderFooterDoc(Outputter * o) const {
+void CommandLineParser::outputHeaderFooterDoc(Outputter * o) const {
 	o->beginSection("Footers And Headers");
 	o->paragraph("Headers and footers can be added to the document by the --header-* and --footer* "
 				 "arguments respectfully.  In header and footer text string supplied to e.g. --header-left, "
@@ -217,7 +218,7 @@ void CommandLineParserPrivate::outputHeaderFooterDoc(Outputter * o) const {
   Output documentation about outlines
   \param o The outputter to output to
 */
-void CommandLineParserPrivate::outputOutlineDoc(Outputter * o) const {
+void CommandLineParser::outputOutlineDoc(Outputter * o) const {
 	o->beginSection("Outlines");
 	o->beginParagraph();
 	o->text(
@@ -239,7 +240,7 @@ void CommandLineParserPrivate::outputOutlineDoc(Outputter * o) const {
   Output contact information
   \param o The outputter to output to
 */
-void CommandLineParserPrivate::outputContact(Outputter * o) const {
+void CommandLineParser::outputContact(Outputter * o) const {
 	o->beginSection("Contact");
 	o->beginParagraph();
 	o->text("If you experience bugs or want to request new features please visit ");
@@ -254,7 +255,7 @@ void CommandLineParserPrivate::outputContact(Outputter * o) const {
   Output beginning of the readme
   \param o The outputter to output to
 */
-void CommandLineParserPrivate::outputDocStart(Outputter * o) const {
+void CommandLineParser::outputDocStart(Outputter * o) const {
 	o->beginSection(QString("wkhtmltopdf ")+QString::number(MAJOR_VERSION)+"."+QString::number(MINOR_VERSION)+"."+QString::number(PATCH_VERSION)+(QString(STRINGIZE(BUILD)).isEmpty()?"":" ")+STRINGIZE(BUILD) + " Manual");
 	o->paragraph("This file documents wkhtmltopdf, a program capable of converting html "
 				 "documents into PDF documents.");
@@ -265,7 +266,7 @@ void CommandLineParserPrivate::outputDocStart(Outputter * o) const {
   Output information on how to use read-args-from-stdin
   \param o The outputter to output to
 */
-void CommandLineParserPrivate::outputArgsFromStdin(Outputter * o) const {
+void CommandLineParser::outputArgsFromStdin(Outputter * o) const {
 	o->beginSection("Reading arguments from stdin");
 	o->paragraph("If you need to convert a lot of pages in a batch, and you feel that wkhtmltopdf "
 				 "is a bit to slow to start up, then you should try --read-args-from-stdin,");
@@ -283,7 +284,7 @@ void CommandLineParserPrivate::outputArgsFromStdin(Outputter * o) const {
   Output information on how to compile
   \param o The outputter to output to
 */
-void CommandLineParserPrivate::outputCompilation(Outputter * o) const {
+void CommandLineParser::outputCompilation(Outputter * o) const {
 	o->beginSection("Compilation");
 	o->paragraph("It can happen that the static binary does not work for your system "
 				 "for one reason or the other, in that case you might need to compile "
@@ -332,7 +333,7 @@ void CommandLineParserPrivate::outputCompilation(Outputter * o) const {
   Output information on how to install
   \param o The outputter to output to
 */
-void CommandLineParserPrivate::outputInstallation(Outputter * o) const {
+void CommandLineParser::outputInstallation(Outputter * o) const {
 	o->beginSection("Installation");
 	o->paragraph(
 		"There are several ways to install wkhtmltopdf.  You can download a "
@@ -350,7 +351,7 @@ void CommandLineParserPrivate::outputInstallation(Outputter * o) const {
   \param o The outputter to output to
 
 */
-void CommandLineParserPrivate::outputPageSizes(Outputter * o) const {
+void CommandLineParser::outputPageSizes(Outputter * o) const {
 	o->beginSection("Page sizes");
 	o->beginParagraph();
 	o->text("The default page size of the rendered document is A4, but using this --page-size option"
@@ -368,7 +369,7 @@ void CommandLineParserPrivate::outputPageSizes(Outputter * o) const {
   Output examples on how to use wkhtmltopdf
   \param o The outputter to output to
 */
-void CommandLineParserPrivate::outputExampels(Outputter * o) const {
+void CommandLineParser::outputExampels(Outputter * o) const {
 	o->beginSection("Examples");
 	o->paragraph("This section presents a number of examples of how to invoke wkhtmltopdf.");
 	o->paragraph("To convert a remote HTML file to PDF:");
