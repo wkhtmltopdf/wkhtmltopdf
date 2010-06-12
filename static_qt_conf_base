@@ -29,7 +29,7 @@
 -no-phonon
 -no-phonon-backend
 -webkit
-# -no-scripttools
+-no-scripttools
 -no-mmx
 -no-3dnow
 -no-sse
@@ -51,6 +51,4 @@
 -no-dbus
 -no-multimedia
 -openssl
--no-audio-backend
-# -no-multimedia
 -no-declarative

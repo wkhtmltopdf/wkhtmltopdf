@@ -151,6 +151,31 @@ public:
 	}
 };
 
+int handleError(bool success, int errorCode) {
+	QHash<int, const char *> cm;
+	cm[400] = "Bad Request";
+	cm[401] = "Unauthorized";
+	cm[402] = "Payment Required";
+	cm[403] = "Forbidden";
+	cm[404] = "Page not found";
+	cm[405] = "Method Not Allowed";
+	cm[500] = "Internal Server Error";
+	cm[501] = "Not Implemented";
+	cm[503] = "Service Unavailable";
+	cm[505] = "HTTP Version Not Supported";
+	QHash<int, int> ce;
+	ce[404] = 2;
+	ce[401] = 3;
+	if (errorCode) {
+		int c = EXIT_FAILURE;
+		if (ce.contains(errorCode)) c = ce[errorCode];
+		const char * m = "";
+		if (cm.contains(errorCode)) m = cm[errorCode];
+		fprintf(stderr, "Exit with code %d do to http error: %d %s\n", c, errorCode, m);
+		return c;
+	}
+	return success?EXIT_SUCCESS:EXIT_FAILURE;
+}
 
 int main(int argc, char * argv[]) {
 	//This will store all our settings
@@ -207,17 +232,7 @@ int main(int argc, char * argv[]) {
 	ProgressFeedback feedback(converter);
 	foreach(const Page & page, pageSettings) 
 		converter.addResource(page);
-	
-	if (!converter.convert())
-		return EXIT_FAILURE;
-	switch(converter.httpErrorCode()) {
-	case 401:
-		return 3;
-	case 404: 
-		return 2;
-	case 0:
-		return EXIT_SUCCESS;
-	default:
-		return EXIT_FAILURE;
-	}
+
+	bool success = converter.convert();
+	return handleError(success, converter.httpErrorCode());
 }
