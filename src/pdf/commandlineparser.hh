@@ -59,9 +59,9 @@ public:
 	void parseArguments(int argc, const char ** argv, bool fromStdin=false);
 
 	virtual char * mapAddress(char * d, char * ns) const {
-		char * od = reinterpret_cast<char *>(&od);
-		if(od > d || d >= od + sizeof(wkhtmltopdf::settings::Page)) return d;;
-		return d - od + ns;
+		const char * _od = reinterpret_cast<const char *>(&od);
+		if(_od > d || d >= _od + sizeof(wkhtmltopdf::settings::Page)) return d;;
+		return d - _od + ns;
 	}
  
 };
