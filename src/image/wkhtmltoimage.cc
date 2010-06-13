@@ -17,6 +17,7 @@
 #include "settings.hh"
 #include "utilities.hh"
 #include "imageconverter.hh"
+#include "progressfeedback.hh"
 #include <QApplication>
 
 int main(int argc, char** argv) {
@@ -24,32 +25,24 @@ int main(int argc, char** argv) {
 	wkhtmltopdf::settings::Global settings;
 	//Create a command line parser to parse commandline arguments
 	CommandLineParser parser(settings);
-	//Setup default values in settings
-	//parser.loadDefaults();
 	//Parse the arguments
 	parser.parseArguments(argc, (const char**)argv);
 
-	//Construct QApplication required for printing
-	QApplication a( argc, argv );
+
+	bool use_graphics=true;
+#if defined(Q_WS_X11) || defined(Q_WS_MACX)
+#ifdef __EXTENSIVE_WKHTMLTOPDF_QT_HACK__
+	use_graphics=settings.useGraphics;
+	if (!use_graphics) QApplication::setGraphicsSystem("raster");
+#endif
+#endif
+	QApplication a(argc, argv, use_graphics);
 	a.setStyle(new MyLooksStyle());
 
 	//Create the actual page converter to convert the pages
 	wkhtmltopdf::ImageConverter converter(settings);
 
-	if (!converter.convert()) return EXIT_FAILURE;
-
-	switch(converter.httpErrorCode()) {
-
-		case 401:
-			return 3;
-
-		case 404:
-			return 2;
-
-		case 0:
-			return EXIT_SUCCESS;
-
-		default:
-			return EXIT_FAILURE;
-	}
+	wkhtmltopdf::ProgressFeedback feedback(settings.quiet, converter);
+	bool success = converter.convert();
+	return handleError(success, converter.httpErrorCode());
 }

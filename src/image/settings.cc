@@ -14,11 +14,27 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with wkhtmltopdf.  If not, see <http://www.gnu.org/licenses/>.
-#include <settings.hh>
+#include "settings.hh"
+
+namespace wkhtmltopdf {
+namespace settings {
+
+CropSettings:: CropSettings():
+	left(0),
+	top(0),
+	width(-1),
+	height(-1) {}
+
+ScaleSettings::ScaleSettings():
+	width(-1),
+	height(-1) {}
 
 Global::Global():
-  quiet(false),
-  useGraphics(false),
-  in(""),
-  out(""),
-  fmt("") {}
+	quiet(false),
+	useGraphics(false),
+	in(""),
+	out(""),
+	fmt("") {}
+
+}
+}

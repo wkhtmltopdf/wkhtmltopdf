@@ -38,6 +38,6 @@ include(../shared/shared.pri)
 # Input
 HEADERS += imageconverter.hh imageconverter_p.hh settings.hh converter.hh
 SOURCES += wkhtmltoimage.cc arguments.cc commandlineparser.cc docparts.cc \
-           imageconverter.cc
+           imageconverter.cc settings.cc
 
 

@@ -26,6 +26,7 @@ namespace settings {
 
 /*! \brief Settings for cropping image */
 struct CropSettings {
+	CropSettings();
 	//! Cropping left/x coord
 	int left;
 	//! Cropping top/y coord
@@ -38,6 +39,7 @@ struct CropSettings {
 
 /*! \brief Settings for scaling image */
 struct ScaleSettings {
+	ScaleSettings();
 	//! Scale width/w dime
 	int width;
 	//! Scale height/h dime
@@ -51,6 +53,8 @@ struct ScaleSettings {
     \sa CommandLineParser::parse()
 */
 struct Global {
+	Global();
+
 	//! Crop related settings
 	CropSettings crop;
 	//! Scale related settings

@@ -125,7 +125,6 @@ void CommandLineParserBase::parseArg(int sections, const int argc, const char **
 				usage(stderr, false);
 				exit(1);
 			}
-			qDebug() << k.value()->section << sections;
 		
 			if (!(k.value()->section & sections)) {
 				fprintf(stderr, "-%c specified in incorrect location\n\n", argv[c][j]);

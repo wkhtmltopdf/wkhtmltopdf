@@ -49,9 +49,9 @@ void ImageConverterPrivate::beginConvert() {
 	error = false;
 	convertionDone = false;
 	progressString = "0%";
-	currentPhase=0;
 	loaderObject = loader.addResource(settings.in, settings.loadPage);
-	
+	updateWebSettings(loaderObject->page.settings(), settings.web);
+	currentPhase=0;
 	emit out. phaseChanged();
 	loadProgress(0);
 	loader.load();
@@ -63,13 +63,12 @@ void ImageConverterPrivate::clearResources() {
 }
 
 void ImageConverterPrivate::pagesLoaded(bool ok) {
-	//TODO theck ok
-
-	// if fmt is empty try to get it from file extension in out
-	if(settings.fmt==""){
-		QFileInfo fi(settings.out);
-        settings.fmt = fi.suffix();
+	if (errorCode == 0) errorCode = loader.httpErrorCode();
+	if (!ok) {
+		fail(); 
+		return;
 	}
+	
 	// check whether image format is supported (for writing)
 //	QImageWriter test;
 //	test.setFormat(settings.fmt);
@@ -80,46 +79,58 @@ void ImageConverterPrivate::pagesLoaded(bool ok) {
 //	}
 	// create webkit frame and load website
 	
-	// begin looping till loadFinished is encountered
-	//QEventLoop loop;
-	//QObject::connect(&page, SIGNAL(loadFinished(bool)), &loop, SLOT( quit( )));
-	//loop.exec( );
-	// paint image
-	//if(!settings.quiet)printf("downloading complete, converting...\n");
-
+	currentPhase=1;
+	emit out. phaseChanged();
+	loadProgress(0);
 	loaderObject->page.setViewportSize(loaderObject->page.mainFrame()->contentsSize());
-
-	
 	QImage image(loaderObject->page.viewportSize(), QImage::Format_ARGB32_Premultiplied);
 	QPainter painter(&image);
 
 	loaderObject->page.mainFrame()->render(&painter);
 	painter.end();
+	loadProgress(30);
 	// perform filter(s)
-	if(settings.crop.width!=-1 && settings.crop.height!=-1){
-		if(!settings.quiet)printf("cropping...\n");
-		// note: the returned image object is a copy; is this a memleak? does c++ have a GC?
+	if (settings.crop.width > 0 && settings.crop.height > 0) 
 		image=image.copy(settings.crop.left,settings.crop.top,settings.crop.width,settings.crop.height);
-	}
-	if(settings.scale.width!=-1 && settings.scale.height!=-1){
-		if(!settings.quiet)printf("scaling...\n");
+
+	loadProgress(50);
+	if (settings.scale.width > 0 && settings.scale.height > 0) {
 		// todo: perhaps get more user options to change aspect ration and scaling mode?
-		// note: the returned image object is a copy; is this a memleak? does c++ have a GC?
 		image=image.scaled(settings.scale.width,settings.scale.height,Qt::IgnoreAspectRatio,Qt::SmoothTransformation);
 	}
+	loadProgress(80);
+
+
+	QFile file;
+	bool openOk;
 	// output image
-	if(settings.out!="-"){
-		// save to file
-		if(!settings.quiet)printf("saving image...\n");
-		QByteArray ba=settings.fmt.toLatin1();
-		if(!image.save(QString(settings.out),ba.data(),-1)){
-			emit out.error("could'nt save image");
-			fail();
-		} 
-	}else{
-		// save to stdout
-		// TODO: print to stdout
+	if (settings.out != "-" ) {
+		file.setFileName(settings.out);
+		openOk = file.open(QIODevice::WriteOnly);
+	} else {
+		openOk = file.open(stdout, QIODevice::WriteOnly);
 	}
+	if (!openOk) {
+		emit out.error("Could not write to output file");
+		fail();
+	}
+
+	// if fmt is empty try to get it from file extension in out
+	if(settings.fmt==""){
+		if (settings.out == "-")
+			settings.fmt = "jpg";
+		else {
+			QFileInfo fi(settings.out);
+			settings.fmt = fi.suffix();
+		}
+	}
+	QByteArray fmt=settings.fmt.toLatin1();
+	if (!image.save(&file,fmt.data(),-1)) {
+		emit out.error("Could not save image");
+		fail();
+	} 
+
+	loadProgress(100);
 
 	currentPhase = 2;
 	emit out.phaseChanged();

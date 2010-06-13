@@ -34,9 +34,9 @@ CommandLineParser::CommandLineParser(wkhtmltopdf::settings::Global & s):
 	addarg("crop-y",0,"Set y coordinate for croping", new IntSetter(s.crop.top,"int"));
 	addarg("crop-w",0,"Set width for croping", new IntSetter(s.crop.width,"int"));
 	addarg("crop-h",0,"Set height for croping", new IntSetter(s.crop.height,"int"));
-
-	extended(false);
-	qthack(false);
+	addarg("format",'f',"Output format", new QStrSetter(s.fmt, "format") );
+	extended(true);
+	qthack(true);
 
 #ifdef Q_WS_X11
 	addarg("use-xserver",0,"Use the X server (some plugins and other stuff might not work without X11)", new ConstSetter<bool>(s.useGraphics,true));

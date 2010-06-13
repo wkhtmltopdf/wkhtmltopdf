@@ -109,9 +109,9 @@ void CommandLineParser::parseArguments(int argc, const char ** argv, bool final)
     settings.out="";
 	bool defaultMode=false;
 	for (int i=1; i < argc; ++i) {
-        if(i==argc-2 && argv[i][1]!='-'){ // the arg before last (in)
+        if(i==argc-2 && (argv[i][0] != '-' || argv[i][1] == '\0')) { // the arg before last (in)
             settings.in = argv[i];
-        } else if (i==argc-1 && argv[i][1]!='-'){ // the last arg (out)
+        } else if (i==argc-1 && (argv[i][0] != '-' || argv[i][1] == '\0')) { // the last arg (out)
             settings.out = argv[i];
 		} else {
 			parseArg(global, argc, argv, defaultMode, i, 0);
