@@ -68,6 +68,16 @@ void ImageConverterPrivate::pagesLoaded(bool ok) {
 		fail(); 
 		return;
 	}
+
+	// if fmt is empty try to get it from file extension in out
+	if(settings.fmt==""){
+		if (settings.out == "-")
+			settings.fmt = "jpg";
+		else {
+			QFileInfo fi(settings.out);
+			settings.fmt = fi.suffix();
+		}
+	}
 	
 	// check whether image format is supported (for writing)
 //	QImageWriter test;
@@ -85,6 +95,8 @@ void ImageConverterPrivate::pagesLoaded(bool ok) {
 	loaderObject->page.setViewportSize(loaderObject->page.mainFrame()->contentsSize());
 	QImage image(loaderObject->page.viewportSize(), QImage::Format_ARGB32_Premultiplied);
 	QPainter painter(&image);
+	if (!settings.transparent || settings.fmt != "png")
+		painter.fillRect(image.rect(), Qt::white);
 
 	loaderObject->page.mainFrame()->render(&painter);
 	painter.end();
@@ -115,15 +127,6 @@ void ImageConverterPrivate::pagesLoaded(bool ok) {
 		fail();
 	}
 
-	// if fmt is empty try to get it from file extension in out
-	if(settings.fmt==""){
-		if (settings.out == "-")
-			settings.fmt = "jpg";
-		else {
-			QFileInfo fi(settings.out);
-			settings.fmt = fi.suffix();
-		}
-	}
 	QByteArray fmt=settings.fmt.toLatin1();
 	if (!image.save(&file,fmt.data(),-1)) {
 		emit out.error("Could not save image");

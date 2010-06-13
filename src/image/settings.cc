@@ -31,6 +31,7 @@ ScaleSettings::ScaleSettings():
 
 Global::Global():
 	quiet(false),
+	transparent(false),
 	useGraphics(false),
 	in(""),
 	out(""),

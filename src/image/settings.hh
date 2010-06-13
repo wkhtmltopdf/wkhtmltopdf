@@ -66,6 +66,8 @@ struct Global {
 
 	//! Be less verbose
 	bool quiet; 
+	
+	bool transparent;
 
 	//! Should we use the graphics system
 	bool useGraphics;
