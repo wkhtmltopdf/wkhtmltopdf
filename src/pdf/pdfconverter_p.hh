@@ -72,7 +72,7 @@ public:
 		tocFile.remove();
 	}
 
-	PageObject(const settings::Page & set): settings(set), page(0) {};
+	PageObject(const settings::Page & set): settings(set), loaderObject(0), page(0) {};
 
 	~PageObject() {
 		clear();

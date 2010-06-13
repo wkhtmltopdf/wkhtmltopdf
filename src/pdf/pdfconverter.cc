@@ -235,7 +235,8 @@ void PdfConverterPrivate::pagesLoaded(bool ok) {
 	QString title = settings.documentTitle;
 	for(int d=0; d < objects.size(); ++d) {
 		if (title != "") break;
-		if (objects[d].loaderObject->skip || objects[d].settings.isTableOfContent) continue;
+		if (!objects[d].loaderObject || objects[d].loaderObject->skip || 
+			objects[d].settings.isTableOfContent) continue;
 		title = objects[d].page->mainFrame()->title();
 	}
 	printer->setDocName(title);
@@ -254,24 +255,26 @@ void PdfConverterPrivate::pagesLoaded(bool ok) {
 	// * The location and page number of each header
 	pageCount = 0;
 	for(int d=0; d < objects.size(); ++d) {
-		if (objects[d].loaderObject->skip) continue;
-		if (objects[d].settings.isTableOfContent) {
-			objects[d].pageCount = 1;
+		PageObject & obj = objects[d];
+		if (obj.settings.isTableOfContent) {
+			obj.pageCount = 1;
 			pageCount += 1;
 			outline->addEmptyWebPage();
 			continue;
 		}
+		if (!obj.loaderObject || obj.loaderObject->skip) continue;
 			
 		int tot = objects.size();
 		progressString = QString("Object ")+QString::number(d+1)+QString(" of ")+QString::number(tot);
 		emit out.progressChanged((d+1)*100 / tot);
 
 		painter->save();
-		QWebPrinter wp(objects[d].page->mainFrame(), printer, *painter);
-		objects[d].pageCount = objects[d].settings.pagesCount? wp.pageCount(): 0;
+		QWebPrinter wp(obj.page->mainFrame(), printer, *painter);
+		obj.pageCount = objects[d].settings.pagesCount? wp.pageCount(): 0;
 		pageCount += objects[d].pageCount;
 		
-		outline->addWebPage("", wp, objects[d].page->mainFrame(), objects[d].settings, objects[d].localLinks, objects[d].anchors );
+		outline->addWebPage(obj.page->mainFrame()->title(), wp, obj.page->mainFrame(), 
+							obj.settings, obj.localLinks, obj.anchors);
 		painter->restore();
 	}
 
@@ -290,7 +293,7 @@ void PdfConverterPrivate::loadHeaders() {
 	int pageNumber=1;
 	for(int d=0; d < objects.size(); ++d) {
 		PageObject & obj = objects[d];
-		if (obj.loaderObject->skip) continue;
+		if (!obj.loaderObject || obj.loaderObject->skip) continue;
 				
 		settings::Page & ps = obj.settings;
 		for (int op=0; op < obj.pageCount; ++op) {
@@ -335,7 +338,7 @@ void PdfConverterPrivate::loadTocs() {
 		StreamDumper sd(path);
 		outline->dump(sd.stream, style);
 		
-		obj.loaderObject = pageLoader.addResource(path, ps.load);
+		obj.loaderObject = tocLoader->addResource(path, ps.load);
 		obj.page = &obj.loaderObject->page;
 		PageObject::webPageToObject[obj.page] = &obj;
 		updateWebSettings(obj.page->settings(), ps.web);
@@ -512,7 +515,7 @@ void PdfConverterPrivate::tocLoaded(bool ok) {
 	bool changed=false;
 	pageCount = 0;
 	for(int d=0; d < objects.size(); ++d) {
-		if (objects[d].loaderObject->skip) continue;
+		if (!objects[d].loaderObject || objects[d].loaderObject->skip) continue;
 
 		if (!objects[d].settings.isTableOfContent) {
 			pageCount += objects[d].pageCount;
@@ -541,13 +544,13 @@ void PdfConverterPrivate::tocLoaded(bool ok) {
 		
 		QHash<QString, int> urlToDoc;
 		for(int d=0; d < objects.size(); ++d) {
-			if (objects[d].loaderObject->skip) continue;
+			if (!objects[d].loaderObject || objects[d].loaderObject->skip) continue;
 			if (objects[d].settings.isTableOfContent) continue;
 			urlToPageObj[ objects[d].page->mainFrame()->url().toString(QUrl::RemoveFragment) ] = &objects[d];
 		}
 		
 		for(int d=0; d < objects.size(); ++d) {
-			if (objects[d].loaderObject->skip) continue;
+			if (!objects[d].loaderObject || objects[d].loaderObject->skip) continue;
 			progressString = QString("Object ")+QString::number(d+1)+QString(" of ")+QString::number(objects.size());
 			emit out.progressChanged((d+1)*100 / objects.size());
 			findLinks(objects[d].page->mainFrame(), objects[d].localLinks, objects[d].externalLinks, objects[d].anchors );
@@ -591,7 +594,7 @@ void PdfConverterPrivate::printDocument() {
 		int pageNumber=1;
 		for(int d=0; d < objects.size(); ++d) {
 			PageObject & obj = objects[d];
-			if (obj.loaderObject->skip) continue;
+			if (!obj.loaderObject || obj.loaderObject->skip) continue;
 			const settings::Page & ps = obj.settings;
 			bool hasHeaderFooter = ps.header.line || ps.footer.line ||
 				!ps.header.left.isEmpty() || !ps.footer.left.isEmpty() ||
@@ -604,13 +607,7 @@ void PdfConverterPrivate::printDocument() {
 			QString l1=obj.page->mainFrame()->url().path().split("/").back()+"#";
 			QString l2=obj.page->mainFrame()->url().toString() + "#";
 
-			// if (settings.cover.isEmpty() || d != 0) {
-			// 	//The toc printer adds an extra TOC document to the beginning of the outline
-			// 	//Using a cover does not add anything to cover
-			// 	int delta = (tocPrinter?1:0) - (settings.cover.isEmpty()?0:1);
-			// 	if(tocPrinter) tocPrinter->fillLinks(d+delta, localLinks[d]);
 			outline->fillAnchors(d, obj.anchors);				
-			// }
 
 			//Sort anchors and links by page
 			QHash<int, QHash<QString, QWebElement> > myAnchors;

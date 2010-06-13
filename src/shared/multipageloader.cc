@@ -406,8 +406,11 @@ void MultiPageLoaderPrivate::load() {
 	finishedEmitted=false;
 	hasError=false;
 	loading=0;
+
 	for(int i=0; i < resources.size(); ++i)
 		resources[i]->load();
+
+	if (resources.size() == 0) loadDone();
 }
 
 void MultiPageLoaderPrivate::clearResources() {
