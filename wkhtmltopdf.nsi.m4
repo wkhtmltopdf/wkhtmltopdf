@@ -39,6 +39,7 @@ InstallDirRegKey HKCU "Software\wkhtmltopdf" ""
 Section
   SetOutPath "$INSTDIR"
   file wkhtmltopdf.exe
+  file wkhtmltoimage.exe
   file libgcc_s_dw2-1.dll
   file ssleay32.dll
   file libeay32.dll
@@ -57,6 +58,7 @@ SectionEnd
 ;Uninstaller Section
 
 Section "Uninstall"
+  Delete "$INSTDIR\wkhtmltoimage.exe"
   Delete "$INSTDIR\wkhtmltopdf.exe"
   Delete "$INSTDIR\libgcc_s_dw2-1.dll"
   Delete "$INSTDIR\ssleay32.dll"

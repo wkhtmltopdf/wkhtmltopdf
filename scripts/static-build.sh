@@ -116,8 +116,8 @@ function checkout() {
 
     #Fetch most recent version of qt
     echo "Updating qt from remote"
-	git_fetch_and_update qt git://gitorious.org/+wkhtml2pdf/qt/wkhtmltopdf-qt.git "$QTBRANCH" || exit 1
-	cd qt
+    git_fetch_and_update qt git://gitorious.org/+wkhtml2pdf/qt/wkhtmltopdf-qt.git "$QTBRANCH" || exit 1
+    cd qt
 }
 
 function setup_build() {
@@ -178,7 +178,8 @@ function build_linux_local() {
     setup_build linux
     ./build.sh || exit 1
     cd ..
-    ${BUILD}/${UPX}/upx --best ${BUILD}/linux-local/wkhtmltopdf/wkhtmltopdf -o ${BASE}/wkhtmltopdf || exit 1
+    ${BUILD}/${UPX}/upx --best ${BUILD}/linux-local/wkhtmltopdf/bin/wkhtmltopdf -o ${BASE}/bin/wkhtmltopdf || exit 1
+    ${BUILD}/${UPX}/upx --best ${BUILD}/linux-local/wkhtmltopdf/bin/wkhtmltoimage -o ${BASE}/bin/wkhtmltoimage || exit 1
 }
 
 function setup_chroot() {
@@ -210,7 +211,8 @@ function build_linux_chroot() {
     else
 	sudo chroot ${BUILD}/linux-$1/ /build/buildw.sh || exit 1
     fi
-    ${BUILD}/${UPX}/upx --best ${BUILD}/linux-$1/build/wkhtmltopdf/wkhtmltopdf -o ${BASE}/wkhtmltopdf-$1 || exit 1
+    ${BUILD}/${UPX}/upx --best ${BUILD}/linux-$1/build/wkhtmltopdf/bin/wkhtmltopdf -o ${BASE}/bin/wkhtmltopdf-$1 || exit 1
+    ${BUILD}/${UPX}/upx --best ${BUILD}/linux-$1/build/wkhtmltopdf/bin/wkhtmltoimage -o ${BASE}/bin/wkhtmltoimage-$1 || exit 1
 }
 
 function build_windows() {
@@ -267,7 +269,8 @@ EOF
     wine mingw32-make -j3 || exit 1
     wine strip.exe release/wkhtmltopdf.exe || exit 1
     rm -rf ${BASE}/wkhtmltopdf.exe
-    ${BUILD}/${UPX}/upx --best release/wkhtmltopdf.exe -o ${BASE}/wkhtmltopdf.exe || exit 1
+    ${BUILD}/${UPX}/upx --best release/wkhtmltopdf.exe -o ${BASE}/bin/wkhtmltopdf.exe || exit 1
+    ${BUILD}/${UPX}/upx --best release/wkhtmltoimage.exe -o ${BASE}/bin/wkhtmltoimage.exe || exit 1
 }
 
 case "$1" in

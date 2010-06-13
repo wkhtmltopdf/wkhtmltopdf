@@ -1,4 +1,4 @@
-==========================> wkhtmltopdf 0.9.6 Manual <==========================
+==========================> wkhtmltopdf 0.9.9 Manual <==========================
 This file documents wkhtmltopdf, a program capable of converting html documents
 into PDF documents.
 
@@ -27,7 +27,7 @@ Currently the list of features only supported with patch QT includes:
  * Disabling the smart shrink feature of webkit.
 
 ==================================> License <===================================
-Copyright (C) 2008,2009 Wkhtmltopdf Authors.
+Copyright (C) 2010 wkhtmltopdf/wkhtmltoimage Authors.
 
 
 
@@ -36,57 +36,62 @@ This is free software: you are free to change and redistribute it. There is NO
 WARRANTY, to the extent permitted by law.
 
 ==================================> Authors <===================================
-Written by Jakob Truelsen. Patches by Mário Silva, Benoit Garret and Emmanuel
-Bouthenot.
+Written by Jan Habermann, Christian Sciberras and Jakob Truelsen. Patches by
+Mehdi Abbad, Lyes Amazouz, Emmanuel Bouthenot, Benoit Garret and Mário Silva.
 
 ==================================> Synopsis <==================================
-wkhtmltopdf [OPTIONS]... <input file> [More input files] <output file>
+wkhtmltopdf [GLOBAL OPTION]... [OBJECT]... <output file>
 
-==============================> General Options <===============================
-    --allow <path>                    Allow the file or files from the specified
-                                      folder to be loaded (repeatable)
--b, --book *                          Set the options one would usually set when
-                                      printing a book
+==============================> Document objects <==============================
+wkhtmltopdf is able to put several objecs into the output file, an object is
+either a single webpage, a cover webpage or a table of content.  The objects are
+put into the output document in the order they are specified on the commandline,
+options can be specified on a per object basis or in the global options area.
+Options from the Global Options section can only be placed in the global options
+area
+
+A page objects puts the content of a singe webpage into the output document.
+
+(page)? <input url/file name> [PAGE OPTION]...
+Options for the page object can be placed in the global options and the page
+options areas. The applicable options can be found in the Page Options and 
+Headers And Footer Options sections.
+
+A cover objects puts the content of a singe webpage into the output document,
+the page does not appear in the table of content, and does not have headers and
+footers.
+
+cover <input url/file name> [PAGE OPTION]...
+All options that can be specified for a page object can also be specified for a
+cover.
+
+A table of content object inserts a table of content into the output document.
+
+toc [TOC OPTION]...
+All options that can be specified for a page object can also be specified for a
+toc, further more the options from the TOC Options section can also be applied.
+The table of content is generated via xslt which means that it can be styled to
+look however you want it to look. To get an idear of how to do this you can dump
+the default xslt document by supplying the --dump-default-toc-xsl, and the
+outline it works on by supplying --dump-outline, see the Outline Options
+section.
+
+===============================> Global Options <===============================
     --collate                         Collate when printing multiple copies
-    --cookie <name> <value>           Set an additional cookie (repeatable)
+                                      (default)
+    --no-collate                      Do not collate when printing multiple
+                                      copies
     --cookie-jar <path>               Read and write cookies from and to the
                                       supplied cookie jar file
     --copies <number>                 Number of copies to print into the pdf
                                       file (default 1)
-    --cover * <url>                   Use html document as cover. It will be
-                                      inserted before the toc with no headers
-                                      and footers
-    --custom-header <name> <value>    Set an additional HTTP header (repeatable)
-    --debug-javascript                Show javascript debugging output
--H, --default-header *                Add a default header, with the name of the
-                                      page to the left, and the page number to
-                                      the right, this is short for:
-                                      --header-left='[webpage]'
-                                      --header-right='[page]/[toPage]' --top 2cm
-                                      --header-line
-    --disable-external-links *        Do no make links to remote web pages
-    --disable-internal-links *        Do no make local links
--n, --disable-javascript              Do not allow web pages to run javascript
-    --disable-pdf-compression *       Do not use lossless compression on pdf
-                                      objects
-    --disable-smart-shrinking *       Disable the intelligent shrinking strategy
-                                      used by WebKit that makes the pixel/dpi
-                                      ratio none constant
-    --disallow-local-file-access      Do not allowed conversion of a local file
-                                      to read in other local files, unless
-                                      explecitily allowed with --allow
 -d, --dpi <dpi>                       Change the dpi explicitly (this has no
                                       effect on X11 based systems)
-    --enable-plugins                  Enable installed plugins (such as flash
-    --encoding <encoding>             Set the default text encoding, for input
-    --extended-help                   Display more extensive help, detailing
+-H, --extended-help                   Display more extensive help, detailing
                                       less common command switches
-    --forms *                         Turn HTML form fields into pdf form fields
 -g, --grayscale                       PDF will be generated in grayscale
 -h, --help                            Display help
     --htmldoc                         Output program html help
-    --ignore-load-errors              Ignore pages that claim to have
-                                      encountered an error during loading
 -l, --lowquality                      Generates lower quality pdf/ps. Useful to
                                       shrink the result document space
     --manpage                         Output program man page
@@ -94,111 +99,149 @@ wkhtmltopdf [OPTIONS]... <input file> [More input files] <output file>
 -L, --margin-left <unitreal>          Set the page left margin (default 10mm)
 -R, --margin-right <unitreal>         Set the page right margin (default 10mm)
 -T, --margin-top <unitreal>           Set the page top margin (default 10mm)
-    --minimum-font-size <int>         Minimum font size (default 5)
-    --no-background                   Do not print background
 -O, --orientation <orientation>       Set orientation to Landscape or Portrait
-    --page-height <unitreal>          Page height (default unit millimeter)
-    --page-offset * <offset>          Set the starting page number (default 1)
--s, --page-size <size>                Set paper size to: A4, Letter, etc.
-    --page-width <unitreal>           Page width  (default unit millimeter)
-    --password <password>             HTTP Authentication password
-    --post <name> <value>             Add an additional post field (repeatable)
-    --post-file <name> <path>         Post an aditional file (repeatable)
-    --print-media-type *              Use print media-type instead of screen
--p, --proxy <proxy>                   Use a proxy
+                                      (default Portrait)
+    --output-format <format>          Specify an output format to use pdf or ps,
+                                      instead of looking at the extention of the
+                                      output filename
+    --page-height <unitreal>          Page height
+-s, --page-size <Size>                Set paper size to: A4, Letter, etc.
+                                      (default A4)
+    --page-width <unitreal>           Page width
+    --no-pdf-compression *            Do not use lossless compression on pdf
+                                      objects
 -q, --quiet                           Be less verbose
     --read-args-from-stdin            Read command line arguments from stdin
     --readme                          Output program readme
-    --redirect-delay <msec>           Wait some milliseconds for js-redirects
-                                      (default 200)
-    --replace * <name> <value>        Replace [name] with value in header and
-                                      footer (repeatable)
-    --stop-slow-scripts               Stop slow running javascripts
     --title <text>                    The title of the generated pdf file (The
                                       title of the first document is used if not
                                       specified)
--t, --toc *                           Insert a table of content in the beginning
-                                      of the document
     --use-xserver *                   Use the X server (some plugins and other
                                       stuff might not work without X11)
+-V, --version                         Output version information an exit
+
+Items marked * are only available using patched QT.
+
+==============================> Outline Options <===============================
+    --dump-default-toc-xsl *          Dump the default TOC xsl style sheet to
+                                      stdout
+    --dump-outline * <file>           Dump the outline to a file
+    --outline *                       Put an outline into the pdf (default)
+    --no-outline *                    Do not put an outline into the pdf
+    --outline-depth * <level>         Set the depth of the outline (default 4)
+
+Items marked * are only available using patched QT.
+
+================================> Page Options <================================
+    --allow <path>                    Allow the file or files from the specified
+                                      folder to be loaded (repeatable)
+    --background                      Do print background (default)
+    --no-background                   Do not print background
+    --cookie <name> <value>           Set an additional cookie (repeatable)
+    --custom-header <name> <value>    Set an additional HTTP header (repeatable)
+    --custom-header-propagation       Add HTTP headers specified by
+                                      --custom-header for each resource request.
+    --no-custom-header-propagation    Do not add HTTP headers specified by
+                                      --custom-header for each resource request.
+    --debug-javascript                Show javascript debugging output
+    --no-debug-javascript             Do not show javascript debugging output
+                                      (default)
+    --default-header *                Add a default header, with the name of the
+                                      page to the left, and the page number to
+                                      the right, this is short for:
+                                      --header-left='[webpage]'
+                                      --header-right='[page]/[toPage]' --top 2cm
+                                      --header-line
+    --encoding <encoding>             Set the default text encoding, for input
+    --disable-external-links *        Do not make links to remote web pages
+    --enable-external-links *         Make links to remote web pages (default)
+    --disable-forms *                 Do not turn HTML form fields into pdf form
+                                      fields (default)
+    --enable-forms *                  Turn HTML form fields into pdf form fields
+    --images                          Do load or print images (default)
+    --no-images                       Do not load or print images
+    --disable-internal-links *        Do not make local links
+    --enable-internal-links *         Make local links (default)
+-n, --disable-javascript              Do not allow web pages to run javascript
+-n, --enable-javascript               Do allow web pages to run javascript
+                                      (default)
+    --javascript-delay <msec>         Wait some milliseconds for javascript
+                                      finish (default 200)
+    --load-error-handling <handler>   Specify how to handle pages that fail to
+                                      load: abort, ignore or skip (default
+                                      abort)
+    --disable-local-file-access       Do not allowed conversion of a local file
+                                      to read in other local files, unless
+                                      explecitily allowed with --allow
+    --enable-local-file-access        Allowed conversion of a local file to read
+                                      in other local files. (default)
+    --minimum-font-size <int>         Minimum font size
+    --password <password>             HTTP Authentication password
+    --disable-plugins                 Disable installed plugins (default)
+    --enable-plugins                  Enable installed plugins (plugins will
+                                      likely not work)
+    --post <name> <value>             Add an additional post field (repeatable)
+    --post-file <name> <path>         Post an additional file (repeatable)
+    --print-media-type                Use print media-type instead of screen
+    --no-print-media-type             Do not use print media-type instead of
+                                      screen (default)
+-p, --proxy <proxy>                   Use a proxy
+    --disable-smart-shrinking         Disable the intelligent shrinking strategy
+                                      used by WebKit that makes the pixel/dpi
+                                      ratio none constant
+    --enable-smart-shrinking          Enable the intelligent shrinking strategy
+                                      used by WebKit that makes the pixel/dpi
+                                      ratio none constant (default)
+    --stop-slow-scripts               Stop slow running javascripts (default)
+    --no-stop-slow-scripts            Do not Stop slow running javascripts
+                                      (default)
+    --disable-toc-back-links *        Do not link from section header to toc
+    --enable-toc-back-links *         Do not link from section header to toc
     --user-style-sheet <url>          Specify a user style sheet, to load with
                                       every page
     --username <username>             HTTP Authentication username
--V, --version                         Output version information an exit
     --zoom <float>                    Use this zoom factor (default 1)
 
 Items marked * are only available using patched QT.
 
 =========================> Headers And Footer Options <=========================
     --footer-center * <text>          Centered footer text
-    --footer-font-name * <name>       Set footer font name (default Arial)
-    --footer-font-size * <size>       Set footer font size (default 11)
+    --footer-font-name * <name>       Set footer font name (default Ariel)
+    --footer-font-size * <size>       Set footer font size (default 12)
     --footer-html * <url>             Adds a html footer
     --footer-left * <text>            Left aligned footer text
     --footer-line *                   Display line above the footer
+    --no-footer-line *                Do not display line above the footer
+                                      (default)
     --footer-right * <text>           Right aligned footer text
     --footer-spacing * <real>         Spacing between footer and content in mm
                                       (default 0)
     --header-center * <text>          Centered header text
-    --header-font-name * <name>       Set header font name (default Arial)
-    --header-font-size * <size>       Set header font size (default 11)
+    --header-font-name * <name>       Set header font name (default Ariel)
+    --header-font-size * <size>       Set header font size (default 12)
     --header-html * <url>             Adds a html header
     --header-left * <text>            Left aligned header text
-    --header-line *                   Display line below the header
+    --no-header-line *                Display line below the header (default)
     --header-right * <text>           Right aligned header text
     --header-spacing * <real>         Spacing between header and content in mm
                                       (default 0)
+    --replace * <name> <value>        Replace [name] with value in header and
+                                      footer (repeatable)
 
 Items marked * are only available using patched QT.
 
-==========================> Table Of Content Options <==========================
-    --toc-depth * <level>             Set the depth of the toc (default 3)
-    --toc-disable-back-links *        Do not link from section header to toc
-    --toc-disable-links *             Do not link from toc to sections
-    --toc-font-name * <name>          Set the font used for the toc (default
-                                      Arial)
-    --toc-header-font-name * <name>   The font of the toc header (if unset use
-                                      --toc-font-name)
-    --toc-header-font-size * <size>   The font size of the toc header (default
-                                      15)
+================================> TOC Options <=================================
+    --disable-dotted-lines *          Do not use dottet lines in the toc
     --toc-header-text * <text>        The header text of the toc (default Table
-                                      Of Contents)
-    --toc-l1-font-size * <size>       Set the font size on level 1 of the toc
-                                      (default 12)
-    --toc-l1-indentation * <num>      Set indentation on level 1 of the toc
-                                      (default 0)
-    --toc-l2-font-size * <size>       Set the font size on level 2 of the toc
-                                      (default 10)
-    --toc-l2-indentation * <num>      Set indentation on level 2 of the toc
-                                      (default 20)
-    --toc-l3-font-size * <size>       Set the font size on level 3 of the toc
-                                      (default 8)
-    --toc-l3-indentation * <num>      Set indentation on level 3 of the toc
-                                      (default 40)
-    --toc-l4-font-size * <size>       Set the font size on level 4 of the toc
-                                      (default 6)
-    --toc-l4-indentation * <num>      Set indentation on level 4 of the toc
-                                      (default 60)
-    --toc-l5-font-size * <size>       Set the font size on level 5 of the toc
-                                      (default 4)
-    --toc-l5-indentation * <num>      Set indentation on level 5 of the toc
-                                      (default 80)
-    --toc-l6-font-size * <size>       Set the font size on level 6 of the toc
-                                      (default 2)
-    --toc-l6-indentation * <num>      Set indentation on level 6 of the toc
-                                      (default 100)
-    --toc-l7-font-size * <size>       Set the font size on level 7 of the toc
-                                      (default 0)
-    --toc-l7-indentation * <num>      Set indentation on level 7 of the toc
-                                      (default 120)
-    --toc-no-dots *                   Do not use dots, in the toc
-
-Items marked * are only available using patched QT.
-
-==============================> Outline Options <===============================
-    --dump-outline * <file>           Dump the outline to a file
-    --outline *                       Put an outline into the pdf
-    --outline-depth * <level>         Set the depth of the outline (default 4)
+                                      of Content)
+    --toc-level-indentation * <width> For each level of headings in the toc
+                                      indent by this length (default 1em)
+    --disable-toc-links *             Do not link from toc to sections
+    --toc-text-size-shrink * <real>   For each level of headings in the toc the
+                                      font is scaled by this facter (default
+                                      0.8)
+    --xsl-style-sheet * <file>        Use the supplied xsl style sheet for
+                                      printing the table of content
 
 Items marked * are only available using patched QT.
 
@@ -269,9 +312,9 @@ html documents in get fashion.
 Wkhtmltopdf with patched qt has support for PDF outlines also known as book
 marks, this can be enabled by specifying the --outline switch. The outlines are
 generated based on the <h?> tags, for a in-depth description of how this is done
-see the "Table Of Contest" section. 
+see the Table Of Conte section. 
 
-The outline tree can sometimes be very deep, if the <h?> tags where spread to
+The outlin etree can sometimes be very deep, if the <h?> tags where spread to
 generous in the HTML document.  The --outline-depth switch can be used to bound
 this.
 
@@ -394,5 +437,9 @@ wkhtmltopdf my.html my.ps
 
 Produce the eler2.pdf sample file:
 
-wkhtmltopdf http://geekz.co.uk/lovesraymond/archive/eler-highlights-2008 eler2.pdf -H --outline
+wkhtmltopdf -H  http://geekz.co.uk/lovesraymond/archive/eler-highlights-2008 eler2.pdf
+
+Printing a book with a table of content:
+
+wkhtmltopdf -H cover cover.html toc chapter1.html chapter2.html chapter3.html book.pdf
 

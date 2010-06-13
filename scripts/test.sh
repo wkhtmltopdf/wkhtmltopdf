@@ -230,7 +230,7 @@ LEVEL1=/dev/null
 LEVEL2=/dev/stdout
 LEVEL3=/dev/stdout
 
-export WK=../wkhtmltopdf 
+export WK=../bin/wkhtmltopdf 
 
 while getopts hvqw: O; do
     case "$O" in
