@@ -69,11 +69,12 @@ tar -cjvf "release-$v/wkhtmltopdf-$v.tar.bz2" -C "release-$v" "wkhtmltopdf-$v"
 cp bin/wkhtmltopdf.exe "release-$v/wkhtmltopdf.exe"
 cp bin/wkhtmltoimage.exe "release-$v/wkhtmltoimage.exe"
 m4 -D "WKVERSION=$v" wkhtmltopdf.nsi.m4 > "release-$v/wkhtmltopdf.nsi"
-tar -cjvf "release-$v/wkhtmltopdf-$v-static-i386.tar.bz2" bin/wkhtmltopdf-i386
-tar -cjvf "release-$v/wkhtmltopdf-$v-static-amd64.tar.bz2" bin/wkhtmltopdf-amd64
-tar -cjvf "release-$v/wkhtmltoimage-$v-static-i386.tar.bz2" bin/wkhtmltoimage-i386
-tar -cjvf "release-$v/wkhtmltoimage-$v-static-amd64.tar.bz2" bin/wkhtmltoimage-amd64
-cd "release-$v"
+cd bin
+tar -cjvf "../release-$v/wkhtmltopdf-$v-static-i386.tar.bz2" wkhtmltopdf-i386
+tar -cjvf "../release-$v/wkhtmltopdf-$v-static-amd64.tar.bz2" wkhtmltopdf-amd64
+tar -cjvf "../release-$v/wkhtmltoimage-$v-static-i386.tar.bz2" wkhtmltoimage-i386
+tar -cjvf "../release-$v/wkhtmltoimage-$v-static-amd64.tar.bz2" wkhtmltoimage-amd64
+cd "../release-$v"
 for x in libgcc_s_dw2-1.dll ssleay32.dll libeay32.dll EnvVarUpdate.nsh; do
     [ -f "$x" ] ||  wget http://wkhtmltopdf.googlecode.com/files/$x -O $x
 done
