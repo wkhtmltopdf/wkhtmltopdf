@@ -166,7 +166,8 @@ cd ../wkhtmltopdf
 
 echo "Building wkhtmltopdfe"
 (../qt/bin/qmake && make -j3) || (make distclean; ../qt/bin/qmake && make -j3) || exit 1
-strip wkhtmltopdf || exit 1
+strip ./bin/wkhtmltopdf || exit 1
+strip ./bin/wkhtmltoimage || exit 1
 EOF
     chmod +x build.sh
 }
@@ -267,10 +268,11 @@ EOF
     wine ../qt/bin/qmake.exe wkhtmltopdf.pro -o Makefile -spec win32-g++ || exit 1
     wine mingw32-make clean || exit 1
     wine mingw32-make -j3 || exit 1
-    wine strip.exe release/wkhtmltopdf.exe || exit 1
+    wine strip.exe bin/wkhtmltopdf.exe || exit 1
+    wine strip.exe bin/wkhtmltoimage.exe || exit 1
     rm -rf ${BASE}/wkhtmltopdf.exe
-    ${BUILD}/${UPX}/upx --best release/wkhtmltopdf.exe -o ${BASE}/bin/wkhtmltopdf.exe || exit 1
-    ${BUILD}/${UPX}/upx --best release/wkhtmltoimage.exe -o ${BASE}/bin/wkhtmltoimage.exe || exit 1
+    ${BUILD}/${UPX}/upx --best bin/wkhtmltopdf.exe -o ${BASE}/bin/wkhtmltopdf.exe || exit 1
+    ${BUILD}/${UPX}/upx --best bin/wkhtmltoimage.exe -o ${BASE}/bin/wkhtmltoimage.exe || exit 1
 }
 
 case "$1" in
