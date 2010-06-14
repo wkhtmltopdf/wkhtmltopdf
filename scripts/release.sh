@@ -35,10 +35,10 @@ echo "About to release $v"
 read -p "Are you sure you are ready: " N
 [ "$N" != "YES" ] && exit
 
-sed -ri "s/MAJOR_VERSION=[0-9]+ MINOR_VERSION=[0-9]+ PATCH_VERSION=[0-9]+ BUILD=.*/MAJOR_VERSION=$1 MINOR_VERSION=$2 PATCH_VERSION=$3 BUILD=\"$4\"/" wkhtmltopdf.pro || exit 1
+echo "MAJOR_VERSION=$1 MINOR_VERSION=$2 PATCH_VERSION=$3 BUILD=\"$4\"" > version.pri
 
 HEAD="$(git log --pretty=oneline  -n 1 | sed -e 's/ .*//')"
-git commit -m "TEMPORERY DO NOT COMMIT $v" common.pri
+git commit -m "TEMPORERY DO NOT COMMIT $v" version.pri || exit 1
 
 rm -rf bin
 mkdir bin
@@ -56,7 +56,7 @@ fi
 ./scripts/static-build.sh $QB linux-amd64 || (echo Build failed; git reset $HEAD --hard; exit 1)
 ./scripts/static-build.sh $QB windows || (echo Build failed; git reset $HEAD --hard; exit 1)
 
-git commit --amend -m "Version $v" common.pri README_WKHTMLTOPDF README_WKHTMLTOIMAGE
+git commit --amend -m "Version $v" version.pri README_WKHTMLTOPDF README_WKHTMLTOIMAGE
 git tag "$v"
 
 rm -rf "release-$v"

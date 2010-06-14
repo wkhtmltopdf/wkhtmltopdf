@@ -165,7 +165,7 @@ fi
 cd ../wkhtmltopdf
 
 echo "Building wkhtmltopdfe"
-(../qt/bin/qmake && make -j3) || (make distclean; ../qt/bin/qmake && make -j3) || exit 1
+(make distclean; ../qt/bin/qmake && make -j3) || exit 1
 strip ./bin/wkhtmltopdf || exit 1
 strip ./bin/wkhtmltoimage || exit 1
 EOF
@@ -265,6 +265,7 @@ EOF
     fi
 
     cd ../wkhtmltopdf
+    wine mingw32-make dist-clean
     wine ../qt/bin/qmake.exe wkhtmltopdf.pro -o Makefile -spec win32-g++ || exit 1
     wine mingw32-make clean || exit 1
     wine mingw32-make -j3 || exit 1

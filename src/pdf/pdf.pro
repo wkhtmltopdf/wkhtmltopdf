@@ -1,3 +1,4 @@
+include(../../version.pri)
 include(../../common.pri)
 
 TEMPLATE = app
