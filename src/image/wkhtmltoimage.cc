@@ -19,6 +19,7 @@
 #include "imageconverter.hh"
 #include "progressfeedback.hh"
 #include <QApplication>
+#include <QWebFrame>
 
 int main(int argc, char** argv) {
 	//This will store all our settings
