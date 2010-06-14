@@ -36,9 +36,8 @@ read -p "Are you sure you are ready: " N
 [ "$N" != "YES" ] && exit
 
 echo "MAJOR_VERSION=$1 MINOR_VERSION=$2 PATCH_VERSION=$3 BUILD=\"$4\"" > version.pri
-
 HEAD="$(git log --pretty=oneline  -n 1 | sed -e 's/ .*//')"
-git commit -m "TEMPORERY DO NOT COMMIT $v" version.pri || exit 1
+git commit -m "TEMPORERY DO NOT COMMIT $v" version.pri
 
 rm -rf bin
 mkdir bin
