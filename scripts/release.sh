@@ -75,7 +75,10 @@ tar -cjvf "../release-$v/wkhtmltopdf-$v-static-amd64.tar.bz2" wkhtmltopdf-amd64
 tar -cjvf "../release-$v/wkhtmltoimage-$v-static-i386.tar.bz2" wkhtmltoimage-i386
 tar -cjvf "../release-$v/wkhtmltoimage-$v-static-amd64.tar.bz2" wkhtmltoimage-amd64
 cd "../release-$v"
-for x in libgcc_s_dw2-1.dll ssleay32.dll libeay32.dll EnvVarUpdate.nsh; do
-    [ -f "$x" ] ||  wget http://wkhtmltopdf.googlecode.com/files/$x -O $x
+for x in libgcc_s_dw2-1.dll ssleay32.dll libeay32.dll mingwm10.dll EnvVarUpdate.nsh; do
+	[ -f "$x" ] && continue
+	l=$(find -name "$x" ../static-build/windows/)
+	[ -f "$l" ] && cp "$l" "$x" && continue
+    wget "http://wkhtmltopdf.googlecode.com/files/$x" -O "$x" && continue
 done
 makensis wkhtmltopdf.nsi 

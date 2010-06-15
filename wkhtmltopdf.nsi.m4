@@ -21,7 +21,7 @@ InstallDirRegKey HKCU "Software\wkhtmltopdf" ""
 ;Pages
 	
 !insertmacro MUI_PAGE_LICENSE "../COPYING"
-; !insertmacro MUI_PAGE_COMPONENTS
+!insertmacro MUI_PAGE_COMPONENTS
 !insertmacro MUI_PAGE_DIRECTORY
 !insertmacro MUI_PAGE_INSTFILES
   
@@ -36,13 +36,26 @@ InstallDirRegKey HKCU "Software\wkhtmltopdf" ""
 ;--------------------------------
 ;Installer Sections
 
-Section
+Section Wkhtmltopdf 
   SetOutPath "$INSTDIR"
   file wkhtmltopdf.exe
+SectionEnd
+
+Section Wkhtmltoimage
+  SetOutPath "$INSTDIR"
   file wkhtmltoimage.exe
+SectionEnd
+
+Section \o "Update PATH, WILL BREAK PATH IN VISTA AN WIN7"
+  ${EnvVarUpdate} $0 "PATH" "A" "HKLM" "$INSTDIR" 
+SectionEnd
+
+Section
+  SetOutPath "$INSTDIR"
   file libgcc_s_dw2-1.dll
   file ssleay32.dll
   file libeay32.dll
+  file mingwm10.dll
   WriteRegStr HKCU "Software\wkhtmltopdf" "" $INSTDIR
   WriteUninstaller "$INSTDIR\uninstall.exe"
 
@@ -50,7 +63,6 @@ Section
                    "DisplayName" "wkhtmltopdf"
   WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\wkhtmltopdf" \
                    "UninstallString" "$\"$INSTDIR\uninstall.exe$\""
-;  ${EnvVarUpdate} $0 "PATH" "A" "HKLM" "$INSTDIR" 
 SectionEnd
 
 
@@ -63,6 +75,7 @@ Section "Uninstall"
   Delete "$INSTDIR\libgcc_s_dw2-1.dll"
   Delete "$INSTDIR\ssleay32.dll"
   Delete "$INSTDIR\libeay32.dll"
+  Delete "$INSTDIR\mingwm10.dll"
 ;  ${un.EnvVarUpdate} $0 "PATH" "R" "HKLM" "$INSTDIR"
   Delete "$INSTDIR\uninstall.exe"
   RMDir "$INSTDIR"
