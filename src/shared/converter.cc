@@ -15,6 +15,7 @@
 // You should have received a copy of the GNU General Public License
 // along with wkhtmltopdf.  If not, see <http://www.gnu.org/licenses/>.
 #include "converter_p.hh"
+#include <QWebFrame>
 #include "multipageloader.hh"
 #include <qapplication.h>
 namespace wkhtmltopdf {
