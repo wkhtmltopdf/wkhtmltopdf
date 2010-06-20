@@ -1,5 +1,3 @@
-DEFINES += MAJOR_VERSION=0 MINOR_VERSION=9 PATCH_VERSION=9 BUILD=""
-
 TEMP = $$[QT_INSTALL_LIBS] libQtGui.prl
 PRL  = $$[QT_INSTALL_LIBS] QtGui.framework/QtGui.prl
 include($$join(TEMP, "/"))

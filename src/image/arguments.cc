@@ -38,7 +38,7 @@ CommandLineParser::CommandLineParser(wkhtmltopdf::settings::Global & s):
 	extended(true);
 	qthack(true);
 
-	addarg("transparent",0,"Make the background transparrent in pngs", new ConstSetter<bool>(s.transparent, true));
+	addarg("transparent",0,"Make the background transparent in pngs", new ConstSetter<bool>(s.transparent, true));
 #ifdef Q_WS_X11
 	addarg("use-xserver",0,"Use the X server (some plugins and other stuff might not work without X11)", new ConstSetter<bool>(s.useGraphics,true));
 #endif
