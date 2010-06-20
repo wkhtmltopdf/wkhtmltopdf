@@ -77,7 +77,7 @@ tar -cjvf "../release-$v/wkhtmltoimage-$v-static-amd64.tar.bz2" wkhtmltoimage-am
 cd "../release-$v"
 for x in libgcc_s_dw2-1.dll ssleay32.dll libeay32.dll mingwm10.dll EnvVarUpdate.nsh; do
 	[ -f "$x" ] && continue
-	l=$(find -name "$x" ../static-build/windows/)
+	l=$(find ../static-build/windows/drive_c/mingw/bin -name "$x")
 	[ -f "$l" ] && cp "$l" "$x" && continue
     wget "http://wkhtmltopdf.googlecode.com/files/$x" -O "$x" && continue
 done
