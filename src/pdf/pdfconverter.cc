@@ -632,6 +632,7 @@ void PdfConverterPrivate::printDocument() {
 				foreach(const QWebElement & elm, obj.page->mainFrame()->findAllElements("textarea")) 
 					myFormElements[wp.elementLocation(elm).first].push_back(elm);
 			}
+			emit out.producingForms( obj.settings.produceForms);
 			for(int p=0; p < wp.pageCount(); ++p) {
 				for(int pc_=0; pc_ < pc; ++pc_) {
 					beginPage(actualPage);

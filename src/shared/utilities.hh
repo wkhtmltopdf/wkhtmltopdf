@@ -29,9 +29,14 @@
  * Custom simplistic style
  */
 class MyLooksStyle: public QCleanlooksStyle {
+	Q_OBJECT
 public:
-  typedef QCleanlooksStyle parent_t;
-  void drawPrimitive( PrimitiveElement element, const QStyleOption * option, QPainter * painter, const QWidget * widget = 0 ) const;
+	typedef QCleanlooksStyle parent_t;
+	MyLooksStyle();
+	void drawPrimitive( PrimitiveElement element, const QStyleOption * option, QPainter * painter, const QWidget * widget = 0 ) const;
+	bool weAreDrawingForms;
+public slots:
+	void producingForms(bool f);
 };
 
 int handleError(bool success, int errorCode);

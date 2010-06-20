@@ -5,6 +5,7 @@ SOURCES += ../shared/loadsettings.cc ../shared/multipageloader.cc ../shared/temp
 	../shared/converter.cc ../shared/websettings.cc ../shared/progressfeedback.cc
 
 #Application part
+HEADERS +=  ../shared/utilities.hh
 
 SOURCES += ../shared/outputter.cc ../shared/manoutputter.cc ../shared/htmloutputter.cc \
            ../shared/textoutputter.cc ../shared/arghandler.cc ../shared/commondocparts.cc \

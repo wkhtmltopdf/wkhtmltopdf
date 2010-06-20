@@ -23,6 +23,12 @@ Q_IMPORT_PLUGIN(qtiff)
 Q_IMPORT_PLUGIN(qmng)
 #endif
 
+MyLooksStyle::MyLooksStyle(): weAreDrawingForms(false) {}
+
+void MyLooksStyle::producingForms(bool f) {
+	weAreDrawingForms=f;
+}
+
 void MyLooksStyle::drawPrimitive( PrimitiveElement element, const QStyleOption * option, QPainter * painter, const QWidget * widget) const {
 	painter->setBrush(Qt::white);
 	painter->setPen(QPen(Qt::black, 0.7));
@@ -31,20 +37,20 @@ void MyLooksStyle::drawPrimitive( PrimitiveElement element, const QStyleOption *
 		painter->drawRect(r);
 	} else if(element == QStyle::PE_IndicatorCheckBox) {
 		painter->drawRect(r);
-		//if (!settings.produceForms && (option->state & QStyle::State_On)) {
-		r.translate(int(r.width()*0.075), int(r.width()*0.075));
-		painter->drawLine(r.topLeft(), r.bottomRight());
-		painter->drawLine(r.topRight(), r.bottomLeft());
-		//}
+		if (!weAreDrawingForms && (option->state & QStyle::State_On)) {
+			r.translate(int(r.width()*0.075), int(r.width()*0.075));
+			painter->drawLine(r.topLeft(), r.bottomRight());
+			painter->drawLine(r.topRight(), r.bottomLeft());
+		}
 	} else if(element == QStyle::PE_IndicatorRadioButton) {
 		painter->drawEllipse(r);
-		//if (!settings.produceForms && (option->state & QStyle::State_On)) {
-		r.translate(int(r.width()*0.20), int(r.width()*0.20));
-		r.setWidth(int(r.width()*0.70));
-		r.setHeight(int(r.height()*0.70));
-		painter->setBrush(Qt::black);
-		painter->drawEllipse(r);
-		//}
+		if (!weAreDrawingForms && (option->state & QStyle::State_On)) {
+			r.translate(int(r.width()*0.20), int(r.width()*0.20));
+			r.setWidth(int(r.width()*0.70));
+			r.setHeight(int(r.height()*0.70));
+			painter->setBrush(Qt::black);
+			painter->drawEllipse(r);
+		}
 	} else {
 		parent_t::drawPrimitive(element, option, painter, widget);
 	}

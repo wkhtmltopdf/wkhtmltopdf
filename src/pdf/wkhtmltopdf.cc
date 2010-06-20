@@ -130,7 +130,8 @@ int main(int argc, char * argv[]) {
 #endif
 #endif
 	QApplication a(argc, argv, use_graphics);
-	a.setStyle(new MyLooksStyle());
+	MyLooksStyle * style = new MyLooksStyle();
+	a.setStyle(style);
 
 	if (parser.readArgsFromStdin) {
 		char buff[20400];
@@ -162,6 +163,7 @@ int main(int argc, char * argv[]) {
 	}
 	//Create the actual page converter to convert the pages
 	PdfConverter converter(globalSettings);
+	QObject::connect(&converter, SIGNAL(producingForms(bool)), style, SLOT(producingForms(bool)));
 	ProgressFeedback feedback(globalSettings.quiet, converter);
 	foreach(const Page & page, pageSettings) 
 		converter.addResource(page);
