@@ -3,7 +3,11 @@ PRL  = $$[QT_INSTALL_LIBS] QtGui.framework/QtGui.prl
 include($$join(TEMP, "/"))
 include($$join(PRL, "/"))
 
-contains(QMAKE_PRL_CONFIG, shared) {
+exists($$QMAKE_LIBDIR_QT/libQtGui.so) {
+    DEFINES += QT_SHARED				      
+} else exists($$QMAKE_LIBDIR_QT/libQtGui.dll) {
+    DEFINES += QT_SHARED
+} else contains(QMAKE_PRL_CONFIG, shared) {
     DEFINES += QT_SHARED
 } else {
     DEFINES += QT_STATIC
