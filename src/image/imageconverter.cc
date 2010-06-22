@@ -48,6 +48,7 @@ ImageConverterPrivate::ImageConverterPrivate(ImageConverter & o, wkhtmltopdf::se
 void ImageConverterPrivate::beginConvert() {
 	error = false;
 	convertionDone = false;
+	errorCode = 0;
 	progressString = "0%";
 	loaderObject = loader.addResource(settings.in, settings.loadPage);
 	updateWebSettings(loaderObject->page.settings(), settings.web);
