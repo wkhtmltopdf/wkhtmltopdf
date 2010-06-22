@@ -602,6 +602,14 @@ void PdfConverterPrivate::printDocument() {
 				!ps.header.right.isEmpty() || !ps.footer.right.isEmpty();
 
 			painter->save();
+
+			if (ps.produceForms) {
+				foreach(QWebElement elm, obj.page->mainFrame()->findAllElements("input")) 
+				 	elm.setStyleProperty("color","white");
+				foreach(QWebElement elm, obj.page->mainFrame()->findAllElements("textarea")) 
+				 	elm.setStyleProperty("color","white");
+			}
+
 			//output 
 			QWebPrinter wp(obj.page->mainFrame(), printer, *painter);
 			QString l1=obj.page->mainFrame()->url().path().split("/").back()+"#";
