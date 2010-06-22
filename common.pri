@@ -1,13 +1,15 @@
-TEMP = $$[QT_INSTALL_LIBS] libQtGui.prl
-PRL  = $$[QT_INSTALL_LIBS] QtGui.framework/QtGui.prl
-include($$join(TEMP, "/"))
-include($$join(PRL, "/"))
+unix {
+    TEMP = $$[QT_INSTALL_LIBS] libQtGui.prl
+    PRL  = $$[QT_INSTALL_LIBS] QtGui.framework/QtGui.prl
+    include($$join(TEMP, "/"))
+    include($$join(PRL, "/"))
+}
 
 exists($$QMAKE_LIBDIR_QT/libQtGui.so) {
     DEFINES += QT_SHARED				      
-} else exists($$QMAKE_LIBDIR_QT/libQtGui.dll) {
+} else:exists($$QMAKE_LIBDIR_QT/../bin//QtGui4.dll) {
     DEFINES += QT_SHARED
-} else contains(QMAKE_PRL_CONFIG, shared) {
+} else:contains(QMAKE_PRL_CONFIG, shared) {
     DEFINES += QT_SHARED
 } else {
     DEFINES += QT_STATIC
