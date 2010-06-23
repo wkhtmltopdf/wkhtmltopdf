@@ -195,6 +195,7 @@ Global::Global():
 	colorMode(QPrinter::Color), 
 	resolution(QPrinter::HighResolution),
 	dpi(-1),
+	pageOffset(0), 
 	copies(1),
 	collate(true),
 	outline(true),

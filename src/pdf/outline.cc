@@ -293,7 +293,7 @@ void Outline::fillHeaderFooterParms(int page, QHash<QString, QString> & parms, c
 	foreach (const SP & rep, ps.replacements) 
 		parms[rep.first] = rep.second;
 		
-	parms["frompage"] = QString::number(off);
+	parms["frompage"] = QString::number(off+1);
 	parms["topage"] = QString::number(off+d->pageCount);
 	parms["page" ] = QString::number(page+off);
 	parms["webpage"] = ps.page;
