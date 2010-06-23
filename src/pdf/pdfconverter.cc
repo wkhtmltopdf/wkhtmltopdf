@@ -232,7 +232,7 @@ void PdfConverterPrivate::pagesLoaded(bool ok) {
 
 	painter = new QPainter();
 	
-	QString title = settings.documentTitle;
+	title = settings.documentTitle;
 	for(int d=0; d < objects.size(); ++d) {
 		if (title != "") break;
 		if (!objects[d].loaderObject || objects[d].loaderObject->skip || 
@@ -299,7 +299,7 @@ void PdfConverterPrivate::loadHeaders() {
 		for (int op=0; op < obj.pageCount; ++op) {
 			if (!ps.header.htmlUrl.isEmpty() || !ps.footer.htmlUrl.isEmpty()) {
 				QHash<QString, QString> parms;
-				fillParms(parms, pageNumber, ps);
+				fillParms(parms, pageNumber, obj);
 				hf = true;
 				if (!ps.header.htmlUrl.isEmpty())
 					obj.headers.push_back(loadHeaderFooter(ps.header.htmlUrl, parms, ps) );
@@ -397,8 +397,10 @@ void PdfConverterPrivate::findLinks(QWebFrame * frame, QVector<QPair<QWebElement
 	}
 }
 
-void PdfConverterPrivate::fillParms(QHash<QString, QString> & parms, int page, const settings::Page & ps) {
-	outline->fillHeaderFooterParms(page, parms, ps);
+void PdfConverterPrivate::fillParms(QHash<QString, QString> & parms, int page, const PageObject & object) {
+	outline->fillHeaderFooterParms(page, parms, object.settings);
+	parms["doctitle"] = title;
+	parms["title"] = object.page?object.page->mainFrame()->title():"";
 	QDateTime t(QDateTime::currentDateTime());
 	parms["time"] = t.time().toString(Qt::SystemLocaleShortDate);
 	parms["date"] = t.date().toString(Qt::SystemLocaleShortDate);
@@ -416,7 +418,7 @@ void PdfConverterPrivate::endPage(PageObject & object, bool hasHeaderFooter, int
 	settings::Page & s = object.settings;
 	if(hasHeaderFooter) {
 		QHash<QString, QString> parms;
-		fillParms(parms, pageNumber, s);
+		fillParms(parms, pageNumber, object);
 
 		//Webkit used all kinds of crazy coordinate transformation, and font setup
 		//We save it here and restore some sane defaults

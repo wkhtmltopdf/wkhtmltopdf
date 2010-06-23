@@ -100,6 +100,7 @@ private:
 	QPrinter * printer;
 	QPainter * painter;
 	QString lout;
+	QString title;
 
 	int actualPages;
 	int pageCount;
@@ -121,7 +122,7 @@ private:
 	void findLinks(QWebFrame * frame, QVector<QPair<QWebElement, QString> > & local, QVector<QPair<QWebElement, QString> > & external, QHash<QString, QWebElement> & anchors);
 	void beginPage(int actualPage);
 	void endPage(PageObject & object, bool hasHeaderFooter, int objectPage,  int pageNumber);
-	void fillParms(QHash<QString, QString> & parms, int page, const settings::Page & ps);
+	void fillParms(QHash<QString, QString> & parms, int page, const PageObject & object);
 	QString hfreplace(const QString & q, const QHash<QString, QString> & parms);
 	QWebPage * loadHeaderFooter(QString url, const QHash<QString, QString> & parms, const settings::Page & ps);
 #endif
