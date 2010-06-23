@@ -129,6 +129,9 @@ struct Global {
 	//! Specify the output format we should use
 	QString outputFormat;
 
+	int imageDPI;
+	int imageQuality;
+
 	LoadGlobal load;
 };
 

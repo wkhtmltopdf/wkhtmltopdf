@@ -208,6 +208,10 @@ CommandLineParser::CommandLineParser(Global & s, QList<Page> & ps):
 
 	extended(true);
  	qthack(true);
+
+	addarg("image-quality", 0, "When jpeg compressing images use this quality", new IntSetter(s.imageQuality,"integer"));
+	addarg("image-dpi", 0, "When embedding images scale them down to this dpi", new IntSetter(s.imageDPI, "integer"));
+		   
 	addarg("no-pdf-compression", 0 , "Do not use lossless compression on pdf objects", new ConstSetter<bool>(s.useCompression,false));
 
  #ifdef Q_WS_X11

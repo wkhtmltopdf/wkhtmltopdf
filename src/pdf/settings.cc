@@ -203,7 +203,10 @@ Global::Global():
 	dumpOutline(""),
 	out("-"),
 	documentTitle(""),
-	useCompression(true) {};
+	useCompression(true),
+	imageDPI(600), 
+	imageQuality(94)
+{};
 
 TableOfContent::TableOfContent():
 	useDottedLines(true),
