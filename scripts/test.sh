@@ -115,6 +115,14 @@ function testLoadError() {
 	[ "$(pages tmp2.pdf)" == 2 ] ) && good $1 || bad $1
 }
 
+function testFontSpacing() {
+	echo "<html><body style=\"font-size: 7pt; font-family: Arial;\">vii vaa vuu vvv vee</body></html>" > tmp.html
+    wk tmp.html tmp.pdf 2>$LEVEL2 >$LEVEL1
+    ([ -f tmp.pdf ] && 
+	pdftotext tmp.pdf /dev/stdout | grep -q "vii vaa vuu vvv vee") && good $1 || bad $1
+
+}
+
 function testToc() {
     echo "<html><head></head><body><h1>foo</h1><h2>bar</h2><h3>baz</h3></body>" > tmp.html
     wk toc tmp.html tmp.pdf 2>$LEVEL2 >$LEVEL1
