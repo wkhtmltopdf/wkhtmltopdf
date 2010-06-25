@@ -76,7 +76,7 @@ int handleError(bool success, int errorCode) {
 		if (ce.contains(errorCode)) c = ce[errorCode];
 		const char * m = "";
 		if (cm.contains(errorCode)) m = cm[errorCode];
-		fprintf(stderr, "Exit with code %d do to http error: %d %s\n", c, errorCode, m);
+		fprintf(stderr, "Exit with code %d due to http error: %d %s\n", c, errorCode, m);
 		return c;
 	}
 	return success?EXIT_SUCCESS:EXIT_FAILURE;
