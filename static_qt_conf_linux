@@ -26,7 +26,6 @@
 -no-xcursor
 -no-xfixes
 -no-xrandr
--no-xrender
 -no-mitshm
 -no-xinput
 -no-xkb
