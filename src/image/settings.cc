@@ -17,25 +17,26 @@
 #include "settings.hh"
 
 namespace wkhtmltopdf {
-namespace settings {
+	namespace settings {
 
-CropSettings:: CropSettings():
-	left(0),
-	top(0),
-	width(-1),
-	height(-1) {}
+	CropSettings:: CropSettings():
+		left(0),
+		top(0),
+		width(-1),
+		height(-1) {}
 
-ScaleSettings::ScaleSettings():
-	width(-1),
-	height(-1) {}
+	ScaleSettings::ScaleSettings():
+		width(-1),
+		height(-1) {}
 
-Global::Global():
-	quiet(false),
-	transparent(false),
-	useGraphics(false),
-	in(""),
-	out(""),
-	fmt("") {}
+	Global::Global():
+		screenWidth(1024),
+		quiet(false),
+		transparent(false),
+		useGraphics(false),
+		in(""),
+		out(""),
+		fmt("jpg") {}
 
-}
+	}
 }

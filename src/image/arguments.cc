@@ -27,6 +27,7 @@ CommandLineParser::CommandLineParser(wkhtmltopdf::settings::Global & s):
 
 	extended(false);
 	qthack(false);
+	addarg("width",0,"Set screen width (default is 1024)", new IntSetter(s.screenWidth,"int"));
 	addarg("scale-w",0,"Set width for resizing", new IntSetter(s.scale.width,"int"));
 	addarg("scale-h",0,"Set height for resizing", new IntSetter(s.scale.height,"int"));
 
@@ -34,7 +35,7 @@ CommandLineParser::CommandLineParser(wkhtmltopdf::settings::Global & s):
 	addarg("crop-y",0,"Set y coordinate for croping", new IntSetter(s.crop.top,"int"));
 	addarg("crop-w",0,"Set width for croping", new IntSetter(s.crop.width,"int"));
 	addarg("crop-h",0,"Set height for croping", new IntSetter(s.crop.height,"int"));
-	addarg("format",'f',"Output format", new QStrSetter(s.fmt, "format") );
+	addarg("format",'f',"Output file format (default is jpg)", new QStrSetter(s.fmt, "format") );
 	extended(true);
 	qthack(true);
 

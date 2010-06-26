@@ -77,6 +77,10 @@ struct Global {
 	QString out;
 	//! The output format
 	QString fmt;
+
+	//! Set the screen width
+	int screenWidth;
+
 };
 
 }

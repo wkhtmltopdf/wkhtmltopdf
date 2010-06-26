@@ -93,7 +93,10 @@ void ImageConverterPrivate::pagesLoaded(bool ok) {
 	currentPhase=1;
 	emit out. phaseChanged();
 	loadProgress(0);
-	loaderObject->page.setViewportSize(loaderObject->page.mainFrame()->contentsSize());
+
+	if(settings.screenWidth<=0)settings.screenWidth=1024;
+	loaderObject->page.setViewportSize(QSize(settings.screenWidth,loaderObject->page.mainFrame()->contentsSize().height()));
+
 	QImage image(loaderObject->page.viewportSize(), QImage::Format_ARGB32_Premultiplied);
 	QPainter painter(&image);
 	if (!settings.transparent || settings.fmt != "png")
