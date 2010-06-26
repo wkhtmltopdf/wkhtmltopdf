@@ -37,14 +37,14 @@ struct CropSettings {
 	int height;
 };
 
-/*! \brief Settings for scaling image */
-struct ScaleSettings {
-	ScaleSettings();
-	//! Scale width/w dime
-	int width;
-	//! Scale height/h dime
-	int height;
-};
+// /*! \brief Settings for scaling image */
+// struct ScaleSettings {
+// 	ScaleSettings();
+// 	//! Scale width/w dime
+// 	int width;
+// 	//! Scale height/h dime
+// 	int height;
+// };
 
 /*! \brief Class holding all user settings.
 
@@ -58,7 +58,7 @@ struct Global {
 	//! Crop related settings
 	CropSettings crop;
 	//! Scale related settings
-	ScaleSettings scale;
+	// ScaleSettings scale;
 	
 	LoadGlobal loadGlobal;
 	LoadPage loadPage;
@@ -81,6 +81,10 @@ struct Global {
 	//! Set the screen width
 	int screenWidth;
 
+	//! Image Quality
+	int quality;
+
+	bool smartWidth;
 };
 
 }

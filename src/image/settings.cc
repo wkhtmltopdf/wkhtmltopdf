@@ -22,12 +22,12 @@ namespace wkhtmltopdf {
 	CropSettings:: CropSettings():
 		left(0),
 		top(0),
-		width(-1),
-		height(-1) {}
+		width(100000),
+		height(100000) {}
 
-	ScaleSettings::ScaleSettings():
-		width(-1),
-		height(-1) {}
+	//ScaleSettings::ScaleSettings():
+	//	width(-1),
+	//	height(-1) {}
 
 	Global::Global():
 		screenWidth(1024),
@@ -36,7 +36,8 @@ namespace wkhtmltopdf {
 		useGraphics(false),
 		in(""),
 		out(""),
-		fmt("jpg") {}
-
+		fmt(""),
+		quality(94),
+		smartWidth(true) {}
 	}
 }

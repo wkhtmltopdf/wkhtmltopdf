@@ -27,7 +27,7 @@
 #include <QFileInfo>
 #include <QDebug>
 #include <qapplication.h>
-
+#include <QSvgGenerator>
 namespace wkhtmltopdf {
 
 ImageConverterPrivate::ImageConverterPrivate(ImageConverter & o, wkhtmltopdf::settings::Global & s):
@@ -69,7 +69,6 @@ void ImageConverterPrivate::pagesLoaded(bool ok) {
 		fail(); 
 		return;
 	}
-
 	// if fmt is empty try to get it from file extension in out
 	if(settings.fmt==""){
 		if (settings.out == "-")
@@ -94,29 +93,38 @@ void ImageConverterPrivate::pagesLoaded(bool ok) {
 	emit out. phaseChanged();
 	loadProgress(0);
 
-	if(settings.screenWidth<=0)settings.screenWidth=1024;
-	loaderObject->page.setViewportSize(QSize(settings.screenWidth,loaderObject->page.mainFrame()->contentsSize().height()));
-
-	QImage image(loaderObject->page.viewportSize(), QImage::Format_ARGB32_Premultiplied);
-	QPainter painter(&image);
-	if (!settings.transparent || settings.fmt != "png")
-		painter.fillRect(image.rect(), Qt::white);
-
-	loaderObject->page.mainFrame()->render(&painter);
-	painter.end();
-	loadProgress(30);
-	// perform filter(s)
-	if (settings.crop.width > 0 && settings.crop.height > 0) 
-		image=image.copy(settings.crop.left,settings.crop.top,settings.crop.width,settings.crop.height);
-
-	loadProgress(50);
-	if (settings.scale.width > 0 && settings.scale.height > 0) {
-		// todo: perhaps get more user options to change aspect ration and scaling mode?
-		image=image.scaled(settings.scale.width,settings.scale.height,Qt::IgnoreAspectRatio,Qt::SmoothTransformation);
+	QWebFrame * frame = loaderObject->page.mainFrame();
+	loaderObject->page.mainFrame()->setScrollBarPolicy(Qt::Vertical, Qt::ScrollBarAlwaysOff);
+	
+	loadProgress(25);
+	// Calculate a good width for the image
+	int highWidth=settings.screenWidth;
+	loaderObject->page.setViewportSize(QSize(highWidth, 10));
+	if (settings.smartWidth && frame->scrollBarMaximum(Qt::Horizontal) > 0) {
+		if (highWidth < 10) highWidth=10;
+		int lowWidth=highWidth;
+		while (frame->scrollBarMaximum(Qt::Horizontal) > 0 && highWidth < 32000) {
+			lowWidth = highWidth;
+			highWidth *= 2;
+			loaderObject->page.setViewportSize(QSize(highWidth, 10));
+		}
+		while (highWidth - lowWidth > 10) {
+			int t = lowWidth + (highWidth - lowWidth)/2;
+			loaderObject->page.setViewportSize(QSize(t, 10));
+			if (frame->scrollBarMaximum(Qt::Horizontal) > 0)
+				lowWidth = t;
+			else 
+				highWidth = t;
+		}
+		loaderObject->page.setViewportSize(QSize(highWidth, 10));
 	}
-	loadProgress(80);
-
-
+	loaderObject->page.mainFrame()->setScrollBarPolicy(Qt::Horizontal, Qt::ScrollBarAlwaysOff);
+	//Set the right height
+	loaderObject->page.setViewportSize(QSize(highWidth, frame->contentsSize().height()));
+	
+	QPainter painter;
+	QSvgGenerator generator;
+	QImage image;
 	QFile file;
 	bool openOk;
 	// output image
@@ -131,12 +139,44 @@ void ImageConverterPrivate::pagesLoaded(bool ok) {
 		fail();
 	}
 
-	QByteArray fmt=settings.fmt.toLatin1();
-	if (!image.save(&file,fmt.data(),-1)) {
-		emit out.error("Could not save image");
-		fail();
-	} 
+	QRect rect = QRect(QPoint(0,0), loaderObject->page.viewportSize()).intersected(
+		QRect(settings.crop.left,settings.crop.top,settings.crop.width,settings.crop.height));
+	
+	if (settings.fmt != "svg") {
+		image = QImage(rect.size(), QImage::Format_ARGB32_Premultiplied);
+		painter.begin(&image);
+	} else {
+		generator.setOutputDevice(&file);
+		generator.setSize(rect.size());
+		generator.setViewBox(QRect(QPoint(0,0),rect.size()));
+		painter.begin(&generator);
+	}
+	
+	if (!settings.transparent || (settings.fmt != "png" && settings.fmt != "svg"))
+		painter.fillRect(QRect(QPoint(0,0),loaderObject->page.viewportSize()), Qt::white);
+	
+	painter.translate(-rect.left(), -rect.top());
+	frame->render(&painter, rect);
+	painter.end();
 
+	//loadProgress(30);
+	// perform filter(s)
+	//if (settings.crop.width > 0 && settings.crop.height > 0) 
+	//	image=image.copy(settings.crop.left,settings.crop.top,settings.crop.width,settings.crop.height);
+	//loadProgress(50);
+	//if (settings.scale.width > 0 && settings.scale.height > 0) {
+		// todo: perhaps get more user options to change aspect ration and scaling mode?
+	//	image=image.scaled(settings.scale.width,settings.scale.height,Qt::IgnoreAspectRatio,Qt::SmoothTransformation);
+	//}
+	//loadProgress(80);
+
+	if (settings.fmt != "svg") {
+		QByteArray fmt=settings.fmt.toLatin1();
+		if (!image.save(&file,fmt.data(), settings.quality)) {
+			emit out.error("Could not save image");
+			fail();
+		} 
+	}
 	loadProgress(100);
 
 	currentPhase = 2;

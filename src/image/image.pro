@@ -1,6 +1,8 @@
 include(../../version.pri)
 include(../../common.pri)
 
+QT += svg
+
 MOC_DIR = ../../build/image
 OBJECTS_DIR = ../../build/image
 UI_DIR = ../../build/image
