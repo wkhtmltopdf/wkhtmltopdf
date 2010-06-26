@@ -20,10 +20,10 @@ namespace wkhtmltopdf {
 	namespace settings {
 
 	CropSettings:: CropSettings():
-		left(0),
-		top(0),
-		width(100000),
-		height(100000) {}
+		left(-1),
+		top(-1),
+		width(-1),
+		height(-1) {}
 
 	//ScaleSettings::ScaleSettings():
 	//	width(-1),

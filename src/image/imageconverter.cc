@@ -139,8 +139,16 @@ void ImageConverterPrivate::pagesLoaded(bool ok) {
 		fail();
 	}
 
+	if (settings.crop.left < 0) settings.crop.left = 0;
+	if (settings.crop.top < 0) settings.crop.top = 0;
+	if (settings.crop.width < 0) settings.crop.width = 1000000;
+	if (settings.crop.height < 0) settings.crop.height = 1000000;
 	QRect rect = QRect(QPoint(0,0), loaderObject->page.viewportSize()).intersected(
 		QRect(settings.crop.left,settings.crop.top,settings.crop.width,settings.crop.height));
+	if (rect.width() == 0 || rect.height() == 0) {
+		emit out.error("Will not output an empty image");
+		fail();
+	}
 	
 	if (settings.fmt != "svg") {
 		image = QImage(rect.size(), QImage::Format_ARGB32_Premultiplied);
@@ -154,7 +162,6 @@ void ImageConverterPrivate::pagesLoaded(bool ok) {
 	
 	if (!settings.transparent || (settings.fmt != "png" && settings.fmt != "svg"))
 		painter.fillRect(QRect(QPoint(0,0),loaderObject->page.viewportSize()), Qt::white);
-	
 	painter.translate(-rect.left(), -rect.top());
 	frame->render(&painter, rect);
 	painter.end();
