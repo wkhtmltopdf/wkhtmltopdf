@@ -119,7 +119,7 @@ function testFontSpacing() {
 	echo "<html><body style=\"font-size: 7pt; font-family: Arial;\">vii vaa vuu vvv vee</body></html>" > tmp.html
     wk tmp.html tmp.pdf 2>$LEVEL2 >$LEVEL1
     ([ -f tmp.pdf ] && 
-	pdftotext tmp.pdf /dev/stdout | grep -q "vii vaa vuu vvv vee") && good $1 || bad $1
+	pdftotext tmp.pdf /dev/stdout | grep -q "vii vaa vuu vvv vee") && good $1 || bad $1 false
 
 }
 
