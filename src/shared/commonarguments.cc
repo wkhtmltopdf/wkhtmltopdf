@@ -170,8 +170,6 @@ void CommandLineParserBase::addWebArgs(Web & s) {
 	addarg("minimum-font-size",0,"Minimum font size", new IntSetter(s.minimumFontSize,"int"));
 	
 #if QT_VERSION >= 0x040500 //Not printing the background was added in QT4.5
- 	addarg("no-background",0,"Do not print background", new ConstSetter<bool>(s.background, false));
- 	addarg("background",0,"Do print background", new ConstSetter<bool>(s.background, true));
  	addarg("user-style-sheet",0,"Specify a user style sheet, to load with every page", new QStrSetter(s.userStyleSheet,"url"));
 #endif
 
@@ -184,16 +182,7 @@ void CommandLineParserBase::addWebArgs(Web & s) {
 	addarg("enable-javascript",'n',"Do allow web pages to run javascript", new ConstSetter<bool>(s.enableJavascript,true));
 	
 	extended(true);
- 	qthack(false);
-	
-	addarg("disable-smart-shrinking", 0, "Disable the intelligent shrinking strategy used by WebKit that makes the pixel/dpi ratio none constant",new ConstSetter<bool>(s.enableIntelligentShrinking, false));
- 	addarg("enable-smart-shrinking", 0, "Enable the intelligent shrinking strategy used by WebKit that makes the pixel/dpi ratio none constant",new ConstSetter<bool>(s.enableIntelligentShrinking, true));
-	
-	
-	addarg("print-media-type",0,"Use print media-type instead of screen", new ConstSetter<bool>(s.printMediaType,true));
-	addarg("no-print-media-type",0,"Do not use print media-type instead of screen", new ConstSetter<bool>(s.printMediaType, false));
-
-	
+ 	qthack(true);
 #if QT_VERSION >= 0x040600
  	qthack(false);
 #endif

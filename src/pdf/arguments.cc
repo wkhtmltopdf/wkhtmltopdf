@@ -232,7 +232,21 @@ CommandLineParser::CommandLineParser(Global & s, QList<Page> & ps):
  	addarg("default-header",0,"Add a default header, with the name of the page to the left, and the page number to the right, this is short for: --header-left='[webpage]' --header-right='[page]/[toPage]' --top 2cm --header-line", new Caller<DefaultHeaderFunc>());
 
 	addWebArgs(od.web);
-   	
+	extended(true);
+ 	qthack(false);
+#if QT_VERSION >= 0x040500 //Not printing the background was added in QT4.5
+ 	addarg("no-background",0,"Do not print background", new ConstSetter<bool>(od.web.background, false));
+ 	addarg("background",0,"Do print background", new ConstSetter<bool>(od.web.background, true));
+#endif
+
+	extended(true);
+ 	qthack(true);
+	addarg("disable-smart-shrinking", 0, "Disable the intelligent shrinking strategy used by WebKit that makes the pixel/dpi ratio none constant",new ConstSetter<bool>(od.web.enableIntelligentShrinking, false));
+ 	addarg("enable-smart-shrinking", 0, "Enable the intelligent shrinking strategy used by WebKit that makes the pixel/dpi ratio none constant",new ConstSetter<bool>(od.web.enableIntelligentShrinking, true));
+	
+	addarg("print-media-type",0,"Use print media-type instead of screen", new ConstSetter<bool>(od.web.printMediaType,true));
+	addarg("no-print-media-type",0,"Do not use print media-type instead of screen", new ConstSetter<bool>(od.web.printMediaType, false));
+
  	extended(true);
  	qthack(true);
 	addarg("enable-forms", 0, "Turn HTML form fields into pdf form fields", new ConstSetter<bool>(od.produceForms, true));
