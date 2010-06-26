@@ -163,7 +163,7 @@ void ImageConverterPrivate::pagesLoaded(bool ok) {
 	if (!settings.transparent || (settings.fmt != "png" && settings.fmt != "svg"))
 		painter.fillRect(QRect(QPoint(0,0),loaderObject->page.viewportSize()), Qt::white);
 	painter.translate(-rect.left(), -rect.top());
-	frame->render(&painter, rect);
+	frame->render(&painter);
 	painter.end();
 
 	//loadProgress(30);
