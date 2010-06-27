@@ -157,6 +157,9 @@ void ImageConverterPrivate::pagesLoaded(bool ok) {
 		generator.setOutputDevice(&file);
 		generator.setSize(rect.size());
 		generator.setViewBox(QRect(QPoint(0,0),rect.size()));
+#ifdef __EXTENSIVE_WKHTMLTOPDF_QT_HACK__
+		generator.setViewBoxClip(true);
+#endif
 		painter.begin(&generator);
 	}
 	
