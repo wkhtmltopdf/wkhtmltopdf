@@ -1,8 +1,8 @@
 !include "MUI2.nsh"
 !include "EnvVarUpdate.nsh"
 
-Name "wkhtmltopdf WKVERSION"
-OutFile "wkhtmltopdf-WKVERSION-installer.exe"
+Name "wkhtmltox WKVERSION"
+OutFile "wkhtmltox-WKVERSION-installer.exe"
 
 RequestExecutionLevel admin
 
