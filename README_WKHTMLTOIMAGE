@@ -1,4 +1,4 @@
-=====================> wkhtmltoimage 0.10.0 beta3 Manual <======================
+=====================> wkhtmltoimage 0.10.0 beta4 Manual <======================
 This file documents wkhtmltoimage, a program capable of converting HTML
 documents into images.
 
@@ -26,15 +26,13 @@ wkhtmltoimage [OPTIONS]... <input file> <output file>
 ==============================> General Options <===============================
     --allow <path>                    Allow the file or files from the specified
                                       folder to be loaded (repeatable)
-    --background                      Do print background (default)
-    --no-background                   Do not print background
     --cookie <name> <value>           Set an additional cookie (repeatable)
     --cookie-jar <path>               Read and write cookies from and to the
                                       supplied cookie jar file
     --crop-h <int>                    Set height for croping
     --crop-w <int>                    Set width for croping
-    --crop-x <int>                    Set x coordinate for croping (default 0)
-    --crop-y <int>                    Set y coordinate for croping (default 0)
+    --crop-x <int>                    Set x coordinate for croping
+    --crop-y <int>                    Set y coordinate for croping
     --custom-header <name> <value>    Set an additional HTTP header (repeatable)
     --custom-header-propagation       Add HTTP headers specified by
                                       --custom-header for each resource request.
@@ -46,7 +44,7 @@ wkhtmltoimage [OPTIONS]... <input file> <output file>
     --encoding <encoding>             Set the default text encoding, for input
 -H, --extended-help                   Display more extensive help, detailing
                                       less common command switches
--f, --format <format>                 Output format
+-f, --format <format>                 Output file format (default is jpg)
 -h, --help                            Display help
     --htmldoc                         Output program html help
     --images                          Do load or print images (default)
@@ -72,29 +70,24 @@ wkhtmltoimage [OPTIONS]... <input file> <output file>
                                       likely not work)
     --post <name> <value>             Add an additional post field (repeatable)
     --post-file <name> <path>         Post an additional file (repeatable)
-    --print-media-type                Use print media-type instead of screen
-    --no-print-media-type             Do not use print media-type instead of
-                                      screen (default)
 -p, --proxy <proxy>                   Use a proxy
+    --quality <int>                   Output image quality (between 0 and 100)
+                                      (default 94)
     --readme                          Output program readme
-    --scale-h <int>                   Set height for resizing
-    --scale-w <int>                   Set width for resizing
-    --disable-smart-shrinking         Disable the intelligent shrinking strategy
-                                      used by WebKit that makes the pixel/dpi
-                                      ratio none constant
-    --enable-smart-shrinking          Enable the intelligent shrinking strategy
-                                      used by WebKit that makes the pixel/dpi
-                                      ratio none constant (default)
+-0, --disable-smart-width *           Use the specified width even if it is not
+                                      large enough for the content
     --stop-slow-scripts               Stop slow running javascripts (default)
     --no-stop-slow-scripts            Do not Stop slow running javascripts
                                       (default)
-    --transparent *                   Make the background transparrent in pngs
+    --transparent *                   Make the background transparent in pngs
     --use-xserver *                   Use the X server (some plugins and other
                                       stuff might not work without X11)
     --user-style-sheet <url>          Specify a user style sheet, to load with
                                       every page
     --username <username>             HTTP Authentication username
 -V, --version                         Output version information an exit
+    --width <int>                     Set screen width (default is 1024)
+                                      (default 1024)
     --zoom <float>                    Use this zoom factor (default 1)
 
 Items marked * are only available using patched QT.

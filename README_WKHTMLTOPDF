@@ -1,4 +1,4 @@
-======================> wkhtmltopdf 0.10.0 beta3 Manual <=======================
+======================> wkhtmltopdf 0.10.0 beta4 Manual <=======================
 This file documents wkhtmltopdf, a program capable of converting html documents
 into PDF documents.
 
@@ -92,6 +92,10 @@ section.
 -g, --grayscale                       PDF will be generated in grayscale
 -h, --help                            Display help
     --htmldoc                         Output program html help
+    --image-dpi * <integer>           When embedding images scale them down to
+                                      this dpi (default 600)
+    --image-quality * <integer>       When jpeg compressing images use this
+                                      quality (default 94)
 -l, --lowquality                      Generates lower quality pdf/ps. Useful to
                                       shrink the result document space
     --manpage                         Output program man page
@@ -182,14 +186,14 @@ Items marked * are only available using patched QT.
                                       likely not work)
     --post <name> <value>             Add an additional post field (repeatable)
     --post-file <name> <path>         Post an additional file (repeatable)
-    --print-media-type                Use print media-type instead of screen
-    --no-print-media-type             Do not use print media-type instead of
+    --print-media-type *              Use print media-type instead of screen
+    --no-print-media-type *           Do not use print media-type instead of
                                       screen (default)
 -p, --proxy <proxy>                   Use a proxy
-    --disable-smart-shrinking         Disable the intelligent shrinking strategy
+    --disable-smart-shrinking *       Disable the intelligent shrinking strategy
                                       used by WebKit that makes the pixel/dpi
                                       ratio none constant
-    --enable-smart-shrinking          Enable the intelligent shrinking strategy
+    --enable-smart-shrinking *        Enable the intelligent shrinking strategy
                                       used by WebKit that makes the pixel/dpi
                                       ratio none constant (default)
     --stop-slow-scripts               Stop slow running javascripts (default)
@@ -272,6 +276,8 @@ arguments respectfully.  In header and footer text string supplied to e.g.
  * [subsection] Replaced by the name of the current subsection
  * [date]       Replaced by the current date in system local format
  * [time]       Replaced by the current time in system local format
+ * [title]      Replaced by the title of the of the current page object
+ * [doctitle]   Replaced by the title of the output document
 
 
 As an example specifying --header-right "Page [page] of [toPage]", will result
