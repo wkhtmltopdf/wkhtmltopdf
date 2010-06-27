@@ -255,9 +255,9 @@ EOF
     mkdir -p qt
     cp -r qts/mkspecs qt
     cd qts
-    if ! cmp conf conf_new; then
-	QTDIR=. bin/syncqt || exit 1
-	(yes | wine configure.exe -I "C:\qts\include" -I "C:\mingw32\include\freetype2" `cat conf_new` -prefix "C:\qt" && cp conf_new conf) || exit 1
+    if ! [ -f Makefile ] || ! cmp conf conf_new; then
+		QTDIR=. bin/syncqt || exit 1
+		(yes | wine configure.exe -I "C:\qts\include" -I "C:\mingw32\include\freetype2" `cat conf_new` -prefix "C:\qt" && cp conf_new conf) || exit 1
     fi
     if ! wine mingw32-make -j3 -q; then
 		wine mingw32-make -j3 || exit 1
