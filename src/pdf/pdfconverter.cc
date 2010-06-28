@@ -650,7 +650,7 @@ void PdfConverterPrivate::printDocument() {
 					beginPage(actualPage);
 					wp.spoolPage(p+1);
 
-					foreach(const QWebElement & elm, myFormElements[p+1]) {
+					foreach(QWebElement elm, myFormElements[p+1]) {
 						QString type = elm.attribute("type");
 						QString tn = elm.tagName();
 						QString name = elm.attribute("name");
@@ -661,15 +661,15 @@ void PdfConverterPrivate::printDocument() {
 								name, 
 								tn == "TEXTAREA",		   
 								type == "password",
-								elm.attribute("readonly") == "readonly", 
+								elm.evaluateJavaScript("this.readonly;").toBool(),
 								elm.hasAttribute("maxlength")?elm.attribute("maxlength").toInt():-1
 								);
 						} else if (type == "checkbox") {
 							painter->addCheckBox(
 								wp.elementLocation(elm).second,
-								elm.attribute("checked") == "checked",
+								elm.evaluateJavaScript("this.checked;").toBool(), 
 								name,
-								elm.attribute("readonly") == "readonly");
+								elm.evaluateJavaScript("this.readonly;").toBool());
 						}
 					}
 					for(QHash<QString, QWebElement>::iterator i=myAnchors[p+1].begin();
