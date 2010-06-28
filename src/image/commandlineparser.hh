@@ -1,4 +1,8 @@
-//-*- mode: c++; tab-width: 4; indent-tabs-mode: t; c-file-style: "stroustrup"; -*-
+// -*- mode: c++; tab-width: 4; indent-tabs-mode: t; eval: (progn (c-set-style "stroustrup") (c-set-offset 'innamespace 0)); -*-
+// vi:set ts=4 sts=4 sw=4 noet :
+//
+// Copyright 2010 wkhtmltopdf authors
+//
 // This file is part of wkhtmltopdf.
 //
 // wkhtmltopdf is free software: you can redistribute it and/or modify
@@ -13,10 +17,11 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with wkhtmltopdf.  If not, see <http://www.gnu.org/licenses/>.
-#ifndef __COMMMAND_LINE_PARSER_HH__
-#define __COMMMAND_LINE_PARSER_HH__
-#include "settings.hh"
+
+#ifndef __COMMANDLINEPARSER_HH__
+#define __COMMANDLINEPARSER_HH__
 #include "commandlineparserbase.hh"
+#include "settings.hh"
 #include <cstdio>
 
 /*! \brief The class is responcible for parsing command line information
@@ -52,4 +57,4 @@ public:
 	void parseArguments(int argc, const char ** argv, bool final=false);
 
 };
-#endif //__COMMMAND_LINE_PARSER_HH__
+#endif //__COMMANDLINEPARSER_HH__

@@ -1,4 +1,8 @@
-//-*- mode: c++; tab-width: 4; indent-tabs-mode: t; c-file-style: "stroustrup"; -*-
+// -*- mode: c++; tab-width: 4; indent-tabs-mode: t; eval: (progn (c-set-style "stroustrup") (c-set-offset 'innamespace 0)); -*-
+// vi:set ts=4 sts=4 sw=4 noet :
+//
+// Copyright 2010 wkhtmltopdf authors
+//
 // This file is part of wkhtmltopdf.
 //
 // wkhtmltopdf is free software: you can redistribute it and/or modify
@@ -13,13 +17,13 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with wkhtmltopdf.  If not, see <http://www.gnu.org/licenses/>.
-#include "commandlineparser.hh"
+
 #include "arghandler.inl"
+#include "commandlineparser.hh"
 #include <qglobal.h>
 
 CommandLineParser::CommandLineParser(wkhtmltopdf::settings::Global & s):
-	settings(s)
-{
+	settings(s) {
 	mode(global);
 	section("General Options");
 	addDocArgs();
@@ -37,7 +41,7 @@ CommandLineParser::CommandLineParser(wkhtmltopdf::settings::Global & s):
 	addarg("crop-h",0,"Set height for croping", new IntSetter(s.crop.height,"int"));
 	addarg("format",'f',"Output file format (default is jpg)", new QStrSetter(s.fmt, "format") );
 	addarg("quality",0,"Output image quality (between 0 and 100)", new IntSetter(s.quality, "int") );
-	
+
 	extended(true);
 	qthack(true);
 	addarg("disable-smart-width", '0', "Use the specified width even if it is not large enough for the content", new ConstSetter<bool>(s.smartWidth, false));

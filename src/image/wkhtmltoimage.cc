@@ -1,4 +1,8 @@
-//-*- mode: c++; tab-width: 4; indent-tabs-mode: t; c-file-style: "stroustrup"; -*-
+// -*- mode: c++; tab-width: 4; indent-tabs-mode: t; eval: (progn (c-set-style "stroustrup") (c-set-offset 'innamespace 0)); -*-
+// vi:set ts=4 sts=4 sw=4 noet :
+//
+// Copyright 2010 wkhtmltopdf authors
+//
 // This file is part of wkhtmltopdf.
 //
 // wkhtmltopdf is free software: you can redistribute it and/or modify
@@ -13,11 +17,12 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with wkhtmltopdf.  If not, see <http://www.gnu.org/licenses/>.
+
 #include "commandlineparser.hh"
-#include "settings.hh"
-#include "utilities.hh"
 #include "imageconverter.hh"
 #include "progressfeedback.hh"
+#include "settings.hh"
+#include "utilities.hh"
 #include <QApplication>
 #include <QWebFrame>
 

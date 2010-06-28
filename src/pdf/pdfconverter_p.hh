@@ -1,4 +1,8 @@
-//-*- mode: c++; tab-width: 4; indent-tabs-mode: t; c-file-style: "stroustrup"; -*-
+// -*- mode: c++; tab-width: 4; indent-tabs-mode: t; eval: (progn (c-set-style "stroustrup") (c-set-offset 'innamespace 0)); -*-
+// vi:set ts=4 sts=4 sw=4 noet :
+//
+// Copyright 2010 wkhtmltopdf authors
+//
 // This file is part of wkhtmltopdf.
 //
 // wkhtmltopdf is free software: you can redistribute it and/or modify
@@ -13,12 +17,14 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with wkhtmltopdf.  If not, see <http://www.gnu.org/licenses/>.
-#ifndef __TEXTUALFEEDBACK_P_HH__
-#define __TEXTUALFEEDBACK_P_HH__
+
+#ifndef __PDFCONVERTER_P_HH__
+#define __PDFCONVERTER_P_HH__
+#include "converter_p.hh"
 #include "multipageloader.hh"
 #include "outline.hh"
 #include "pdfconverter.hh"
-#include "converter_p.hh"
+#include "settings.hh"
 #include "tempfile.hh"
 #include "tocprinter.hh"
 #include <QAtomicInt>
@@ -30,7 +36,6 @@
 #include <QWaitCondition>
 #include <QWebPage>
 #include <qnetworkreply.h>
-#include "settings.hh"
 #ifdef __EXTENSIVE_WKHTMLTOPDF_QT_HACK__
 #include <QWebElement>
 #endif
@@ -40,7 +45,7 @@ namespace wkhtmltopdf {
 class PageObject {
 public:
 	static QMap<QWebPage *, PageObject *> webPageToObject;
-	
+
 	settings::Page settings;
 	LoaderObject * loaderObject;
 	QWebPage * page;
@@ -77,7 +82,7 @@ public:
 	~PageObject() {
 		clear();
 	}
-	
+
 };
 
 class PdfConverterPrivate: public ConverterPrivate {
@@ -111,7 +116,7 @@ private:
 	MultiPageLoader hfLoader;
 	MultiPageLoader tocLoader1;
 	MultiPageLoader tocLoader2;
-	
+
 	MultiPageLoader * tocLoader;
 	MultiPageLoader * tocLoaderOld;
 
@@ -133,7 +138,7 @@ public slots:
 	void pagesLoaded(bool ok);
 	void tocLoaded(bool ok);
 	void headersLoaded(bool ok);
-	
+
 	void printDocument();
 
 	void beginConvert();
@@ -144,4 +149,4 @@ public slots:
 };
 
 }
-#endif //__TEXTUALFEEDBACK_P_HH__
+#endif //__PDFCONVERTER_P_HH__

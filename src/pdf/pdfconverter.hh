@@ -1,5 +1,8 @@
 // -*- mode: c++; tab-width: 4; indent-tabs-mode: t; eval: (progn (c-set-style "stroustrup") (c-set-offset 'innamespace 0)); -*-
 // vi:set ts=4 sts=4 sw=4 noet :
+//
+// Copyright 2010 wkhtmltopdf authors
+//
 // This file is part of wkhtmltopdf.
 //
 // wkhtmltopdf is free software: you can redistribute it and/or modify
@@ -14,10 +17,11 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with wkhtmltopdf.  If not, see <http://www.gnu.org/licenses/>.
-#ifndef __PAGECONVERTER_HH__
-#define __PAGECONVERTER_HH__
-#include "settings.hh"
+
+#ifndef __PDFCONVERTER_HH__
+#define __PDFCONVERTER_HH__
 #include "converter.hh"
+#include "settings.hh"
 
 namespace wkhtmltopdf {
 
@@ -42,4 +46,4 @@ signals:
 };
 
 }
-#endif //__PAGECONVERTER_HH__
+#endif //__PDFCONVERTER_HH__

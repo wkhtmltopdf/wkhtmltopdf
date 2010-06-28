@@ -1,4 +1,8 @@
-//-*- mode: c++; tab-width: 4; indent-tabs-mode: t; c-file-style: "stroustrup"; -*-
+// -*- mode: c++; tab-width: 4; indent-tabs-mode: t; eval: (progn (c-set-style "stroustrup") (c-set-offset 'innamespace 0)); -*-
+// vi:set ts=4 sts=4 sw=4 noet :
+//
+// Copyright 2010 wkhtmltopdf authors
+//
 // This file is part of wkhtmltopdf.
 //
 // wkhtmltopdf is free software: you can redistribute it and/or modify
@@ -13,9 +17,10 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with wkhtmltopdf.  If not, see <http://www.gnu.org/licenses/>.
-#include <qwebframe.h>
+
 #include "commandlineparserbase.hh"
 #include "outputter.hh"
+#include <qwebframe.h>
 
 bool ahsort(const ArgHandler * a, const ArgHandler * b) {
 	QRegExp e("^(no|enable|disable)-");
@@ -40,27 +45,27 @@ bool ahsort(const ArgHandler * a, const ArgHandler * b) {
   \param doc Indicate to the outputter that it is writing documentation
 */
 void CommandLineParserBase::outputSwitches(Outputter * o, bool extended, bool doc) const {
-	foreach(const QString & section, sections) {
+	foreach (const QString & section, sections) {
 		QList<const ArgHandler *> display;
-		foreach(const ArgHandler * handler, sectionArgumentHandles[section]) {
+		foreach (const ArgHandler * handler, sectionArgumentHandles[section]) {
 #ifndef __EXTENSIVE_WKHTMLTOPDF_QT_HACK__
-			if(!doc && handler->qthack) continue;
-#else 
+			if (!doc && handler->qthack) continue;
+#else
 			Q_UNUSED(doc);
 #endif
-			if(!extended && handler->extended) continue;
+			if (!extended && handler->extended) continue;
 			display.push_back(handler);
 		}
 		qSort(display.begin(), display.end(), ahsort);
-		if(display.size() == 0) continue;
+		if (display.size() == 0) continue;
 		o->beginSection(section);
-		if(!sectionDesc[section].isEmpty()) {
+		if (!sectionDesc[section].isEmpty()) {
 			o->beginParagraph();
 			o->text(sectionDesc[section]);
 			o->endParagraph();
 		}
 		o->beginSwitch();
-		foreach(const ArgHandler * handler, display)
+		foreach (const ArgHandler * handler, display)
 			o->cswitch(handler);
 		o->endSwitch();
 		o->endSection();
@@ -125,7 +130,7 @@ void CommandLineParserBase::parseArg(int sections, const int argc, const char **
 				usage(stderr, false);
 				exit(1);
 			}
-		
+
 			if (!(k.value()->section & sections)) {
 				fprintf(stderr, "-%c specified in incorrect location\n\n", argv[c][j]);
 				usage(stderr, false);

@@ -1,4 +1,8 @@
-//-*- mode: c++; tab-width: 4; indent-tabs-mode: t; c-file-style: "stroustrup"; -*-
+// -*- mode: c++; tab-width: 4; indent-tabs-mode: t; eval: (progn (c-set-style "stroustrup") (c-set-offset 'innamespace 0)); -*-
+// vi:set ts=4 sts=4 sw=4 noet :
+//
+// Copyright 2010 wkhtmltopdf authors
+//
 // This file is part of wkhtmltopdf.
 //
 // wkhtmltopdf is free software: you can redistribute it and/or modify
@@ -13,19 +17,19 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with wkhtmltopdf.  If not, see <http://www.gnu.org/licenses/>.
+
 #ifndef __IMAGECONVERTER_P_HH__
 #define __IMAGECONVERTER_P_HH__
-
-#include "multipageloader.hh"
-#include "imageconverter.hh"
 #include "converter_p.hh"
+#include "imageconverter.hh"
+#include "multipageloader.hh"
 namespace wkhtmltopdf {
-  
+
 class ImageConverterPrivate: public ConverterPrivate {
 	Q_OBJECT
 public:
 	ImageConverterPrivate(ImageConverter & o, wkhtmltopdf::settings::Global & s);
-	
+
 	wkhtmltopdf::settings::Global settings;
 	MultiPageLoader loader;
 private:
@@ -44,4 +48,4 @@ public slots:
 };
 
 }
-#endif //__IMAGECONVERTER_HH__
+#endif //__IMAGECONVERTER_P_HH__

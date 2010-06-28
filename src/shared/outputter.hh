@@ -1,5 +1,8 @@
 // -*- mode: c++; tab-width: 4; indent-tabs-mode: t; eval: (progn (c-set-style "stroustrup") (c-set-offset 'innamespace 0)); -*-
 // vi:set ts=4 sts=4 sw=4 noet :
+//
+// Copyright 2010 wkhtmltopdf authors
+//
 // This file is part of wkhtmltopdf.
 //
 // wkhtmltopdf is free software: you can redistribute it and/or modify
@@ -14,12 +17,13 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with wkhtmltopdf.  If not, see <http://www.gnu.org/licenses/>.
+
 #ifndef __OUTPUTTER_HH__
 #define __OUTPUTTER_HH__
+#include "commandlineparserbase.hh"
 #include <QString>
 #include <QVector>
 #include <stdio.h>
-#include "commandlineparserbase.hh"
 
 class Outputter {
 public:
@@ -45,5 +49,4 @@ public:
 	static Outputter * man(FILE * fd);
 	static Outputter * html(FILE * fd);
 };
-
-#endif
+#endif //__OUTPUTTER_HH__

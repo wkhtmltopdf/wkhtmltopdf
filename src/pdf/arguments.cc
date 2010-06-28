@@ -1,4 +1,8 @@
-//-*- mode: c++; tab-width: 4; indent-tabs-mode: t; c-file-style: "stroustrup"; -*-
+// -*- mode: c++; tab-width: 4; indent-tabs-mode: t; eval: (progn (c-set-style "stroustrup") (c-set-offset 'innamespace 0)); -*-
+// vi:set ts=4 sts=4 sw=4 noet :
+//
+// Copyright 2010 wkhtmltopdf authors
+//
 // This file is part of wkhtmltopdf.
 //
 // wkhtmltopdf is free software: you can redistribute it and/or modify
@@ -14,10 +18,10 @@
 // You should have received a copy of the GNU General Public License
 // along with wkhtmltopdf.  If not, see <http://www.gnu.org/licenses/>.
 
-#include "commandlineparser.hh"
 #include "arghandler.inl"
-#include <QFile>
+#include "commandlineparser.hh"
 #include "pdfconverter.hh"
+#include <QFile>
 #include <qglobal.h>
 
 /*!
@@ -45,7 +49,7 @@
   \brief The names of the arguments to the switch
 */
 
-/*!											  
+/*!
   \var ArgHandler::display
   \brief Indicate that the argument is not hidden
 */
@@ -55,7 +59,7 @@
   \brief Indicate if the argument is an extended argument
 */
 
-/*!											  
+/*!
   \var ArgHandler::qthack
   \brief Indicate that the argument is only available with hacked qt
 */
@@ -84,7 +88,7 @@ struct UnitRealTM: public SomeSetterTM<UnitReal> {
 	}
 };
 /*!
-  Argument handler setting a real-number/unit combo variable  
+  Argument handler setting a real-number/unit combo variable
  */
 typedef SomeSetter<UnitRealTM> UnitRealSetter;
 
@@ -98,7 +102,7 @@ struct PageSizeTM: public SomeSetterTM<QPrinter::PageSize> {
 	}
 };
 /*!
-  Argument handler setting a page size variable  
+  Argument handler setting a page size variable
  */
 typedef SomeSetter<PageSizeTM> PageSizeSetter;
 
@@ -112,7 +116,7 @@ struct OrientationTM: public SomeSetterTM<QPrinter::Orientation> {
 	}
 };
 /*!
-  Argument handler setting a orientation variable  
+  Argument handler setting a orientation variable
  */
 typedef SomeSetter<OrientationTM> OrientationSetter;
 
@@ -163,8 +167,7 @@ struct BookFunc {
 CommandLineParser::CommandLineParser(Global & s, QList<Page> & ps):
 	readArgsFromStdin(false),
 	globalSettings(s),
-	pageSettings(ps)
-{
+	pageSettings(ps) {
 	section("Global Options");
 	mode(global);
 
@@ -174,7 +177,7 @@ CommandLineParser::CommandLineParser(Global & s, QList<Page> & ps):
 	qthack(false);
 
 	addarg("quiet", 'q', "Be less verbose", new ConstSetter<bool>(s.quiet,true));
-	
+
 	addarg("no-collate", 0, "Do not collate when printing multiple copies", new ConstSetter<bool>(s.collate, false));
 	addarg("collate", 0, "Collate when printing multiple copies", new ConstSetter<bool>(s.collate, true));
 
@@ -211,7 +214,7 @@ CommandLineParser::CommandLineParser(Global & s, QList<Page> & ps):
 
 	addarg("image-quality", 0, "When jpeg compressing images use this quality", new IntSetter(s.imageQuality,"integer"));
 	addarg("image-dpi", 0, "When embedding images scale them down to this dpi", new IntSetter(s.imageDPI, "integer"));
-		   
+
 	addarg("no-pdf-compression", 0 , "Do not use lossless compression on pdf objects", new ConstSetter<bool>(s.useCompression,false));
 
  #ifdef Q_WS_X11
@@ -243,7 +246,7 @@ CommandLineParser::CommandLineParser(Global & s, QList<Page> & ps):
  	qthack(true);
 	addarg("disable-smart-shrinking", 0, "Disable the intelligent shrinking strategy used by WebKit that makes the pixel/dpi ratio none constant",new ConstSetter<bool>(od.web.enableIntelligentShrinking, false));
  	addarg("enable-smart-shrinking", 0, "Enable the intelligent shrinking strategy used by WebKit that makes the pixel/dpi ratio none constant",new ConstSetter<bool>(od.web.enableIntelligentShrinking, true));
-	
+
 	addarg("print-media-type",0,"Use print media-type instead of screen", new ConstSetter<bool>(od.web.printMediaType,true));
 	addarg("no-print-media-type",0,"Do not use print media-type instead of screen", new ConstSetter<bool>(od.web.printMediaType, false));
 
@@ -284,7 +287,7 @@ CommandLineParser::CommandLineParser(Global & s, QList<Page> & ps):
  	addarg("header-right",0,"Right aligned header text", new QStrSetter(od.header.right,"text"));
  	addarg("header-spacing",0,"Spacing between header and content in mm", new FloatSetter(od.header.spacing,"real"));
  	addarg("header-html",0,"Adds a html header", new QStrSetter(od.header.htmlUrl,"url"));
-	
+
 	addarg("replace",0, "Replace [name] with value in header and footer (repeatable)", new MapSetter<>(od.replacements, "name", "value"));
 
 	section("TOC Options");

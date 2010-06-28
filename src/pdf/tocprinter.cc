@@ -1,4 +1,8 @@
-//-*- mode: c++; tab-width: 4; indent-tabs-mode: t; c-file-style: "stroustrup"; -*-
+// -*- mode: c++; tab-width: 4; indent-tabs-mode: t; eval: (progn (c-set-style "stroustrup") (c-set-offset 'innamespace 0)); -*-
+// vi:set ts=4 sts=4 sw=4 noet :
+//
+// Copyright 2010 wkhtmltopdf authors
+//
 // This file is part of wkhtmltopdf.
 //
 // wkhtmltopdf is free software: you can redistribute it and/or modify
@@ -13,17 +17,18 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with wkhtmltopdf.  If not, see <http://www.gnu.org/licenses/>.
-#include "tocprinter.hh"
+
 #include "outline_p.hh"
 #include "settings.hh"
+#include "tocprinter.hh"
 #ifdef __EXTENSIVE_WKHTMLTOPDF_QT_HACK__
 
 
 typedef QPair<int, OutlineItem *> line_t;
 /*!
-  We imploy a cheep strategy of not using a render tree, 
+  We imploy a cheep strategy of not using a render tree,
   insted we just store the state render state for every page start,
-  the render state is uniquly defined by a OutlineItem, 
+  the render state is uniquly defined by a OutlineItem,
  */
 class TocPrinterPrivate {
 public:
@@ -37,7 +42,7 @@ public:
 	QVector<OutlineItem *> pageItems;
 
 	QList< QList< line_t > > pages;
-	
+
 	TocPrinterPrivate(Outline * o, QPrinter * pr, QPainter & pa);
 	void revLinkChildren(OutlineItem * i, QVector<QPair<QWebElement, QString> > & links, int level);
 	void renderPage(OutlineItem * & cur, bool first, bool dry);
@@ -59,7 +64,7 @@ void TocPrinterPrivate::layoutChildren(OutlineItem * item, double & y, int level
 	QRect pr = printer->pageRect();
 	foreach (OutlineItem * i, item->children) {
 		y += step[level];
-		if(y > pr.height()) {
+		if (y > pr.height()) {
 			pages.push_back( QList< QPair<int, OutlineItem *> >() );
 			y = step[level];
 		}
@@ -74,13 +79,13 @@ TocPrinterPrivate::TocPrinterPrivate(Outline * o, QPrinter * pr, QPainter & pa):
 	painter.save();
 	painter.resetTransform();
 	QRectF pageRect = printer->pageRect();
-	for(uint level=0; level < levels; ++level) {
+	for (uint level=0; level < levels; ++level) {
 		painter.setFont(QFont(s.fontName, s.fontSize[level]));
 		step[level] = painter.fontMetrics().height();
 		dw[level] = painter.boundingRect(pageRect, Qt::AlignRight | Qt::AlignTop, ".").width();
 	}
 	painter.setFont(QFont(s.fontName, s.captionFontSize));
-	//The height of the caption	
+	//The height of the caption
 	double y = painter.boundingRect(pageRect, Qt::AlignTop | Qt::AlignHCenter, s.captionText).height() * 3;
 	painter.restore();
 	pages.push_back( QList< QPair<int, OutlineItem *> >() );
@@ -97,11 +102,11 @@ TocPrinterPrivate::TocPrinterPrivate(Outline * o, QPrinter * pr, QPainter & pa):
 	pages.back().push_back( qMakePair(0, toc) );
 
 	foreach (OutlineItem * i, o->d->documentOutlines)
-		layoutChildren(i, y, 0); 	
+		layoutChildren(i, y, 0);
 
 	outline->d->pageCount += pages.size();
 
-	foreach (OutlineItem * i, outline->d->documentOutlines) 
+	foreach (OutlineItem * i, outline->d->documentOutlines)
 		incChildren(i);
 
 	outline->d->documentOutlines.push_front(root);
@@ -156,11 +161,11 @@ void TocPrinter::spoolPage(int page) {
 	double y = 0;
 	const Settings::TOCSettings & s = d->outline->d->settings.toc;
 	QRect pr = d->printer->pageRect();
-	
-	if(page == 0) {
+
+	if (page == 0) {
 		double h = d->painter.boundingRect(pr,Qt::AlignTop | Qt::AlignHCenter, s.captionText).height();
 		QRect r((int)h,0,pr.width(),(int)h*3);
-		
+
 		d->painter.setFont(QFont(s.captionFontName.isEmpty()?s.fontName:s.captionFontName, s.captionFontSize));
 		d->painter.drawText(r, Qt::AlignVCenter | Qt::AlignHCenter, s.captionText);
 		d->painter.addAnchor(r, "_WK_TOC");
@@ -175,9 +180,9 @@ void TocPrinter::spoolPage(int page) {
 		}
 
 		double startX = pr.width()*s.indentation[lvl]/1000.0;
-		
+
 		QRectF lineRect(startX,y,pr.width()-startX, d->step[lvl]);
-		
+
 		QRectF br;
 		d->painter.drawText(lineRect,Qt::AlignBottom | Qt::AlignRight, QString(" ") + QString::number(line.second->page),&br);
 		QString v = line.second->value;
@@ -189,7 +194,7 @@ void TocPrinter::spoolPage(int page) {
 			for (int i=0; i < ndots; ++i) v.append(".");
 		}
 		d->painter.drawText(lineRect,Qt::AlignBottom | Qt::AlignLeft, v);
-		
+
 		QRectF r(0,y, pr.width(), d->step[lvl]);
 		if (s.forwardLinks)
 			d->painter.addLink(r, line.second->anchor);

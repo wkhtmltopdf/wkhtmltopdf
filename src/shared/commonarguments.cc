@@ -1,4 +1,8 @@
-//-*- mode: c++; tab-width: 4; indent-tabs-mode: t; c-file-style: "stroustrup"; -*-
+// -*- mode: c++; tab-width: 4; indent-tabs-mode: t; eval: (progn (c-set-style "stroustrup") (c-set-offset 'innamespace 0)); -*-
+// vi:set ts=4 sts=4 sw=4 noet :
+//
+// Copyright 2010 wkhtmltopdf authors
+//
 // This file is part of wkhtmltopdf.
 //
 // wkhtmltopdf is free software: you can redistribute it and/or modify
@@ -13,8 +17,9 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with wkhtmltopdf.  If not, see <http://www.gnu.org/licenses/>.
-#include "commandlineparserbase.hh"
+
 #include "arghandler.inl"
+#include "commandlineparserbase.hh"
 #include "loadsettings.hh"
 using namespace wkhtmltopdf::settings;
 
@@ -35,7 +40,7 @@ struct ProxyTM: public SomeSetterTM<Proxy> {
 	}
 };
 /*!
-  Argument handler setting a proxy variable  
+  Argument handler setting a proxy variable
  */
 typedef SomeSetter<ProxyTM> ProxySetter;
 
@@ -108,7 +113,7 @@ void CommandLineParserBase::mode(int m) {
 }
 
 /*!
-  Indicate whether the next arguments we add are "extended" and should not 
+  Indicate whether the next arguments we add are "extended" and should not
   be shown in a simple --help
   \param e Are the arguments extended
 */
@@ -134,7 +139,7 @@ void CommandLineParserBase::addarg(QString l, char s, QString d, ArgHandler * h,
 	h->section = currentMode;
 	h->extended = currentExtended;
 	longToHandler[l] = h;
-	if(s) shortToHandler[s] = h;
+	if (s) shortToHandler[s] = h;
 	sectionArgumentHandles[currentSection].push_back(h);
 }
 
@@ -156,19 +161,19 @@ void CommandLineParserBase::addDocArgs() {
 void CommandLineParserBase::addGlobalLoadArgs(LoadGlobal & s) {
 	extended(true);
 	qthack(false);
-	
+
     addarg("cookie-jar", 0, "Read and write cookies from and to the supplied cookie jar file", new QStrSetter(s.cookieJar, "path") );
 }
 
 void CommandLineParserBase::addWebArgs(Web & s) {
 	extended(true);
  	qthack(false);
-	
+
 	addarg("enable-plugins",0,"Enable installed plugins (plugins will likely not work)", new ConstSetter<bool>(s.enablePlugins,true));
  	addarg("disable-plugins",0,"Disable installed plugins", new ConstSetter<bool>(s.enablePlugins,false));
-	
+
 	addarg("minimum-font-size",0,"Minimum font size", new IntSetter(s.minimumFontSize,"int"));
-	
+
 #if QT_VERSION >= 0x040500 //Not printing the background was added in QT4.5
  	addarg("user-style-sheet",0,"Specify a user style sheet, to load with every page", new QStrSetter(s.userStyleSheet,"url"));
 #endif
@@ -176,11 +181,11 @@ void CommandLineParserBase::addWebArgs(Web & s) {
 #if QT_VERSION >= 0x040600
 	addarg("no-images",0,"Do not load or print images", new ConstSetter<bool>(s.loadImages, false));
 	addarg("images",0,"Do load or print images", new ConstSetter<bool>(s.loadImages, true));
-#endif	
+#endif
 
 	addarg("disable-javascript",'n',"Do not allow web pages to run javascript", new ConstSetter<bool>(s.enableJavascript,false));
 	addarg("enable-javascript",'n',"Do allow web pages to run javascript", new ConstSetter<bool>(s.enableJavascript,true));
-	
+
 	extended(true);
  	qthack(true);
 #if QT_VERSION >= 0x040600
@@ -201,22 +206,22 @@ void CommandLineParserBase::addPageLoadArgs(LoadPage & s) {
 	addarg("custom-header",0,"Set an additional HTTP header (repeatable)", new MapSetter<>(s.customHeaders, "name", "value"));
 	addarg("custom-header-propagation",0,"Add HTTP headers specified by --custom-header for each resource request.", new ConstSetter<bool>(s.repeatCustomHeaders, true));
 	addarg("no-custom-header-propagation",0,"Do not add HTTP headers specified by --custom-header for each resource request.", new ConstSetter<bool>(s.repeatCustomHeaders, true));
-	
+
 	addarg("javascript-delay",0,"Wait some milliseconds for javascript finish", new IntSetter(s.jsdelay,"msec"));
-	
+
 	addarg("zoom",0,"Use this zoom factor", new FloatSetter(s.zoomFactor,"float",1.0));
 	addarg("cookie",0,"Set an additional cookie (repeatable)", new MapSetter<>(s.cookies, "name", "value"));
 	addarg("post", 0, "Add an additional post field (repeatable)", new MapSetter<PostItemCreator<false> >(s.post, "name", "value"));
 	addarg("post-file", 0, "Post an additional file (repeatable)", new MapSetter<PostItemCreator<true> >(s.post, "name", "path"));
-		
+
 	addarg("disable-local-file-access", 0, "Do not allowed conversion of a local file to read in other local files, unless explecitily allowed with --allow", new ConstSetter<bool>(s.blockLocalFileAccess, true));
 	addarg("enable-local-file-access", 0, "Allowed conversion of a local file to read in other local files.", new ConstSetter<bool>(s.blockLocalFileAccess, false));
 	addarg("allow", 0, "Allow the file or files from the specified folder to be loaded (repeatable)", new StringListSetter(s.allowed,"path"));
-	
+
 	addarg("debug-javascript", 0,"Show javascript debugging output", new ConstSetter<bool>(s.debugJavascript, true));
 	addarg("no-debug-javascript", 0,"Do not show javascript debugging output", new ConstSetter<bool>(s.debugJavascript, false));
 #if QT_VERSION >= 0x040600
 	addarg("stop-slow-scripts", 0, "Stop slow running javascripts", new ConstSetter<bool>(s.stopSlowScripts, true));
 	addarg("no-stop-slow-scripts", 0, "Do not Stop slow running javascripts", new ConstSetter<bool>(s.stopSlowScripts, true));
-#endif	
+#endif
 }

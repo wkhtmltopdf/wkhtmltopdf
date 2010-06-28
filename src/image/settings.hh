@@ -1,5 +1,8 @@
 // -*- mode: c++; tab-width: 4; indent-tabs-mode: t; eval: (progn (c-set-style "stroustrup") (c-set-offset 'innamespace 0)); -*-
 // vi:set ts=4 sts=4 sw=4 noet :
+//
+// Copyright 2010 wkhtmltopdf authors
+//
 // This file is part of wkhtmltopdf.
 //
 // wkhtmltopdf is free software: you can redistribute it and/or modify
@@ -14,6 +17,7 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with wkhtmltopdf.  If not, see <http://www.gnu.org/licenses/>.
+
 #ifndef __SETTINGS_HH__
 #define __SETTINGS_HH__
 #include "loadsettings.hh"
@@ -49,7 +53,7 @@ struct CropSettings {
 /*! \brief Class holding all user settings.
 
     This class holds all the user settings, settings can be filled in by hand,
-    or with other methods. 
+    or with other methods.
     \sa CommandLineParser::parse()
 */
 struct Global {
@@ -59,14 +63,14 @@ struct Global {
 	CropSettings crop;
 	//! Scale related settings
 	// ScaleSettings scale;
-	
+
 	LoadGlobal loadGlobal;
 	LoadPage loadPage;
 	Web web;
 
 	//! Be less verbose
-	bool quiet; 
-	
+	bool quiet;
+
 	bool transparent;
 
 	//! Should we use the graphics system

@@ -1,5 +1,8 @@
 // -*- mode: c++; tab-width: 4; indent-tabs-mode: t; eval: (progn (c-set-style "stroustrup") (c-set-offset 'innamespace 0)); -*-
 // vi:set ts=4 sts=4 sw=4 noet :
+//
+// Copyright 2010 wkhtmltopdf authors
+//
 // This file is part of wkhtmltopdf.
 //
 // wkhtmltopdf is free software: you can redistribute it and/or modify
@@ -14,11 +17,12 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with wkhtmltopdf.  If not, see <http://www.gnu.org/licenses/>.
+
 #include "multipageloader_p.hh"
 #include <QFile>
 #include <QFileInfo>
-#include <QTimer>
 #include <QNetworkCookie>
+#include <QTimer>
 #include <QUuid>
 
 namespace wkhtmltopdf {
@@ -44,11 +48,11 @@ void MyNetworkAccessManager::allow(QString path) {
 }
 
 QNetworkReply * MyNetworkAccessManager::createRequest(Operation op, const QNetworkRequest & req, QIODevice * outgoingData) {
-	if (req.url().scheme() == "file" && settings.blockLocalFileAccess) { 
+	if (req.url().scheme() == "file" && settings.blockLocalFileAccess) {
 		bool ok=false;
 		QString path = QFileInfo(req.url().toLocalFile()).canonicalFilePath();
 		QString old = "";
-		while(path != old) {
+		while (path != old) {
 			if (allowed.contains(path)) {
 				ok=true;
 				break;
@@ -69,7 +73,7 @@ QNetworkReply * MyNetworkAccessManager::createRequest(Operation op, const QNetwo
 		foreach (const HT & j, settings.customHeaders)
 			r3.setRawHeader(j.first.toAscii(), j.second.toAscii());
 	}
-	return QNetworkAccessManager::createRequest(op, r3, outgoingData);	
+	return QNetworkAccessManager::createRequest(op, r3, outgoingData);
 }
 
 
@@ -103,22 +107,22 @@ bool MyQWebPage::shouldInterruptJavaScript() {
 	return false;
 }
 
-ResourceObject::ResourceObject(MultiPageLoaderPrivate & mpl, const QUrl & u, const settings::LoadPage & s): 
+ResourceObject::ResourceObject(MultiPageLoaderPrivate & mpl, const QUrl & u, const settings::LoadPage & s):
 	networkAccessManager(s),
 	url(u),
-	loginTry(0), 
-	progress(0), 
+	loginTry(0),
+	progress(0),
 	finished(false),
 	signalPrint(false),
-	multiPageLoader(mpl), 
+	multiPageLoader(mpl),
 	webPage(*this),
 	lo(webPage),
 	httpErrorCode(0),
 	settings(s) {
-	
+
 	connect(&networkAccessManager, SIGNAL(authenticationRequired(QNetworkReply*, QAuthenticator *)),this,
 	        SLOT(handleAuthenticationRequired(QNetworkReply *, QAuthenticator *)));
-	foreach(const QString & path, s.allowed)
+	foreach (const QString & path, s.allowed)
 		networkAccessManager.allow(path);
 	if (url.scheme() == "file")
 		networkAccessManager.allow(url.toLocalFile());
@@ -135,7 +139,7 @@ ResourceObject::ResourceObject(MultiPageLoaderPrivate & mpl, const QUrl & u, con
 	connect(&networkAccessManager, SIGNAL(finished (QNetworkReply *)),
 			this, SLOT(amfinished (QNetworkReply *) ) );
 
-	connect(&networkAccessManager, SIGNAL(warning(const QString &)), 
+	connect(&networkAccessManager, SIGNAL(warning(const QString &)),
 			this, SLOT(warning(const QString &)));
 
 	networkAccessManager.setCookieJar(multiPageLoader.cookieJar);
@@ -214,7 +218,7 @@ void ResourceObject::loadDone() {
 	if (finished) return;
 	finished=true;
 	--multiPageLoader.loading;
-	if (multiPageLoader.loading == 0) 
+	if (multiPageLoader.loading == 0)
 		multiPageLoader.loadDone();
 }
 
@@ -350,7 +354,7 @@ void MyCookieJar::saveToFile(const QString & path) {
 void MultiPageLoaderPrivate::loadDone() {
 	 if (!settings.cookieJar.isEmpty())
 	 	cookieJar->saveToFile(settings.cookieJar);
-	
+
 	if (!finishedEmitted) {
 		finishedEmitted = true;
 		emit outer.loadFinished(!hasError);
@@ -381,12 +385,12 @@ bool MultiPageLoader::copyFile(QFile & src, QFile & dst) {
 	return true;
 }
 
-MultiPageLoaderPrivate::MultiPageLoaderPrivate(const settings::LoadGlobal & s, MultiPageLoader & o): 
+MultiPageLoaderPrivate::MultiPageLoaderPrivate(const settings::LoadGlobal & s, MultiPageLoader & o):
 	outer(o), settings(s) {
 
 	cookieJar = new MyCookieJar();
 
-	if (!settings.cookieJar.isEmpty()) 
+	if (!settings.cookieJar.isEmpty())
 		cookieJar->loadFromFile(settings.cookieJar);
 }
 
@@ -399,7 +403,7 @@ LoaderObject * MultiPageLoaderPrivate::addResource(const QUrl & url, const setti
 	resources.push_back(ro);
 	return &ro->lo;
 }
-	
+
 void MultiPageLoaderPrivate::load() {
 	progressSum=0;
 	loadStartedEmitted=false;
@@ -407,21 +411,21 @@ void MultiPageLoaderPrivate::load() {
 	hasError=false;
 	loading=0;
 
-	for(int i=0; i < resources.size(); ++i)
+	for (int i=0; i < resources.size(); ++i)
 		resources[i]->load();
 
 	if (resources.size() == 0) loadDone();
 }
 
 void MultiPageLoaderPrivate::clearResources() {
-	for(int i=0; i < resources.size(); ++i)
+	for (int i=0; i < resources.size(); ++i)
 		delete resources[i];
 	resources.clear();
 	tempIn.remove();
 }
 
 void MultiPageLoaderPrivate::cancel() {
-	//foreach (QWebPage * page, pages) 
+	//foreach (QWebPage * page, pages)
 	//	page->triggerAction(QWebPage::Stop);
 }
 
@@ -454,7 +458,7 @@ LoaderObject * MultiPageLoader::addResource(const QString & string, const settin
 		in.open(stdin,QIODevice::ReadOnly);
 		url = d->tempIn.create(".html");
 		QFile tmp(url);
-		if(!tmp.open(QIODevice::WriteOnly) || !copyFile(in, tmp)) {
+		if (!tmp.open(QIODevice::WriteOnly) || !copyFile(in, tmp)) {
 			emit error("Unable to create temporery file");
 			return NULL;
 		}
@@ -472,7 +476,7 @@ LoaderObject * MultiPageLoader::addResource(const QUrl & url, const settings::Lo
 
 /*!
   \brief Guess a url, by looking at a string
-  
+
   (shamelessly copied from Arora Project)
   \param string The string the is suppose to be some kind of url
 */
@@ -538,7 +542,7 @@ QUrl MultiPageLoader::guessUrlFromString(const QString &string) {
  */
 int MultiPageLoader::httpErrorCode() {
 	int res=0;
-	foreach (const ResourceObject * ro, d->resources) 
+	foreach (const ResourceObject * ro, d->resources)
 		if (ro->httpErrorCode > res) res = ro->httpErrorCode;
 	return res;
 }

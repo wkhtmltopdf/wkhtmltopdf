@@ -1,4 +1,7 @@
 #!/bin/bash
+#
+# Copyright 2010 wkhtmltopdf authors
+#
 # This file is part of wkhtmltopdf.
 #
 # wkhtmltopdf is free software: you can redistribute it and/or modify
@@ -93,7 +96,7 @@ function git_fetch_and_update() {
 	git clone "$2" "$1" || (rm -rf "$1" && return 1)
     fi
     cd "$1"
-    git fetch origin 
+    git fetch origin
     if ! (git checkout "$3" -f 2>/dev/null && git pull origin "$3" 2>/dev/null); then
 	git branch -a
 	git checkout origin/"$3" -f 2>/dev/null || return 1
@@ -138,7 +141,7 @@ function setup_build() {
 		git checkout "$VERSION" || exit 1
     fi
     cd ..
-    [ "$1" == "win" ] && return 
+    [ "$1" == "win" ] && return
     cat > build.sh <<EOF
 unset LANG
 unset LC_ALL
@@ -157,7 +160,7 @@ if ! cmp conf conf_new; then
   QTDIR=. bin/syncqt || exit 1
   do_configure
 fi
-    
+
 if ! make -j3 -q; then
    echo "Building QT"
    (make -j3 && make install) || (make distclean; do_configure && make -j3 && make install) || exit 1
@@ -192,7 +195,7 @@ function setup_chroot() {
 	sudo mkdir -p linux-$2/build || exit 1
 	sudo chown --reference=. linux-$2/build -Rv || exit 1
     fi
-    
+
     if [ ! -f linux-$2/installed ]; then
 	echo -e "deb http://ftp.debian.org $1 main non-free contrib\ndeb-src http://ftp.debian.org $1 main non-free contrib" | sudo tee linux-$2/etc/apt/sources.list || exit 1
 	sudo chroot linux-$2 apt-get -y update || exit 1
@@ -218,10 +221,10 @@ function build_linux_chroot() {
 
 function build_windows() {
     cd ${BUILD}
- 
+
     export WINEPREFIX=${BUILD}/windows
     if [ ! -f ${BUILD}/windows/create ]; then
-	    cat > tmp <<EOF 
+	    cat > tmp <<EOF
 REGEDIT4
 
 [HKEY_LOCAL_MACHINE\System\CurrentControlSet\Control\Session Manager\Environment]
@@ -246,7 +249,7 @@ EOF
 
     cd ..
     setup_build win
-    
+
     unset CPLUS_INCLUDE_PATH
     unset C_INCLUDE_PATH
     export CPLUS_INCLUDE_PATH=

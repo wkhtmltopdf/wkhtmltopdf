@@ -1,4 +1,8 @@
-//-*- mode: c++; tab-width: 4; indent-tabs-mode: t; c-file-style: "stroustrup"; -*-
+// -*- mode: c++; tab-width: 4; indent-tabs-mode: t; eval: (progn (c-set-style "stroustrup") (c-set-offset 'innamespace 0)); -*-
+// vi:set ts=4 sts=4 sw=4 noet :
+//
+// Copyright 2010 wkhtmltopdf authors
+//
 // This file is part of wkhtmltopdf.
 //
 // wkhtmltopdf is free software: you can redistribute it and/or modify
@@ -13,6 +17,7 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with wkhtmltopdf.  If not, see <http://www.gnu.org/licenses/>.
+
 #include "commandlineparser.hh"
 #include "outputter.hh"
 #include <QWebFrame>
@@ -64,7 +69,7 @@ void CommandLineParser::outputSynopsis(Outputter * o) const {
 				 "the page does not appear in the table of content, and does not have headers and footers.");
 	o->verbatim("cover <input url/file name> [PAGE OPTION]...");
 	o->paragraph("All options that can be specified for a page object can also be specified for a cover.");
-	
+
 	o->paragraph("A table of content object inserts a table of content into the output document.");
 	o->verbatim("toc [TOC OPTION]...");
 	o->beginParagraph();
@@ -107,7 +112,7 @@ void CommandLineParser::outputDescripton(Outputter * o) const {
 */
 void CommandLineParser::outputNotPatched(Outputter * o, bool sure) const {
 	o->beginSection("Reduced Functionality");
-	if (sure) 
+	if (sure)
 		o->paragraph("This version of wkhtmltopdf has been compiled against a version of "
 					 "QT without the wkhtmltopdf patches. Therefore some features are missing, "
 					 "if you need these features please use the static version.");
@@ -192,11 +197,11 @@ void CommandLineParser::outputHeaderFooterDoc(Outputter * o) const {
 "function subst() {\n"
 "  var vars={};\n"
 "  var x=document.location.search.substring(1).split('&');\n"
-"  for(var i in x) {var z=x[i].split('=',2);vars[z[0]] = unescape(z[1]);}\n"
+"  for (var i in x) {var z=x[i].split('=',2);vars[z[0]] = unescape(z[1]);}\n"
 "  var x=['frompage','topage','page','webpage','section','subsection','subsubsection'];\n"
-"  for(var i in x) {\n"
+"  for (var i in x) {\n"
 "    var y = document.getElementsByClassName(x[i]);\n"
-"    for(var j=0; j<y.length; ++j) y[j].textContent = vars[x[i]];\n"
+"    for (var j=0; j<y.length; ++j) y[j].textContent = vars[x[i]];\n"
 "  }\n"
 "}\n"
 "</script></head><body style=\"border:0; margin: 0;\" onload=\"subst()\">\n"
@@ -345,7 +350,7 @@ void CommandLineParser::outputInstallation(Outputter * o) const {
 		"binary, however you still need to install some other pieces of "
 		"software, to learn more about this read the static version section "
 		"of the manual.");
-	o->endSection(); 
+	o->endSection();
 }
 
 /*!

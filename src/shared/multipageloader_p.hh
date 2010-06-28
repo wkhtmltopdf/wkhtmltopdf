@@ -1,5 +1,8 @@
 // -*- mode: c++; tab-width: 4; indent-tabs-mode: t; eval: (progn (c-set-style "stroustrup") (c-set-offset 'innamespace 0)); -*-
 // vi:set ts=4 sts=4 sw=4 noet :
+//
+// Copyright 2010 wkhtmltopdf authors
+//
 // This file is part of wkhtmltopdf.
 //
 // wkhtmltopdf is free software: you can redistribute it and/or modify
@@ -14,16 +17,19 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with wkhtmltopdf.  If not, see <http://www.gnu.org/licenses/>.
+
+#ifndef __MULTIPAGELOADER_P_HH__
+#define __MULTIPAGELOADER_P_HH__
 #include "multipageloader.hh"
 #include "tempfile.hh"
 #include <QAtomicInt>
 #include <QAuthenticator>
 #include <QFile>
+#include <QFileInfo>
 #include <QNetworkAccessManager>
+#include <QNetworkCookieJar>
 #include <QNetworkReply>
 #include <QWebFrame>
-#include <QNetworkCookieJar>
-#include <QFileInfo>
 namespace wkhtmltopdf {
 
 class MyNetworkAccessManager: public QNetworkAccessManager {
@@ -71,7 +77,7 @@ public:
 	MyQWebPage webPage;
 	LoaderObject lo;
 	int httpErrorCode;
-	const settings::LoadPage settings;	
+	const settings::LoadPage settings;
 public slots:
 	void load();
 	void loadStarted();
@@ -116,7 +122,7 @@ public:
 	TempFile tempIn;
 
 	MultiPageLoaderPrivate(const settings::LoadGlobal & settings, MultiPageLoader & o);
-	~MultiPageLoaderPrivate(); 
+	~MultiPageLoaderPrivate();
 	LoaderObject * addResource(const QUrl & url, const settings::LoadPage & settings);
 	void load();
 	void clearResources();
@@ -127,3 +133,4 @@ public slots:
 };
 
 }
+#endif //__MULTIPAGELOADER_P_HH__

@@ -1,5 +1,8 @@
 // -*- mode: c++; tab-width: 4; indent-tabs-mode: t; eval: (progn (c-set-style "stroustrup") (c-set-offset 'innamespace 0)); -*-
 // vi:set ts=4 sts=4 sw=4 noet :
+//
+// Copyright 2010 wkhtmltopdf authors
+//
 // This file is part of wkhtmltopdf.
 //
 // wkhtmltopdf is free software: you can redistribute it and/or modify
@@ -14,6 +17,7 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with wkhtmltopdf.  If not, see <http://www.gnu.org/licenses/>.
+
 #include "progressfeedback.hh"
 #include <cstdio>
 namespace wkhtmltopdf {
@@ -28,7 +32,7 @@ namespace wkhtmltopdf {
 */
 
 #define S(t) ((t).toLocal8Bit().constData())
-	
+
 /*!
   \brief Write out a warning message
   \param message The warning message
@@ -36,7 +40,7 @@ namespace wkhtmltopdf {
 void ProgressFeedback::warning(const QString &message) {
 	if (quiet) return;
 	fprintf(stderr, "Warning: %s",S(message));
-	for(int l = 9 + message.size(); l < lw; ++l) 
+	for (int l = 9 + message.size(); l < lw; ++l)
 		fprintf(stderr, " ");
 	fprintf(stderr, "\n");
 	lw = 0;
@@ -48,7 +52,7 @@ void ProgressFeedback::warning(const QString &message) {
 */
 void ProgressFeedback::error(const QString &message) {
 	fprintf(stderr, "Error: %s",S(message));
-	for(int l = 7 + message.size(); l < lw; ++l) 
+	for (int l = 7 + message.size(); l < lw; ++l)
 		fprintf(stderr, " ");
 	fprintf(stderr, "\n");
 	lw = 0;
@@ -61,11 +65,11 @@ void ProgressFeedback::phaseChanged() {
 	if (quiet) return;
 	QString desc=converter.phaseDescription();
 	fprintf(stderr, "%s", S(desc));
-	
+
 	int l = desc.size();
-	if(converter.currentPhase() < converter.phaseCount() -1)
+	if (converter.currentPhase() < converter.phaseCount() -1)
 		l += fprintf(stderr," (%d/%d)",converter.currentPhase()+1,converter.phaseCount()-1);
-	for(; l < lw; ++l) 
+	for (; l < lw; ++l)
 		fprintf(stderr, " ");
 	fprintf(stderr, "\n");
 	lw = 0;
@@ -88,7 +92,7 @@ void ProgressFeedback::progressChanged(int progress) {
 	fprintf(stderr, "]");
 	fprintf(stderr, " %s", S(converter.progressString()));
 	int l=1+w+2+converter.progressString().size();
-	for(int i=l; i < lw; ++i) fprintf(stderr, " ");
+	for (int i=l; i < lw; ++i) fprintf(stderr, " ");
 	lw = l;
 	fprintf(stderr, "\r");
 }

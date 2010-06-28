@@ -21,9 +21,10 @@ from sys import argv, exit
 import re
 from datetime import date
 import os
+import difflib
 
 cdate = re.compile(r"Copyright ([0-9 ,]*) wkhtmltopdf authors")
-ifdef = re.compile(r"^#ifndef __(.*)__[\r\n]*#define __\1__[\r\n]*")
+ifdef = re.compile(r"^[\n\r \t]*#ifndef __(.*)__[\t ]*\n#define __(\1)__[\t ]*\n")
 endif = re.compile(r"#endif.*[\r\n \t]*$")
 ws = re.compile(r"[ \t]*[\r\n]")
 branchspace = re.compile(r"([ \t\r\n])(for|if|while|switch|foreach)[\t \r\n]*\(")
@@ -89,6 +90,10 @@ for path in argv[1:]:
 	ndata = hexp.sub("", data,1)
 	ndata = ws.sub("\n", ndata)+"\n"
 	if ext in ["hh","h","inl"]:
+		s=0
+		e=-1
+		while ndata[s] in ['\r','\n',' ','\t']: s+=1
+		while ndata[e] in ['\r','\n',' ','\t']: e-=1
 		#Strip away generated ifdef
 		if ifdef.search(ndata):
 			ndata = endif.sub("",ifdef.sub("",ndata,1),1)
@@ -111,8 +116,9 @@ for path in argv[1:]:
 #endif //__%s__"""%(n,n,ndata,n)
 	ndata = header.replace("//",cc)+ndata+"\n"
 	if ndata != data:
-		changes=True
-		print "Updated %s for style"%path
+		for x in difflib.unified_diff(data.split("\n"),ndata.split("\n"), "a/"+path, "b/"+path):
+			print x
+ 		changes=True
 		file(path, "w").write(ndata)
 
 if changes: exit(1)

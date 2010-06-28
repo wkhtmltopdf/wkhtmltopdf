@@ -1,4 +1,8 @@
-//-*- mode: c++; tab-width: 4; indent-tabs-mode: t; c-file-style: "stroustrup"; -*-
+// -*- mode: c++; tab-width: 4; indent-tabs-mode: t; eval: (progn (c-set-style "stroustrup") (c-set-offset 'innamespace 0)); -*-
+// vi:set ts=4 sts=4 sw=4 noet :
+//
+// Copyright 2010 wkhtmltopdf authors
+//
 // This file is part of wkhtmltopdf.
 //
 // wkhtmltopdf is free software: you can redistribute it and/or modify
@@ -13,17 +17,17 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with wkhtmltopdf.  If not, see <http://www.gnu.org/licenses/>.
+
 #ifndef __UTILITIES_HH__
 #define __UTILITIES_HH__
-
 #include <QCleanlooksStyle>
 #include <QCommonStyle>
-#include <QPainter>
-#include <QStyleOption>
-#include <QUrl>
 #include <QFile>
 #include <QFileInfo>
 #include <QImageWriter>
+#include <QPainter>
+#include <QStyleOption>
+#include <QUrl>
 
 /**
  * Custom simplistic style
@@ -40,5 +44,4 @@ public slots:
 };
 
 int handleError(bool success, int errorCode);
-
 #endif //__UTILITIES_HH__

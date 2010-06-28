@@ -1,4 +1,8 @@
-//-*- mode: c++; tab-width: 4; indent-tabs-mode: t; c-file-style: "stroustrup"; -*-
+// -*- mode: c++; tab-width: 4; indent-tabs-mode: t; eval: (progn (c-set-style "stroustrup") (c-set-offset 'innamespace 0)); -*-
+// vi:set ts=4 sts=4 sw=4 noet :
+//
+// Copyright 2010 wkhtmltopdf authors
+//
 // This file is part of wkhtmltopdf.
 //
 // wkhtmltopdf is free software: you can redistribute it and/or modify
@@ -13,13 +17,17 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with wkhtmltopdf.  If not, see <http://www.gnu.org/licenses/>.
+
+#ifndef __ARGHANDLER_INL__
+#define __ARGHANDLER_INL__
+#include "commandlineparserbase.hh"
 #include "loadsettings.hh"
 
 template <typename T> class DstArgHandler: public ArgHandler {
 public:
  	T & dst;
  	DstArgHandler(T & d): dst(d) {};
-	
+
  	T & realDst(const CommandLineParserBase & cp, char * page) {
 		return * reinterpret_cast<T*>(cp.mapAddress(reinterpret_cast<char *>(&dst), page));
  	}
@@ -37,7 +45,7 @@ public:
 		p_t::realDst(cp, ps)=src;
 		return true;
 	}
-	
+
 	virtual QString getDesc() const {
 		if (src != p_t::dst) return p_t::desc;
 		return p_t::desc + " (default)";
@@ -51,7 +59,7 @@ struct StringPairCreator {
 	}
 };
 
-template <bool file> 
+template <bool file>
 struct PostItemCreator {
 	typedef wkhtmltopdf::settings::PostItem T;
 	inline T operator()(const QString & key, const QString & value) const {
@@ -93,7 +101,7 @@ struct StringListSetter: public DstArgHandler<QList<QString> > {
 /*!
   SomeSetter template method base
 */
-template <typename TT> 
+template <typename TT>
 struct SomeSetterTM {
 	typedef TT T;
 	//T strToT(const char * val, bool & ok);
@@ -200,3 +208,4 @@ template <typename T> struct Caller: public ArgHandler {
 		return T()(vals, s, page);
 	}
 };
+#endif //__ARGHANDLER_INL__

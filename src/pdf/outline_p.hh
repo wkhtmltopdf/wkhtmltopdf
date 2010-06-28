@@ -1,5 +1,8 @@
 // -*- mode: c++; tab-width: 4; indent-tabs-mode: t; eval: (progn (c-set-style "stroustrup") (c-set-offset 'innamespace 0)); -*-
 // vi:set ts=4 sts=4 sw=4 noet :
+//
+// Copyright 2010 wkhtmltopdf authors
+//
 // This file is part of wkhtmltopdf.
 //
 // wkhtmltopdf is free software: you can redistribute it and/or modify
@@ -14,6 +17,9 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with wkhtmltopdf.  If not, see <http://www.gnu.org/licenses/>.
+
+#ifndef __OUTLINE_P_HH__
+#define __OUTLINE_P_HH__
 #ifndef __OUTLINE_P_HH
 #define __OUTLINE_P_HH
 #include "outline.hh"
@@ -60,3 +66,4 @@ public:
 }
 #endif //__EXTENSIVE_WKHTMLTOPDF_QT_HACK__
 #endif //__OUTLINE_P_HH
+#endif //__OUTLINE_P_HH__

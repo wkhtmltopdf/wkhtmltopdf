@@ -1,5 +1,8 @@
 // -*- mode: c++; tab-width: 4; indent-tabs-mode: t; eval: (progn (c-set-style "stroustrup") (c-set-offset 'innamespace 0)); -*-
 // vi:set ts=4 sts=4 sw=4 noet :
+//
+// Copyright 2010 wkhtmltopdf authors
+//
 // This file is part of wkhtmltopdf.
 //
 // wkhtmltopdf is free software: you can redistribute it and/or modify
@@ -14,9 +17,10 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with wkhtmltopdf.  If not, see <http://www.gnu.org/licenses/>.
+
 #include "converter_p.hh"
-#include <QWebFrame>
 #include "multipageloader.hh"
+#include <QWebFrame>
 #include <qapplication.h>
 namespace wkhtmltopdf {
 
@@ -78,7 +82,7 @@ void ConverterPrivate::cancel() {
 bool ConverterPrivate::convert() {
 	convertionDone=false;
 	beginConvert();
-	while(!convertionDone) {
+	while (!convertionDone) {
 		qApp->exec();
 		//qApp->processEvents(QEventLoop::WaitForMoreEvents | QEventLoop::AllEvents);
 	}

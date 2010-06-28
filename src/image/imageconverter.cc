@@ -1,5 +1,8 @@
 // -*- mode: c++; tab-width: 4; indent-tabs-mode: t; eval: (progn (c-set-style "stroustrup") (c-set-offset 'innamespace 0)); -*-
 // vi:set ts=4 sts=4 sw=4 noet :
+//
+// Copyright 2010 wkhtmltopdf authors
+//
 // This file is part of wkhtmltopdf.
 //
 // wkhtmltopdf is free software: you can redistribute it and/or modify
@@ -14,27 +17,28 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with wkhtmltopdf.  If not, see <http://www.gnu.org/licenses/>.
+
 #include "imageconverter_p.hh"
 #include "settings.hh"
-#include <QObject>
-#include <QWebPage>
-#include <QWebFrame>
-#include <QUrl>
-#include <QImage>
-#include <QPainter>
-#include <QObject>
+#include <QDebug>
 #include <QEventLoop>
 #include <QFileInfo>
-#include <QDebug>
-#include <qapplication.h>
+#include <QImage>
+#include <QObject>
+#include <QObject>
+#include <QPainter>
 #include <QSvgGenerator>
+#include <QUrl>
+#include <QWebFrame>
+#include <QWebPage>
+#include <qapplication.h>
 namespace wkhtmltopdf {
 
 ImageConverterPrivate::ImageConverterPrivate(ImageConverter & o, wkhtmltopdf::settings::Global & s):
 	settings(s),
 	loader(s.loadGlobal),
 	out(o) {
-	
+
 	phaseDescriptions.push_back("Loading page");
 	phaseDescriptions.push_back("Rendering");
 	phaseDescriptions.push_back("Done");
@@ -66,11 +70,11 @@ void ImageConverterPrivate::clearResources() {
 void ImageConverterPrivate::pagesLoaded(bool ok) {
 	if (errorCode == 0) errorCode = loader.httpErrorCode();
 	if (!ok) {
-		fail(); 
+		fail();
 		return;
 	}
 	// if fmt is empty try to get it from file extension in out
-	if(settings.fmt==""){
+	if (settings.fmt=="") {
 		if (settings.out == "-")
 			settings.fmt = "jpg";
 		else {
@@ -78,24 +82,24 @@ void ImageConverterPrivate::pagesLoaded(bool ok) {
 			settings.fmt = fi.suffix();
 		}
 	}
-	
+
 	// check whether image format is supported (for writing)
 //	QImageWriter test;
 //	test.setFormat(settings.fmt);
-//	if(!test.canWrite()){
-//		if(!settings.quiet)printf("error: file format not supported\n");
+//	if (!test.canWrite()) {
+//		if (!settings.quiet)printf("error: file format not supported\n");
 //		httpErrorCode=EFAULT;
 //		return false;
 //	}
 	// create webkit frame and load website
-	
+
 	currentPhase=1;
 	emit out. phaseChanged();
 	loadProgress(0);
 
 	QWebFrame * frame = loaderObject->page.mainFrame();
 	loaderObject->page.mainFrame()->setScrollBarPolicy(Qt::Vertical, Qt::ScrollBarAlwaysOff);
-	
+
 	loadProgress(25);
 	// Calculate a good width for the image
 	int highWidth=settings.screenWidth;
@@ -113,7 +117,7 @@ void ImageConverterPrivate::pagesLoaded(bool ok) {
 			loaderObject->page.setViewportSize(QSize(t, 10));
 			if (frame->scrollBarMaximum(Qt::Horizontal) > 0)
 				lowWidth = t;
-			else 
+			else
 				highWidth = t;
 		}
 		loaderObject->page.setViewportSize(QSize(highWidth, 10));
@@ -121,7 +125,7 @@ void ImageConverterPrivate::pagesLoaded(bool ok) {
 	loaderObject->page.mainFrame()->setScrollBarPolicy(Qt::Horizontal, Qt::ScrollBarAlwaysOff);
 	//Set the right height
 	loaderObject->page.setViewportSize(QSize(highWidth, frame->contentsSize().height()));
-	
+
 	QPainter painter;
 	QSvgGenerator generator;
 	QImage image;
@@ -149,7 +153,7 @@ void ImageConverterPrivate::pagesLoaded(bool ok) {
 		emit out.error("Will not output an empty image");
 		fail();
 	}
-	
+
 	if (settings.fmt != "svg") {
 		image = QImage(rect.size(), QImage::Format_ARGB32_Premultiplied);
 		painter.begin(&image);
@@ -162,7 +166,7 @@ void ImageConverterPrivate::pagesLoaded(bool ok) {
 #endif
 		painter.begin(&generator);
 	}
-	
+
 	if (!settings.transparent || (settings.fmt != "png" && settings.fmt != "svg"))
 		painter.fillRect(QRect(QPoint(0,0),loaderObject->page.viewportSize()), Qt::white);
 	painter.translate(-rect.left(), -rect.top());
@@ -171,7 +175,7 @@ void ImageConverterPrivate::pagesLoaded(bool ok) {
 
 	//loadProgress(30);
 	// perform filter(s)
-	//if (settings.crop.width > 0 && settings.crop.height > 0) 
+	//if (settings.crop.width > 0 && settings.crop.height > 0)
 	//	image=image.copy(settings.crop.left,settings.crop.top,settings.crop.width,settings.crop.height);
 	//loadProgress(50);
 	//if (settings.scale.width > 0 && settings.scale.height > 0) {
@@ -185,7 +189,7 @@ void ImageConverterPrivate::pagesLoaded(bool ok) {
 		if (!image.save(&file,fmt.data(), settings.quality)) {
 			emit out.error("Could not save image");
 			fail();
-		} 
+		}
 	}
 	loadProgress(100);
 

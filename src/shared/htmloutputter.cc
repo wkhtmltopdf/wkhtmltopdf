@@ -1,5 +1,8 @@
 // -*- mode: c++; tab-width: 4; indent-tabs-mode: t; eval: (progn (c-set-style "stroustrup") (c-set-offset 'innamespace 0)); -*-
 // vi:set ts=4 sts=4 sw=4 noet :
+//
+// Copyright 2010 wkhtmltopdf authors
+//
 // This file is part of wkhtmltopdf.
 //
 // wkhtmltopdf is free software: you can redistribute it and/or modify
@@ -14,6 +17,7 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with wkhtmltopdf.  If not, see <http://www.gnu.org/licenses/>.
+
 #include "outputter.hh"
 #include <QTextDocument>
 
@@ -63,15 +67,15 @@ public:
 	void text(const QString & t) {
 		fprintf(fd, "%s", S(t));
 	}
-	
+
 	void sectionLink(const QString & s) {
 		fprintf(fd, "<a href=\"#%s\">%s</a>", S(s), S(s));
 	}
-	
+
 	void bold(const QString & t) {
 		fprintf(fd, "<b>%s</b>", S(t));
 	}
-	
+
 	void italic(const QString & t) {
 		fprintf(fd, "<i>%s</i>", S(t));
 	}
@@ -79,7 +83,7 @@ public:
 	void link(const QString & t) {
 		fprintf(fd, "<a href=\"%s\">%s</a>", S(t),S(t));
 	}
-	
+
 	void verbatim(const QString & t) {
 		fprintf(fd, "<pre>%s</pre>", S(t));
 	}
@@ -88,26 +92,26 @@ public:
 		ordered = o;
 		fprintf(fd, ordered?"<ol>":"<ul>");
 	}
-	
+
 	void endList() {
 		fprintf(fd, ordered?"</ol>":"</ul>");
 	}
-	
+
 	void listItem(const QString & s) {
 		fprintf(fd, "<li>%s</li>\n", S(s));
 	}
-	
+
 	void beginSwitch() {
 		fprintf(fd, "<table>\n");
 	}
 
 	void cswitch(const ArgHandler * h) {
 		fprintf(fd, "<tr><td class=\"short\">");
-		if(h->shortSwitch)
+		if (h->shortSwitch)
 			fprintf(fd, "-%c,",h->shortSwitch);
 		fprintf(fd, "</td><td class=\"long\">--%s%s</td><td class=\"arg\">",S(h->longName),
 				(h->qthack?"<span style=\"font-weight: normal; font-size: 80%; color:red;\">*</span>":""));
-		foreach(const QString & arg, h->argn)
+		foreach (const QString & arg, h->argn)
 			fprintf(fd, "&lt;%s&gt; ",S(arg));
 		fprintf(fd, "</td><td class=\"desc\">%s</td></tr>\n",S(h->getDesc()));
 	}
@@ -116,7 +120,7 @@ public:
 		fprintf(fd, "</table>\n");
 		fprintf(fd, "<p>Items marked <span style=\"font-weight: normal; font-size: 80%%; color:red;\">*</span> are only available using patched QT.</p>");
 	}
-	
+
 };
 
 /*!

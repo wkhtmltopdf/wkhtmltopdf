@@ -1,4 +1,8 @@
-//-*- mode: c++; tab-width: 4; indent-tabs-mode: t; c-file-style: "stroustrup"; -*-
+// -*- mode: c++; tab-width: 4; indent-tabs-mode: t; eval: (progn (c-set-style "stroustrup") (c-set-offset 'innamespace 0)); -*-
+// vi:set ts=4 sts=4 sw=4 noet :
+//
+// Copyright 2010 wkhtmltopdf authors
+//
 // This file is part of wkhtmltopdf.
 //
 // wkhtmltopdf is free software: you can redistribute it and/or modify
@@ -13,6 +17,7 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with wkhtmltopdf.  If not, see <http://www.gnu.org/licenses/>.
+
 #include "commandlineparser.hh"
 #include "outputter.hh"
 #include <qwebframe.h>
@@ -64,7 +69,7 @@ void CommandLineParser::usage(FILE * fd, bool extended) const {
 	outputSynopsis(o);
  	outputDescripton(o);
 	outputSwitches(o, extended, false);
-#ifndef __EXTENSIVE_WKHTMLTOPDF_QT_HACK__	
+#ifndef __EXTENSIVE_WKHTMLTOPDF_QT_HACK__
 	outputNotPatched(o, true);
 #endif
 	if (extended) {
@@ -111,7 +116,7 @@ void CommandLineParser::readme(FILE * fd, bool html) const {
 //void CommandLineParser::loadDefaults() {
 	//settings.in.clear();
 	//settings.proxy.host = "";
-	//foreach(ArgHandler * h, longToHandler) 
+	//foreach(ArgHandler * h, longToHandler)
 	//	h->useDefault(*d);
 
 	//Load configuration from enviornment
@@ -121,7 +126,7 @@ void CommandLineParser::readme(FILE * fd, bool html) const {
 	//	if ((val = getenv("proxy"))) {
 	//		bool ok=false;
 	//		Settings::ProxySettings p = Settings::strToProxy(val, &ok);
-	//		if(ok) 
+	//		if (ok)
 	//			settings.proxy = p;
 	//	}
 	//}
@@ -136,25 +141,25 @@ void CommandLineParser::readme(FILE * fd, bool html) const {
 void CommandLineParser::parseArguments(int argc, const char ** argv, bool fromStdin) {
 	bool defaultMode = false;
 	int arg=1;
-	
+
 	Page def;
-	
+
 	//Parse global options
-	for(;arg < argc;++arg) {
+	for (;arg < argc;++arg) {
 		if (argv[arg][0] != '-' || argv[arg][1] == '\0' || defaultMode) break;
 		parseArg(global | page, argc, argv, defaultMode, arg, (char *)&def);
 	}
-	
+
 	if (readArgsFromStdin && !fromStdin) return;
 
 	//Parse page options
-	while(arg < argc-1) {
+	while (arg < argc-1) {
 		pageSettings.push_back(def);
 		Page & ps = pageSettings.back();
 		int sections = page;
 		if (!strcmp(argv[arg],"cover")) {
 			++arg;
-			if(arg >= argc-1) {
+			if (arg >= argc-1) {
 				fprintf(stderr, "You need to specify a input file to cover\n\n");
 				usage(stderr, false);
 				exit(1);
@@ -166,7 +171,7 @@ void CommandLineParser::parseArguments(int argc, const char ** argv, bool fromSt
 			ps.header.line = ps.footer.line = false;
 			ps.header.htmlUrl = ps.footer.htmlUrl = "";
 			ps.includeInOutline = false;
-				
+
 			//Setup varius cover settings her
 			++arg;
 		} else if (!strcmp(argv[arg],"toc")) {
@@ -176,7 +181,7 @@ void CommandLineParser::parseArguments(int argc, const char ** argv, bool fromSt
 		} else {
 			if (!strcmp(argv[arg],"page")) {
 				++arg;
-				if(arg >= argc-1) {
+				if (arg >= argc-1) {
 					fprintf(stderr, "You need to specify a input file to page\n\n");
 					usage(stderr, false);
 					exit(1);
@@ -185,12 +190,12 @@ void CommandLineParser::parseArguments(int argc, const char ** argv, bool fromSt
 			ps.page = QString::fromLocal8Bit(argv[arg]);
 			++arg;
 		}
-		for(;arg < argc;++arg) {
+		for (;arg < argc;++arg) {
 			if (argv[arg][0] != '-' || argv[arg][1] == '\0' || defaultMode) break;
 			parseArg(sections, argc, argv, defaultMode, arg, (char*)&ps);
 		}
 	}
-	
+
 	if (pageSettings.size() == 0 || argc < 2) {
 		fprintf(stderr, "You need to specify atleast one input file, and exactly one output file\nUse - for stdin or stdout\n\n");
 		usage(stderr, false);
@@ -198,5 +203,3 @@ void CommandLineParser::parseArguments(int argc, const char ** argv, bool fromSt
 	}
 	globalSettings.out = argv[argc-1];
 }
-
-

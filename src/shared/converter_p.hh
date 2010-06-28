@@ -1,5 +1,8 @@
 // -*- mode: c++; tab-width: 4; indent-tabs-mode: t; eval: (progn (c-set-style "stroustrup") (c-set-offset 'innamespace 0)); -*-
 // vi:set ts=4 sts=4 sw=4 noet :
+//
+// Copyright 2010 wkhtmltopdf authors
+//
 // This file is part of wkhtmltopdf.
 //
 // wkhtmltopdf is free software: you can redistribute it and/or modify
@@ -14,11 +17,12 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with wkhtmltopdf.  If not, see <http://www.gnu.org/licenses/>.
+
 #ifndef __CONVERTER_P_HH__
 #define __CONVERTER_P_HH__
-#include <QFile>
 #include "converter.hh"
 #include "websettings.hh"
+#include <QFile>
 #include <QWebSettings>
 
 namespace wkhtmltopdf {
@@ -27,24 +31,24 @@ class ConverterPrivate: public QObject {
 	Q_OBJECT
 public:
 	void copyFile(QFile & src, QFile & dst);
-	
+
 	QList<QString> phaseDescriptions;
 	int currentPhase;
-	
+
 	QString progressString;
 protected:
 	bool error;
 	virtual void clearResources() = 0;
 	virtual Converter & outer() = 0;
 	int errorCode;
-	
+
 	bool convertionDone;
-	
+
 	void updateWebSettings(QWebSettings * ws, const settings::Web & s) const;
 public slots:
 	void fail();
 	void loadProgress(int progress);
-	
+
 	virtual void beginConvert() = 0;
 	void cancel();
 	bool convert();
@@ -55,5 +59,4 @@ private:
 };
 
 }
-#endif //__CONVERTER_P__HH__
-
+#endif //__CONVERTER_P_HH__

@@ -1,5 +1,8 @@
 // -*- mode: c++; tab-width: 4; indent-tabs-mode: t; eval: (progn (c-set-style "stroustrup") (c-set-offset 'innamespace 0)); -*-
 // vi:set ts=4 sts=4 sw=4 noet :
+//
+// Copyright 2010 wkhtmltopdf authors
+//
 // This file is part of wkhtmltopdf.
 //
 // wkhtmltopdf is free software: you can redistribute it and/or modify
@@ -14,13 +17,14 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with wkhtmltopdf.  If not, see <http://www.gnu.org/licenses/>.
+
 #ifndef __SETTINGS_HH__
 #define __SETTINGS_HH__
-#include <QString>
-#include <QNetworkProxy>
-#include <QPrinter>
 #include "loadsettings.hh"
 #include "websettings.hh"
+#include <QNetworkProxy>
+#include <QPrinter>
+#include <QString>
 
 namespace wkhtmltopdf {
 namespace settings {
@@ -39,12 +43,12 @@ struct Margin {
 	//!Margin applied to the leftp of the page
 	UnitReal left;
 };
-	
+
 /*! \brief Settings considering page size */
 struct Size {
 	Size();
 	//! What size paper should we use
-	QPrinter::PageSize pageSize; 
+	QPrinter::PageSize pageSize;
 	//!Height of the page
 	UnitReal height;
 	//!Width of the page
@@ -71,7 +75,7 @@ struct TableOfContent {
 
 /*! \brief Class holding all user setting.
     This class holds all the user settings, settings can be filled in by hand,
-    or with other methods. 
+    or with other methods.
     \sa CommandLineParser::parse()
 */
 struct Global {
@@ -81,23 +85,23 @@ struct Global {
 	Size size;
 
 	//! Be less verbose
-	bool quiet; 
-	
+	bool quiet;
+
 	//! Should we use the graphics system
 	bool useGraphics;
 
 	//! Should we orientate in landscape or portrate
-	QPrinter::Orientation orientation; 
+	QPrinter::Orientation orientation;
 
 	//! Color or grayscale
-	QPrinter::ColorMode colorMode; 
+	QPrinter::ColorMode colorMode;
 
 	//! What overall resolution should we use
-	QPrinter::PrinterMode resolution; 
+	QPrinter::PrinterMode resolution;
 
 	//! What dpi should be used when printing
 	int dpi;
-	
+
 	//! When pagenumbers are printed, apply this offset to them all
 	int pageOffset;
 
@@ -118,13 +122,13 @@ struct Global {
 
 	//! The file where in to store the output
 	QString out;
-	
+
 	QString documentTitle;
 
 	bool useCompression;
 
 	//! Margin related settings
-	Margin margin;	
+	Margin margin;
 
 	//! Specify the output format we should use
 	QString outputFormat;
@@ -160,29 +164,29 @@ struct Page {
 	Page();
 	//! Settings regarding the TOC
 	TableOfContent toc;
-	
+
 	QString page;
-	
+
 	//! Header related settings
 	HeaderFooter header;
-	
+
 	//! Header related settings
 	HeaderFooter footer;
-	
+
 	//! Should external links be links in the PDF
 	bool useExternalLinks;
-	
+
 	//! Should internal links be links in the PDF
 	bool useLocalLinks;
-			
+
 	//! Replacements
 	QList< QPair<QString, QString> > replacements;
-	
+
 	//! Convert forms on the pages into PDF forms
 	bool produceForms;
-	
+
 	LoadPage load;
-	
+
 	Web web;
 
 	bool includeInOutline;

@@ -1,3 +1,5 @@
+# Copyright 2010 wkhtmltopdf authors
+#
 # This file is part of wkhtmltopdf.
 #
 # wkhtmltopdf is free software: you can redistribute it and/or modify

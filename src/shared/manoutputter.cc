@@ -1,5 +1,8 @@
 // -*- mode: c++; tab-width: 4; indent-tabs-mode: t; eval: (progn (c-set-style "stroustrup") (c-set-offset 'innamespace 0)); -*-
 // vi:set ts=4 sts=4 sw=4 noet :
+//
+// Copyright 2010 wkhtmltopdf authors
+//
 // This file is part of wkhtmltopdf.
 //
 // wkhtmltopdf is free software: you can redistribute it and/or modify
@@ -14,6 +17,7 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with wkhtmltopdf.  If not, see <http://www.gnu.org/licenses/>.
+
 #include "outputter.hh"
 #include <QStringList>
 #define S(x) ((x).toUtf8().constData())
@@ -41,7 +45,7 @@ public:
 	void endParagraph() {
 		fprintf(fd, "\n\n");
 	}
-	
+
 	void text(const QString & t) {
 		QString str = QString(t).replace("-", "\\-");
 		fprintf(fd, "%s", S(str));
@@ -50,11 +54,11 @@ public:
 	void sectionLink(const QString & t) {
 		text(t);
 	}
-	
+
 	void bold(const QString & t) {
 		fprintf(fd, "\\fB%s\\fP", S(t));
 	}
-	
+
 	void italic(const QString & t) {
 		fprintf(fd, "\\fB%s\\fP", S(t));
 	}
@@ -67,11 +71,11 @@ public:
 		QString str = QString(t).replace("-", "\\-");
 		QStringList l = str.split('\n');
 		while ( l.back() == "") l.pop_back();
-		foreach(const QString & line, l)
+		foreach (const QString & line, l)
 			fprintf(fd, "  %s\n", S(line));
 		fprintf(fd, "\n");
 	}
-	
+
 	void beginSwitch() {
 		fprintf(fd, ".PD 0\n");
 	}
@@ -83,28 +87,28 @@ public:
 	void endList() {
 		fprintf(fd, "\n");
 	}
-	
+
 	void listItem(const QString & s) {
 		if (order < 0) fprintf(fd, " * ");
 		else fprintf(fd, "%3d ", order++);
 		fprintf(fd,"%s\n",S(s));
 	}
-	
+
 	void cswitch(const ArgHandler * h) {
 		fprintf(fd, ".TP\n");
 		fprintf(fd, "\\fB");
-		if(h->shortSwitch != 0)
+		if (h->shortSwitch != 0)
 			fprintf(fd, "\\-%c, ", h->shortSwitch);
 		else
 			fprintf(fd, "    ");
 		fprintf(fd,"\\-\\-%s\\fR", S(h->longName));
-		
-		for(QVector<QString>::const_iterator i = h->argn.constBegin(); i != h->argn.constEnd(); ++i)
+
+		for (QVector<QString>::const_iterator i = h->argn.constBegin(); i != h->argn.constEnd(); ++i)
 			fprintf(fd," \\fI<%s>\\fR", S(*i));
-		
+
 		fprintf(fd, "\n%s\n", S(QString(h->desc).replace("-", "\\-")));
 	}
-	
+
 	void endSwitch() {
 		fprintf(fd, ".PD\n");
 		fprintf(fd, "\n");

@@ -1,4 +1,8 @@
-//-*- mode: c++; tab-width: 4; indent-tabs-mode: t; c-file-style: "stroustrup"; -*-
+// -*- mode: c++; tab-width: 4; indent-tabs-mode: t; eval: (progn (c-set-style "stroustrup") (c-set-offset 'innamespace 0)); -*-
+// vi:set ts=4 sts=4 sw=4 noet :
+//
+// Copyright 2010 wkhtmltopdf authors
+//
 // This file is part of wkhtmltopdf.
 //
 // wkhtmltopdf is free software: you can redistribute it and/or modify
@@ -13,8 +17,9 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with wkhtmltopdf.  If not, see <http://www.gnu.org/licenses/>.
-#ifndef __COMMANDLINEPARSER_BASE_HH__
-#define __COMMANDLINEPARSER_BASE_HH__
+
+#ifndef __COMMANDLINEPARSERBASE_HH__
+#define __COMMANDLINEPARSERBASE_HH__
 #include "loadsettings.hh"
 #include "websettings.hh"
 class Outputter;
@@ -41,32 +46,32 @@ public:
 	QString currentSection;
 	bool currentExtended;
 	bool currentHack;
-	
+
 	QList<QString> sections;
 	QHash<QString, ArgHandler *> longToHandler;
 	QHash<char, ArgHandler *> shortToHandler;
 	QHash<QString, QList<ArgHandler *> > sectionArgumentHandles;
 	QHash<QString, QString> sectionDesc;
-	
+
 	//basearguments.cc
 	void section(QString s, QString desc="");
 	void mode(int m);
 	void qthack(bool);
 	void extended(bool);
-	
+
 	void addarg(QString, char, QString, ArgHandler * h, bool display=true);
 	void addDocArgs();
 	void addWebArgs(wkhtmltopdf::settings::Web & s);
 	void addGlobalLoadArgs(wkhtmltopdf::settings::LoadGlobal & s);
 	void addPageLoadArgs(wkhtmltopdf::settings::LoadPage & s);
-	
+
 	//commondocparts.cc
 	void outputName(Outputter * o) const;
 	void outputLicense(Outputter * o) const;
 	void outputAuthors(Outputter * o) const;
 	void outputStaticProblems(Outputter * o) const;
 	void outputProxyDoc(Outputter * o) const;
-	
+
 	//commandlineparserbase.cc
 	void outputSwitches(Outputter * o, bool extended, bool doc) const;
 	virtual char * mapAddress(char * d, char *) const {return d;}
@@ -78,4 +83,4 @@ public:
 	virtual void manpage(FILE * fd) const = 0;
 	virtual void readme(FILE * fd, bool html) const = 0;
 };
-#endif //__COMMANDLINEPARSER_BASE_HH__
+#endif //__COMMANDLINEPARSERBASE_HH__

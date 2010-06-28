@@ -1,5 +1,8 @@
 // -*- mode: c++; tab-width: 4; indent-tabs-mode: t; eval: (progn (c-set-style "stroustrup") (c-set-offset 'innamespace 0)); -*-
 // vi:set ts=4 sts=4 sw=4 noet :
+//
+// Copyright 2010 wkhtmltopdf authors
+//
 // This file is part of wkhtmltopdf.
 //
 // wkhtmltopdf is free software: you can redistribute it and/or modify
@@ -14,6 +17,7 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with wkhtmltopdf.  If not, see <http://www.gnu.org/licenses/>.
+
 #include "loadsettings.hh"
 #include <QMap>
 #include <stdexcept>
@@ -30,7 +34,7 @@ LoadPage::LoadErrorHandling strToLoadErrorHandling(const char * s, bool * ok) {
 }
 
 QString loadErrorHandlingToStr(LoadPage::LoadErrorHandling leh) {
-	switch(leh) {
+	switch (leh) {
 	case LoadPage::abort: return "abort";
 	case LoadPage::skip: return "skip";
 	case LoadPage::ignore: return "ignore";
@@ -45,13 +49,13 @@ QString loadErrorHandlingToStr(LoadPage::LoadErrorHandling leh) {
 */
 Proxy strToProxy(const char * proxy, bool * ok) {
 	Proxy p;
-	if(ok) *ok=true;
+	if (ok) *ok=true;
 	//Allow users to use no proxy, even if one is specified in the env
 	if (!strcmp(proxy,"none")) {
 		p.host = "";
 		return p;
 	}
-	
+
 	p.type = QNetworkProxy::HttpProxy;
 	//Read proxy type bit "http://" or "socks5://"
 	if (!strncmp(proxy,"http://",7)) {
@@ -67,9 +71,9 @@ Proxy strToProxy(const char * proxy, bool * ok) {
 	if (val != NULL) {
 		p.user = QString(proxy).left(val-proxy);
 		proxy = val+1;
-		
+
 		int idx = p.user.indexOf(':');
-		if(idx != -1) {
+		if (idx != -1) {
 			p.password = p.user.mid(idx+1);
 			p.user = p.user.left(idx);
 		}
@@ -81,13 +85,13 @@ Proxy strToProxy(const char * proxy, bool * ok) {
  	if (val == NULL) p.host = proxy;
  	else {
 		p.port = QString(val+1).toInt(ok);
-		if(p.port < 0 || p.port > 65535) {
+		if (p.port < 0 || p.port > 65535) {
 			p.port = 1080;
 			*ok = false;
 		}
 		p.host = QString(proxy).left(val-proxy);
  	}
-	if(ok && p.host.size() == 0) *ok = false;
+	if (ok && p.host.size() == 0) *ok = false;
 	return p;
 }
 

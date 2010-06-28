@@ -1,4 +1,8 @@
-//-*- mode: c++; tab-width: 4; indent-tabs-mode: t; c-file-style: "stroustrup"; -*-
+// -*- mode: c++; tab-width: 4; indent-tabs-mode: t; eval: (progn (c-set-style "stroustrup") (c-set-offset 'innamespace 0)); -*-
+// vi:set ts=4 sts=4 sw=4 noet :
+//
+// Copyright 2010 wkhtmltopdf authors
+//
 // This file is part of wkhtmltopdf.
 //
 // wkhtmltopdf is free software: you can redistribute it and/or modify
@@ -13,10 +17,12 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with wkhtmltopdf.  If not, see <http://www.gnu.org/licenses/>.
+
 #include "commandlineparser.hh"
 #include "pdfconverter.hh"
 #include "progressfeedback.hh"
 #include "settings.hh"
+#include "utilities.hh"
 #include <QCleanlooksStyle>
 #include <QCommonStyle>
 #include <QPainter>
@@ -28,7 +34,6 @@
 #include <qapplication.h>
 #include <qglobal.h>
 #include <string.h>
-#include "utilities.hh"
 
 using namespace wkhtmltopdf::settings;
 using namespace wkhtmltopdf;
@@ -150,10 +155,10 @@ int main(int argc, char * argv[]) {
 			//parser.loadDefaults();
 			//Parse the arguments
 			parser.parseArguments(nargc, (const char**)nargv, true);
-			
+
 			PdfConverter converter(globalSettings);
 			ProgressFeedback feedback(globalSettings.quiet, converter);
-			foreach(const Page & page, pageSettings) 
+			foreach (const Page & page, pageSettings)
 				converter.addResource(page);
 
 			if (!converter.convert())
@@ -165,7 +170,7 @@ int main(int argc, char * argv[]) {
 	PdfConverter converter(globalSettings);
 	QObject::connect(&converter, SIGNAL(producingForms(bool)), style, SLOT(producingForms(bool)));
 	ProgressFeedback feedback(globalSettings.quiet, converter);
-	foreach(const Page & page, pageSettings) 
+	foreach (const Page & page, pageSettings)
 		converter.addResource(page);
 
 	bool success = converter.convert();

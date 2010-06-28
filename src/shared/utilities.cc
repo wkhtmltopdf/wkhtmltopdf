@@ -1,4 +1,8 @@
-//-*- mode: c++; tab-width: 4; indent-tabs-mode: t; c-file-style: "stroustrup"; -*-
+// -*- mode: c++; tab-width: 4; indent-tabs-mode: t; eval: (progn (c-set-style "stroustrup") (c-set-offset 'innamespace 0)); -*-
+// vi:set ts=4 sts=4 sw=4 noet :
+//
+// Copyright 2010 wkhtmltopdf authors
+//
 // This file is part of wkhtmltopdf.
 //
 // wkhtmltopdf is free software: you can redistribute it and/or modify
@@ -13,6 +17,7 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with wkhtmltopdf.  If not, see <http://www.gnu.org/licenses/>.
+
 #include "utilities.hh"
 
 #ifdef QT_STATIC
@@ -35,14 +40,14 @@ void MyLooksStyle::drawPrimitive( PrimitiveElement element, const QStyleOption *
 	QRect r = option->rect;
 	if (element == QStyle::PE_PanelLineEdit) {
 		painter->drawRect(r);
-	} else if(element == QStyle::PE_IndicatorCheckBox) {
+	} else if (element == QStyle::PE_IndicatorCheckBox) {
 		painter->drawRect(r);
 		if (!weAreDrawingForms && (option->state & QStyle::State_On)) {
 			r.translate(int(r.width()*0.075), int(r.width()*0.075));
 			painter->drawLine(r.topLeft(), r.bottomRight());
 			painter->drawLine(r.topRight(), r.bottomLeft());
 		}
-	} else if(element == QStyle::PE_IndicatorRadioButton) {
+	} else if (element == QStyle::PE_IndicatorRadioButton) {
 		painter->drawEllipse(r);
 		if (!weAreDrawingForms && (option->state & QStyle::State_On)) {
 			r.translate(int(r.width()*0.20), int(r.width()*0.20));
@@ -83,7 +88,7 @@ int handleError(bool success, int errorCode) {
 }
 
 
-// void printSupportedWriteformats(){
+// void printSupportedWriteformats() {
 //   QList<QByteArray> formats = QImageWriter::supportedImageFormats();
 //   for ( QList<QByteArray>::Iterator f = formats.begin(); f != formats.end(); ++ f )
 //     printf("%s , ", f->constData() );

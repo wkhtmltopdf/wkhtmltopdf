@@ -1,5 +1,8 @@
 // -*- mode: c++; tab-width: 4; indent-tabs-mode: t; eval: (progn (c-set-style "stroustrup") (c-set-offset 'innamespace 0)); -*-
 // vi:set ts=4 sts=4 sw=4 noet :
+//
+// Copyright 2010 wkhtmltopdf authors
+//
 // This file is part of wkhtmltopdf.
 //
 // wkhtmltopdf is free software: you can redistribute it and/or modify
@@ -14,8 +17,9 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with wkhtmltopdf.  If not, see <http://www.gnu.org/licenses/>.
-#include <settings.hh>
+
 #include <QMap>
+#include <settings.hh>
 #include <stdexcept>
 namespace wkhtmltopdf {
 namespace settings {
@@ -68,7 +72,7 @@ QMap<QString, QPrinter::PageSize> pageSizeMap() {
 */
 QPrinter::PageSize strToPageSize(const char * s, bool * ok) {
 	QMap<QString,QPrinter::PageSize> map = pageSizeMap();
-	for(QMap<QString,QPrinter::PageSize>::const_iterator i=map.begin(); i != map.end(); ++i) {
+	for (QMap<QString,QPrinter::PageSize>::const_iterator i=map.begin(); i != map.end(); ++i) {
 		if (!i.key().compare(s, Qt::CaseInsensitive) ) continue;
 		if (ok) *ok=true;
 		return i.value();
@@ -79,7 +83,7 @@ QPrinter::PageSize strToPageSize(const char * s, bool * ok) {
 
 QString pageSizeToStr(QPrinter::PageSize ps) {
 	QMap<QString,QPrinter::PageSize> map = pageSizeMap();
-	for(QMap<QString,QPrinter::PageSize>::const_iterator i=map.begin(); i != map.end(); ++i) {
+	for (QMap<QString,QPrinter::PageSize>::const_iterator i=map.begin(); i != map.end(); ++i) {
 		if (i.value() == ps) return i.key();
 	}
 	return "";
@@ -140,7 +144,7 @@ UnitReal strToUnitReal(const char * o, bool * ok) {
 	else if (!strcasecmp(o+i,"point") || !strcasecmp(o+i,"pt"))
 		u=QPrinter::Point;
 	else {
-		if(ok) ok=false;
+		if (ok) ok=false;
 		return UnitReal(QString(o).left(i).toDouble()*s, u);
 	}
 	return UnitReal(QString(o).left(i).toDouble(ok)*s, u);
@@ -153,14 +157,14 @@ QString unitRealToStr(const UnitReal & ur, bool * ok) {
 		return "";
 	}
 	if (ok) *ok=true;
-	switch(ur.second) {
+	switch (ur.second) {
 	case QPrinter::Didot: c = "didot"; break;
 	case QPrinter::Inch: c = "in"; break;
 	case QPrinter::Pica: c = "pica"; break;
 	case QPrinter::DevicePixel: c = "px"; break;
 	case QPrinter::Point: c = "pt"; break;
 	case QPrinter::Millimeter: c = "mm"; break;
-	default: 
+	default:
 		if (ok) *ok=false; break;
 	}
 	return QString("%1%2").arg(ur.first).arg(c);
@@ -168,7 +172,7 @@ QString unitRealToStr(const UnitReal & ur, bool * ok) {
 
 
 Size::Size():
-	pageSize(QPrinter::A4), 
+	pageSize(QPrinter::A4),
 	height(UnitReal(-1,QPrinter::Millimeter)),
 	width(UnitReal(-1,QPrinter::Millimeter)) {}
 
@@ -192,10 +196,10 @@ Global::Global():
 	quiet(false),
 	useGraphics(false),
 	orientation(QPrinter::Portrait),
-	colorMode(QPrinter::Color), 
+	colorMode(QPrinter::Color),
 	resolution(QPrinter::HighResolution),
 	dpi(-1),
-	pageOffset(0), 
+	pageOffset(0),
 	copies(1),
 	collate(true),
 	outline(true),
@@ -204,9 +208,8 @@ Global::Global():
 	out("-"),
 	documentTitle(""),
 	useCompression(true),
-	imageDPI(600), 
-	imageQuality(94)
-{};
+	imageDPI(600),
+	imageQuality(94) {};
 
 TableOfContent::TableOfContent():
 	useDottedLines(true),
@@ -214,8 +217,7 @@ TableOfContent::TableOfContent():
 	forwardLinks(true),
 	backLinks(false),
 	indentation("1em"),
-	fontScale(0.8)
-{}
+	fontScale(0.8) {}
 
 Page::Page():
 	useExternalLinks(true),

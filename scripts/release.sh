@@ -1,4 +1,21 @@
 #!/bin/bash
+#
+# Copyright 2010 wkhtmltopdf authors
+#
+# This file is part of wkhtmltopdf.
+#
+# wkhtmltopdf is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# wkhtmltopdf is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with wkhtmltopdf.  If not, see <http:#www.gnu.org/licenses/>.
 
 function usage() {
     echo "Usage $0: [Options] Major Minor Patch [Build]"
@@ -81,4 +98,4 @@ for x in libgcc_s_dw2-1.dll ssleay32.dll libeay32.dll mingwm10.dll EnvVarUpdate.
 	[ -f "$l" ] && cp "$l" "$x" && continue
     wget "http://wkhtmltopdf.googlecode.com/files/$x" -O "$x" && continue
 done
-makensis wkhtmltopdf.nsi 
+makensis wkhtmltopdf.nsi
