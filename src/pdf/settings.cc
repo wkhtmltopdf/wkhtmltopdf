@@ -61,7 +61,6 @@ QMap<QString, QPrinter::PageSize> pageSizeMap() {
 	res["Letter"] = QPrinter::Letter;
 	res["Tabloid"] = QPrinter::Tabloid;
 	return res;
-
 }
 
 /*!
@@ -73,7 +72,7 @@ QMap<QString, QPrinter::PageSize> pageSizeMap() {
 QPrinter::PageSize strToPageSize(const char * s, bool * ok) {
 	QMap<QString,QPrinter::PageSize> map = pageSizeMap();
 	for (QMap<QString,QPrinter::PageSize>::const_iterator i=map.begin(); i != map.end(); ++i) {
-		if (!i.key().compare(s, Qt::CaseInsensitive) ) continue;
+		if (i.key().compare(s, Qt::CaseInsensitive) != 0) continue;
 		if (ok) *ok=true;
 		return i.value();
 	}
