@@ -533,7 +533,7 @@ void PdfConverterPrivate::tocLoaded(bool ok) {
 		QWebPrinter wp(objects[d].page->mainFrame(), printer, *painter);
 		int pc = objects[d].settings.pagesCount? wp.pageCount(): 0;
 		if (pc != objects[d].pageCount) {
-			objects[d].pageCount = true;
+			objects[d].pageCount = pc;
 			changed=true;
 		}
 		pageCount += objects[d].pageCount;
