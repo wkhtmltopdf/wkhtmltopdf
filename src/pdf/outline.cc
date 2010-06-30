@@ -46,7 +46,34 @@ OutlineItem::~OutlineItem() {
 		delete i;
 }
 
-bool OutlineItem::differentFrom(OutlineItem * other) const {
+void OutlineItem::fillAnchors(const OutlineItem * other,
+							  int & anchorCounter,
+							  QVector<QPair<QWebElement, QString> > & local,
+							  QHash<QString, QWebElement> & anchors) {
+	if (!other ||
+		other->children.size() != children.size() ||
+		other->document != document ||
+		other->value != value ||
+		other->display != display) other=0;
+
+	if (other) {
+		anchor = other->anchor;
+		tocAnchor = other->anchor;
+	} else {
+		anchor = QString("__WKANCHOR_")+QString::number(anchorCounter++,36);
+		tocAnchor = QString("__WKANCHOR_")+QString::number(anchorCounter++,36);
+	}
+
+	if (forwardLinks)
+		anchors[anchor] = element;
+	if (backLinks)
+		local.push_back( QPair<QWebElement, QString>(element, tocAnchor) );
+
+	for (int i=0; i < children.size(); ++i)
+		children[i]->fillAnchors(other?other->children[i]:0, anchorCounter, local, anchors);
+}
+
+bool OutlineItem::differentFrom(const OutlineItem * other) const {
 	if (other->children.size() != children.size() ||
 		other->page != page ||
 		other->document != document ||
@@ -191,20 +218,8 @@ bool Outline::replaceWebPage(int document,
 		item->document = document;
 		item->value = value;
 		item->element = element;
-		item->display = ps.includeInOutline;
-
-		if (!d->linkNames[document].contains(value))
-			d->linkNames[document][value] = QString("__WKANCHOR_")+QString::number(d->anchorCounter++,36);
-
-		if (!d->backLinkNames[document].contains(value))
-			d->backLinkNames[document][value] = QString("__WKANCHOR_")+QString::number(d->anchorCounter++,36);
-
-		item->anchor = d->linkNames[document][value];
-		item->tocAnchor = d->backLinkNames[document][value];
-		if (ps.toc.forwardLinks)
-			anchors[item->anchor] = element;
-		if (ps.toc.backLinks)
-			local.push_back( QPair<QWebElement, QString>(element, item->tocAnchor) );
+		item->forwardLinks = ps.toc.forwardLinks;
+		item->backLinks = ps.toc.backLinks;
 
 		while (levelStack.back() >= level) {
 			old = old->parent;
@@ -216,6 +231,7 @@ bool Outline::replaceWebPage(int document,
 		levelStack.push_back(level);
 	}
 
+	root->fillAnchors(d->documentOutlines[document], d->anchorCounter, local, anchors);
 	bool changed=d->documentOutlines[document]->differentFrom(root);
 	delete d->documentOutlines[document];
 	d->documentOutlines[document] = root;
@@ -253,9 +269,6 @@ void Outline::addEmptyWebPage() {
 	d->documentOutlines.push_back(root);
 	d->pageCount += 1;
 	d->documentPages.push_back(1);
-
-	d->linkNames.push_back( QHash<QString, QString>() );
-	d->backLinkNames.push_back( QHash<QString, QString>() );
 }
 
 void OutlinePrivate::buildHFCache(OutlineItem * i, int level) {

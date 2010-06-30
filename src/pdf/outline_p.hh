@@ -37,7 +37,13 @@ public:
 	QString anchor;
 	QString tocAnchor;
 	bool display;
-	bool differentFrom(OutlineItem * other) const;
+	bool forwardLinks;
+	bool backLinks;
+	void fillAnchors(const OutlineItem * other,
+					 int & anchorCounter,
+					 QVector<QPair<QWebElement, QString> > & local,
+					 QHash<QString, QWebElement> & anchors);
+	bool differentFrom(const OutlineItem * other) const;
 	OutlineItem();
 	~OutlineItem();
 };
@@ -48,8 +54,6 @@ public:
 	QList<OutlineItem *> documentOutlines;
 	QList<int> documentPages;
 	QList<int> prefixSum;
-	QList<QHash<QString, QString> > linkNames;
-	QList<QHash<QString, QString> > backLinkNames;
 	int pageCount;
 	int anchorCounter;
 

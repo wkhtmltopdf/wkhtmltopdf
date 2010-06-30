@@ -259,8 +259,8 @@ CommandLineParser::CommandLineParser(Global & s, QList<Page> & ps):
  	addarg("disable-external-links",0,"Do not make links to remote web pages", new ConstSetter<bool>(od.useExternalLinks, false));
  	addarg("enable-external-links",0,"Make links to remote web pages", new ConstSetter<bool>(od.useExternalLinks, true));
 
-	addarg("enable-toc-back-links",0,"Do not link from section header to toc", new ConstSetter<bool>(od.toc.backLinks,true));
-	addarg("disable-toc-back-links",0,"Do not link from section header to toc", new ConstSetter<bool>(od.toc.backLinks,true));
+	addarg("enable-toc-back-links",0,"Link from section header to toc", new ConstSetter<bool>(od.toc.backLinks,true));
+	addarg("disable-toc-back-links",0,"Do not link from section header to toc", new ConstSetter<bool>(od.toc.backLinks,false));
 
 	addPageLoadArgs(od.load);
 
