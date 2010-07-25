@@ -74,7 +74,7 @@ PdfConverterPrivate::PdfConverterPrivate(PdfGlobal & s, PdfConverter & o) :
 #ifdef __EXTENSIVE_WKHTMLTOPDF_QT_HACK__
 	, hfLoader(s.load), tocLoader1(s.load), tocLoader2(s.load)
 	, tocLoader(&tocLoader1), tocLoaderOld(&tocLoader2)
-	, outline(0), tocPrinter(0)
+	, outline(0)
 #endif
 {
 
@@ -769,7 +769,6 @@ void PdfConverterPrivate::clearResources() {
 	if (outline) delete outline;
 	outline=0;
 
-	tocPrinter = 0;
 #endif
 
 	if (printer) delete printer;

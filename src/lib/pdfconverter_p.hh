@@ -26,7 +26,6 @@
 #include "pdfconverter.hh"
 #include "pdfsettings.hh"
 #include "tempfile.hh"
-#include "tocprinter.hh"
 #include <QAtomicInt>
 #include <QFile>
 #include <QMutex>
@@ -124,7 +123,6 @@ private:
 	QHash<QString, PageObject *> urlToPageObj;
 
 	Outline * outline;
-	TocPrinter * tocPrinter;
 	void findLinks(QWebFrame * frame, QVector<QPair<QWebElement, QString> > & local, QVector<QPair<QWebElement, QString> > & external, QHash<QString, QWebElement> & anchors);
 	void beginPage(int actualPage);
 	void endPage(PageObject & object, bool hasHeaderFooter, int objectPage,  int pageNumber);
