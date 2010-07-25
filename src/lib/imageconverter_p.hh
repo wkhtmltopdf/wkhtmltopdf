@@ -18,25 +18,37 @@
 // You should have received a copy of the GNU General Public License
 // along with wkhtmltopdf.  If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef __PROGRESSFEEDBACK_HH__
-#define __PROGRESSFEEDBACK_HH__
-#include <wkhtmltox/converter.hh>
+#ifndef __IMAGECONVERTER_P_HH__
+#define __IMAGECONVERTER_P_HH__
+#include "converter_p.hh"
+#include "imageconverter.hh"
+#include "multipageloader.hh"
+
+#include "dllbegin.inc"
 namespace wkhtmltopdf {
 
-class ProgressFeedback: public QObject {
+class DLL_LOCAL ImageConverterPrivate: public ConverterPrivate {
 	Q_OBJECT
-private:
-	bool quiet;
-	Converter & converter;
-	int lw;
-public slots:
-	void warning(const QString &message);
-	void error(const QString &message);
-	void phaseChanged();
-	void progressChanged(int progress);
 public:
-	ProgressFeedback(bool quiet, Converter & _);
+	ImageConverterPrivate(ImageConverter & o, wkhtmltopdf::settings::ImageGlobal & s);
+
+	wkhtmltopdf::settings::ImageGlobal settings;
+	MultiPageLoader loader;
+private:
+	ImageConverter & out;
+	void clearResources();
+
+	LoaderObject * loaderObject;
+
+public slots:
+	void pagesLoaded(bool ok);
+	void beginConvert();
+
+	friend class ImageConverter;
+
+	virtual Converter & outer();
 };
 
 }
-#endif //__PROGRESSFEEDBACK_HH__
+#include "dllend.inc"
+#endif //__IMAGECONVERTER_P_HH__

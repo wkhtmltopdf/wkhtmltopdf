@@ -18,10 +18,8 @@
 // You should have received a copy of the GNU General Public License
 // along with wkhtmltopdf.  If not, see <http://www.gnu.org/licenses/>.
 
-#include "commandlineparser.hh"
-#include "pdfconverter.hh"
+#include "pdfcommandlineparser.hh"
 #include "progressfeedback.hh"
-#include "settings.hh"
 #include "utilities.hh"
 #include <QCleanlooksStyle>
 #include <QCommonStyle>
@@ -34,6 +32,8 @@
 #include <qapplication.h>
 #include <qglobal.h>
 #include <string.h>
+#include <wkhtmltox/pdfconverter.hh>
+#include <wkhtmltox/pdfsettings.hh>
 
 using namespace wkhtmltopdf::settings;
 using namespace wkhtmltopdf;
@@ -115,10 +115,10 @@ void parseString(char * buff, int &nargc, char **nargv) {
 
 int main(int argc, char * argv[]) {
 	//This will store all our settings
-	Global globalSettings;
-	QList<Page> pageSettings;
+	PdfGlobal globalSettings;
+	QList<PdfObject> objectSettings;
 	//Create a command line parser to parse commandline arguments
-	CommandLineParser parser(globalSettings, pageSettings);
+	PdfCommandLineParser parser(globalSettings, objectSettings);
 
 	//Setup default values in settings
 	//parser.loadDefaults();
@@ -147,10 +147,10 @@ int main(int argc, char * argv[]) {
 			int nargc=argc;
 			parseString(buff,nargc,nargv);
 
-			Global globalSettings;
-			QList<Page> pageSettings;
+			PdfGlobal globalSettings;
+			QList<PdfObject> objectSettings;
 			//Create a command line parser to parse commandline arguments
-			CommandLineParser parser(globalSettings, pageSettings);
+			PdfCommandLineParser parser(globalSettings, objectSettings);
 			//Setup default values in settings
 			//parser.loadDefaults();
 			//Parse the arguments
@@ -158,8 +158,8 @@ int main(int argc, char * argv[]) {
 
 			PdfConverter converter(globalSettings);
 			ProgressFeedback feedback(globalSettings.quiet, converter);
-			foreach (const Page & page, pageSettings)
-				converter.addResource(page);
+			foreach (const PdfObject & object, objectSettings)
+				converter.addResource(object);
 
 			if (!converter.convert())
 				exit(EXIT_FAILURE);
@@ -170,8 +170,8 @@ int main(int argc, char * argv[]) {
 	PdfConverter converter(globalSettings);
 	QObject::connect(&converter, SIGNAL(producingForms(bool)), style, SLOT(producingForms(bool)));
 	ProgressFeedback feedback(globalSettings.quiet, converter);
-	foreach (const Page & page, pageSettings)
-		converter.addResource(page);
+	foreach (const PdfObject & object, objectSettings)
+		converter.addResource(object);
 
 	bool success = converter.convert();
 	return handleError(success, converter.httpErrorCode());

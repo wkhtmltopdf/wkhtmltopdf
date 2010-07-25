@@ -18,12 +18,6 @@
 include(../../version.pri)
 include(../../common.pri)
 
-QT += svg
-
-MOC_DIR = ../../build/image
-OBJECTS_DIR = ../../build/image
-UI_DIR = ../../build/image
-
 TEMPLATE = app
 TARGET = wkhtmltoimage
 DESTDIR = ../../bin
@@ -55,7 +49,11 @@ target.path=$$INSTALLBASE/bin
 
 include(../shared/shared.pri)
 
+contains(DEFINES, QT_SHARED) {
+  LIBS += -L../../bin -lwkhtmltox
+} else {
+  include(../lib/lib.pri)
+}
+
 # Input
-HEADERS += imageconverter.hh imageconverter_p.hh settings.hh converter.hh
-SOURCES += wkhtmltoimage.cc arguments.cc commandlineparser.cc docparts.cc \
-           imageconverter.cc settings.cc
+SOURCES += wkhtmltoimage.cc imagearguments.cc imagecommandlineparser.cc imagedocparts.cc

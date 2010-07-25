@@ -18,25 +18,21 @@
 // You should have received a copy of the GNU General Public License
 // along with wkhtmltopdf.  If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef __PROGRESSFEEDBACK_HH__
-#define __PROGRESSFEEDBACK_HH__
-#include <wkhtmltox/converter.hh>
-namespace wkhtmltopdf {
+#ifndef __TEMPFILE_HH__
+#define __TEMPFILE_HH__
+#include <QString>
 
-class ProgressFeedback: public QObject {
-	Q_OBJECT
+#include "dllbegin.inc"
+
+class DLL_LOCAL TempFile {
 private:
-	bool quiet;
-	Converter & converter;
-	int lw;
-public slots:
-	void warning(const QString &message);
-	void error(const QString &message);
-	void phaseChanged();
-	void progressChanged(int progress);
+	QString path;
 public:
-	ProgressFeedback(bool quiet, Converter & _);
+	TempFile();
+	~TempFile();
+	QString create(const QString & ext);
+	void remove();
 };
 
-}
-#endif //__PROGRESSFEEDBACK_HH__
+#include "dllend.inc"
+#endif //__TEMPFILE_HH__

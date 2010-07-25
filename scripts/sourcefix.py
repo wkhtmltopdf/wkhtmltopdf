@@ -38,6 +38,7 @@ def includesort(x):
 changes=False
 progname="wkhtmltopdf"
 for path in argv[1:]:
+	if path.split("/")[0] == "include": continue
 	try:
 		data = file(path).read()
 	except:

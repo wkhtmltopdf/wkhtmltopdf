@@ -49,13 +49,12 @@ target.path=$$INSTALLBASE/bin
 
 include(../shared/shared.pri)
 
-#Libaray part
-HEADERS += pdfconverter.hh pdfconverter_p.hh
-
-SOURCES += settings.cc pdfconverter.cc \
-           outline.cc tocstylesheet.cc
+contains(DEFINES, QT_SHARED) {
+  LIBS += -L../../bin -lwkhtmltox
+} else {
+  include(../lib/lib.pri)
+}
 
 #Application part
-
-SOURCES += wkhtmltopdf.cc arguments.cc commandlineparser.cc \
-           docparts.cc
+SOURCES += wkhtmltopdf.cc pdfarguments.cc pdfcommandlineparser.cc \
+           pdfdocparts.cc

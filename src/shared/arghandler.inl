@@ -21,7 +21,7 @@
 #ifndef __ARGHANDLER_INL__
 #define __ARGHANDLER_INL__
 #include "commandlineparserbase.hh"
-#include "loadsettings.hh"
+#include <wkhtmltox/loadsettings.hh>
 
 template <typename T> class DstArgHandler: public ArgHandler {
 public:

@@ -37,6 +37,8 @@ MOC_DIR = ../../build
 OBJECTS_DIR = ../../build
 UI_DIR = ../../build
 
+INCLUDEPATH += ../../include
+
 win32 {
     CONFIG += console
 }

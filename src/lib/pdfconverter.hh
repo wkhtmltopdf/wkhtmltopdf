@@ -18,25 +18,34 @@
 // You should have received a copy of the GNU General Public License
 // along with wkhtmltopdf.  If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef __PROGRESSFEEDBACK_HH__
-#define __PROGRESSFEEDBACK_HH__
+#ifndef __PDFCONVERTER_HH__
+#define __PDFCONVERTER_HH__
 #include <wkhtmltox/converter.hh>
+#include <wkhtmltox/pdfsettings.hh>
+
+#include <wkhtmltox/dllbegin.inc>
 namespace wkhtmltopdf {
 
-class ProgressFeedback: public QObject {
+DLL_PUBLIC void dumpDefaultTOCStyleSheet(QTextStream & stream, settings::TableOfContent & s);
+
+class DLL_LOCAL PdfConverterPrivate;
+
+class DLL_PUBLIC PdfConverter: public Converter {
 	Q_OBJECT
-private:
-	bool quiet;
-	Converter & converter;
-	int lw;
-public slots:
-	void warning(const QString &message);
-	void error(const QString &message);
-	void phaseChanged();
-	void progressChanged(int progress);
 public:
-	ProgressFeedback(bool quiet, Converter & _);
+	PdfConverter(settings::PdfGlobal & globalSettings);
+	~PdfConverter();
+	int pageCount();
+	void addResource(const settings::PdfObject & pageSettings);
+	const settings::PdfGlobal & globalSettings() const;
+private:
+	PdfConverterPrivate * d;
+	virtual ConverterPrivate & priv();
+	friend class PdfConverterPrivate;
+signals:
+	void producingForms(bool);
 };
 
 }
-#endif //__PROGRESSFEEDBACK_HH__
+#include <wkhtmltox/dllend.inc>
+#endif //__PDFCONVERTER_HH__

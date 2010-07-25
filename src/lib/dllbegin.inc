@@ -1,6 +1,3 @@
-// -*- mode: c++; tab-width: 4; indent-tabs-mode: t; eval: (progn (c-set-style "stroustrup") (c-set-offset 'innamespace 0)); -*-
-// vi:set ts=4 sts=4 sw=4 noet :
-//
 // Copyright 2010 wkhtmltopdf authors
 //
 // This file is part of wkhtmltopdf.
@@ -17,26 +14,26 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with wkhtmltopdf.  If not, see <http://www.gnu.org/licenses/>.
+#ifndef __WKHTMLTOPDF_DLLBEGIN__
+#define __WKHTMLTOPDF_DLLBEGIN__
 
-#ifndef __PROGRESSFEEDBACK_HH__
-#define __PROGRESSFEEDBACK_HH__
-#include <wkhtmltox/converter.hh>
-namespace wkhtmltopdf {
+#if defined _WIN32 || defined __CYGWIN__
+  #ifdef BUILDING_DLL
+     #define DLL_PUBLIC __declspec(dllexport)
+  #else
+     #define DLL_PUBLIC __declspec(dllimport)
+  #endif
+  #define DLL_LOCAL
+#else
+  #if __GNUC__ >= 4
+    #define DLL_PUBLIC __attribute__ ((visibility("default")))
+    #define DLL_LOCAL  __attribute__ ((visibility("hidden")))
+  #else
+    #define DLL_PUBLIC
+    #define DLL_LOCAL
+  #endif
+#endif
 
-class ProgressFeedback: public QObject {
-	Q_OBJECT
-private:
-	bool quiet;
-	Converter & converter;
-	int lw;
-public slots:
-	void warning(const QString &message);
-	void error(const QString &message);
-	void phaseChanged();
-	void progressChanged(int progress);
-public:
-	ProgressFeedback(bool quiet, Converter & _);
-};
+#define CAPI extern "C" DLL_PUBLIC
 
-}
-#endif //__PROGRESSFEEDBACK_HH__
+#endif //__WKHTMLTOPDF_DLLBEGIN__

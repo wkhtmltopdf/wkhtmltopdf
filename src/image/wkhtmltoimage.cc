@@ -18,19 +18,19 @@
 // You should have received a copy of the GNU General Public License
 // along with wkhtmltopdf.  If not, see <http://www.gnu.org/licenses/>.
 
-#include "commandlineparser.hh"
-#include "imageconverter.hh"
+#include "imagecommandlineparser.hh"
 #include "progressfeedback.hh"
-#include "settings.hh"
 #include "utilities.hh"
 #include <QApplication>
 #include <QWebFrame>
+#include <wkhtmltox/imageconverter.hh>
+#include <wkhtmltox/imagesettings.hh>
 
 int main(int argc, char** argv) {
 	//This will store all our settings
-	wkhtmltopdf::settings::Global settings;
+	wkhtmltopdf::settings::ImageGlobal settings;
 	//Create a command line parser to parse commandline arguments
-	CommandLineParser parser(settings);
+	ImageCommandLineParser parser(settings);
 	//Parse the arguments
 	parser.parseArguments(argc, (const char**)argv);
 

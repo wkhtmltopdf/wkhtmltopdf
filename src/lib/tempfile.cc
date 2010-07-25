@@ -18,25 +18,45 @@
 // You should have received a copy of the GNU General Public License
 // along with wkhtmltopdf.  If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef __PROGRESSFEEDBACK_HH__
-#define __PROGRESSFEEDBACK_HH__
-#include <wkhtmltox/converter.hh>
-namespace wkhtmltopdf {
+#include "tempfile.hh"
+#include <QDir>
+#include <QFile>
+#include <QUuid>
 
-class ProgressFeedback: public QObject {
-	Q_OBJECT
-private:
-	bool quiet;
-	Converter & converter;
-	int lw;
-public slots:
-	void warning(const QString &message);
-	void error(const QString &message);
-	void phaseChanged();
-	void progressChanged(int progress);
-public:
-	ProgressFeedback(bool quiet, Converter & _);
-};
+#include "dllbegin.inc"
+/*!
+  \file tempfile.hh
+  \brief Defines the TempFile class
+*/
 
+
+/*!
+  \class TempFile
+  \brief Class responsible for creating and deleting temporery files
+*/
+TempFile::TempFile() {
 }
-#endif //__PROGRESSFEEDBACK_HH__
+
+TempFile::~TempFile() {
+	remove();
+}
+
+/*!
+  \brief Create a new temporery file, deleteing the old if one exists
+  \param ext The extention of the temporery file
+  \returns Path of the new temporery file
+*/
+QString TempFile::create(const QString & ext) {
+	remove();
+	path = QDir::tempPath()+"/wktemp-"+QUuid::createUuid().toString().mid(1,36)+ext;
+	return path;
+}
+
+/*!
+  \brief Remove the temporery file hold by this object it it exists
+*/
+void TempFile::remove() {
+	if (!path.isEmpty())
+		QFile::remove(path);
+	path="";
+}

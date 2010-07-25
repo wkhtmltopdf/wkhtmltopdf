@@ -15,8 +15,14 @@
 # You should have received a copy of the GNU General Public License
 # along with wkhtmltopdf.  If not, see <http:#www.gnu.org/licenses/>.
 
-TEMPLATE = subdirs
+TEMPLATE = lib
+CONFIG += dll
 
+CXX += -fvisibility=hidden -fvisibility-inlines-hidden
 
-CONFIG += ordered
-SUBDIRS = src/lib src/pdf src/image
+include(../../version.pri)
+include(../../common.pri)
+include(lib.pri)
+
+TARGET = wkhtmltox
+DESTDIR = ../../bin
