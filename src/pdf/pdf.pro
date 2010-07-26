@@ -19,25 +19,25 @@ include(../../version.pri)
 include(../../common.pri)
 
 TEMPLATE = app
-DESTDIR = ../../bin
 TARGET = wkhtmltopdf
+DESTDIR = ../../bin
 DEPENDPATH += . ../shared
 INCLUDEPATH += . ../shared
 
-readme.target=README
-readme.commands=./wkhtmltopdf --readme > README
-readme.depends=wkhtmltopdf
+readme.target=../../README_WKHTMLTOPDF
+readme.commands=LD_LIBRARY_PATH=../../bin/ ../../bin/wkhtmltopdf --readme > ../../README_WKHTMLTOPDF
+readme.depends=../../bin/wkhtmltopdf
 
 QMAKE_EXTRA_TARGETS += readme
 
 unix {
-    man.target=wkhtmltopdf.1.gz
-    man.commands=./wkhtmltopdf --manpage | gzip > $@
-    man.depends=wkhtmltopdf
+    man.target=../../wkhtmltopdf.1.gz
+    man.commands=LD_LIBRARY_PATH=../../bin/ ../../bin/wkhtmltopdf --manpage | gzip > $@
+    man.depends=../../bin/wkhtmltopdf
 
     manins.target=manins
     manins.depends=man
-    manins.files=wkhtmltopdf.1.gz
+    manins.files=../../wkhtmltopdf.1.gz
     manins.path=$$INSTALLBASE/share/man/man1
 
     QMAKE_EXTRA_TARGETS += manins man

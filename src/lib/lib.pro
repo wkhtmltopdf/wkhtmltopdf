@@ -18,11 +18,24 @@
 TEMPLATE = lib
 CONFIG += dll
 
-CXX += -fvisibility=hidden -fvisibility-inlines-hidden
-
 include(../../version.pri)
 include(../../common.pri)
 include(lib.pri)
 
-TARGET = wkhtmltox
+unix {
+   headers.targit=headers
+   headers.files=../../include/wkhtmltox/*
+   headers.path=$$INSTALLBASE/include/wkhtmltox
+
+   QMAKE_EXTRA_TARGETS += headers
+   INSTALLS += headers
+}
+
+VERSION=$${MAJOR_VERSION}.$${MINOR_VERSION}.$${PATCH_VERSION}
+
+TARGET=wkhtmltox
+INSTALLS += target
+wkhtmltox.path=$$INSTALLBASE/lib
+
 DESTDIR = ../../bin
+target.path=$$INSTALLBASE/lib

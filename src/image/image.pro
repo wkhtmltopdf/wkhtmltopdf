@@ -24,20 +24,20 @@ DESTDIR = ../../bin
 DEPENDPATH += . ../shared
 INCLUDEPATH += . ../shared
 
-readme.target=README_WKHTMLTOIMAGE
-readme.commands=./wkhtmltoimage --readme > README_WKHTMLTOIMAGE
-readme.depends=wkhtmltoimage
+readme.target=../../README_WKHTMLTOIMAGE
+readme.commands=LD_LIBRARY_PATH=../../bin/ ../../bin/wkhtmltoimage --readme > ../../README_WKHTMLTOIMAGE
+readme.depends=../../bin/wkhtmltoimage
 
 QMAKE_EXTRA_TARGETS += readme
 
 unix {
-    man.target=wkhtmltoimage.1.gz
-    man.commands=./wkhtmltoimage --manpage | gzip > $@
-    man.depends=wkhtmltoimage
+    man.target=../../wkhtmltoimage.1.gz
+    man.commands=LD_LIBRARY_PATH=../../bin/ ../../bin/wkhtmltoimage --manpage | gzip > $@
+    man.depends=../../bin/wkhtmltoimage
 
     manins.target=manins
     manins.depends=man
-    manins.files=wkhtmltoimage.1.gz
+    manins.files=../../wkhtmltoimage.1.gz
     manins.path=$$INSTALLBASE/share/man/man1
 
     QMAKE_EXTRA_TARGETS += manins man
