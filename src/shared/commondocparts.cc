@@ -60,7 +60,7 @@ void CommandLineParserBase::outputAuthors(Outputter * o) const {
 	o->paragraph(
 		QString::fromUtf8(
 			"Written by Jan Habermann, Christian Sciberras and Jakob Truelsen. "
-			"Patches by Mehdi Abbad, Lyes Amazouz, Emmanuel Bouthenot, Benoit Garret and Mário Silva."));
+			"Patches by Mehdi Abbad, Lyes Amazouz, Pascal Bach, Emmanuel Bouthenot, Benoit Garret and Mário Silva."));
 	o->endSection();
 }
 

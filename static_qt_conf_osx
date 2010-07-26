@@ -33,4 +33,13 @@
 -no-opengl
 -no-xsync
 -no-javascript-jit
-#-no-egl
+-no-egl
+# Use the carbon version as cocoa doesn't support static build
+-carbon
+# Use the Snow Leopard SDK
+-sdk /Developer/SDKs/MacOSX10.6.sdk
+# Use the Leopard SDK
+# -sdk /Developer/SDKs/MacOSX10.5.sdk
+-arch x86 
+-no-dwarf2 
+-no-framework
