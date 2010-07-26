@@ -34,6 +34,10 @@
   #endif
 #endif
 
-#define CAPI extern "C" DLL_PUBLIC
+#ifdef __cplusplus
+  #define CAPI extern "C" DLL_PUBLIC
+#else
+  #define CAPI DLL_PUBLIC
+#endif
 
 #endif //__WKHTMLTOPDF_DLLBEGIN__

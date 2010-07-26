@@ -34,7 +34,7 @@ public:
 	wkhtmltopdf_str_callback * error_cb;
 	wkhtmltopdf_void_callback * phase_changed;
 	wkhtmltopdf_int_callback * progress_changed;
-	wkhtmltopdf_bool_callback * finished_cb;
+	wkhtmltopdf_int_callback * finished_cb;
 
 	wkhtmltopdf::PdfConverter converter;
 

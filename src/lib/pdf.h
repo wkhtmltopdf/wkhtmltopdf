@@ -31,10 +31,8 @@ typedef struct wkhtmltopdf_object_settings wkhtmltopdf_object_settings;
 struct wkhtmltopdf_converter;
 typedef struct wkhtmltopdf_converter wkhtmltopdf_converter;
 
-
 typedef void (*wkhtmltopdf_str_callback)(wkhtmltopdf_converter * converter, const char * str);
 typedef void (*wkhtmltopdf_int_callback)(wkhtmltopdf_converter * converter, const int val);
-typedef void (*wkhtmltopdf_bool_callback)(wkhtmltopdf_converter * converter, const bool val);
 typedef void (*wkhtmltopdf_void_callback)(wkhtmltopdf_converter * converter);
 
 CAPI wkhtmltopdf_global_settings * wkhtmltopdf_create_global_settings();
@@ -53,12 +51,12 @@ CAPI void wkhtmltopdf_set_warning_callback(wkhtmltopdf_converter * converter, wk
 CAPI void wkhtmltopdf_set_error_callback(wkhtmltopdf_converter * converter, wkhtmltopdf_str_callback * cb);
 CAPI void wkhtmltopdf_set_phase_changed_callback(wkhtmltopdf_converter * converter, wkhtmltopdf_void_callback * cb);
 CAPI void wkhtmltopdf_set_progress_changed_callback(wkhtmltopdf_converter * converter, wkhtmltopdf_int_callback * cb);
-CAPI void wkhtmltopdf_set_finished_callback(wkhtmltopdf_converter * converter, wkhtmltopdf_bool_callback * cb);
+CAPI void wkhtmltopdf_set_finished_callback(wkhtmltopdf_converter * converter, wkhtmltopdf_int_callback * cb);
 CAPI void wkhtmltopdf_begin_convertion(wkhtmltopdf_converter * converter);
-CAPI bool wkhtmltopdf_convert(wkhtmltopdf_converter * converter);
+CAPI int wkhtmltopdf_convert(wkhtmltopdf_converter * converter);
 CAPI void wkhtmltopdf_cancel(wkhtmltopdf_converter * converter);
 CAPI void wkhtmltopdf_add_resource(
-	wkhtmltopdf_converter * converter, wkhtmltopdf_object_settings * setting, const char * data=0);
+	wkhtmltopdf_converter * converter, wkhtmltopdf_object_settings * setting, const char * data);
 
 CAPI int wkhtmltopdf_current_phase(wkhtmltopdf_converter * converter);
 CAPI int wkhtmltopdf_phase_count(wkhtmltopdf_converter * converter);

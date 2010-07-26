@@ -30,7 +30,6 @@ typedef struct wkhtmltoimage_converter wkhtmltoimage_converter;
 
 typedef void (*wkhtmltoimage_str_callback)(wkhtmltoimage_converter * converter, const char * str);
 typedef void (*wkhtmltoimage_int_callback)(wkhtmltoimage_converter * converter, const int val);
-typedef void (*wkhtmltoimage_bool_callback)(wkhtmltoimage_converter * converter, const bool val);
 typedef void (*wkhtmltoimage_void_callback)(wkhtmltoimage_converter * converter);
 
 CAPI wkhtmltoimage_global_settings * wkhtmltoinage_create_global_settings();
@@ -45,9 +44,9 @@ CAPI void wkhtmltoimage_set_warning_callback(wkhtmltoimage_converter * converter
 CAPI void wkhtmltoimage_set_error_callback(wkhtmltoimage_converter * converter, wkhtmltoimage_str_callback * cb);
 CAPI void wkhtmltoimage_set_phase_changed_callback(wkhtmltoimage_converter * converter, wkhtmltoimage_void_callback * cb);
 CAPI void wkhtmltoimage_set_progress_changed_callback(wkhtmltoimage_converter * converter, wkhtmltoimage_int_callback * cb);
-CAPI void wkhtmltoimage_set_finished_callback(wkhtmltoimage_converter * converter, wkhtmltoimage_bool_callback * cb);
+CAPI void wkhtmltoimage_set_finished_callback(wkhtmltoimage_converter * converter, wkhtmltoimage_int_callback * cb);
 CAPI void wkhtmltoimage_begin_convertion(wkhtmltoimage_converter * converter);
-CAPI bool wkhtmltoimage_convert(wkhtmltoimage_converter * converter);
+CAPI int wkhtmltoimage_convert(wkhtmltoimage_converter * converter);
 CAPI void wkhtmltoimage_cancel(wkhtmltoimage_converter * converter);
 
 CAPI int wkhtmltoimage_current_phase(wkhtmltoimage_converter * converter);

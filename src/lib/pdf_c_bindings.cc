@@ -109,7 +109,7 @@ CAPI void wkhtmltopdf_set_progress_changed_callback(wkhtmltopdf_converter * conv
 	reinterpret_cast<MyPdfConverter *>(converter)->progress_changed = cb;
 }
 
-CAPI void wkhtmltopdf_set_finished_callback(wkhtmltopdf_converter * converter, wkhtmltopdf_bool_callback * cb) {
+CAPI void wkhtmltopdf_set_finished_callback(wkhtmltopdf_converter * converter, wkhtmltopdf_int_callback * cb) {
 	reinterpret_cast<MyPdfConverter *>(converter)->finished_cb = cb;
 }
 
@@ -117,7 +117,7 @@ CAPI void wkhtmltopdf_begin_convertion(wkhtmltopdf_converter * converter) {
 	reinterpret_cast<MyPdfConverter *>(converter)->converter.beginConvertion();
 }
 
-CAPI bool wkhtmltopdf_convert(wkhtmltopdf_converter * converter) {
+CAPI int wkhtmltopdf_convert(wkhtmltopdf_converter * converter) {
 	return reinterpret_cast<MyPdfConverter *>(converter)->converter.convert();
 }
 

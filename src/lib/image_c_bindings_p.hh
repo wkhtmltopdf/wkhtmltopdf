@@ -33,7 +33,7 @@ public:
 	wkhtmltoimage_str_callback * error_cb;
 	wkhtmltoimage_void_callback * phase_changed;
 	wkhtmltoimage_int_callback * progress_changed;
-	wkhtmltoimage_bool_callback * finished_cb;
+	wkhtmltoimage_int_callback * finished_cb;
 
 	wkhtmltopdf::ImageConverter converter;
 

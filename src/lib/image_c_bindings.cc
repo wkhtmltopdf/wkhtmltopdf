@@ -91,7 +91,7 @@ CAPI void wkhtmltoimage_set_progress_changed_callback(wkhtmltoimage_converter * 
 	reinterpret_cast<MyImageConverter *>(converter)->progress_changed = cb;
 }
 
-CAPI void wkhtmltoimage_set_finished_callback(wkhtmltoimage_converter * converter, wkhtmltoimage_bool_callback * cb) {
+CAPI void wkhtmltoimage_set_finished_callback(wkhtmltoimage_converter * converter, wkhtmltoimage_int_callback * cb) {
 	reinterpret_cast<MyImageConverter *>(converter)->finished_cb = cb;
 }
 
@@ -99,7 +99,7 @@ CAPI void wkhtmltoimage_begin_convertion(wkhtmltoimage_converter * converter) {
 	reinterpret_cast<MyImageConverter *>(converter)->converter.beginConvertion();
 }
 
-CAPI bool wkhtmltoimage_convert(wkhtmltoimage_converter * converter) {
+CAPI int wkhtmltoimage_convert(wkhtmltoimage_converter * converter) {
 	return reinterpret_cast<MyImageConverter *>(converter)->converter.convert();
 }
 
