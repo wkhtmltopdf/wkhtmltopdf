@@ -46,6 +46,7 @@ public:
 	void outputPageSizes(Outputter * o) const;
 	void outputArgsFromStdin(Outputter * o) const;
 	void outputHeaderFooterDoc(Outputter * o) const;
+	void outputTableOfContentDoc(Outputter * o) const;
 	void outputOutlineDoc(Outputter * o) const;
 	void outputNotPatched(Outputter * o, bool sure) const;
 	void outputPageBreakDoc(Outputter * o) const;

@@ -27,7 +27,7 @@ namespace wkhtmltopdf {
 void dumpDefaultTOCStyleSheet(QTextStream & stream, settings::TableOfContent & s) {
     stream << "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" << endl
 		   << "<xsl:stylesheet version=\"1.0\"" << endl
-		   << "	               xmlns:xsl=\"http://www.w3.org/1999/XSL/Transform\"" << endl
+		   << "                xmlns:xsl=\"http://www.w3.org/1999/XSL/Transform\"" << endl
 		   << "                xmlns:outline=\"http://code.google.com/p/wkhtmltopdf/outline\"" << endl
 		   << "                xmlns=\"http://www.w3.org/1999/xhtml\">" << endl
 		   << "  <xsl:output doctype-public=\"-//W3C//DTD XHTML 1.0 Strict//EN\"" << endl

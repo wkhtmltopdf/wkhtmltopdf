@@ -47,6 +47,7 @@ void PdfCommandLineParser::manpage(FILE * fd) const {
 #ifdef __EXTENSIVE_WKHTMLTOPDF_QT_HACK__
  	outputHeaderFooterDoc(o);
  	outputOutlineDoc(o);
+	outputTableOfContentDoc(o);
 #else
 	outputNotPatched(o,true);
 #endif
@@ -78,6 +79,7 @@ void PdfCommandLineParser::usage(FILE * fd, bool extended) const {
 		outputProxyDoc(o);
 		outputHeaderFooterDoc(o);
 		outputOutlineDoc(o);
+		outputTableOfContentDoc(o);
 	}
  	outputContact(o);
 	delete o;
@@ -100,6 +102,7 @@ void PdfCommandLineParser::readme(FILE * fd, bool html) const {
  	outputProxyDoc(o);
  	outputHeaderFooterDoc(o);
  	outputOutlineDoc(o);
+	outputTableOfContentDoc(o);
  	outputPageBreakDoc(o);
 	outputPageSizes(o);
 	outputArgsFromStdin(o);

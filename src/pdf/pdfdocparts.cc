@@ -46,9 +46,9 @@ void PdfCommandLineParser::outputSynopsis(Outputter * o) const {
 
 	o->beginSection("Document objects");
 	o->beginParagraph();
-	o->text("wkhtmltopdf is able to put several objecs into the output file, an object is either "
+	o->text("wkhtmltopdf is able to put several objects into the output file, an object is either "
 			"a single webpage, a cover webpage or a table of content.  The objects are put into "
-			"the output document in the order they are specified on the commandline, options can "
+			"the output document in the order they are specified on the command line, options can "
 			"be specified on a per object basis or in the global options area. Options from the ");
 	o->sectionLink("Global Options");
 	o->text(" section can only be placed in the global options area");
@@ -76,8 +76,8 @@ void PdfCommandLineParser::outputSynopsis(Outputter * o) const {
 	o->text("All options that can be specified for a page object can also be specified for a toc, "
 			"further more the options from the ");
 	o->sectionLink("TOC Options");
-	o->text(" section can also be applied. The table of content is generated via xslt which means "
-			"that it can be styled to look however you want it to look. To get an idear of how to "
+	o->text(" section can also be applied. The table of content is generated via XSLT which means "
+			"that it can be styled to look however you want it to look. To get an aide of how to "
 			"do this you can dump the default xslt document by supplying the --dump-default-toc-xsl, and the outline it works on by supplying --dump-outline, see the ");
 	o->sectionLink("Outline Options");
 	o->text(" section.");
@@ -216,8 +216,44 @@ void PdfCommandLineParser::outputHeaderFooterDoc(Outputter * o) const {
 "</body></html>\n"
 "\n"
 		);
-	o->paragraph("As can be seen from the example, the arguments are sent to the header/footer html "
-				 "documents in get fashion.");
+	o->paragraph("As can be seen from the example, the arguments are sent to the header/footer "
+				 "html documents in get fashion.");
+	o->endSection();
+}
+
+void PdfCommandLineParser::outputTableOfContentDoc(Outputter * o) const {
+	o->beginSection("Table Of Content");
+	o->paragraph("A table of content can be added to the document by adding a toc object"
+				 "to the command line. For example:");
+	o->verbatim("wkhtmltopdf toc http://doc.trolltech.com/4.6/qstring.html qstring.pdf\n");
+	o->paragraph("The table of content is generated based on the H tags in the input "
+				 "documents. First a XML document is generated, then it is converted to "
+				 "HTML using XSLT.");
+	o->paragraph("The generated XML document can be viewed by dumping it to a file using "
+				 "the --dump-outline switch. For example:");
+	o->verbatim("wkhtmltopdf --dump-outline toc.xml http://doc.trolltech.com/4.6/qstring.html qstring.pdf\n");
+	o->paragraph("The XSLT document can be specified using the --xsl-style-sheet switch. "
+				 "For example:");
+	o->verbatim("wkhtmltopdf toc --xsl-style-sheet my.xsl http://doc.trolltech.com/4.6/qstring.html qstring.pdf\n");
+	o->paragraph("The --dump-default-toc-xsl switch can be used to dump the default "
+				 "XSLT style sheet to stdout. This is a good start for writing your "
+				 "own style sheet");
+	o->verbatim("wkhtmltopdf --dump-default-toc-xsl");
+	o->paragraph("The XML document is in the namespace "
+				 "\"http://code.google.com/p/wkhtmltopdf/outline\" "
+				 "it has a root node called \"outline\" which contains a number of "
+				 "\"item\" nodes. An item can contain any number of item. These are the "
+				 "outline subsections to the section the item represents. A item node "
+				 "has the following attributes:");
+	o->beginList();
+	o->listItem("\"title\" the name of the section.");
+	o->listItem("\"page\" the page number the section occurs on.");
+	o->listItem("\"link\" a URL that links to the section.");
+	o->listItem("\"backLink\" the name of the anchor the the section will link back to.");
+	o->endList();
+
+	o->paragraph("The remaining TOC options only affect the default style sheet "
+				 "so they will not work when specifying a custom style sheet.");
 	o->endSection();
 }
 
@@ -233,11 +269,11 @@ void PdfCommandLineParser::outputOutlineDoc(Outputter * o) const {
 		"book marks, this can be enabled by specifying the --outline switch. "
 		"The outlines are generated based on the <h?> tags, for a in-depth "
 		"description of how this is done see the ");
-	o->sectionLink("Table Of Conte");
+	o->sectionLink("Table Of Contest");
 	o->text(" section. ");
 	o->endParagraph();
 	o->paragraph(
-		"The outlin etree can sometimes be very deep, if the <h?> tags where "
+		"The outline tree can sometimes be very deep, if the <h?> tags where "
 		"spread to generous in the HTML document.  The --outline-depth switch can "
 		"be used to bound this.");
 	o->endSection();
@@ -401,4 +437,4 @@ void PdfCommandLineParser::outputExampels(Outputter * o) const {
 //  LocalWords:  textContent onload readme stdin qapplication pdf cmds google
 //  LocalWords:  todo gcc openssl sudo dep libqt gui xorg wget xvf svn linux ps
 //  LocalWords:  PageSize enum eler glibc xserver xfonts libssl dev wkhtml cd
-//  LocalWords:  nomake opensource
+//  LocalWords:  nomake opensource xslt
