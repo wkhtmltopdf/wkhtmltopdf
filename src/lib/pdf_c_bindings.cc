@@ -18,6 +18,11 @@
 // You should have received a copy of the GNU General Public License
 // along with wkhtmltopdf.  If not, see <http://www.gnu.org/licenses/>.
 
+/**
+ * \file pdf.h
+ * \brief Provides C bindings for pdf convertion 
+ */
+
 #include "pdf_c_bindings_p.hh"
 
 #include "dllbegin.inc"
@@ -54,30 +59,60 @@ MyPdfConverter::~MyPdfConverter() {
 	objectSettings.clear();
 }
 
+/**
+ * \brief Create a new global settings object for pdf convertion
+ * 
+ * Create a new global settings object for pdf convertion, settings can be altered with
+ * \ref wkhtmltopdf_set_global_setting, and inspected with \ref wkhtmltopdf_get_global_setting.
+ * Once the decired settings have been set a converter object can be created using \reg wkhtmltopdf_create_converter.
+ *
+ * \returns A wkhtmltopdf global settings object
+ */
 CAPI wkhtmltopdf_global_settings * wkhtmltopdf_create_global_settings() {
 	return reinterpret_cast<wkhtmltopdf_global_settings *>(new settings::PdfGlobal());
 }
 
-CAPI wkhtmltopdf_object_settings * wkhtmltopdf_create_object_settings() {
-	return reinterpret_cast<wkhtmltopdf_object_settings *>(new settings::PdfObject());
-}
-
-CAPI int wkhtmltopdf_set_global_option(wkhtmltopdf_global_settings * settings, const char * name, const char * value) {
+/**
+ * \brief Alter a setting in a global settings object
+ *
+ * \sa  wkhtmltopdf_create_global_settings, wkhtmltopdf_get_global_setting
+ *
+ * \param settings The settings object to change
+ * \param name The name of the setting
+ * \param value The new value for the setting
+ * \returns 1 if the setting was updated successfully and 0 otherwize.
+ */
+CAPI int wkhtmltopdf_set_global_setting(wkhtmltopdf_global_settings * settings, const char * name, const char * value) {
 	return reinterpret_cast<settings::PdfGlobal *>(settings)->set(name, value);
 }
 
-CAPI int wkhtmltopdf_get_global_option(wkhtmltopdf_global_settings * settings, const char * name, char * value, int vs) {
+/**
+ * \brief Retrive a setting in a global settings object
+ *
+ * \sa wkhtmltopdf_create_global_settings, wkhtmltopdf_set_global_setting
+ * 
+ * \param settings The settings object to inspect
+ * \param name The name of the setting to read
+ * \param value A buffer of length at least \a vs, where the value is storred.
+ * \param vs The length of \a value
+ * \returns 1 If the the setting exists and was read successfully and 0 otherwize
+ */
+CAPI int wkhtmltopdf_get_global_setting(wkhtmltopdf_global_settings * settings, const char * name, char * value, int vs) {
 	QString res = reinterpret_cast<settings::PdfGlobal *>(settings)->get(name);
 	if (res.isNull()) return 0;
 	qstrncpy(value, res.toUtf8().constData(), vs);
 	return 1;
 }
 
-CAPI int wkhtmltopdf_set_object_option(wkhtmltopdf_object_settings * settings, const char * name, const char * value) {
+CAPI wkhtmltopdf_object_settings * wkhtmltopdf_create_object_settings() {
+	return reinterpret_cast<wkhtmltopdf_object_settings *>(new settings::PdfObject());
+}
+
+CAPI int wkhtmltopdf_set_object_setting(wkhtmltopdf_object_settings * settings, const char * name, const char * value) {
 	return reinterpret_cast<settings::PdfObject *>(settings)->set(name, value);
 }
 
-CAPI int wkhtmltopdf_get_object_option(wkhtmltopdf_object_settings * settings, const char * name, char * value, int vs) {
+CAPI int wkhtmltopdf_get_object_setting(wkhtmltopdf_object_settings * settings, const char * name, char * value, int vs) {
 	QString res = reinterpret_cast<settings::PdfObject *>(settings)->get(name);
 	if (res.isNull()) return 0;
 	qstrncpy(value, res.toUtf8().constData(), vs);

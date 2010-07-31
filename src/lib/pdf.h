@@ -38,10 +38,10 @@ typedef void (*wkhtmltopdf_void_callback)(wkhtmltopdf_converter * converter);
 CAPI wkhtmltopdf_global_settings * wkhtmltopdf_create_global_settings();
 CAPI wkhtmltopdf_object_settings * wkhtmltopdf_create_object_settings();
 
-CAPI int wkhtmltopdf_set_global_option(wkhtmltopdf_global_settings * settings, const char * name, const char * value);
-CAPI int wkhtmltopdf_get_global_option(wkhtmltopdf_global_settings * settings, const char * name, char * value, int vs);
-CAPI int wkhtmltopdf_set_object_option(wkhtmltopdf_object_settings * settings, const char * name, const char * value);
-CAPI int wkhtmltopdf_get_object_option(wkhtmltopdf_object_settings * settings, const char * name, char * value, int vs);
+CAPI int wkhtmltopdf_set_global_setting(wkhtmltopdf_global_settings * settings, const char * name, const char * value);
+CAPI int wkhtmltopdf_get_global_setting(wkhtmltopdf_global_settings * settings, const char * name, char * value, int vs);
+CAPI int wkhtmltopdf_set_object_setting(wkhtmltopdf_object_settings * settings, const char * name, const char * value);
+CAPI int wkhtmltopdf_get_object_setting(wkhtmltopdf_object_settings * settings, const char * name, char * value, int vs);
 
 
 CAPI wkhtmltopdf_converter * wkhtmltopdf_create_converter(wkhtmltopdf_global_settings * settings);
