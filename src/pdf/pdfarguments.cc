@@ -283,7 +283,8 @@ PdfCommandLineParser::PdfCommandLineParser(PdfGlobal & s, QList<PdfObject> & ps)
  	addarg("header-font-name",0,"Set header font name", new QStrSetter(od.header.fontName,"name"));
  	addarg("header-font-size",0,"Set header font size", new IntSetter(od.header.fontSize,"size"));
  	addarg("header-left",0,"Left aligned header text", new QStrSetter(od.header.left,"text"));
- 	addarg("no-header-line",0,"Display line below the header", new ConstSetter<bool>(od.header.line,false));
+ 	addarg("header-line",0,"Display line below the header", new ConstSetter<bool>(od.header.line,true));
+ 	addarg("no-header-line",0,"Do not display line below the header", new ConstSetter<bool>(od.header.line,false));
  	addarg("header-right",0,"Right aligned header text", new QStrSetter(od.header.right,"text"));
  	addarg("header-spacing",0,"Spacing between header and content in mm", new FloatSetter(od.header.spacing,"real"));
  	addarg("header-html",0,"Adds a html header", new QStrSetter(od.header.htmlUrl,"url"));
