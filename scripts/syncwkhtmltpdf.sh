@@ -22,7 +22,11 @@ find src -iname '*.pro' -or -iname '*.pri' | while read name; do
 	cat "$name" | sed -nre 's/PUBLIC_HEADERS \+=[ \t]*(.*[^\t ])[^\t ]*/\1/p' | sed -re 's/[\t ]+/\n/g' | sort -u | while read file; do
 		path="$(dirname $name)/$file"
 		[ -f "$path" ] || continue
-		echo $path
-		cat $path | sed -n '4,$p' > "include/wkhtmltox/$(basename $path)"
+		cat $path | sed -n '4,$p' | sed -e '1s/ \*/\/\*\n \*/'> tmpheader
+		dst="include/wkhtmltox/$(basename $path)"
+
+		[ -f "${dst}" ] && cmp -s "$dst" tmpheader && rm tmpheader && continue
+		echo "$dst"
+		mv tmpheader "$dst"
 	done
 done
