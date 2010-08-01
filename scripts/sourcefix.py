@@ -51,7 +51,7 @@ for path in argv[1:]:
 	ext = path.rsplit(".",2)[-1]
 	header = ""
 	cc = "//"
-	if ext in ["hh","h","c","cc","cpp","inl"]:
+	if ext in ["hh","h","c","cc","cpp","inl", "inc"]:
 		header += """// -*- mode: c++; tab-width: 4; indent-tabs-mode: t; eval: (progn (c-set-style "stroustrup") (c-set-offset 'innamespace 0)); -*-
 // vi:set ts=4 sts=4 sw=4 noet :
 //
@@ -86,8 +86,13 @@ for path in argv[1:]:
 
 """%{"years": (", ".join(sorted(list(years)))),"name":progname}
 
-	#Strip away generated header
-	hexp = re.compile("^(%s[^\\n]*\\n)*"%(cc))
+	if ext in ["c", "h", "inc"]:
+		header = "/*" + header[2:-1] + " */\n\n"
+		cc = " *"
+		hexp = re.compile(r"^/\*([^*]*(\*[^/]))*[^*]*\*/[ \t\n]*");
+	else:
+		#Strip away generated header
+		hexp = re.compile("^(%s[^\\n]*\\n)*"%(cc))
 	ndata = hexp.sub("", data,1)
 	ndata = ws.sub("\n", ndata)+"\n"
 	if ext in ["hh","h","inl"]:
@@ -114,7 +119,7 @@ for path in argv[1:]:
 		ndata = """#ifndef __%s__
 #define __%s__
 %s
-#endif //__%s__"""%(n,n,ndata,n)
+#endif %s__%s__%s"""%(n,n,ndata, "//" if ext != "h" else "/*", n, "" if ext != "h" else "*/")
 	ndata = header.replace("//",cc)+ndata+"\n"
 	if ndata != data:
 		for x in difflib.unified_diff(data.split("\n"),ndata.split("\n"), "a/"+path, "b/"+path):
