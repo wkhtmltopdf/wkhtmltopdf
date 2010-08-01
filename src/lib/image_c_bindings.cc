@@ -59,8 +59,8 @@ MyImageConverter::~MyImageConverter() {
 	delete globalSettings;
 }
 
-CAPI int wkhtmltoimage_init(int useGraphics) {
-	return wkhtmltopdf_init(useGraphics);
+CAPI int wkhtmltoimage_init(int use_graphics) {
+	return wkhtmltopdf_init(use_graphics);
 }
 
 CAPI int wkhtmltoimage_deinit() {

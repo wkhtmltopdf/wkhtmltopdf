@@ -70,6 +70,12 @@ MyPdfConverter::~MyPdfConverter() {
 	objectSettings.clear();
 }
 
+
+/**
+ * \brief Check if the library is build against the wkhtmltopdf version of QT
+ *
+ * \return 1 if the library was build against the wkhtmltopdf version of QT and 0 otherwize
+ */
 CAPI int wkhtmltopdf_extended_qt() {
 #ifdef __EXTENSIVE_WKHTMLTOPDF_QT_HACK__
 	return 1;
@@ -78,31 +84,49 @@ CAPI int wkhtmltopdf_extended_qt() {
 #endif
 }
 
-
-CAPI int wkhtmltopdf_init(int ug) {
+/**
+ * \brief Setup wkhtmltopdf
+ *
+ * Must be called before any other functions.
+ *
+ * \param use_graphics Should we use a grahics system
+ * \returns 1 on success and 0 otherwize
+ *
+ * \sa wkhtmltopdf_deinit
+ */
+CAPI int wkhtmltopdf_init(int use_graphics) {
 	if (qApp == 0) {
 		char * arg[] = {"wkhtmltox", 0};
 		int aa;
 
-		bool use_graphics=true;
+		bool ug = true;
 #if defined(Q_WS_X11) || defined(Q_WS_MACX)
 #ifdef __EXTENSIVE_WKHTMLTOPDF_QT_HACK__
-		use_graphics=ug;
-		if (!use_graphics) QApplication::setGraphicsSystem("raster");
+		ug = use_graphics;
+		if (!ug) QApplication::setGraphicsSystem("raster");
 #endif
 #endif
-		a = new QApplication(aa,arg,use_graphics);
+		a = new QApplication(aa, arg, ug);
 		MyLooksStyle * style = new MyLooksStyle();
 		a->setStyle(style);
 	}
 	return 1;
 }
 
+/**
+ * \brief Deinit wkhtmltopdf
+ *
+ * Free up resources used by wkhtmltopdf, when this has been called no other
+ * wkhtmltopdf function can be called.
+ *
+ * \returns 1 on success and 0 otherwize
+ *
+ * \sa wkhtmltopdf_init
+ */
 CAPI int wkhtmltopdf_deinit() {
 	if (a != 0) delete a;
 	return 1;
 }
-
 
 /**
  * \brief Create a new global settings object for pdf convertion

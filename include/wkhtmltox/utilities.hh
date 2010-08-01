@@ -42,6 +42,6 @@ public slots:
 };
 
 DLL_PUBLIC int handleError(bool success, int errorCode);
-#endif //__UTILITIES_HH__
 
 #include <wkhtmltox/dllend.inc>
+#endif //__UTILITIES_HH__
