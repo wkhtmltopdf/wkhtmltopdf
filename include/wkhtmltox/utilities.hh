@@ -1,6 +1,3 @@
-// -*- mode: c++; tab-width: 4; indent-tabs-mode: t; eval: (progn (c-set-style "stroustrup") (c-set-offset 'innamespace 0)); -*-
-// vi:set ts=4 sts=4 sw=4 noet :
-//
 // Copyright 2010 wkhtmltopdf authors
 //
 // This file is part of wkhtmltopdf.
@@ -29,10 +26,11 @@
 #include <QStyleOption>
 #include <QUrl>
 
+#include <wkhtmltox/dllbegin.inc>
 /**
  * Custom simplistic style
  */
-class MyLooksStyle: public QCleanlooksStyle {
+class DLL_PUBLIC MyLooksStyle: public QCleanlooksStyle {
 	Q_OBJECT
 public:
 	typedef QCleanlooksStyle parent_t;
@@ -43,5 +41,7 @@ public slots:
 	void producingForms(bool f);
 };
 
-int handleError(bool success, int errorCode);
+DLL_PUBLIC int handleError(bool success, int errorCode);
 #endif //__UTILITIES_HH__
+
+#include <wkhtmltox/dllend.inc>

@@ -20,7 +20,6 @@
 
 #include "pdfcommandlineparser.hh"
 #include "progressfeedback.hh"
-#include "utilities.hh"
 #include <QCleanlooksStyle>
 #include <QCommonStyle>
 #include <QPainter>
@@ -34,6 +33,7 @@
 #include <string.h>
 #include <wkhtmltox/pdfconverter.hh>
 #include <wkhtmltox/pdfsettings.hh>
+#include <wkhtmltox/utilities.hh>
 
 using namespace wkhtmltopdf::settings;
 using namespace wkhtmltopdf;

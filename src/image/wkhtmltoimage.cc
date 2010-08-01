@@ -20,11 +20,11 @@
 
 #include "imagecommandlineparser.hh"
 #include "progressfeedback.hh"
-#include "utilities.hh"
 #include <QApplication>
 #include <QWebFrame>
 #include <wkhtmltox/imageconverter.hh>
 #include <wkhtmltox/imagesettings.hh>
+#include <wkhtmltox/utilities.hh>
 
 int main(int argc, char** argv) {
 	//This will store all our settings

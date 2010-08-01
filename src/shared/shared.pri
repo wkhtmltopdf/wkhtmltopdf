@@ -15,9 +15,9 @@
 # You should have received a copy of the GNU General Public License
 # along with wkhtmltopdf.  If not, see <http:#www.gnu.org/licenses/>.
 
-HEADERS +=  ../shared/utilities.hh  ../shared/progressfeedback.hh
+HEADERS +=  ../shared/progressfeedback.hh
 
 SOURCES += ../shared/outputter.cc ../shared/manoutputter.cc ../shared/htmloutputter.cc \
            ../shared/textoutputter.cc ../shared/arghandler.cc ../shared/commondocparts.cc \
- 	   ../shared/commandlineparserbase.cc ../shared/commonarguments.cc ../shared/utilities.cc \
+ 	   ../shared/commandlineparserbase.cc ../shared/commonarguments.cc \
 	   ../shared/progressfeedback.cc
