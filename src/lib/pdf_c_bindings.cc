@@ -20,37 +20,48 @@
 
 /**
  * \file pdf.h
- * \brief Provides C bindings for pdf convertion 
+ * \brief Provides C bindings for pdf convertion
  */
-
 #include "pdf_c_bindings_p.hh"
+#include "utilities.hh"
+#include <QApplication>
+#include <QWebFrame>
 
 #include "dllbegin.inc"
 using namespace wkhtmltopdf;
 
+QApplication * a = 0;
+
 void MyPdfConverter::warning(const QString & message) {
-	if (warning_cb) (*warning_cb)(reinterpret_cast<wkhtmltopdf_converter*>(this), message.toUtf8().constData());
+	if (warning_cb) (warning_cb)(reinterpret_cast<wkhtmltopdf_converter*>(this), message.toUtf8().constData());
 }
 
 void MyPdfConverter::error(const QString & message) {
-	if (error_cb) (*error_cb)(reinterpret_cast<wkhtmltopdf_converter*>(this), message.toUtf8().constData());
+	if (error_cb) (error_cb)(reinterpret_cast<wkhtmltopdf_converter*>(this), message.toUtf8().constData());
 }
 
 void MyPdfConverter::phaseChanged() {
-	if (phase_changed) (*phase_changed)(reinterpret_cast<wkhtmltopdf_converter*>(this));
+	if (phase_changed) (phase_changed)(reinterpret_cast<wkhtmltopdf_converter*>(this));
 }
 
 void MyPdfConverter::progressChanged(int progress) {
-	if (progress_changed) (*progress_changed)(reinterpret_cast<wkhtmltopdf_converter*>(this), progress);
+	if (progress_changed) (progress_changed)(reinterpret_cast<wkhtmltopdf_converter*>(this), progress);
 }
 
 void MyPdfConverter::finished(bool ok) {
-	if (finished_cb) (*finished_cb)(reinterpret_cast<wkhtmltopdf_converter*>(this), ok);
+	if (finished_cb) (finished_cb)(reinterpret_cast<wkhtmltopdf_converter*>(this), ok);
 }
 
 MyPdfConverter::MyPdfConverter(settings::PdfGlobal * gs):
 	warning_cb(0), error_cb(0), phase_changed(0), progress_changed(0), finished_cb(0),
-	converter(*gs), globalSettings(gs) {}
+	converter(*gs), globalSettings(gs) {
+
+    connect(&converter, SIGNAL(warning(const QString &)), this, SLOT(warning(const QString &)));
+	connect(&converter, SIGNAL(error(const QString &)), this, SLOT(error(const QString &)));
+	connect(&converter, SIGNAL(phaseChanged()), this, SLOT(phaseChanged()));
+	connect(&converter, SIGNAL(progressChanged(int)), this, SLOT(progressChanged(int)));
+	connect(&converter, SIGNAL(finished(bool)), this, SLOT(finished(bool)));
+}
 
 MyPdfConverter::~MyPdfConverter() {
 	delete globalSettings;
@@ -59,9 +70,43 @@ MyPdfConverter::~MyPdfConverter() {
 	objectSettings.clear();
 }
 
+CAPI int wkhtmltopdf_extended_qt() {
+#ifdef __EXTENSIVE_WKHTMLTOPDF_QT_HACK__
+	return 1;
+#else
+	return 0;
+#endif
+}
+
+
+CAPI int wkhtmltopdf_init(int ug) {
+	if (qApp == 0) {
+		char * arg[] = {"wkhtmltox", 0};
+		int aa;
+
+		bool use_graphics=true;
+#if defined(Q_WS_X11) || defined(Q_WS_MACX)
+#ifdef __EXTENSIVE_WKHTMLTOPDF_QT_HACK__
+		use_graphics=ug;
+		if (!use_graphics) QApplication::setGraphicsSystem("raster");
+#endif
+#endif
+		a = new QApplication(aa,arg,use_graphics);
+		MyLooksStyle * style = new MyLooksStyle();
+		a->setStyle(style);
+	}
+	return 1;
+}
+
+CAPI int wkhtmltopdf_deinit() {
+	if (a != 0) delete a;
+	return 1;
+}
+
+
 /**
  * \brief Create a new global settings object for pdf convertion
- * 
+ *
  * Create a new global settings object for pdf convertion, settings can be altered with
  * \ref wkhtmltopdf_set_global_setting, and inspected with \ref wkhtmltopdf_get_global_setting.
  * Once the decired settings have been set a converter object can be created using \reg wkhtmltopdf_create_converter.
@@ -90,7 +135,7 @@ CAPI int wkhtmltopdf_set_global_setting(wkhtmltopdf_global_settings * settings, 
  * \brief Retrive a setting in a global settings object
  *
  * \sa wkhtmltopdf_create_global_settings, wkhtmltopdf_set_global_setting
- * 
+ *
  * \param settings The settings object to inspect
  * \param name The name of the setting to read
  * \param value A buffer of length at least \a vs, where the value is storred.
@@ -120,6 +165,7 @@ CAPI int wkhtmltopdf_get_object_setting(wkhtmltopdf_object_settings * settings, 
 }
 
 CAPI wkhtmltopdf_converter * wkhtmltopdf_create_converter(wkhtmltopdf_global_settings * settings) {
+
 	return reinterpret_cast<wkhtmltopdf_converter *>(
 		new MyPdfConverter(reinterpret_cast<settings::PdfGlobal *>(settings)));
 }
@@ -128,23 +174,23 @@ CAPI void wkhtmltopdf_destroy_converter(wkhtmltopdf_converter * converter) {
 	delete reinterpret_cast<MyPdfConverter *>(converter);
 }
 
-CAPI void wkhtmltopdf_set_warning_callback(wkhtmltopdf_converter * converter, wkhtmltopdf_str_callback * cb) {
+CAPI void wkhtmltopdf_set_warning_callback(wkhtmltopdf_converter * converter, wkhtmltopdf_str_callback cb) {
 	reinterpret_cast<MyPdfConverter *>(converter)->warning_cb = cb;
 }
 
-CAPI void wkhtmltopdf_set_error_callback(wkhtmltopdf_converter * converter, wkhtmltopdf_str_callback * cb) {
+CAPI void wkhtmltopdf_set_error_callback(wkhtmltopdf_converter * converter, wkhtmltopdf_str_callback cb) {
 	reinterpret_cast<MyPdfConverter *>(converter)->error_cb = cb;
 }
 
-CAPI void wkhtmltopdf_set_phase_changed_callback(wkhtmltopdf_converter * converter, wkhtmltopdf_void_callback * cb) {
+CAPI void wkhtmltopdf_set_phase_changed_callback(wkhtmltopdf_converter * converter, wkhtmltopdf_void_callback cb) {
 	reinterpret_cast<MyPdfConverter *>(converter)->phase_changed = cb;
 }
 
-CAPI void wkhtmltopdf_set_progress_changed_callback(wkhtmltopdf_converter * converter, wkhtmltopdf_int_callback * cb) {
+CAPI void wkhtmltopdf_set_progress_changed_callback(wkhtmltopdf_converter * converter, wkhtmltopdf_int_callback cb) {
 	reinterpret_cast<MyPdfConverter *>(converter)->progress_changed = cb;
 }
 
-CAPI void wkhtmltopdf_set_finished_callback(wkhtmltopdf_converter * converter, wkhtmltopdf_int_callback * cb) {
+CAPI void wkhtmltopdf_set_finished_callback(wkhtmltopdf_converter * converter, wkhtmltopdf_int_callback cb) {
 	reinterpret_cast<MyPdfConverter *>(converter)->finished_cb = cb;
 }
 

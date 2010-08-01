@@ -1,19 +1,21 @@
-// Copyright 2010 wkhtmltopdf authors
-//
-// This file is part of wkhtmltopdf.
-//
-// wkhtmltopdf is free software: you can redistribute it and/or modify
-// it under the terms of the GNU General Public License as published by
-// the Free Software Foundation, either version 3 of the License, or
-// (at your option) any later version.
-//
-// wkhtmltopdf is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU General Public License for more details.
-//
-// You should have received a copy of the GNU General Public License
-// along with wkhtmltopdf.  If not, see <http://www.gnu.org/licenses/>.
+/*
+ * Copyright 2010 wkhtmltopdf authors
+ *
+ * This file is part of wkhtmltopdf.
+ *
+ * wkhtmltopdf is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * wkhtmltopdf is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with wkhtmltopdf.  If not, see <http: *www.gnu.org/licenses/>.
+ */
 
 #ifndef __IMAGE_H__
 #define __IMAGE_H__
@@ -27,8 +29,11 @@ typedef struct wkhtmltoimage_converter wkhtmltoimage_converter;
 
 typedef void (*wkhtmltoimage_str_callback)(wkhtmltoimage_converter * converter, const char * str);
 typedef void (*wkhtmltoimage_int_callback)(wkhtmltoimage_converter * converter, const int val);
-typedef void (*wkhtmltoimage_bool_callback)(wkhtmltoimage_converter * converter, const bool val);
 typedef void (*wkhtmltoimage_void_callback)(wkhtmltoimage_converter * converter);
+
+CAPI int wkhtmltoimage_init(int useGraphics);
+CAPI int wkhtmltoimage_deinit();
+CAPI int wkhtmltoimage_extended_qt();
 
 CAPI wkhtmltoimage_global_settings * wkhtmltoinage_create_global_settings();
 
@@ -38,13 +43,13 @@ CAPI int wkhtmltoimage_get_global_option(wkhtmltoimage_global_settings * setting
 CAPI wkhtmltoimage_converter * wkhtmltoimage_create_converter(wkhtmltoimage_global_settings * settings);
 CAPI void wkhtmltoimage_destroy_converter(wkhtmltoimage_converter * converter);
 
-CAPI void wkhtmltoimage_set_warning_callback(wkhtmltoimage_converter * converter, wkhtmltoimage_str_callback * cb);
-CAPI void wkhtmltoimage_set_error_callback(wkhtmltoimage_converter * converter, wkhtmltoimage_str_callback * cb);
-CAPI void wkhtmltoimage_set_phase_changed_callback(wkhtmltoimage_converter * converter, wkhtmltoimage_void_callback * cb);
-CAPI void wkhtmltoimage_set_progress_changed_callback(wkhtmltoimage_converter * converter, wkhtmltoimage_int_callback * cb);
-CAPI void wkhtmltoimage_set_finished_callback(wkhtmltoimage_converter * converter, wkhtmltoimage_bool_callback * cb);
+CAPI void wkhtmltoimage_set_warning_callback(wkhtmltoimage_converter * converter, wkhtmltoimage_str_callback cb);
+CAPI void wkhtmltoimage_set_error_callback(wkhtmltoimage_converter * converter, wkhtmltoimage_str_callback cb);
+CAPI void wkhtmltoimage_set_phase_changed_callback(wkhtmltoimage_converter * converter, wkhtmltoimage_void_callback cb);
+CAPI void wkhtmltoimage_set_progress_changed_callback(wkhtmltoimage_converter * converter, wkhtmltoimage_int_callback cb);
+CAPI void wkhtmltoimage_set_finished_callback(wkhtmltoimage_converter * converter, wkhtmltoimage_int_callback cb);
 CAPI void wkhtmltoimage_begin_convertion(wkhtmltoimage_converter * converter);
-CAPI bool wkhtmltoimage_convert(wkhtmltoimage_converter * converter);
+CAPI int wkhtmltoimage_convert(wkhtmltoimage_converter * converter);
 CAPI void wkhtmltoimage_cancel(wkhtmltoimage_converter * converter);
 
 CAPI int wkhtmltoimage_current_phase(wkhtmltoimage_converter * converter);
@@ -54,4 +59,4 @@ CAPI const char * wkhtmltoimage_progress_string(wkhtmltoimage_converter * conver
 CAPI int wkhtmltoimage_http_error_code(wkhtmltoimage_converter * converter);
 
 #include <wkhtmltox/dllend.inc>
-#endif //__IMAGE_H__
+#endif /*__IMAGE_H__*/

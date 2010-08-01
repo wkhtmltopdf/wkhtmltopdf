@@ -29,11 +29,11 @@
 class DLL_LOCAL MyImageConverter: public QObject {
     Q_OBJECT
 public:
-	wkhtmltoimage_str_callback * warning_cb;
-	wkhtmltoimage_str_callback * error_cb;
-	wkhtmltoimage_void_callback * phase_changed;
-	wkhtmltoimage_int_callback * progress_changed;
-	wkhtmltoimage_int_callback * finished_cb;
+	wkhtmltoimage_str_callback warning_cb;
+	wkhtmltoimage_str_callback error_cb;
+	wkhtmltoimage_void_callback phase_changed;
+	wkhtmltoimage_int_callback progress_changed;
+	wkhtmltoimage_int_callback finished_cb;
 
 	wkhtmltopdf::ImageConverter converter;
 

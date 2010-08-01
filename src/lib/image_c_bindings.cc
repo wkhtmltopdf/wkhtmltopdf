@@ -19,36 +19,56 @@
 // along with wkhtmltopdf.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "image_c_bindings_p.hh"
+#include "pdf.h"
 
 #include "dllbegin.inc"
 using namespace wkhtmltopdf;
 
 void MyImageConverter::warning(const QString & message) {
-	if (warning_cb) (*warning_cb)(reinterpret_cast<wkhtmltoimage_converter*>(this), message.toUtf8().constData());
+	if (warning_cb) (warning_cb)(reinterpret_cast<wkhtmltoimage_converter*>(this), message.toUtf8().constData());
 }
 
 void MyImageConverter::error(const QString & message) {
-	if (error_cb) (*error_cb)(reinterpret_cast<wkhtmltoimage_converter*>(this), message.toUtf8().constData());
+	if (error_cb) (error_cb)(reinterpret_cast<wkhtmltoimage_converter*>(this), message.toUtf8().constData());
 }
 
 void MyImageConverter::phaseChanged() {
-	if (phase_changed) (*phase_changed)(reinterpret_cast<wkhtmltoimage_converter*>(this));
+	if (phase_changed) (phase_changed)(reinterpret_cast<wkhtmltoimage_converter*>(this));
 }
 
 void MyImageConverter::progressChanged(int progress) {
-	if (progress_changed) (*progress_changed)(reinterpret_cast<wkhtmltoimage_converter*>(this), progress);
+	if (progress_changed) (progress_changed)(reinterpret_cast<wkhtmltoimage_converter*>(this), progress);
 }
 
 void MyImageConverter::finished(bool ok) {
-	if (finished_cb) (*finished_cb)(reinterpret_cast<wkhtmltoimage_converter*>(this), ok);
+	if (finished_cb) (finished_cb)(reinterpret_cast<wkhtmltoimage_converter*>(this), ok);
 }
 
 MyImageConverter::MyImageConverter(settings::ImageGlobal * gs):
 	warning_cb(0), error_cb(0), phase_changed(0), progress_changed(0), finished_cb(0),
-	converter(*gs), globalSettings(gs) {}
+	converter(*gs), globalSettings(gs) {
+
+    connect(&converter, SIGNAL(warning(const QString &)), this, SLOT(warning(const QString &)));
+	connect(&converter, SIGNAL(error(const QString &)), this, SLOT(error(const QString &)));
+	connect(&converter, SIGNAL(phaseChanged()), this, SLOT(phaseChanged()));
+	connect(&converter, SIGNAL(progressChanged(int)), this, SLOT(progressChanged(int)));
+	connect(&converter, SIGNAL(finished(bool)), this, SLOT(finished(bool)));
+}
 
 MyImageConverter::~MyImageConverter() {
 	delete globalSettings;
+}
+
+CAPI int wkhtmltoimage_init(int useGraphics) {
+	return wkhtmltopdf_init(useGraphics);
+}
+
+CAPI int wkhtmltoimage_deinit() {
+	return wkhtmltopdf_deinit();
+}
+
+CAPI int wkhtmltoimage_extended_qt() {
+	return wkhtmltopdf_extended_qt();
 }
 
 CAPI wkhtmltoimage_global_settings * wkhtmltoimage_create_global_settings() {
@@ -75,23 +95,23 @@ CAPI void wkhtmltoimage_destroy_converter(wkhtmltoimage_converter * converter) {
 	delete reinterpret_cast<MyImageConverter *>(converter);
 }
 
-CAPI void wkhtmltoimage_set_warning_callback(wkhtmltoimage_converter * converter, wkhtmltoimage_str_callback * cb) {
+CAPI void wkhtmltoimage_set_warning_callback(wkhtmltoimage_converter * converter, wkhtmltoimage_str_callback cb) {
 	reinterpret_cast<MyImageConverter *>(converter)->warning_cb = cb;
 }
 
-CAPI void wkhtmltoimage_set_error_callback(wkhtmltoimage_converter * converter, wkhtmltoimage_str_callback * cb) {
+CAPI void wkhtmltoimage_set_error_callback(wkhtmltoimage_converter * converter, wkhtmltoimage_str_callback cb) {
 	reinterpret_cast<MyImageConverter *>(converter)->error_cb = cb;
 }
 
-CAPI void wkhtmltoimage_set_phase_changed_callback(wkhtmltoimage_converter * converter, wkhtmltoimage_void_callback * cb) {
+CAPI void wkhtmltoimage_set_phase_changed_callback(wkhtmltoimage_converter * converter, wkhtmltoimage_void_callback cb) {
 	reinterpret_cast<MyImageConverter *>(converter)->phase_changed = cb;
 }
 
-CAPI void wkhtmltoimage_set_progress_changed_callback(wkhtmltoimage_converter * converter, wkhtmltoimage_int_callback * cb) {
+CAPI void wkhtmltoimage_set_progress_changed_callback(wkhtmltoimage_converter * converter, wkhtmltoimage_int_callback cb) {
 	reinterpret_cast<MyImageConverter *>(converter)->progress_changed = cb;
 }
 
-CAPI void wkhtmltoimage_set_finished_callback(wkhtmltoimage_converter * converter, wkhtmltoimage_int_callback * cb) {
+CAPI void wkhtmltoimage_set_finished_callback(wkhtmltoimage_converter * converter, wkhtmltoimage_int_callback cb) {
 	reinterpret_cast<MyImageConverter *>(converter)->finished_cb = cb;
 }
 
