@@ -39,6 +39,7 @@ typedef void (*wkhtmltopdf_void_callback)(wkhtmltopdf_converter * converter);
 CAPI int wkhtmltopdf_init(int use_graphics);
 CAPI int wkhtmltopdf_deinit();
 CAPI int wkhtmltopdf_extended_qt();
+CAPI const char * wkhtmltopdf_version();
 
 CAPI wkhtmltopdf_global_settings * wkhtmltopdf_create_global_settings();
 CAPI wkhtmltopdf_object_settings * wkhtmltopdf_create_object_settings();

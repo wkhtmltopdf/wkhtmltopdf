@@ -1,4 +1,6 @@
-/*
+/* -*- mode: c++; tab-width: 4; indent-tabs-mode: t; eval: (progn (c-set-style "stroustrup") (c-set-offset 'innamespace 0)); -*-
+ * vi:set ts=4 sts=4 sw=4 noet :
+ *
  * Copyright 2010 wkhtmltopdf authors
  *
  * This file is part of wkhtmltopdf.
@@ -34,9 +36,10 @@ typedef void (*wkhtmltopdf_str_callback)(wkhtmltopdf_converter * converter, cons
 typedef void (*wkhtmltopdf_int_callback)(wkhtmltopdf_converter * converter, const int val);
 typedef void (*wkhtmltopdf_void_callback)(wkhtmltopdf_converter * converter);
 
-CAPI int wkhtmltopdf_init(int useGraphics);
+CAPI int wkhtmltopdf_init(int use_graphics);
 CAPI int wkhtmltopdf_deinit();
 CAPI int wkhtmltopdf_extended_qt();
+CAPI const char * wkhtmltopdf_version();
 
 CAPI wkhtmltopdf_global_settings * wkhtmltopdf_create_global_settings();
 CAPI wkhtmltopdf_object_settings * wkhtmltopdf_create_object_settings();

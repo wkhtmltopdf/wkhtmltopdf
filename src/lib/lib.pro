@@ -22,6 +22,8 @@ include(../../version.pri)
 include(../../common.pri)
 include(lib.pri)
 
+DEFINES += __WKHTMLTOX_UNDEF_QT_DLL__
+
 unix {
    headers.targit=headers
    headers.files=../../include/wkhtmltox/*

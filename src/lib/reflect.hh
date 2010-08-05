@@ -20,6 +20,13 @@
 
 #ifndef __REFLECT_HH__
 #define __REFLECT_HH__
+
+#ifdef __WKHTMLTOX_UNDEF_QT_DLL__
+#ifdef QT_DLL
+#undef QT_DLL
+#endif
+#endif
+
 #include "loadsettings.hh"
 #include "websettings.hh"
 #include <QStringList>

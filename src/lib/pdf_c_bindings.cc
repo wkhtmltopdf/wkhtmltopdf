@@ -17,6 +17,11 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with wkhtmltopdf.  If not, see <http://www.gnu.org/licenses/>.
+#ifdef __WKHTMLTOX_UNDEF_QT_DLL__
+#ifdef QT_DLL
+#undef QT_DLL
+#endif
+#endif
 
 /**
  * \file pdf.h
@@ -82,6 +87,11 @@ CAPI int wkhtmltopdf_extended_qt() {
 #else
 	return 0;
 #endif
+}
+
+
+CAPI const char * wkhtmltopdf_version() {
+	return "NOT IMPLEMENTED";
 }
 
 /**
@@ -230,8 +240,7 @@ CAPI void wkhtmltopdf_cancel(wkhtmltopdf_converter * converter) {
 	reinterpret_cast<MyPdfConverter *>(converter)->converter.cancel();
 }
 
-CAPI void wkhtmltopdf_add_resource(
-	wkhtmltopdf_converter * converter, wkhtmltopdf_object_settings * settings, const char * data) {
+CAPI void wkhtmltopdf_add_resource(wkhtmltopdf_converter * converter, wkhtmltopdf_object_settings * settings, const char * data) {
 	reinterpret_cast<MyPdfConverter *>(converter)->converter.addResource(
 		*reinterpret_cast<settings::PdfObject *>(settings) );
 	reinterpret_cast<MyPdfConverter *>(converter)->objectSettings.push_back(reinterpret_cast<settings::PdfObject *>(settings));
