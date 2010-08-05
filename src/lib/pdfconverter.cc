@@ -334,9 +334,13 @@ void PdfConverterPrivate::loadTocs() {
 		if (!ps.isTableOfContent) continue;
 		obj.clear();
 
-		QString style = obj.tocStyleFile.create(".xsl");
-		StreamDumper styleDump(style);
-		dumpDefaultTOCStyleSheet(styleDump.stream, ps.toc);
+		QString style = ps.tocXsl;
+		if (style.isEmpty()) {
+			style = obj.tocStyleFile.create(".xsl");
+			StreamDumper styleDump(style);
+			dumpDefaultTOCStyleSheet(styleDump.stream, ps.toc);
+		} else
+			style = MultiPageLoader::guessUrlFromString(style).toString();
 
 		QString path = obj.tocFile.create(".xml");
 		StreamDumper sd(path);
