@@ -36,6 +36,7 @@
 using namespace wkhtmltopdf;
 
 QApplication * a = 0;
+int usage = 0;
 
 void MyPdfConverter::warning(const QString & message) {
 	if (warning_cb) (warning_cb)(reinterpret_cast<wkhtmltopdf_converter*>(this), message.toUtf8().constData());
@@ -105,6 +106,7 @@ CAPI const char * wkhtmltopdf_version() {
  * \sa wkhtmltopdf_deinit
  */
 CAPI int wkhtmltopdf_init(int use_graphics) {
+	++usage;
 	if (qApp == 0) {
 		char * arg[] = {"wkhtmltox", 0};
 		int aa;
@@ -134,6 +136,8 @@ CAPI int wkhtmltopdf_init(int use_graphics) {
  * \sa wkhtmltopdf_init
  */
 CAPI int wkhtmltopdf_deinit() {
+	--usage;
+	if (usage != 0) return 1;
 	if (a != 0) delete a;
 	return 1;
 }
