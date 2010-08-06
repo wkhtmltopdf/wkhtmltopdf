@@ -91,8 +91,15 @@ CAPI int wkhtmltopdf_extended_qt() {
 #endif
 }
 
+#define STRINGIZEE(a) # a
+#define STRINGIZE(a) STRINGIZEE(a)
+
 CAPI const char * wkhtmltopdf_version() {
-	return "NOT IMPLEMENTED";
+	return STRINGIZE(MAJOR_VERSION)"."STRINGIZE(MINOR_VERSION)"."STRINGIZE(PATCH_VERSION)
+#ifdef BUILD
+		"_"STRINGIZE(BUILD)
+#endif
+		;
 }
 
 /**
@@ -107,9 +114,12 @@ CAPI const char * wkhtmltopdf_version() {
  */
 CAPI int wkhtmltopdf_init(int use_graphics) {
 	++usage;
+
 	if (qApp == 0) {
-		char * arg[] = {"wkhtmltox", 0};
-		int aa;
+		char x[256];
+		strcpy(x, "wkhtmltox");
+		char * arg[] = {x, 0};
+		int aa = 1;
 
 		bool ug = true;
 #if defined(Q_WS_X11) || defined(Q_WS_MACX)
