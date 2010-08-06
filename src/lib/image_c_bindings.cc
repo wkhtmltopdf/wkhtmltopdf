@@ -85,11 +85,11 @@ CAPI wkhtmltoimage_global_settings * wkhtmltoimage_create_global_settings() {
 	return reinterpret_cast<wkhtmltoimage_global_settings *>(new settings::ImageGlobal());
 }
 
-CAPI int wkhtmltoimage_set_global_option(wkhtmltoimage_global_settings * settings, const char * name, const char * value) {
+CAPI int wkhtmltoimage_set_global_setting(wkhtmltoimage_global_settings * settings, const char * name, const char * value) {
 	return reinterpret_cast<settings::ImageGlobal *>(settings)->set(name, value);
 }
 
-CAPI int wkhtmltoimage_get_global_option(wkhtmltoimage_global_settings * settings, const char * name, char * value, int vs) {
+CAPI int wkhtmltoimage_get_global_setting(wkhtmltoimage_global_settings * settings, const char * name, char * value, int vs) {
 	QString res = reinterpret_cast<settings::ImageGlobal *>(settings)->get(name);
 	if (res.isNull()) return 0;
 	qstrncpy(value, res.toUtf8().constData(), vs);

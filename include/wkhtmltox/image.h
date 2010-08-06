@@ -36,10 +36,10 @@ CAPI int wkhtmltoimage_deinit();
 CAPI int wkhtmltoimage_extended_qt();
 CAPI const char * wkhtmltoimage_version();
 
-CAPI wkhtmltoimage_global_settings * wkhtmltoinage_create_global_settings();
+CAPI wkhtmltoimage_global_settings * wkhtmltoimage_create_global_settings();
 
-CAPI int wkhtmltoimage_set_global_option(wkhtmltoimage_global_settings * settings, const char * name, const char * value);
-CAPI int wkhtmltoimage_get_global_option(wkhtmltoimage_global_settings * settings, const char * name, char * value, int vs);
+CAPI int wkhtmltoimage_set_global_setting(wkhtmltoimage_global_settings * settings, const char * name, const char * value);
+CAPI int wkhtmltoimage_get_global_setting(wkhtmltoimage_global_settings * settings, const char * name, char * value, int vs);
 
 CAPI wkhtmltoimage_converter * wkhtmltoimage_create_converter(wkhtmltoimage_global_settings * settings);
 CAPI void wkhtmltoimage_destroy_converter(wkhtmltoimage_converter * converter);
