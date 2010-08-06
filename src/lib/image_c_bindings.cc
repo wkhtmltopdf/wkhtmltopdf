@@ -125,17 +125,17 @@ CAPI void wkhtmltoimage_set_finished_callback(wkhtmltoimage_converter * converte
 	reinterpret_cast<MyImageConverter *>(converter)->finished_cb = cb;
 }
 
-CAPI void wkhtmltoimage_begin_convertion(wkhtmltoimage_converter * converter) {
+/*CAPI void wkhtmltoimage_begin_convertion(wkhtmltoimage_converter * converter) {
 	reinterpret_cast<MyImageConverter *>(converter)->converter.beginConvertion();
-}
+	}*/
 
 CAPI int wkhtmltoimage_convert(wkhtmltoimage_converter * converter) {
 	return reinterpret_cast<MyImageConverter *>(converter)->converter.convert();
 }
 
-CAPI void wkhtmltoimage_cancel(wkhtmltoimage_converter * converter) {
+/*CAPI void wkhtmltoimage_cancel(wkhtmltoimage_converter * converter) {
 	reinterpret_cast<MyImageConverter *>(converter)->converter.cancel();
-}
+	}*/
 
 CAPI int wkhtmltoimage_current_phase(wkhtmltoimage_converter * converter) {
 	return reinterpret_cast<MyImageConverter *>(converter)->converter.currentPhase();
