@@ -20,7 +20,6 @@
 
 #ifndef __PDFCONVERTER_HH__
 #define __PDFCONVERTER_HH__
-
 #ifdef __WKHTMLTOX_UNDEF_QT_DLL__
 #ifdef QT_DLL
 #undef QT_DLL
@@ -43,8 +42,9 @@ public:
 	PdfConverter(settings::PdfGlobal & globalSettings);
 	~PdfConverter();
 	int pageCount();
-	void addResource(const settings::PdfObject & pageSettings);
+	void addResource(const settings::PdfObject & pageSettings, const QString * data=0);
 	const settings::PdfGlobal & globalSettings() const;
+	const QByteArray & output();
 private:
 	PdfConverterPrivate * d;
 	virtual ConverterPrivate & priv();

@@ -49,7 +49,7 @@ class DLL_LOCAL MultiPageLoader: public QObject {
 public:
 	MultiPageLoader(settings::LoadGlobal & s);
 	~MultiPageLoader();
-	LoaderObject * addResource(const QString & url, const settings::LoadPage & settings);
+	LoaderObject * addResource(const QString & url, const settings::LoadPage & settings, const QString * data=NULL);
 	LoaderObject * addResource(const QUrl & url, const settings::LoadPage & settings);
 	static QUrl guessUrlFromString(const QString &string);
 	int httpErrorCode();

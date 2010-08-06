@@ -69,6 +69,7 @@ CAPI int wkhtmltopdf_phase_count(wkhtmltopdf_converter * converter);
 CAPI const char * wkhtmltopdf_phase_description(wkhtmltopdf_converter * converter, int phase);
 CAPI const char * wkhtmltopdf_progress_string(wkhtmltopdf_converter * converter);
 CAPI int wkhtmltopdf_http_error_code(wkhtmltopdf_converter * converter);
+CAPI long wkhtmltopdf_get_output(wkhtmltopdf_converter * converter, const unsigned char **);
 
 #include <wkhtmltox/dllend.inc>
 #endif /*__PDF_H__*/

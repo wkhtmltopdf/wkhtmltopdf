@@ -255,8 +255,9 @@ CAPI void wkhtmltopdf_cancel(wkhtmltopdf_converter * converter) {
 }
 
 CAPI void wkhtmltopdf_add_resource(wkhtmltopdf_converter * converter, wkhtmltopdf_object_settings * settings, const char * data) {
+	QString str= QString::fromUtf8(data);
 	reinterpret_cast<MyPdfConverter *>(converter)->converter.addResource(
-		*reinterpret_cast<settings::PdfObject *>(settings) );
+		*reinterpret_cast<settings::PdfObject *>(settings), &str);
 	reinterpret_cast<MyPdfConverter *>(converter)->objectSettings.push_back(reinterpret_cast<settings::PdfObject *>(settings));
 }
 
@@ -278,4 +279,10 @@ CAPI const char * wkhtmltopdf_progress_string(wkhtmltopdf_converter * converter)
 
 CAPI int wkhtmltopdf_http_error_code(wkhtmltopdf_converter * converter) {
 	return reinterpret_cast<MyPdfConverter *>(converter)->converter.httpErrorCode();
+}
+
+CAPI long wkhtmltopdf_get_output(wkhtmltopdf_converter * converter, const unsigned char ** d) {
+	const QByteArray & out = reinterpret_cast<MyPdfConverter *>(converter)->converter.output();
+	*d = (const unsigned char*)out.constData();
+	return out.size();
 }

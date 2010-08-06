@@ -20,7 +20,6 @@
 
 #ifndef __MULTIPAGELOADER_HH__
 #define __MULTIPAGELOADER_HH__
-
 #ifdef __WKHTMLTOX_UNDEF_QT_DLL__
 #ifdef QT_DLL
 #undef QT_DLL
@@ -52,7 +51,7 @@ class DLL_LOCAL MultiPageLoader: public QObject {
 public:
 	MultiPageLoader(settings::LoadGlobal & s);
 	~MultiPageLoader();
-	LoaderObject * addResource(const QString & url, const settings::LoadPage & settings);
+	LoaderObject * addResource(const QString & url, const settings::LoadPage & settings, const QString * data=NULL);
 	LoaderObject * addResource(const QUrl & url, const settings::LoadPage & settings);
 	static QUrl guessUrlFromString(const QString &string);
 	int httpErrorCode();

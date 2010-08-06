@@ -35,8 +35,9 @@ class DLL_LOCAL ImageConverterPrivate;
 class DLL_PUBLIC ImageConverter: public Converter {
 	Q_OBJECT
 public:
-	ImageConverter(settings::ImageGlobal & settings);
+	ImageConverter(settings::ImageGlobal & settings, const QString * data=NULL);
 	~ImageConverter();
+	const QByteArray & output();
 private:
 	ImageConverterPrivate * d;
 	virtual ConverterPrivate & priv();

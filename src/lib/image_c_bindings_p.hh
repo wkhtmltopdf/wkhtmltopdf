@@ -20,7 +20,6 @@
 
 #ifndef __IMAGE_C_BINDINGS_P_HH__
 #define __IMAGE_C_BINDINGS_P_HH__
-
 #ifdef __WKHTMLTOX_UNDEF_QT_DLL__
 #ifdef QT_DLL
 #undef QT_DLL
@@ -46,7 +45,7 @@ public:
 
 	wkhtmltopdf::settings::ImageGlobal * globalSettings;
 
-	MyImageConverter(wkhtmltopdf::settings::ImageGlobal * gs);
+	MyImageConverter(wkhtmltopdf::settings::ImageGlobal * gs, const QString * data);
 	~MyImageConverter();
 public slots:
     void warning(const QString & message);

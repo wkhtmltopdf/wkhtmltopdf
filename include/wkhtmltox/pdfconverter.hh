@@ -40,8 +40,9 @@ public:
 	PdfConverter(settings::PdfGlobal & globalSettings);
 	~PdfConverter();
 	int pageCount();
-	void addResource(const settings::PdfObject & pageSettings);
+	void addResource(const settings::PdfObject & pageSettings, const QString * data=0);
 	const settings::PdfGlobal & globalSettings() const;
+	const QByteArray & output();
 private:
 	PdfConverterPrivate * d;
 	virtual ConverterPrivate & priv();

@@ -20,7 +20,6 @@
 
 #ifndef __IMAGECONVERTER_P_HH__
 #define __IMAGECONVERTER_P_HH__
-
 #ifdef __WKHTMLTOX_UNDEF_QT_DLL__
 #ifdef QT_DLL
 #undef QT_DLL
@@ -37,11 +36,14 @@ namespace wkhtmltopdf {
 class DLL_LOCAL ImageConverterPrivate: public ConverterPrivate {
 	Q_OBJECT
 public:
-	ImageConverterPrivate(ImageConverter & o, wkhtmltopdf::settings::ImageGlobal & s);
+	ImageConverterPrivate(ImageConverter & o, wkhtmltopdf::settings::ImageGlobal & s, const QString * data);
 
 	wkhtmltopdf::settings::ImageGlobal settings;
 	MultiPageLoader loader;
 private:
+	QByteArray outputData;
+	QString inputData;
+
 	ImageConverter & out;
 	void clearResources();
 

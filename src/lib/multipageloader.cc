@@ -17,6 +17,7 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with wkhtmltopdf.  If not, see <http://www.gnu.org/licenses/>.
+
 #ifdef __WKHTMLTOX_UNDEF_QT_DLL__
 #ifdef QT_DLL
 #undef QT_DLL
@@ -406,6 +407,7 @@ MultiPageLoaderPrivate::~MultiPageLoaderPrivate() {
 LoaderObject * MultiPageLoaderPrivate::addResource(const QUrl & url, const settings::LoadPage & page) {
 	ResourceObject * ro = new ResourceObject(*this, url, page);
 	resources.push_back(ro);
+
 	return &ro->lo;
 }
 
@@ -456,9 +458,17 @@ MultiPageLoader::~MultiPageLoader() {
   \brief Add a resource, to be loaded described by a string
   @param string Url describing the resource to load
 */
-LoaderObject * MultiPageLoader::addResource(const QString & string, const settings::LoadPage & s) {
+LoaderObject * MultiPageLoader::addResource(const QString & string, const settings::LoadPage & s, const QString * data) {
 	QString url=string;
-	if (url == "-") {
+	if (data && !data->isEmpty()) {
+		qDebug() << data;
+		url = d->tempIn.create(".html");
+		QFile tmp(url);
+		if (!tmp.open(QIODevice::WriteOnly) || tmp.write(data->toUtf8())==0) {
+			emit error("Unable to create temporery file");
+			return NULL;
+		}
+	} else if (url == "-") {
 		QFile in;
 		in.open(stdin,QIODevice::ReadOnly);
 		url = d->tempIn.create(".html");

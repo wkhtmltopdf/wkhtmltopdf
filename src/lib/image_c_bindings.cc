@@ -50,9 +50,9 @@ void MyImageConverter::finished(bool ok) {
 	if (finished_cb) (finished_cb)(reinterpret_cast<wkhtmltoimage_converter*>(this), ok);
 }
 
-MyImageConverter::MyImageConverter(settings::ImageGlobal * gs):
+MyImageConverter::MyImageConverter(settings::ImageGlobal * gs, const QString * data):
 	warning_cb(0), error_cb(0), phase_changed(0), progress_changed(0), finished_cb(0),
-	converter(*gs), globalSettings(gs) {
+	converter(*gs, data), globalSettings(gs) {
 
     connect(&converter, SIGNAL(warning(const QString &)), this, SLOT(warning(const QString &)));
 	connect(&converter, SIGNAL(error(const QString &)), this, SLOT(error(const QString &)));
@@ -96,9 +96,10 @@ CAPI int wkhtmltoimage_get_global_setting(wkhtmltoimage_global_settings * settin
 	return 1;
 }
 
-CAPI wkhtmltoimage_converter * wkhtmltoimage_create_converter(wkhtmltoimage_global_settings * settings) {
+CAPI wkhtmltoimage_converter * wkhtmltoimage_create_converter(wkhtmltoimage_global_settings * settings, const char * data) {
+	QString str= QString::fromUtf8(data);
 	return reinterpret_cast<wkhtmltoimage_converter *>(
-		new MyImageConverter(reinterpret_cast<settings::ImageGlobal *>(settings)));
+		new MyImageConverter(reinterpret_cast<settings::ImageGlobal *>(settings), &str));
 }
 
 CAPI void wkhtmltoimage_destroy_converter(wkhtmltoimage_converter * converter) {
@@ -155,4 +156,10 @@ CAPI const char * wkhtmltoimage_progress_string(wkhtmltoimage_converter * conver
 
 CAPI int wkhtmltoimage_http_error_code(wkhtmltoimage_converter * converter) {
 	return reinterpret_cast<MyImageConverter *>(converter)->converter.httpErrorCode();
+}
+
+CAPI long wkhtmltoimage_get_output(wkhtmltoimage_converter * converter, const unsigned char ** d) {
+	const QByteArray & out = reinterpret_cast<MyImageConverter *>(converter)->converter.output();
+	*d = (const unsigned char*)out.constData();
+	return out.size();
 }

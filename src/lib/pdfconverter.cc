@@ -17,6 +17,7 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with wkhtmltopdf.  If not, see <http://www.gnu.org/licenses/>.
+
 #ifdef __WKHTMLTOX_UNDEF_QT_DLL__
 #ifdef QT_DLL
 #undef QT_DLL
@@ -154,7 +155,7 @@ void PdfConverterPrivate::beginConvert() {
 		}
 
 		if (!s.isTableOfContent) {
-			o.loaderObject = pageLoader.addResource(s.page, s.load);
+			o.loaderObject = pageLoader.addResource(s.page, s.load, &o.data);
 			o.page = &o.loaderObject->page;
 			PageObject::webPageToObject[o.page] = &o;
 			updateWebSettings(o.page->settings(), s.web);
@@ -189,6 +190,8 @@ void PdfConverterPrivate::pagesLoaded(bool ok) {
 #endif
 			 lout = tempOut.create(settings.outputFormat == "ps"?".ps":".pdf");
 	}
+	if (settings.out.isEmpty())
+	  lout = tempOut.create(settings.outputFormat == "ps"?".ps":".pdf");
 
 	printer = new QPrinter(settings.resolution);
 	if (settings.dpi != -1) printer->setResolution(settings.dpi);
@@ -733,6 +736,15 @@ void PdfConverterPrivate::printDocument() {
 			return;
 		}
 	}
+
+	if (settings.out.isEmpty()) {
+		QFile i(lout);
+		if (!i.open(QIODevice::ReadOnly)) {
+			emit out.error("Reading output failed");
+			fail();
+		}
+		outputData = i.readAll();
+	}
 	clearResources();
 #ifdef __EXTENSIVE_WKHTMLTOPDF_QT_HACK__
 	currentPhase = 6;
@@ -816,8 +828,12 @@ PdfConverter::~PdfConverter() {
   \brief add a resource we want to convert
   \param url The url of the object we want to convert
 */
-void PdfConverter::addResource(const settings::PdfObject & page) {
-	d->objects.push_back( PageObject(page) );
+void PdfConverter::addResource(const settings::PdfObject & page, const QString * data) {
+  d->objects.push_back( PageObject(page, data) );
+}
+
+const QByteArray & PdfConverter::output() {
+  return d->outputData;
 }
 
 

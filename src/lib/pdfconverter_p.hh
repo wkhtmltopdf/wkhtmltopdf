@@ -20,7 +20,6 @@
 
 #ifndef __PDFCONVERTER_P_HH__
 #define __PDFCONVERTER_P_HH__
-
 #ifdef __WKHTMLTOX_UNDEF_QT_DLL__
 #ifdef QT_DLL
 #undef QT_DLL
@@ -56,6 +55,7 @@ public:
 	settings::PdfObject settings;
 	LoaderObject * loaderObject;
 	QWebPage * page;
+	QString data;
 
 #ifdef __EXTENSIVE_WKHTMLTOPDF_QT_HACK__
 	QHash<QString, QWebElement> anchors;
@@ -84,7 +84,10 @@ public:
 		tocFile.remove();
 	}
 
-	PageObject(const settings::PdfObject & set): settings(set), loaderObject(0), page(0) {};
+	PageObject(const settings::PdfObject & set, const QString * d=NULL):
+		settings(set), loaderObject(0), page(0) {
+		if (d) data=*d;
+	};
 
 	~PageObject() {
 		clear();
@@ -106,6 +109,7 @@ private:
 	PdfConverter & out;
 	void clearResources();
 	TempFile tempOut;
+	QByteArray outputData;
 
 	QList<PageObject> objects;
 

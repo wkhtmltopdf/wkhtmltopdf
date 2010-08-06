@@ -17,6 +17,7 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with wkhtmltopdf.  If not, see <http://www.gnu.org/licenses/>.
+
 #ifdef __WKHTMLTOX_UNDEF_QT_DLL__
 #ifdef QT_DLL
 #undef QT_DLL
@@ -25,6 +26,7 @@
 
 #include "imageconverter_p.hh"
 #include "imagesettings.hh"
+#include <QBuffer>
 #include <QDebug>
 #include <QEventLoop>
 #include <QFileInfo>
@@ -39,10 +41,11 @@
 #include <qapplication.h>
 namespace wkhtmltopdf {
 
-ImageConverterPrivate::ImageConverterPrivate(ImageConverter & o, wkhtmltopdf::settings::ImageGlobal & s):
+ImageConverterPrivate::ImageConverterPrivate(ImageConverter & o, wkhtmltopdf::settings::ImageGlobal & s, const QString * data):
 	settings(s),
 	loader(s.loadGlobal),
 	out(o) {
+	if (data) inputData = *data;
 
 	phaseDescriptions.push_back("Loading page");
 	phaseDescriptions.push_back("Rendering");
@@ -52,14 +55,14 @@ ImageConverterPrivate::ImageConverterPrivate(ImageConverter & o, wkhtmltopdf::se
 	connect(&loader, SIGNAL(loadFinished(bool)), this, SLOT(pagesLoaded(bool)));
 	connect(&loader, SIGNAL(error(QString)), this, SLOT(forwardError(QString)));
 	connect(&loader, SIGNAL(warning(QString)), this, SLOT(forwardWarning(QString)));
-};
+}
 
 void ImageConverterPrivate::beginConvert() {
 	error = false;
 	convertionDone = false;
 	errorCode = 0;
 	progressString = "0%";
-	loaderObject = loader.addResource(settings.in, settings.loadPage);
+	loaderObject = loader.addResource(settings.in, settings.loadPage, &inputData);
 	updateWebSettings(loaderObject->page.settings(), settings.web);
 	currentPhase=0;
 	emit out. phaseChanged();
@@ -135,9 +138,14 @@ void ImageConverterPrivate::pagesLoaded(bool ok) {
 	QSvgGenerator generator;
 	QImage image;
 	QFile file;
-	bool openOk;
+	QBuffer buffer(&outputData);
+	QIODevice * dev = &file;
+
+	bool openOk=true;
 	// output image
-	if (settings.out != "-" ) {
+	if (settings.out.isEmpty()) {
+		dev =  &buffer;
+	} if (settings.out != "-" ) {
 		file.setFileName(settings.out);
 		openOk = file.open(QIODevice::WriteOnly);
 	} else {
@@ -163,7 +171,7 @@ void ImageConverterPrivate::pagesLoaded(bool ok) {
 		image = QImage(rect.size(), QImage::Format_ARGB32_Premultiplied);
 		painter.begin(&image);
 	} else {
-		generator.setOutputDevice(&file);
+		generator.setOutputDevice(dev);
 		generator.setSize(rect.size());
 		generator.setViewBox(QRect(QPoint(0,0),rect.size()));
 #ifdef __EXTENSIVE_WKHTMLTOPDF_QT_HACK__
@@ -219,8 +227,12 @@ ConverterPrivate & ImageConverter::priv() {
 }
 
 
-ImageConverter::ImageConverter(wkhtmltopdf::settings::ImageGlobal & s) {
-	d = new ImageConverterPrivate(*this, s);
+ImageConverter::ImageConverter(wkhtmltopdf::settings::ImageGlobal & s, const QString * data) {
+	d = new ImageConverterPrivate(*this, s, data);
+}
+
+const QByteArray & ImageConverter::output() {
+	return d->outputData;
 }
 
 }
