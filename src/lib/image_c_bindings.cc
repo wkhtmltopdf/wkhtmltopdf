@@ -17,6 +17,7 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with wkhtmltopdf.  If not, see <http://www.gnu.org/licenses/>.
+
 #ifdef __WKHTMLTOX_UNDEF_QT_DLL__
 #ifdef QT_DLL
 #undef QT_DLL
@@ -64,16 +65,20 @@ MyImageConverter::~MyImageConverter() {
 	delete globalSettings;
 }
 
+CAPI int wkhtmltoimage_extended_qt() {
+	return wkhtmltopdf_extended_qt();
+}
+
+CAPI const char * wkhtmltoimage_version() {
+	return "NOT IMPLEMENTED";
+}
+
 CAPI int wkhtmltoimage_init(int use_graphics) {
 	return wkhtmltopdf_init(use_graphics);
 }
 
 CAPI int wkhtmltoimage_deinit() {
 	return wkhtmltopdf_deinit();
-}
-
-CAPI int wkhtmltoimage_extended_qt() {
-	return wkhtmltopdf_extended_qt();
 }
 
 CAPI wkhtmltoimage_global_settings * wkhtmltoimage_create_global_settings() {

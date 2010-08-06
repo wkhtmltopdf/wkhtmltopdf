@@ -36,6 +36,7 @@ typedef void (*wkhtmltoimage_void_callback)(wkhtmltoimage_converter * converter)
 CAPI int wkhtmltoimage_init(int use_graphics);
 CAPI int wkhtmltoimage_deinit();
 CAPI int wkhtmltoimage_extended_qt();
+CAPI const char * wkhtmltoimage_version();
 
 CAPI wkhtmltoimage_global_settings * wkhtmltoinage_create_global_settings();
 
