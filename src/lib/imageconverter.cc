@@ -180,8 +180,13 @@ void ImageConverterPrivate::pagesLoaded(bool ok) {
 		painter.begin(&generator);
 	}
 
-	if (!settings.transparent || (settings.fmt != "png" && settings.fmt != "svg"))
+	if (settings.transparent && (settings.fmt == "png" || settings.fmt == "svg")) {
+		QPalette pal = loaderObject->page.palette();
+		pal.setColor(QPalette::Base, QColor(Qt::transparent));
+		loaderObject->page.setPalette(pal);
+	} else {
 		painter.fillRect(QRect(QPoint(0,0),loaderObject->page.viewportSize()), Qt::white);
+	}
 	painter.translate(-rect.left(), -rect.top());
 	frame->render(&painter);
 	painter.end();
