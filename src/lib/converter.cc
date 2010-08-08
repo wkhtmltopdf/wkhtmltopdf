@@ -17,6 +17,7 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with wkhtmltopdf.  If not, see <http://www.gnu.org/licenses/>.
+
 #ifdef __WKHTMLTOX_UNDEF_QT_DLL__
 #ifdef QT_DLL
 #undef QT_DLL
@@ -87,10 +88,8 @@ void ConverterPrivate::cancel() {
 bool ConverterPrivate::convert() {
 	convertionDone=false;
 	beginConvert();
-	while (!convertionDone) {
-		qApp->exec();
-		//qApp->processEvents(QEventLoop::WaitForMoreEvents | QEventLoop::AllEvents);
-	}
+	while (!convertionDone)
+		qApp->processEvents(QEventLoop::WaitForMoreEvents | QEventLoop::AllEvents);
 	return !error;
 }
 
