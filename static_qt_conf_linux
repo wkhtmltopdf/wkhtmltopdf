@@ -31,6 +31,6 @@
 -no-xkb
 -no-glib
 -no-openvg
--no-opengl
+# -no-opengl
 -no-xsync
 -no-audio-backend

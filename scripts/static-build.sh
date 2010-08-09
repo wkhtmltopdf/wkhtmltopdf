@@ -190,7 +190,7 @@ function build_linux_local() {
 function setup_chroot() {
     if [ ! -f linux-$2/strapped ]; then
 	sudo rm -rf linux-$2
-	(sudo debootstrap --arch=$2 --variant=buildd $1 ./linux-$2 http://archive.debian.org/debian/ && sudo touch linux-$2/strapped) || exit 1
+	(sudo debootstrap --arch=$2 --variant=buildd $1 ./linux-$2 http://ftp.us.debian.org/debian/ && sudo touch linux-$2/strapped) || exit 1
     fi
     if [ ! -d linux-$2/build ]; then
 	sudo mkdir -p linux-$2/build || exit 1
@@ -198,7 +198,7 @@ function setup_chroot() {
     fi
 
     if [ ! -f linux-$2/installed ]; then
-	echo -e "deb http://archive.debian.org/debian/ $1 main non-free contrib\ndeb-src http://archive.debian.org/debian/ $1 main non-free contrib" | sudo tee linux-$2/etc/apt/sources.list || exit 1
+	echo -e "deb http://ftp.us.debian.org/debian/ $1 main non-free contrib\ndeb-src http://ftp.us.debian.org/debian/ $1 main non-free contrib" | sudo tee linux-$2/etc/apt/sources.list || exit 1
 	sudo chroot linux-$2 apt-get -y update || exit 1
 	sudo chroot linux-$2 apt-get -y build-dep libqt4-core && sudo touch linux-$2/installed || exit 1
     fi
@@ -208,7 +208,7 @@ function setup_chroot() {
 
 function build_linux_chroot() {
     cd ${BUILD}
-    setup_chroot etch $1
+    setup_chroot lenny $1
     cd linux-$1/build
     setup_build linux
     if [  "$1" == 'i386' ]; then
@@ -216,8 +216,14 @@ function build_linux_chroot() {
     else
 	sudo chroot ${BUILD}/linux-$1/ /build/buildw.sh || exit 1
     fi
-    ${BUILD}/${UPX}/upx --best ${BUILD}/linux-$1/build/wkhtmltopdf/bin/wkhtmltopdf -o ${BASE}/bin/wkhtmltopdf-$1 || exit 1
-    ${BUILD}/${UPX}/upx --best ${BUILD}/linux-$1/build/wkhtmltopdf/bin/wkhtmltoimage -o ${BASE}/bin/wkhtmltoimage-$1 || exit 1
+    WK=${BUILD}/linux-$1/build/wkhtmltopdf
+    rm -rf  ${BASE}/bin/wkhtmltopdf-$1  ${BASE}/bin/wkhtmltoimage-$1 ${BASE}/bin/libwkhtmltopdf-$1.tar.gz
+    ${BUILD}/${UPX}/upx --best ${WK}/bin/wkhtmltopdf -o ${BASE}/bin/wkhtmltopdf-$1 || exit 1
+    ${BUILD}/${UPX}/upx --best ${WK}/bin/wkhtmltoimage -o ${BASE}/bin/wkhtmltoimage-$1 || exit 1
+    rm -rf ${WK}/lib
+    mkdir -p ${WK}/lib
+    cp ${WK}/bin/libwkhtmltox*.so ${WK}/lib || exit 1
+    cd ${WK} && tar -czf ${BASE}/bin/libwkhtmltopdf-$1.tar.gz lib include examples/Makefile examples/pdf_c_api.c
 }
 
 function build_windows() {
