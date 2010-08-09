@@ -61,7 +61,7 @@ CAPI void wkhtmltopdf_set_finished_callback(wkhtmltopdf_converter * converter, w
 /* CAPI void wkhtmltopdf_begin_convertion(wkhtmltopdf_converter * converter); */
 /* CAPI void wkhtmltopdf_cancel(wkhtmltopdf_converter * converter); */
 CAPI int wkhtmltopdf_convert(wkhtmltopdf_converter * converter);
-CAPI void wkhtmltopdf_add_resource(
+CAPI void wkhtmltopdf_add_object(
 	wkhtmltopdf_converter * converter, wkhtmltopdf_object_settings * setting, const char * data);
 
 CAPI int wkhtmltopdf_current_phase(wkhtmltopdf_converter * converter);

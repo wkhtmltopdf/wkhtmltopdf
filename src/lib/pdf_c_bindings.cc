@@ -26,7 +26,7 @@
 
 /**
  * \file pdf.h
- * \brief Provides C bindings for pdf convertion
+ * \brief Provides C bindings for pdf conversion
  */
 #include "pdf_c_bindings_p.hh"
 #include "utilities.hh"
@@ -77,11 +77,119 @@ MyPdfConverter::~MyPdfConverter() {
 	objectSettings.clear();
 }
 
+/**
+ * \page pagesettings Setting
+ * Settings can be supplied to PDF and image c-bindings using utf-8 encoded strings.
+ * This is done by relatively simple reflection on the CropSettins, HeaderFooter, Margin,
+ * ImageGlobal, PdfGlobal, PdfObject, Size, and TabelOfContent classes .
+ *
+ * - The \ref wkhtmltopdf_global_settings corresponds to the PdfGlobal class and is documented in \ref pagePdfGlobal.
+ * - The \ref wkhtmltopdf_object_settings corresponds to the PdfGlobal class and is documented in \ref pagePdfObject.
+ * - The \ref wkhtmltopdf_image_settings corresponds to the ImageGlobal class and is documented in \ref pageImageGlobal.
+ *
+ * \section pageGlobalLoad Page loading settings
+ *
+ * \section pagePdfGlobal Pdf global settings
+ * The \ref wkhtmltopdf_global_settings structure contains the following settings:
+ * - \b size.paperSize  The paper size of the output document, e.g. "A4".
+ * - \b size.width The with of the output document, e.g.  "4cm".
+ * - \b size.height The height of the output document, e.g. "12in".
+ * - \b orientation The orientation of the output document, must be either "Landscape" or "Portrait".
+ * - \b colorMode Should the output be printed in color or gray scale, must be either "Color" or "Grayscale"
+ * - \b resolution Most likely has no effect.
+ * - \b dpi What dpi should we use when printing, e.g. "80".
+ * - \b pageOffset A number that is added to all page numbers when printing headers, footers and table of content.
+ * - \b copies How many copies should we print?. e.g. "2".
+ * - \b collate Should the copies be collated? Must be either "true" or "false".
+ * - \b outline Should a outline (table of content in the sidebar) be generated and put into the PDF? Must be either "true" or false".
+ * - \b outlineDepth The maximal depth of the outline, e.g. "4".
+ * - \b dumpOutline If not set to the empty string a XML representation of the outline is dumped to this file.
+ * - \b out The path of the output file, if "-" output is sent to stdout, if empty the output is stored in a buffer.
+ * - \b documentTitle The title of the PDF document.
+ * - \b useCompression Should we use loss less compression when creating the pdf file? Must be either "true" or "false".
+ * - \b margin.top Size of the top margin, e.g. "2cm"
+ * - \b margin.bottom Size of the bottom margin, e.g. "2cm"
+ * - \b margin.left Size of the left margin, e.g. "2cm"
+ * - \b margin.right Size of the right margin, e.g. "2cm"
+ * - \b outputFormat The format of the output document, must be ether "", "pdf" or "ps".
+ * - \b imageDPI The maximal DPI to use for images in the pdf document.
+ * - \b imageQuality The jpeg compression factor to use when producing the pdf document, e.g. "92".
+ * - \b load.* Global Setting related to loading content, see \ref pageGlobalLoad.
+ *
+ * \section pagePdfObjectl Pdf object settings
+ * The \ref wkhtmltopdf_object_settings structure contains the following settings:
+ * - \b toc.*
+ * - \b page The URL or path of the web page to convert, if "-" input is read from stdin.
+ * - \b header.*
+ * - \b footer.*
+ * - \b useExternalLinks Should external links in the HTML document be converted into external pdf links? Must be either "true" or "false.
+ * - \b useLocalLinks Should internal links in the HTML document be converted into pdf references? Must be either "true" or "false"
+ * - \b replacements TODO
+ * - \b produceForms Should we turn HTML forms into PDF forms? Must be either "true" or file".
+ * - \b load.* Page specific settings related to loading content, see \ref pageLoad.
+ * - \b web.* See \ref pageWeb.
+ * - \b includeInOutline Should the sections from this document be included in the outline and table of content?
+ * - \b pagesCount Should we count the pages of this document, in the counter used for TOC, headers and footers?
+ * - \b tocXsl If not empty this object is a table of content object, "page" is ignored and this xsl style sheet is
+ *   used to convert the outline XML into a table of content.
+ */
+
+/**
+ * \struct wkhtmltopdf_global_settings
+ * \brief A struct holding global settings
+ *
+ * See also \ref pagesettings
+ */
+
+/**
+ * \struct wkhtmltopdf_object_settings
+ * \brief A struct holding object settings
+ *
+ * See also \ref pagesettings
+ */
+
+/**
+ * \struct wkhtmltopdf_converter
+ * \brief A struct holding information related to a conversion process
+ */
+
+/**
+ * \typedef wkhtmltopdf_str_callback
+ * \brief Function pointer type used for the error and warning callbacks
+ *
+ * \param converter The converter that issued the callback
+ * \param str A utf8 encoded string containing the error or warning message.
+ *
+ * \sa wkhtmltopdf_set_error_callback, wkhtmltopdf_set_warning_callback
+ */
+
+/**
+ * \typedef wkhtmltopdf_int_callback
+ * \brief Function pointer type used for the progress_changed and finished callbacks
+ *
+ * For the progress_changed callback the value indicated the progress
+ * within the current phase in percent. For the finished callback the value
+ * if 1 if the conversion has successful and 0 otherwise.
+ *
+ * \param converter The converter that issued the callback
+ * \param val The integer value
+ *
+ * \sa wkhtmltopdf_set_progress_changed, wkhtmltopdf_set_finished_callback
+ */
+
+/**
+ * \typedef wkhtmltopdf_void_callback
+ * \brief Function pointer type used for the phase_changed callback
+ *
+ * \param converter The converter that issued the callback
+ *
+ * \sa wkhtmltopdf_set_phase_changed_callback
+ */
 
 /**
  * \brief Check if the library is build against the wkhtmltopdf version of QT
  *
- * \return 1 if the library was build against the wkhtmltopdf version of QT and 0 otherwize
+ * \return 1 if the library was build against the wkhtmltopdf version of QT and 0 otherwise
  */
 CAPI int wkhtmltopdf_extended_qt() {
 #ifdef __EXTENSIVE_WKHTMLTOPDF_QT_HACK__
@@ -94,6 +202,12 @@ CAPI int wkhtmltopdf_extended_qt() {
 #define STRINGIZEE(a) # a
 #define STRINGIZE(a) STRINGIZEE(a)
 
+/**
+ * \brief Return the version of wkhtmltopdf
+ * Example: 0.10.0_beta4. The string is utf8 encoded and is owned by wkhtmltopdf.
+ *
+ * \return Qt version
+ */
 CAPI const char * wkhtmltopdf_version() {
 	return STRINGIZE(MAJOR_VERSION)"."STRINGIZE(MINOR_VERSION)"."STRINGIZE(PATCH_VERSION)
 #ifdef BUILD
@@ -107,8 +221,8 @@ CAPI const char * wkhtmltopdf_version() {
  *
  * Must be called before any other functions.
  *
- * \param use_graphics Should we use a grahics system
- * \returns 1 on success and 0 otherwize
+ * \param use_graphics Should we use a graphics system
+ * \returns 1 on success and 0 otherwise
  *
  * \sa wkhtmltopdf_deinit
  */
@@ -141,7 +255,7 @@ CAPI int wkhtmltopdf_init(int use_graphics) {
  * Free up resources used by wkhtmltopdf, when this has been called no other
  * wkhtmltopdf function can be called.
  *
- * \returns 1 on success and 0 otherwize
+ * \returns 1 on success and 0 otherwise
  *
  * \sa wkhtmltopdf_init
  */
@@ -153,11 +267,11 @@ CAPI int wkhtmltopdf_deinit() {
 }
 
 /**
- * \brief Create a new global settings object for pdf convertion
+ * \brief Create a new global settings object for pdf conversion
  *
- * Create a new global settings object for pdf convertion, settings can be altered with
+ * Create a new global settings object for pdf conversion, settings can be altered with
  * \ref wkhtmltopdf_set_global_setting, and inspected with \ref wkhtmltopdf_get_global_setting.
- * Once the decired settings have been set a converter object can be created using \reg wkhtmltopdf_create_converter.
+ * Once the desired settings have been set a converter object can be created using \reg wkhtmltopdf_create_converter.
  *
  * \returns A wkhtmltopdf global settings object
  */
@@ -168,27 +282,27 @@ CAPI wkhtmltopdf_global_settings * wkhtmltopdf_create_global_settings() {
 /**
  * \brief Alter a setting in a global settings object
  *
- * \sa  wkhtmltopdf_create_global_settings, wkhtmltopdf_get_global_setting
+ * \sa \ref pagesettings, wkhtmltopdf_create_global_settings, wkhtmltopdf_get_global_setting
  *
  * \param settings The settings object to change
  * \param name The name of the setting
  * \param value The new value for the setting
- * \returns 1 if the setting was updated successfully and 0 otherwize.
+ * \returns 1 if the setting was updated successfully and 0 otherwise.
  */
 CAPI int wkhtmltopdf_set_global_setting(wkhtmltopdf_global_settings * settings, const char * name, const char * value) {
 	return reinterpret_cast<settings::PdfGlobal *>(settings)->set(name, value);
 }
 
 /**
- * \brief Retrive a setting in a global settings object
+ * \brief Retrieve a setting in a global settings object
  *
- * \sa wkhtmltopdf_create_global_settings, wkhtmltopdf_set_global_setting
+ * \sa \ref pagesettings, wkhtmltopdf_create_global_settings, wkhtmltopdf_set_global_setting
  *
  * \param settings The settings object to inspect
  * \param name The name of the setting to read
- * \param value A buffer of length at least \a vs, where the value is storred.
+ * \param value A buffer of length at least \a vs, where the value is stored.
  * \param vs The length of \a value
- * \returns 1 If the the setting exists and was read successfully and 0 otherwize
+ * \returns 1 If the the setting exists and was read successfully and 0 otherwise
  */
 CAPI int wkhtmltopdf_get_global_setting(wkhtmltopdf_global_settings * settings, const char * name, char * value, int vs) {
 	QString res = reinterpret_cast<settings::PdfGlobal *>(settings)->get(name);
@@ -197,14 +311,45 @@ CAPI int wkhtmltopdf_get_global_setting(wkhtmltopdf_global_settings * settings, 
 	return 1;
 }
 
+/**
+ * \brief Create an object used to store object settings
+ *
+ * Create a new Object settings object for pdf conversion, settings can be altered with
+ * \ref wkhtmltopdf_set_object_setting, and inspected with \ref wkhtmltopdf_get_object_setting.
+ * Once the desired settings have been set the object can be added to a converter
+ * by calling wkhtmltopdf_add_resource.
+ *
+ * \returns an object settings instance
+ */
 CAPI wkhtmltopdf_object_settings * wkhtmltopdf_create_object_settings() {
 	return reinterpret_cast<wkhtmltopdf_object_settings *>(new settings::PdfObject());
 }
 
+/**
+ * \brief Alter a setting in a object settings object
+ *
+ * \sa \ref pagesettings, wkhtmltopdf_create_object_settings, wkhtmltopdf_get_object_setting
+ *
+ * \param settings The settings object to change
+ * \param name The name of the setting
+ * \param value The new value for the setting
+ * \returns 1 if the setting was updated successfully and 0 otherwise.
+ */
 CAPI int wkhtmltopdf_set_object_setting(wkhtmltopdf_object_settings * settings, const char * name, const char * value) {
 	return reinterpret_cast<settings::PdfObject *>(settings)->set(name, value);
 }
 
+/**
+ * \brief Retrieve a setting in a global settings object
+ *
+ * \sa \ref pagesettings, wkhtmltopdf_create_global_settings, wkhtmltopdf_set_global_setting
+ *
+ * \param settings The settings object to inspect
+ * \param name The name of the setting to read
+ * \param value A buffer of length at least \a vs, where the value is stored.
+ * \param vs The length of \a value
+ * \returns 1 If the the setting exists and was read successfully and 0 otherwise
+ */
 CAPI int wkhtmltopdf_get_object_setting(wkhtmltopdf_object_settings * settings, const char * name, char * value, int vs) {
 	QString res = reinterpret_cast<settings::PdfObject *>(settings)->get(name);
 	if (res.isNull()) return 0;
@@ -212,77 +357,238 @@ CAPI int wkhtmltopdf_get_object_setting(wkhtmltopdf_object_settings * settings, 
 	return 1;
 }
 
+/**
+ * \brief Create a wkhtmltopdf converter object
+ *
+ * The converter object is used to convert one or more objects(web sides) into a single pdf.
+ * Once a settings object has been parsed, it may no longer be accessed, and will eventually be freed.
+ * The returned converter object must be freed by calling \ref wkhtmltopdf_destroy_converter
+ *
+ * \param settings The global settings to use during conversion.
+ * \returns A wkhtmltopdf converter object
+ */
 CAPI wkhtmltopdf_converter * wkhtmltopdf_create_converter(wkhtmltopdf_global_settings * settings) {
 
 	return reinterpret_cast<wkhtmltopdf_converter *>(
 		new MyPdfConverter(reinterpret_cast<settings::PdfGlobal *>(settings)));
 }
 
+/**
+ * \brief Destroy a wkhtmltopdf converter object
+ *
+ * An object must be destroyed to free up its memory, once it has been destroyed it may no longer
+ * be accessed.
+ *
+ * \param settings The converter object to destroy
+ */
 CAPI void wkhtmltopdf_destroy_converter(wkhtmltopdf_converter * converter) {
 	delete reinterpret_cast<MyPdfConverter *>(converter);
 }
 
+/**
+ * \brief Set the function that should be called when an errors occurs during conversion
+ *
+ * \param converter The converter object on which errors we want the callback to be called
+ * \param cb The function to call when an error occurs
+ */
 CAPI void wkhtmltopdf_set_warning_callback(wkhtmltopdf_converter * converter, wkhtmltopdf_str_callback cb) {
 	reinterpret_cast<MyPdfConverter *>(converter)->warning_cb = cb;
 }
 
+/**
+ * \brief Set the function that should be called when an warning message is issued during conversion
+ *
+ * \param converter The converter object on which warnings we want the callback to be called
+ * \param cb The function to call when warning message is issued
+ *
+ */
 CAPI void wkhtmltopdf_set_error_callback(wkhtmltopdf_converter * converter, wkhtmltopdf_str_callback cb) {
 	reinterpret_cast<MyPdfConverter *>(converter)->error_cb = cb;
 }
 
+/**
+ * \brief Set the function that should be called whenever conversion changes phase
+ *
+ * The number of the new phase can be found by calling \ref wkhtmltopdf_current_phase
+ *
+ * \param converter The converter which phase change events to call back from
+ * \param cb The function to call when phases change
+ *
+ * \sa wkhtmltopdf_current_phase, wkhtmltopdf_phase_count, wkhtmltopdf_phase_description
+ */
 CAPI void wkhtmltopdf_set_phase_changed_callback(wkhtmltopdf_converter * converter, wkhtmltopdf_void_callback cb) {
 	reinterpret_cast<MyPdfConverter *>(converter)->phase_changed = cb;
 }
 
+/**
+ * \brief Set the function that should be called when progress have been done during conversion.
+ *
+ * The progress in percent within the current phase is given as an integer to the callback function.
+ *
+ * \param converter The converter which progress events to call back from
+ * \param cb The function to call when progress has occurred.
+ *
+ * \sa wkhtmltopdf_progress_description
+ */
 CAPI void wkhtmltopdf_set_progress_changed_callback(wkhtmltopdf_converter * converter, wkhtmltopdf_int_callback cb) {
 	reinterpret_cast<MyPdfConverter *>(converter)->progress_changed = cb;
 }
 
+/**
+ * \brief Set the function that should be called once the conversion has finished.
+ *
+
+ * \param converter The converter which finish events to call back from
+ * \param cb The function to call when the conversion has finished has occurred.
+ *
+ * \sa wkhtmltopdf_convert
+ */
 CAPI void wkhtmltopdf_set_finished_callback(wkhtmltopdf_converter * converter, wkhtmltopdf_int_callback cb) {
 	reinterpret_cast<MyPdfConverter *>(converter)->finished_cb = cb;
 }
 
-CAPI void wkhtmltopdf_begin_convertion(wkhtmltopdf_converter * converter) {
-	reinterpret_cast<MyPdfConverter *>(converter)->converter.beginConvertion();
-}
+//CAPI void wkhtmltopdf_begin_conversion(wkhtmltopdf_converter * converter) {
+//	reinterpret_cast<MyPdfConverter *>(converter)->converter.beginConvertion();
+//}
 
+/**
+ * \brief Convert the input objects into a pdf document
+ *
+ * This is the main method for the conversion process, during conversion progress information
+ * warning, and errors are reported using the supplied call backs. Once the conversion is done
+ * the output pdf (or ps) file will be placed at the location of the "out" setting supplied in
+ * the global settings object during construction of the converter. If this setting is not supplied
+ * or set to the empty string, the output can be retrieved using the \ref wkhtmltopdf_get_output
+ * function.
+ *
+ * \paragm converter The converter to perform the conversion on.
+ *
+ * \returns 1 on success and 0 otherwise
+ */
 CAPI int wkhtmltopdf_convert(wkhtmltopdf_converter * converter) {
 	return reinterpret_cast<MyPdfConverter *>(converter)->converter.convert();
 }
 
-CAPI void wkhtmltopdf_cancel(wkhtmltopdf_converter * converter) {
-	reinterpret_cast<MyPdfConverter *>(converter)->converter.cancel();
-}
+//CAPI void wkhtmltopdf_cancel(wkhtmltopdf_converter * converter) {
+//	reinterpret_cast<MyPdfConverter *>(converter)->converter.cancel();
+//}
 
-CAPI void wkhtmltopdf_add_resource(wkhtmltopdf_converter * converter, wkhtmltopdf_object_settings * settings, const char * data) {
+/**
+ * \brief add an object (web page to convert)
+ *
+ * Add the object described by the supplied object settings to the list of objects (web pages to convert),
+ * objects are placed in the output pdf in the order of addition. Once the object has been added, the
+ * supplied settings may no longer be accessed, it Wit eventually be freed by wkhtmltopdf.
+ * If a none NULL and none empty utf8 encoded string is supplied to data, this HTML content will be converted
+ * instead of the content located at  "page" setting of the supplied object settings instance.
+ *
+ * \param converter The converter to add the object to
+ * \param settings The setting describing the object to add
+ * \param data HTML content of the object to convert or NULL
+ */
+CAPI void wkhtmltopdf_add_object(wkhtmltopdf_converter * converter, wkhtmltopdf_object_settings * settings, const char * data) {
 	QString str= QString::fromUtf8(data);
 	reinterpret_cast<MyPdfConverter *>(converter)->converter.addResource(
 		*reinterpret_cast<settings::PdfObject *>(settings), &str);
 	reinterpret_cast<MyPdfConverter *>(converter)->objectSettings.push_back(reinterpret_cast<settings::PdfObject *>(settings));
 }
 
+/**
+ * \brief Get the number of the current conversion phase
+ *
+ * Conversion is done in a number of named phases, this
+ * function will retrieve the number of the current conversion phase,
+ * which will be a number between 0 and wkhtmltopdf_phase_count(converter)-1.
+ *
+ * The description (name) of any phase can be retrieved by calling the
+ * \ref wkhtmltopdf_phase_description method.
+ *
+ * \param converter The converter to find the current phase of
+ * \returns The current phase of the supplied converter
+ */
 CAPI int wkhtmltopdf_current_phase(wkhtmltopdf_converter * converter) {
 	return reinterpret_cast<MyPdfConverter *>(converter)->converter.currentPhase();
 }
 
+/**
+ * \brief Get the total number of phases the conversion process will go trough
+ *
+ * \param converter The converter to query
+ * \returns The total number of phases in the conversion process
+ *
+ * \sa wkhtmltopdf_current_phase, wkhtmltopdf_phase_description
+ */
 CAPI int wkhtmltopdf_phase_count(wkhtmltopdf_converter * converter) {
 	return reinterpret_cast<MyPdfConverter *>(converter)->converter.phaseCount();
 }
 
+
+/**
+ * \brief Return a short utf8 description of a conversion phase
+ *
+ * \param converter The converter to query
+ * \param phase The number of the conversion step of which we want a description
+ * \returns A description of the conversion phase
+ *
+ * \sa wkhtmltopdf_current_phase, wkhtmltopdf_phase_description
+ */
 CAPI const char * wkhtmltopdf_phase_description(wkhtmltopdf_converter * converter, int phase) {
 	return reinterpret_cast<MyPdfConverter *>(converter)->converter.phaseDescription(phase).toUtf8().constData();
 }
 
+/**
+ * \brief Return a short utf8 string indicating progress within a phase
+ *
+ * Will typically return a string like "40%"
+ *
+ * \param converter The converter to query
+ * \returns A string containing a progress indication
+ *
+ * \sa wkhtmltopdf_set_progress_changed_callback
+ */
 CAPI const char * wkhtmltopdf_progress_string(wkhtmltopdf_converter * converter) {
 	return reinterpret_cast<MyPdfConverter *>(converter)->converter.progressString().toUtf8().constData();
 }
 
+/**
+ * \brief Return the largest HTTP error code encountered during conversion
+ *
+ * Return the largest HTTP code greater then or equal to 300 encountered during loading
+ * of any of the supplied objects, if no such error code is found 0 is returned.
+ * This function will only return a useful result after \ref wkhtmltopdf_convert has been called.
+ *
+ * \param converter The converter to query
+ * \returns The HTTP error code.
+ */
 CAPI int wkhtmltopdf_http_error_code(wkhtmltopdf_converter * converter) {
 	return reinterpret_cast<MyPdfConverter *>(converter)->converter.httpErrorCode();
 }
 
+/**
+ * \brief Get the output document generated during conversion.
+ *
+ * If no "out" location was specified in the global settings object, the binary
+ * output (pdf document) of the convection process will be stored in a buffer.
+ *
+ * \param converter The converter to query
+ * \param d A pointer to a pointer that will be made to point to the output data
+ * \returns The length of the output data
+ */
 CAPI long wkhtmltopdf_get_output(wkhtmltopdf_converter * converter, const unsigned char ** d) {
 	const QByteArray & out = reinterpret_cast<MyPdfConverter *>(converter)->converter.output();
 	*d = (const unsigned char*)out.constData();
 	return out.size();
 }
+
+//  LocalWords:  eval progn stroustrup innamespace sts sw noet wkhtmltopdf DLL
+//  LocalWords:  ifdef WKHTMLTOX UNDEF undef endif pdf dllbegin namespace const
+//  LocalWords:  QString cb bool ok globalSettings phaseChanged progressChanged
+//  LocalWords:  objectSettings utf CropSettins HeaderFooter ImageGlobal dpi sa
+//  LocalWords:  PdfGlobal PdfObject TabelOfContent pagePdfGlobal pagePdfObject
+//  LocalWords:  pageImageGlobal pageGlobalLoad paperSize colorMode Grayscale
+//  LocalWords:  pageOffset outlineDepth dumpOutline stdout pageLoad pageWeb aa
+//  LocalWords:  includeInOutline pagesCount tocXsl xsl struct typedef str CAPI
+//  LocalWords:  param STRINGIZEE STRINGIZE deinit qApp strcpy wkhtmltox arg ug
+//  LocalWords:  WS MACX MyLooksStyle setStyle isNull qstrncpy MyPdfConverter
+//  LocalWords:  beginConvertion paragm addResource currentPhase phaseCount
+//  LocalWords:  urrent http httpErrorCode QByteArray constData
