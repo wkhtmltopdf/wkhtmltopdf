@@ -184,7 +184,7 @@ function packandcopylinux() {
     rm -rf ${WK}/lib
     mkdir -p ${WK}/lib
     cp ${WK}/bin/libwkhtmltox*.so ${WK}/lib || exit 1
-    cd ${WK} && tar -c --lzma -f ${BASE}/bin/libwkhtmltopdf-$1.tar.lzma lib include examples/Makefile examples/pdf_c_api.c
+    cd ${WK} && tar -c --lzma -f ${BASE}/bin/libwkhtmltox-$1.tar.lzma lib include examples/Makefile examples/pdf_c_api.c
 }
 
 
@@ -286,13 +286,13 @@ EOF
     wine strip.exe bin/wkhtmltopdf.exe || exit 1
     wine strip.exe bin/wkhtmltoimage.exe || exit 1
 
-    rm -rf  ${BASE}/bin/wkhtmltopdf.exe  ${BASE}/bin/wkhtmltoimage.exe ${BASE}/bin/libwkhtmltopdf.zip
+    rm -rf  ${BASE}/bin/wkhtmltopdf.exe  ${BASE}/bin/wkhtmltoimage.exe ${BASE}/bin/libwkhtmltox.zip
     ${BUILD}/${UPX}/upx --best bin/wkhtmltopdf.exe -o ${BASE}/bin/wkhtmltopdf.exe || exit 1
     ${BUILD}/${UPX}/upx --best bin/wkhtmltoimage.exe -o ${BASE}/bin/wkhtmltoimage.exe || exit 1
     rm -rf lib
     mkdir -p lib
     cp bin/wkhtmltox*.dll lib || exit 1
-    zip -9 ${BASE}/bin/libwkhtmltopdf.zip  lib include examples/Makefile examples/pdf_c_api.c
+    zip -9 ${BASE}/bin/libwkhtmltox.zip  lib include examples/Makefile examples/pdf_c_api.c
 }
 
 case "$1" in
