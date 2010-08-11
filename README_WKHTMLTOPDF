@@ -1,4 +1,4 @@
-======================> wkhtmltopdf 0.10.0 beta4 Manual <=======================
+======================> wkhtmltopdf 0.10.0 beta5 Manual <=======================
 This file documents wkhtmltopdf, a program capable of converting html documents
 into PDF documents.
 
@@ -37,18 +37,19 @@ WARRANTY, to the extent permitted by law.
 
 ==================================> Authors <===================================
 Written by Jan Habermann, Christian Sciberras and Jakob Truelsen. Patches by
-Mehdi Abbad, Lyes Amazouz, Emmanuel Bouthenot, Benoit Garret and Mário Silva.
+Mehdi Abbad, Lyes Amazouz, Pascal Bach, Emmanuel Bouthenot, Benoit Garret and
+Mário Silva.
 
 ==================================> Synopsis <==================================
 wkhtmltopdf [GLOBAL OPTION]... [OBJECT]... <output file>
 
 ==============================> Document objects <==============================
-wkhtmltopdf is able to put several objecs into the output file, an object is
+wkhtmltopdf is able to put several objects into the output file, an object is
 either a single webpage, a cover webpage or a table of content.  The objects are
-put into the output document in the order they are specified on the commandline,
-options can be specified on a per object basis or in the global options area.
-Options from the Global Options section can only be placed in the global options
-area
+put into the output document in the order they are specified on the command
+line, options can be specified on a per object basis or in the global options
+area. Options from the Global Options section can only be placed in the global
+options area
 
 A page objects puts the content of a singe webpage into the output document.
 
@@ -70,8 +71,8 @@ A table of content object inserts a table of content into the output document.
 toc [TOC OPTION]...
 All options that can be specified for a page object can also be specified for a
 toc, further more the options from the TOC Options section can also be applied.
-The table of content is generated via xslt which means that it can be styled to
-look however you want it to look. To get an idear of how to do this you can dump
+The table of content is generated via XSLT which means that it can be styled to
+look however you want it to look. To get an aide of how to do this you can dump
 the default xslt document by supplying the --dump-default-toc-xsl, and the
 outline it works on by supplying --dump-outline, see the Outline Options
 section.
@@ -226,7 +227,9 @@ Items marked * are only available using patched QT.
     --header-font-size * <size>       Set header font size (default 12)
     --header-html * <url>             Adds a html header
     --header-left * <text>            Left aligned header text
-    --no-header-line *                Display line below the header (default)
+    --header-line *                   Display line below the header
+    --no-header-line *                Do not display line below the header
+                                      (default)
     --header-right * <text>           Right aligned header text
     --header-spacing * <real>         Spacing between header and content in mm
                                       (default 0)
@@ -319,11 +322,48 @@ html documents in get fashion.
 Wkhtmltopdf with patched qt has support for PDF outlines also known as book
 marks, this can be enabled by specifying the --outline switch. The outlines are
 generated based on the <h?> tags, for a in-depth description of how this is done
-see the Table Of Conte section. 
+see the Table Of Contest section. 
 
-The outlin etree can sometimes be very deep, if the <h?> tags where spread to
+The outline tree can sometimes be very deep, if the <h?> tags where spread to
 generous in the HTML document.  The --outline-depth switch can be used to bound
 this.
+
+==============================> Table Of Content <==============================
+A table of content can be added to the document by adding a toc objectto the
+command line. For example:
+
+wkhtmltopdf toc http://doc.trolltech.com/4.6/qstring.html qstring.pdf
+
+The table of content is generated based on the H tags in the input documents.
+First a XML document is generated, then it is converted to HTML using XSLT.
+
+The generated XML document can be viewed by dumping it to a file using the
+--dump-outline switch. For example:
+
+wkhtmltopdf --dump-outline toc.xml http://doc.trolltech.com/4.6/qstring.html qstring.pdf
+
+The XSLT document can be specified using the --xsl-style-sheet switch. For
+example:
+
+wkhtmltopdf toc --xsl-style-sheet my.xsl http://doc.trolltech.com/4.6/qstring.html qstring.pdf
+
+The --dump-default-toc-xsl switch can be used to dump the default XSLT style
+sheet to stdout. This is a good start for writing your own style sheet
+
+wkhtmltopdf --dump-default-toc-xsl
+The XML document is in the namespace
+"http://code.google.com/p/wkhtmltopdf/outline" it has a root node called
+"outline" which contains a number of "item" nodes. An item can contain any
+number of item. These are the outline subsections to the section the item
+represents. A item node has the following attributes:
+
+ * "title" the name of the section.
+ * "page" the page number the section occurs on.
+ * "link" a URL that links to the section.
+ * "backLink" the name of the anchor the the section will link back to.
+
+The remaining TOC options only affect the default style sheet so they will not
+work when specifying a custom style sheet.
 
 ===============================> Page Breaking <================================
 The current page breaking algorithm of WebKit leaves much to be desired.
