@@ -93,7 +93,7 @@ int main() {
 	 * to the list of pages to convert. Objects are converted in the order in which
 	 * they are added
 	 */
-	wkhtmltopdf_add_resource(c, os, NULL);
+	wkhtmltopdf_add_object(c, os, NULL);
 
 	/* Perform the actual convertion */
 	if (!wkhtmltopdf_convert(c))
