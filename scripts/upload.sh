@@ -25,19 +25,25 @@ function ul() {
 	python googlecode_upload.py -u "$USER" -w "$PASS" -s "$1" -p "wkhtmltopdf" -l "$2" "$3"
 }
 
-if ! [ -f "wkhtmltopdf-$1.tar.bz2" ] ||
-   ! [ -f "wkhtmltopdf-$1-static-i386.tar.bz2" ] ||
-   ! [ -f "wkhtmltopdf-$1-static-amd64.tar.bz2" ] ||
+if ! [ -f "wkhtmltopdf-$1.tar.lzma" ] ||
+   ! [ -f "wkhtmltopdf-$1-static-i386.tar.lzma" ] ||
+   ! [ -f "wkhtmltopdf-$1-static-amd64.tar.lzma" ] ||
    ! [ -f "wkhtmltox-$1-installer.exe" ] ||
-   ! [ -f "wkhtmltoimage-$1-static-i386.tar.bz2" ] ||
-   ! [ -f "wkhtmltoimage-$1-static-amd64.tar.bz2" ]; then
+   ! [ -f "wkhtmltoimage-$1-static-i386.tar.lzma" ] ||
+   ! [ -f "wkhtmltoimage-$1-static-amd64.tar.lzma" ] ||
+   ! [ -f "libwkhtmltox-$1.zip" ] ||
+   ! [ -f "libwkhtmltox-$1-i386.tar.lzma" ] ||
+   ! [ -f "libwkhtmltox-$1-amd64.tar.lzma" ] ; then
 	echo "File Missing"
 	exit 1
 fi
 
-ul "wkhtmltopdf-$1 Source" "Type-Source,OpSys-All,Featured" "wkhtmltopdf-$1.tar.bz2"
-ul "wkhtmltopdf-$1 Linux Static Binary (i368)" "Type-Executable,OpSys-Linux,Featured" "wkhtmltopdf-$1-static-i386.tar.bz2"
-ul "wkhtmltopdf-$1 Linux Static Binary (amd64)" "Type-Executable,OpSys-Linux,Featured" "wkhtmltopdf-$1-static-amd64.tar.bz2"
+ul "wkhtmltopdf-$1 Source" "Type-Source,OpSys-All,Featured" "wkhtmltopdf-$1.tar.lzma"
+ul "wkhtmltopdf-$1 Linux Static Binary (i368)" "Type-Executable,OpSys-Linux,Featured" "wkhtmltopdf-$1-static-i386.tar.lzma"
+ul "wkhtmltopdf-$1 Linux Static Binary (amd64)" "Type-Executable,OpSys-Linux,Featured" "wkhtmltopdf-$1-static-amd64.tar.lzma"
 ul "wkhtmltox-$1 Windows Installer (i368)" "Type-Installer,OpSys-Windows,Featured" "wkhtmltox-$1-installer.exe"
-ul "wkhtmltoimage-$1 Linux Static Binary (i368)" "Type-Executable,OpSys-Linux,Featured" "wkhtmltoimage-$1-static-i386.tar.bz2"
-ul "wkhtmltoimage-$1 Linux Static Binary (amd64)" "Type-Executable,OpSys-Linux,Featured" "wkhtmltoimage-$1-static-amd64.tar.bz2"
+ul "wkhtmltoimage-$1 Linux Static Binary (i368)" "Type-Executable,OpSys-Linux,Featured" "wkhtmltoimage-$1-static-i386.tar.lzma"
+ul "wkhtmltoimage-$1 Linux Static Binary (amd64)" "Type-Executable,OpSys-Linux,Featured" "wkhtmltoimage-$1-static-amd64.tar.lzma"
+ul "libwkhtmltox-$1 Linux Static Library (i368)" "Type-Archive,OpSys-Linux" "libwkhtmltox-$1-i386.tar.lzma"
+ul "libwxhtmltox-$1 Linux Static Library (amd64)" "Type-Archive,OpSys-Linux" "libwkhtmltox-$1-amd64.tar.lzma"
+ul "libwkhtmltox-$1 Windows Static Library (i368)" "Type-Archive,OpSys-Windows" "libwkhtmltox-$1.zip"

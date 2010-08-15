@@ -224,4 +224,6 @@ void CommandLineParserBase::addPageLoadArgs(LoadPage & s) {
 	addarg("stop-slow-scripts", 0, "Stop slow running javascripts", new ConstSetter<bool>(s.stopSlowScripts, true));
 	addarg("no-stop-slow-scripts", 0, "Do not Stop slow running javascripts", new ConstSetter<bool>(s.stopSlowScripts, true));
 #endif
+	addarg("run-script", 0, "Run this additional javascript after the page is done loading (repeatable)", new StringListSetter(s.runScript, "js"));
+
 }

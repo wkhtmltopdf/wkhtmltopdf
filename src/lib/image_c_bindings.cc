@@ -18,6 +18,29 @@
 // You should have received a copy of the GNU Lesser General Public License
 // along with wkhtmltopdf.  If not, see <http://www.gnu.org/licenses/>.
 
+/**
+ * \page pagesettings Setting
+ * \section pageImageGlobal Image settings
+ * The \ref wkhtmltoimage_global_settings structure contains the following settings:
+ * - \b crop.left left/x coordinate of the window to capture in pixels. E.g. "200"
+ * - \b crop.top top/y coordinate of the window to capture in pixels. E.g. "200"
+ * - \b crop.width Width of the window to capture in pixels. E.g. "200"
+ * - \b crop.height Heigt of the window to capture in pixels. E.g. "200"
+ * - \b load.cookieJar Path of file used to load and store cookies.
+ * - \b load.* Page specific settings related to loading content, see \ref pageLoad.
+ * - \b web.* See \ref pageWeb.
+ * - \b transparent When outputting a PNG or SVG, make the white background transparent.
+ *      Must be either "true" or "false"
+ * - \b in The URL or path of the input file, if "-" stdin is used. E.g. "http://google.com"
+ * - \b out The path of the output file, if "-" stdout is used, if empty the content is storred
+ *      to a internalBuffer.
+ * - \b fmt The output format to use, must be either "", "jpg", "png", "bmp" or "svg".
+ * - \b screenWidth The with of the screen used to render is pixels, e.g "800".
+ * - \b smartWidth Should we expand the screenWidth if the content does not fit?
+ *      must be either "true" or "false".
+ * - \b quality The compression factor to use when outputting a JPEG image. E.g. "94".
+ */
+
 #ifdef __WKHTMLTOX_UNDEF_QT_DLL__
 #ifdef QT_DLL
 #undef QT_DLL

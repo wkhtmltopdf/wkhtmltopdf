@@ -34,8 +34,180 @@
 #include <QWebFrame>
 
 #include "dllbegin.inc"
-using namespace wkhtmltopdf;
+/**
+ * \page pagesettings Setting
+ * Settings can be supplied to PDF and image c-bindings using utf-8 encoded strings.
+ * This is done by relatively simple reflection on the CropSettins, HeaderFooter, Margin,
+ * ImageGlobal, PdfGlobal, PdfObject, Size, and TabelOfContent classes.
+ *
+ * - The \ref wkhtmltopdf_global_settings corresponds to the PdfGlobal class and is documented in \ref pagePdfGlobal.
+ * - The \ref wkhtmltopdf_object_settings corresponds to the PdfGlobal class and is documented in \ref pagePdfObject.
+ * - The \ref wkhtmltopdf_image_settings corresponds to the ImageGlobal class and is documented in \ref pageImageGlobal.
+ *
+ * \section pageWeb Web page specific settings
+ * The following web page specific settings apply
+ * - \b web.background Should we print the background? Must be either "true" or "false".
+ * - \b web.loadImages Should we load images? Must be either "true" or "false".
+ * - \b web.enableJavascript Should we enable javascript? Must be either "true" or "false".
+ * - \b web.enableIntelligentShrinking Should we enable intelligent shrinkng to fit more content
+ *      on one page? Must be either "true" or "false". Has no effect for wkhtmltoimage.
+ * - \b web.minimumFontSize The minimum font size allowed. E.g. "9"
+ * - \b web.printMediaType Should the content be printed using the print media type instead
+ *      of the screen media type. Must be either "true" or "false". Has no effect for wkhtmltoimage.
+ * - \b web.defaultEncoding What encoding should we guess content is using if they do not
+ *      specify it propperly? E.g. "utf-8"
+ * - \b web.userStyleSheet Url er path to a user specified style sheet.
+ * - \b web.enablePlugins Should we enable NS plugins, must be either "true" or "false".
+ *      Enabling this will have limited success.
+ *
+ * \section pageLoad Object Specific loading settings
+ * The following settings apply for object loading.
+ * - \b load.username The user name to use when loging into a website, E.g. "bart"
+ * - \b load.password The password to used when logging into a website, E.g. "elbarto"
+ * - \b load.jsdelay The mount of time in milliseconds to wait after a page has done loading until
+ *      it is actualy printed. E.g. "1200". We will wait this amount of time or until, javascript
+ *      calles window.print().
+ * - \b load.zoomFactor How much should we zoom in on the content? E.g. "2.2".
+ * - \b load.customHeaders TODO
+ * - \b load.repertCustomHeaders Should the custom headers be sendt all elements loaded instead of
+ *       only the main page? Must be either "true" or "false".
+ * - \b load.cookies TODO
+ * - \b load.post TODO
+ * - \b load.blockLocalFileAccess Dissalow local and piped files to acces other local files. Must
+ *      be either "true" or "false".
+ * - \b load.stopSlowScript Stop slow running javascript. Must be either "true" or "false".
+ * - \b load.debugJavascript Forward javascript warnings and errors to the warning callback.
+ *      Must be either "true" or "false".
+ * - \b load.loadErrorHandling How should we handel obejcts that fail to load. Must be one of:
+ *      - "abort" Abort the convertion process
+ *      - "skip" Do not add the object to the final output
+ *      - "ignore" Try to add the object to the final output.
+ * - \b load.proxy String describing whact proxy to use when loading the object.
+ * - \b load.runScript TODO
+ *
+ * \section pageHeaderFooter Header and footer settings
+ * The same settings can be applied for headers and footers, here there are explained in
+ * terms of the header.
+ * - \b header.fontSize The font size to use for the header, e.g. "13"
+ * - \b header.fontName The name of the font to use for the header. e.g. "times"
+ * - \b header.left The string to print in the left part of the header, note that some sequences
+ *      are replaced in this string, see the wkhtmltopdf manual.
+ * - \b header.center The text to print in the center part of the header.
+ * - \b header.right The text to print in the right part of the header.
+ * - \b header.line Should a line be printed under the header? Must be either "true" or "false.
+ * - \b header.space The amount of space to put between the header and the content, e.g. "1.8". Be
+ *      aware that if this is to large the header will be printed outside the pdf document. This
+ *      can be correct with the margin.top setting.
+ * - \b header.htmlUrl Url for a HTML document to use for the header.
+ *
+ * \section pagePdfGlobal Pdf global settings
+ * The \ref wkhtmltopdf_global_settings structure contains the following settings:
+ * - \b size.paperSize  The paper size of the output document, e.g. "A4".
+ * - \b size.width The with of the output document, e.g.  "4cm".
+ * - \b size.height The height of the output document, e.g. "12in".
+ * - \b orientation The orientation of the output document, must be either "Landscape" or "Portrait".
+ * - \b colorMode Should the output be printed in color or gray scale, must be either "Color" or "Grayscale"
+ * - \b resolution Most likely has no effect.
+ * - \b dpi What dpi should we use when printing, e.g. "80".
+ * - \b pageOffset A number that is added to all page numbers when printing headers, footers and table of content.
+ * - \b copies How many copies should we print?. e.g. "2".
+ * - \b collate Should the copies be collated? Must be either "true" or "false".
+ * - \b outline Should a outline (table of content in the sidebar) be generated and put into the PDF? Must be either "true" or false".
+ * - \b outlineDepth The maximal depth of the outline, e.g. "4".
+ * - \b dumpOutline If not set to the empty string a XML representation of the outline is dumped to this file.
+ * - \b out The path of the output file, if "-" output is sent to stdout, if empty the output is stored in a buffer.
+ * - \b documentTitle The title of the PDF document.
+ * - \b useCompression Should we use loss less compression when creating the pdf file? Must be either "true" or "false".
+ * - \b margin.top Size of the top margin, e.g. "2cm"
+ * - \b margin.bottom Size of the bottom margin, e.g. "2cm"
+ * - \b margin.left Size of the left margin, e.g. "2cm"
+ * - \b margin.right Size of the right margin, e.g. "2cm"
+ * - \b outputFormat The format of the output document, must be ether "", "pdf" or "ps".
+ * - \b imageDPI The maximal DPI to use for images in the pdf document.
+ * - \b imageQuality The jpeg compression factor to use when producing the pdf document, e.g. "92".
+ * - \b load.cookieJar Path of file used to load and store cookies.
+ *
+ * \section pagePdfObject Pdf object settings
+ * The \ref wkhtmltopdf_object_settings structure contains the following settings:
+ * - \b toc.useDottedLines Should we use a dotted line when creating a table of content?
+ *      Must be either "true" or "false".
+ * - \b toc.captionText The caption to use when creating a table of content.
+ * - \b toc.forwardLinks Should we create links from the table of content into the actual content?
+ *      Must be either "true or "false.
+ * - \b toc.backLinks Should we link back from the content to this table of content.
+ * - \b toc.indentation The indentation used for every table of content level, e.g. "2em".
+ * - \b toc.fontScale How much should we scale down the font for every toc level? E.g. "0.8"
+ * - \b page The URL or path of the web page to convert, if "-" input is read from stdin.
+ * - \b header.* Header specific settings see \ref pageHeaderFooter.
+ * - \b footer.* Footer specific settings see \ref pageHeaderFooter.
+ * - \b useExternalLinks Should external links in the HTML document be converted into
+ *      external pdf links? Must be either "true" or "false.
+ * - \b useLocalLinks Should internal links in the HTML document be converted into pdf
+ *      references? Must be either "true" or "false"
+ * - \b replacements TODO
+ * - \b produceForms Should we turn HTML forms into PDF forms? Must be either "true" or file".
+ * - \b load.* Page specific settings related to loading content, see \ref pageLoad.
+ * - \b web.* See \ref pageWeb.
+ * - \b includeInOutline Should the sections from this document be included in the outline and table of content?
+ * - \b pagesCount Should we count the pages of this document, in the counter used for TOC, headers and footers?
+ * - \b tocXsl If not empty this object is a table of content object, "page" is ignored and this xsl style
+ *      sheet is used to convert the outline XML into a table of content.
+ */
 
+/**
+ * \struct wkhtmltopdf_global_settings
+ * \brief A struct holding global settings
+ *
+ * See also \ref pagePdfGlobal
+ */
+
+/**
+ * \struct wkhtmltopdf_object_settings
+ * \brief A struct holding object settings
+ *
+ * See also \ref pagePdfObject
+ */
+
+/**
+ * \struct wkhtmltopdf_converter
+ * \brief A struct holding information related to a conversion process
+ */
+
+/**
+ * \typedef wkhtmltopdf_str_callback
+ * \brief Function pointer type used for the error and warning callbacks
+ *
+ * \param converter The converter that issued the callback
+ * \param str A utf8 encoded string containing the error or warning message.
+ *
+ * \sa wkhtmltopdf_set_error_callback, wkhtmltopdf_set_warning_callback
+ */
+
+/**
+ * \typedef wkhtmltopdf_int_callback
+ * \brief Function pointer type used for the progress_changed and finished callbacks
+ *
+ * For the progress_changed callback the value indicated the progress
+ * within the current phase in percent. For the finished callback the value
+ * if 1 if the conversion has successful and 0 otherwise.
+ *
+ * \param converter The converter that issued the callback
+ * \param val The integer value
+ *
+ * \sa wkhtmltopdf_set_progress_changed, wkhtmltopdf_set_finished_callback
+ */
+
+/**
+ * \typedef wkhtmltopdf_void_callback
+ * \brief Function pointer type used for the phase_changed callback
+ *
+ * \param converter The converter that issued the callback
+ *
+ * \sa wkhtmltopdf_set_phase_changed_callback
+ */
+
+
+using namespace wkhtmltopdf;
 QApplication * a = 0;
 int usage = 0;
 
@@ -77,114 +249,6 @@ MyPdfConverter::~MyPdfConverter() {
 	objectSettings.clear();
 }
 
-/**
- * \page pagesettings Setting
- * Settings can be supplied to PDF and image c-bindings using utf-8 encoded strings.
- * This is done by relatively simple reflection on the CropSettins, HeaderFooter, Margin,
- * ImageGlobal, PdfGlobal, PdfObject, Size, and TabelOfContent classes .
- *
- * - The \ref wkhtmltopdf_global_settings corresponds to the PdfGlobal class and is documented in \ref pagePdfGlobal.
- * - The \ref wkhtmltopdf_object_settings corresponds to the PdfGlobal class and is documented in \ref pagePdfObject.
- * - The \ref wkhtmltopdf_image_settings corresponds to the ImageGlobal class and is documented in \ref pageImageGlobal.
- *
- * \section pageGlobalLoad Page loading settings
- *
- * \section pagePdfGlobal Pdf global settings
- * The \ref wkhtmltopdf_global_settings structure contains the following settings:
- * - \b size.paperSize  The paper size of the output document, e.g. "A4".
- * - \b size.width The with of the output document, e.g.  "4cm".
- * - \b size.height The height of the output document, e.g. "12in".
- * - \b orientation The orientation of the output document, must be either "Landscape" or "Portrait".
- * - \b colorMode Should the output be printed in color or gray scale, must be either "Color" or "Grayscale"
- * - \b resolution Most likely has no effect.
- * - \b dpi What dpi should we use when printing, e.g. "80".
- * - \b pageOffset A number that is added to all page numbers when printing headers, footers and table of content.
- * - \b copies How many copies should we print?. e.g. "2".
- * - \b collate Should the copies be collated? Must be either "true" or "false".
- * - \b outline Should a outline (table of content in the sidebar) be generated and put into the PDF? Must be either "true" or false".
- * - \b outlineDepth The maximal depth of the outline, e.g. "4".
- * - \b dumpOutline If not set to the empty string a XML representation of the outline is dumped to this file.
- * - \b out The path of the output file, if "-" output is sent to stdout, if empty the output is stored in a buffer.
- * - \b documentTitle The title of the PDF document.
- * - \b useCompression Should we use loss less compression when creating the pdf file? Must be either "true" or "false".
- * - \b margin.top Size of the top margin, e.g. "2cm"
- * - \b margin.bottom Size of the bottom margin, e.g. "2cm"
- * - \b margin.left Size of the left margin, e.g. "2cm"
- * - \b margin.right Size of the right margin, e.g. "2cm"
- * - \b outputFormat The format of the output document, must be ether "", "pdf" or "ps".
- * - \b imageDPI The maximal DPI to use for images in the pdf document.
- * - \b imageQuality The jpeg compression factor to use when producing the pdf document, e.g. "92".
- * - \b load.* Global Setting related to loading content, see \ref pageGlobalLoad.
- *
- * \section pagePdfObjectl Pdf object settings
- * The \ref wkhtmltopdf_object_settings structure contains the following settings:
- * - \b toc.*
- * - \b page The URL or path of the web page to convert, if "-" input is read from stdin.
- * - \b header.*
- * - \b footer.*
- * - \b useExternalLinks Should external links in the HTML document be converted into external pdf links? Must be either "true" or "false.
- * - \b useLocalLinks Should internal links in the HTML document be converted into pdf references? Must be either "true" or "false"
- * - \b replacements TODO
- * - \b produceForms Should we turn HTML forms into PDF forms? Must be either "true" or file".
- * - \b load.* Page specific settings related to loading content, see \ref pageLoad.
- * - \b web.* See \ref pageWeb.
- * - \b includeInOutline Should the sections from this document be included in the outline and table of content?
- * - \b pagesCount Should we count the pages of this document, in the counter used for TOC, headers and footers?
- * - \b tocXsl If not empty this object is a table of content object, "page" is ignored and this xsl style sheet is
- *   used to convert the outline XML into a table of content.
- */
-
-/**
- * \struct wkhtmltopdf_global_settings
- * \brief A struct holding global settings
- *
- * See also \ref pagesettings
- */
-
-/**
- * \struct wkhtmltopdf_object_settings
- * \brief A struct holding object settings
- *
- * See also \ref pagesettings
- */
-
-/**
- * \struct wkhtmltopdf_converter
- * \brief A struct holding information related to a conversion process
- */
-
-/**
- * \typedef wkhtmltopdf_str_callback
- * \brief Function pointer type used for the error and warning callbacks
- *
- * \param converter The converter that issued the callback
- * \param str A utf8 encoded string containing the error or warning message.
- *
- * \sa wkhtmltopdf_set_error_callback, wkhtmltopdf_set_warning_callback
- */
-
-/**
- * \typedef wkhtmltopdf_int_callback
- * \brief Function pointer type used for the progress_changed and finished callbacks
- *
- * For the progress_changed callback the value indicated the progress
- * within the current phase in percent. For the finished callback the value
- * if 1 if the conversion has successful and 0 otherwise.
- *
- * \param converter The converter that issued the callback
- * \param val The integer value
- *
- * \sa wkhtmltopdf_set_progress_changed, wkhtmltopdf_set_finished_callback
- */
-
-/**
- * \typedef wkhtmltopdf_void_callback
- * \brief Function pointer type used for the phase_changed callback
- *
- * \param converter The converter that issued the callback
- *
- * \sa wkhtmltopdf_set_phase_changed_callback
- */
 
 /**
  * \brief Check if the library is build against the wkhtmltopdf version of QT
@@ -282,7 +346,7 @@ CAPI wkhtmltopdf_global_settings * wkhtmltopdf_create_global_settings() {
 /**
  * \brief Alter a setting in a global settings object
  *
- * \sa \ref pagesettings, wkhtmltopdf_create_global_settings, wkhtmltopdf_get_global_setting
+ * \sa \ref pagePdfGlobal, wkhtmltopdf_create_global_settings, wkhtmltopdf_get_global_setting
  *
  * \param settings The settings object to change
  * \param name The name of the setting

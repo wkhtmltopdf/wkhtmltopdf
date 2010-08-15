@@ -401,6 +401,8 @@ void PdfConverterPrivate::findLinks(QWebFrame * frame, QVector<QPair<QWebElement
 						e = p->page->mainFrame()->findFirstElement("a[name=\""+href.fragment()+"\"]");
 						if (e.isNull())
 							e = p->page->mainFrame()->findFirstElement("*[id=\""+href.fragment()+"\"]");
+						if (e.isNull())
+							e = p->page->mainFrame()->findFirstElement("*[name=\""+href.fragment()+"\"]");
 					}
 					if (!e.isNull()) {
 						p->anchors[href.toString()] = e;

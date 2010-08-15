@@ -211,6 +211,11 @@ void ResourceObject::loadFinished(bool ok) {
 		} else
 			warning(QString("Failed loading page ") + url.toString() + " (ignored)");
 	}
+
+	// Evaluate extra user supplied javascript
+	foreach (const QString & str, settings.runScript)
+		webPage.mainFrame()->evaluateJavaScript(str);
+
 	if (signalPrint || settings.jsdelay == 0) loadDone();
 	else QTimer::singleShot(settings.jsdelay, this, SLOT(loadDone()));
 }

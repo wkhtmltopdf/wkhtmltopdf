@@ -1,4 +1,4 @@
-=====================> wkhtmltoimage 0.10.0 beta4 Manual <======================
+=====================> wkhtmltoimage 0.10.0 beta5 Manual <======================
 This file documents wkhtmltoimage, a program capable of converting HTML
 documents into images.
 
@@ -18,7 +18,8 @@ WARRANTY, to the extent permitted by law.
 
 ==================================> Authors <===================================
 Written by Jan Habermann, Christian Sciberras and Jakob Truelsen. Patches by
-Mehdi Abbad, Lyes Amazouz, Emmanuel Bouthenot, Benoit Garret and Mário Silva.
+Mehdi Abbad, Lyes Amazouz, Pascal Bach, Emmanuel Bouthenot, Benoit Garret and
+Mário Silva.
 
 ==================================> Synopsis <==================================
 wkhtmltoimage [OPTIONS]... <input file> <output file>

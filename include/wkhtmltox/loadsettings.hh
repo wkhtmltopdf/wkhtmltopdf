@@ -107,6 +107,9 @@ struct DLL_PUBLIC LoadPage {
 
 	//! Proxy related settings
 	Proxy proxy;
+
+	//! Additional javascript to run on a page once it has loaded
+	QList< QString > runScript;
 };
 
 DLL_PUBLIC LoadPage::LoadErrorHandling strToLoadErrorHandling(const char * s, bool * ok=0);

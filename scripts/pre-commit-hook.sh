@@ -17,4 +17,4 @@
 # You should have received a copy of the GNU General Public License
 # along with wkhtmltopdf.  If not, see <http:#www.gnu.org/licenses/>.
 
-git diff --staged --name-only HEAD | xargs -d '\n' python scripts/sourcefix.py || exit 1
+git diff --staged --name-only HEAD | grep -v version.pri | xargs -d '\n' python scripts/sourcefix.py || exit 1

@@ -176,6 +176,18 @@ EOF
     chmod +x build.sh
 }
 
+function packandcopylinux() {
+    WK=${BUILD}/linux-$1/build/wkhtmltopdf
+    rm -rf  ${BASE}/bin/wkhtmltopdf-$1  ${BASE}/bin/wkhtmltoimage-$1 ${BASE}/bin/libwkhtmltopdf-$1.tar.lzma
+    ${BUILD}/${UPX}/upx --best ${WK}/bin/wkhtmltopdf -o ${BASE}/bin/wkhtmltopdf-$1 || exit 1
+    ${BUILD}/${UPX}/upx --best ${WK}/bin/wkhtmltoimage -o ${BASE}/bin/wkhtmltoimage-$1 || exit 1
+    rm -rf ${WK}/lib
+    mkdir -p ${WK}/lib
+    cp ${WK}/bin/libwkhtmltox*.so ${WK}/lib || exit 1
+    cd ${WK} && tar -c --lzma -f ${BASE}/bin/libwkhtmltox-$1.tar.lzma lib include examples/Makefile examples/pdf_c_api.c
+}
+
+
 function build_linux_local() {
     cd ${BUILD}
     mkdir -p linux-local
@@ -183,8 +195,7 @@ function build_linux_local() {
     setup_build linux
     ./build.sh || exit 1
     cd ..
-    ${BUILD}/${UPX}/upx --best ${BUILD}/linux-local/wkhtmltopdf/bin/wkhtmltopdf -o ${BASE}/bin/wkhtmltopdf || exit 1
-    ${BUILD}/${UPX}/upx --best ${BUILD}/linux-local/wkhtmltopdf/bin/wkhtmltoimage -o ${BASE}/bin/wkhtmltoimage || exit 1
+    packandcopylinux local
 }
 
 function setup_chroot() {
@@ -216,14 +227,7 @@ function build_linux_chroot() {
     else
 	sudo chroot ${BUILD}/linux-$1/ /build/buildw.sh || exit 1
     fi
-    WK=${BUILD}/linux-$1/build/wkhtmltopdf
-    rm -rf  ${BASE}/bin/wkhtmltopdf-$1  ${BASE}/bin/wkhtmltoimage-$1 ${BASE}/bin/libwkhtmltopdf-$1.tar.gz
-    ${BUILD}/${UPX}/upx --best ${WK}/bin/wkhtmltopdf -o ${BASE}/bin/wkhtmltopdf-$1 || exit 1
-    ${BUILD}/${UPX}/upx --best ${WK}/bin/wkhtmltoimage -o ${BASE}/bin/wkhtmltoimage-$1 || exit 1
-    rm -rf ${WK}/lib
-    mkdir -p ${WK}/lib
-    cp ${WK}/bin/libwkhtmltox*.so ${WK}/lib || exit 1
-    cd ${WK} && tar -czf ${BASE}/bin/libwkhtmltopdf-$1.tar.gz lib include examples/Makefile examples/pdf_c_api.c
+    packandcopylinux $1
 }
 
 function build_windows() {
@@ -281,9 +285,14 @@ EOF
     wine mingw32-make -j${J} || exit 1
     wine strip.exe bin/wkhtmltopdf.exe || exit 1
     wine strip.exe bin/wkhtmltoimage.exe || exit 1
-    rm -rf ${BASE}/wkhtmltopdf.exe
+
+    rm -rf  ${BASE}/bin/wkhtmltopdf.exe  ${BASE}/bin/wkhtmltoimage.exe ${BASE}/bin/libwkhtmltox.zip
     ${BUILD}/${UPX}/upx --best bin/wkhtmltopdf.exe -o ${BASE}/bin/wkhtmltopdf.exe || exit 1
     ${BUILD}/${UPX}/upx --best bin/wkhtmltoimage.exe -o ${BASE}/bin/wkhtmltoimage.exe || exit 1
+    rm -rf lib
+    mkdir -p lib
+    cp bin/wkhtmltox*.dll lib || exit 1
+    zip -9 ${BASE}/bin/libwkhtmltox.zip  lib include examples/Makefile examples/pdf_c_api.c
 }
 
 case "$1" in
