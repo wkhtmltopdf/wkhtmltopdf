@@ -70,6 +70,7 @@ ReflectImpl<LoadPage>::ReflectImpl(LoadPage & c) {
 	WKHTMLTOPDF_REFLECT(debugJavascript);
 	WKHTMLTOPDF_REFLECT(loadErrorHandling);
 	WKHTMLTOPDF_REFLECT(proxy);
+	WKHTMLTOPDF_REFLECT(runScript);
 }
 
 ReflectImpl<Web>::ReflectImpl(Web & c) {

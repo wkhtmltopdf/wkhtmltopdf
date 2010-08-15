@@ -89,10 +89,10 @@ struct DLL_PUBLIC PdfGlobal {
 
 	//! Be less verbose
 	bool quiet;
-	
+
 	//! Should we use the graphics system
 	bool useGraphics;
-	
+
 	//! Should we orientate in landscape or portrate
 	QPrinter::Orientation orientation;
 

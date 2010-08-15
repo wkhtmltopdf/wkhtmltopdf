@@ -83,7 +83,8 @@
  *      - "skip" Do not add the object to the final output
  *      - "ignore" Try to add the object to the final output.
  * - \b load.proxy String describing whact proxy to use when loading the object.
-
+ * - \b load.runScript TODO
+ *
  * \section pageHeaderFooter Header and footer settings
  * The same settings can be applied for headers and footers, here there are explained in
  * terms of the header.
