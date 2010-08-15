@@ -504,7 +504,7 @@ QUrl MultiPageLoader::guessUrlFromString(const QString &string) {
 		urlStr = QLatin1String("http://") + urlStr;
 
 	// Check if it looks like a qualified URL. Try parsing it and see.
-	QRegExp test(QLatin1String("^[a-zA-Z]+\\:.*"));
+	QRegExp test(QLatin1String("^[a-zA-Z]+\\://.*"));
 	bool hasSchema = test.exactMatch(urlStr);
 	if (hasSchema) {
 		bool isAscii = true;
