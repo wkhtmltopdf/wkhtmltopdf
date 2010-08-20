@@ -22,6 +22,7 @@ include(../../version.pri)
 include(../../common.pri)
 include(lib.pri)
 
+DEF_FILE = lib.def
 DEFINES += __WKHTMLTOX_UNDEF_QT_DLL__
 
 unix {

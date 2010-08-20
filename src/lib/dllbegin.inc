@@ -39,10 +39,16 @@
   #endif
 #endif
 
-#ifdef __cplusplus
-  #define CAPI extern "C" DLL_PUBLIC
+#if defined _WIN32
+#define CALLTYPE __stdcall
 #else
-  #define CAPI DLL_PUBLIC
+#define CALLTYPE
+#endif
+
+#ifdef __cplusplus
+  #define CAPI extern "C" DLL_PUBLIC CALLTYPE
+#else
+  #define CAPI DLL_PUBLIC CALLTYPE
 #endif
 
 #endif /*__WKHTMLTOPDF_DLLBEGIN__*/
