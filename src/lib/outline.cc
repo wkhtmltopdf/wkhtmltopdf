@@ -124,7 +124,7 @@ void OutlinePrivate::outlineChildren(OutlineItem * item, QPrinter * printer, int
 	}
 }
 
-QString escape(QString & str) {
+QString escape(QString str) {
 	return str.replace('&',"&amp;")
 		.replace('<',"&lt;")
 		.replace('>',"&gt;")
