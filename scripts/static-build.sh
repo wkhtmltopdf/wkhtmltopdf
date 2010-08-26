@@ -291,8 +291,8 @@ EOF
     ${BUILD}/${UPX}/upx --best bin/wkhtmltoimage.exe -o ${BASE}/bin/wkhtmltoimage.exe || exit 1
     rm -rf lib
     mkdir -p lib
-    cp bin/wkhtmltox*.dll lib || exit 1
-    zip -9 ${BASE}/bin/libwkhtmltox.zip  lib include examples/Makefile examples/pdf_c_api.c
+    cp bin/wkhtmltox*.dll bin/libwkhtmltox*.a lib || exit 1
+    zip -r9 ${BASE}/bin/libwkhtmltox.zip lib include examples/Makefile examples/pdf_c_api.c
 }
 
 case "$1" in
