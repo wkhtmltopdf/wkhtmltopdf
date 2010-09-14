@@ -33,6 +33,7 @@
 #include <QImageWriter>
 #include <QPainter>
 #include <QStyleOption>
+#include <QSvgRenderer>
 #include <QUrl>
 
 #include <wkhtmltox/dllbegin.inc>
@@ -46,6 +47,11 @@ public:
 	MyLooksStyle();
 	void drawPrimitive( PrimitiveElement element, const QStyleOption * option, QPainter * painter, const QWidget * widget = 0 ) const;
 	bool weAreDrawingForms;
+
+	static QSvgRenderer * checkbox;
+	static QSvgRenderer * checkbox_checked;
+	static QSvgRenderer * radiobutton;
+	static QSvgRenderer * radiobutton_checked;
 public slots:
 	void producingForms(bool f);
 };
