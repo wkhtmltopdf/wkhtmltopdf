@@ -212,7 +212,7 @@ Items marked * are only available using patched QT.
 
 =========================> Headers And Footer Options <=========================
     --footer-center * <text>          Centered footer text
-    --footer-font-name * <name>       Set footer font name (default Ariel)
+    --footer-font-name * <name>       Set footer font name (default Arial)
     --footer-font-size * <size>       Set footer font size (default 12)
     --footer-html * <url>             Adds a html footer
     --footer-left * <text>            Left aligned footer text
@@ -223,7 +223,7 @@ Items marked * are only available using patched QT.
     --footer-spacing * <real>         Spacing between footer and content in mm
                                       (default 0)
     --header-center * <text>          Centered header text
-    --header-font-name * <name>       Set header font name (default Ariel)
+    --header-font-name * <name>       Set header font name (default Arial)
     --header-font-size * <size>       Set header font size (default 12)
     --header-html * <url>             Adds a html header
     --header-left * <text>            Left aligned header text

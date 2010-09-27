@@ -352,7 +352,7 @@ Size::Size():
 
 HeaderFooter::HeaderFooter():
 	fontSize(12),
-	fontName("Ariel"),
+	fontName("Arial"),
 	left(""),
 	right(""),
 	center(""),

@@ -47,7 +47,7 @@ void dumpDefaultTOCStyleSheet(QTextStream & stream, settings::TableOfContent & s
 		   << "          h1 {" << endl
 		   << "            text-align: center;" << endl
 		   << "            font-size: 20px;" << endl
-		   << "            font-family: ariel;" << endl
+		   << "            font-family: arial;" << endl
 		   << "          }" << endl;
 	if (s.useDottedLines)
 		stream << "          div {border-bottom: 1px dashed rgb(200,200,200);}" << endl;
@@ -55,7 +55,7 @@ void dumpDefaultTOCStyleSheet(QTextStream & stream, settings::TableOfContent & s
 		   << "          li {list-style: none;}" << endl
 		   << "          ul {" << endl
 		   << "            font-size: 20px;" << endl
-		   << "            font-family: ariel;" << endl
+		   << "            font-family: arial;" << endl
 		   << "          }" << endl
 		   << "          ul ul {font-size: " << (s.fontScale*100.0) << "%; }" << endl
 		   << "          ul {padding-left: 0em;}" << endl
