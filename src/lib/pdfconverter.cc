@@ -283,11 +283,14 @@ void PdfConverterPrivate::pagesLoaded(bool ok) {
 
 		painter->save();
 		QWebPrinter wp(obj.page->mainFrame(), printer, *painter);
-		obj.pageCount = objects[d].settings.pagesCount? wp.pageCount(): 0;
-		pageCount += objects[d].pageCount;
+		obj.pageCount = obj.settings.pagesCount? wp.pageCount(): 0;
+		pageCount += obj.pageCount;
 
-		outline->addWebPage(obj.page->mainFrame()->title(), wp, obj.page->mainFrame(),
-							obj.settings, obj.localLinks, obj.anchors);
+		if (obj.settings.includeInOutline)
+			outline->addWebPage(obj.page->mainFrame()->title(), wp, obj.page->mainFrame(),
+								obj.settings, obj.localLinks, obj.anchors);
+		else
+			outline->addEmptyWebPage();
 		painter->restore();
 	}
 

@@ -244,6 +244,9 @@ PdfCommandLineParser::PdfCommandLineParser(PdfGlobal & s, QList<PdfObject> & ps)
 
 	extended(true);
  	qthack(true);
+	addarg("include-in-outline", 0, "Include the page in the table of contents and outlines", new ConstSetter<bool>(od.includeInOutline, true));
+	addarg("exclude-from-outline", 0, "Do not include the page in the table of contents and outlines", new ConstSetter<bool>(od.includeInOutline, false));
+
 	addarg("disable-smart-shrinking", 0, "Disable the intelligent shrinking strategy used by WebKit that makes the pixel/dpi ratio none constant",new ConstSetter<bool>(od.web.enableIntelligentShrinking, false));
  	addarg("enable-smart-shrinking", 0, "Enable the intelligent shrinking strategy used by WebKit that makes the pixel/dpi ratio none constant",new ConstSetter<bool>(od.web.enableIntelligentShrinking, true));
 
@@ -263,7 +266,6 @@ PdfCommandLineParser::PdfCommandLineParser(PdfGlobal & s, QList<PdfObject> & ps)
 	addarg("disable-toc-back-links",0,"Do not link from section header to toc", new ConstSetter<bool>(od.toc.backLinks,false));
 
 	addPageLoadArgs(od.load);
-
 // 	addarg("page-offset",0,"Set the starting page number", new IntSetter(s.pageOffset,"offset",1));
 
 

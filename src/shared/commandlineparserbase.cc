@@ -23,7 +23,7 @@
 #include <qwebframe.h>
 
 bool ahsort(const ArgHandler * a, const ArgHandler * b) {
-	QRegExp e("^(no|enable|disable)-");
+	QRegExp e("^(no|enable|disable|include-in|exclude-from)-");
 	QString x=a->longName;
 	QString y=b->longName;
 	x.remove(e);
