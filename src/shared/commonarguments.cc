@@ -184,7 +184,7 @@ void CommandLineParserBase::addWebArgs(Web & s) {
 #endif
 
 	addarg("disable-javascript",'n',"Do not allow web pages to run javascript", new ConstSetter<bool>(s.enableJavascript,false));
-	addarg("enable-javascript",'n',"Do allow web pages to run javascript", new ConstSetter<bool>(s.enableJavascript,true));
+	addarg("enable-javascript",0,"Do allow web pages to run javascript", new ConstSetter<bool>(s.enableJavascript,true));
 
 	extended(true);
  	qthack(true);
