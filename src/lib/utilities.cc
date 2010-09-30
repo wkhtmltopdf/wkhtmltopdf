@@ -36,9 +36,11 @@ Q_IMPORT_PLUGIN(qmng)
 
 void loadSvg(QSvgRenderer * & ptr, const QString & path) {
 	delete ptr;
-	ptr = new QSvgRenderer(path);
-	if (ptr->isValid()) return;
-	delete ptr;
+	if (path != "") {
+		ptr = new QSvgRenderer(path);
+		if (ptr->isValid()) return;
+		delete ptr;
+	}
 	ptr = 0;
 }
 
@@ -60,7 +62,7 @@ void MyLooksStyle::drawPrimitive( PrimitiveElement element, const QStyleOption *
 	if (element == QStyle::PE_PanelLineEdit) {
 		painter->drawRect(r);
 	} else if (element == QStyle::PE_IndicatorCheckBox) {
-		if (weAreDrawingForms || ((option->state & QStyle::State_On)? !checkbox_checked: !checkbox)) { 
+		if (weAreDrawingForms || ((option->state & QStyle::State_On)? !checkbox_checked: !checkbox)) {
 			painter->drawRect(r);
 			if (!weAreDrawingForms && (option->state & QStyle::State_On)) {
 				r.translate(int(r.width()*0.075), int(r.width()*0.075));

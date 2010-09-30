@@ -190,7 +190,8 @@ void PdfCommandLineParser::parseArguments(int argc, const char ** argv, bool fro
 					exit(1);
 				}
 			}
-			ps.page = QString::fromLocal8Bit(argv[arg]);
+			QByteArray a(argv[arg]);
+			ps.page = QString::fromLocal8Bit(a);
 			++arg;
 		}
 		for (;arg < argc;++arg) {
