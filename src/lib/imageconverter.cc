@@ -168,7 +168,7 @@ void ImageConverterPrivate::pagesLoaded(bool ok) {
 		emit out.error("Will not output an empty image");
 		fail();
 	}
-		
+
 	if (settings.fmt != "svg") {
 		image = QImage(rect.size(), QImage::Format_ARGB32_Premultiplied);
 		painter.begin(&image);
