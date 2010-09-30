@@ -71,6 +71,10 @@ ReflectImpl<LoadPage>::ReflectImpl(LoadPage & c) {
 	WKHTMLTOPDF_REFLECT(loadErrorHandling);
 	WKHTMLTOPDF_REFLECT(proxy);
 	WKHTMLTOPDF_REFLECT(runScript);
+	WKHTMLTOPDF_REFLECT(checkboxSvg);
+	WKHTMLTOPDF_REFLECT(checkboxCheckedSvg);
+	WKHTMLTOPDF_REFLECT(radiobuttonSvg);
+	WKHTMLTOPDF_REFLECT(radiobuttonCheckedSvg);
 }
 
 ReflectImpl<Web>::ReflectImpl(Web & c) {

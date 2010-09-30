@@ -226,4 +226,8 @@ void CommandLineParserBase::addPageLoadArgs(LoadPage & s) {
 #endif
 	addarg("run-script", 0, "Run this additional javascript after the page is done loading (repeatable)", new StringListSetter(s.runScript, "js"));
 
+	addarg("checkbox-svg", 0, "Use this SVG file when rendering unchecked checkboxes", new QStrSetter(s.checkboxSvg, "path", ""));
+	addarg("checkbox-checked-svg", 0, "Use this SVG file when rendering checked checkboxes", new QStrSetter(s.checkboxCheckedSvg, "path" ,""));
+	addarg("radiobutton-svg", 0, "Use this SVG file when rendering unchecked radiobuttons", new QStrSetter(s.radiobuttonSvg, "path", ""));
+	addarg("radiobutton-checked-svg", 0, "Use this SVG file when rendering checked radiobuttons", new QStrSetter(s.radiobuttonCheckedSvg, "path", ""));
 }

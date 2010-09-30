@@ -23,5 +23,6 @@
 #undef DLL_PUBLIC
 #undef DLL_LOCAL
 #undef CAPI
+#undef CALLTYPE
 
 #endif /*__WKHTMLTOPDF_DLLBEGIN__*/

@@ -154,5 +154,11 @@ void Converter::cancel() {
 	priv().cancel();
 }
 
+void Converter::emitCheckboxSvgs(const settings::LoadPage & ls) {
+	emit checkboxSvgChanged(ls.checkboxSvg);
+	emit checkboxCheckedSvgChanged(ls.checkboxCheckedSvg);
+	emit radiobuttonSvgChanged(ls.radiobuttonSvg);
+	emit radiobuttonCheckedSvgChanged(ls.radiobuttonCheckedSvg);
+}
 
 }

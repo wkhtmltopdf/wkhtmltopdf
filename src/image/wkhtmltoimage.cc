@@ -43,11 +43,16 @@ int main(int argc, char** argv) {
 #endif
 #endif
 	QApplication a(argc, argv, use_graphics);
-	a.setStyle(new MyLooksStyle());
+	MyLooksStyle * style = new MyLooksStyle();
+	a.setStyle(style);
 
 	//Create the actual page converter to convert the pages
 	wkhtmltopdf::ImageConverter converter(settings);
-
+	QObject::connect(&converter, SIGNAL(checkboxSvgChanged(const QString &)), style, SLOT(setCheckboxSvg(const QString &)));
+	QObject::connect(&converter, SIGNAL(checkboxCheckedSvgChanged(const QString &)), style, SLOT(setCheckboxCheckedSvg(const QString &)));
+	QObject::connect(&converter, SIGNAL(radiobuttonSvgChanged(const QString &)), style, SLOT(setRadioButtonSvg(const QString &)));
+	QObject::connect(&converter, SIGNAL(radiobuttonCheckedSvgChanged(const QString &)), style, SLOT(setRadioButtonCheckedSvg(const QString &)));
+	
 	wkhtmltopdf::ProgressFeedback feedback(settings.quiet, converter);
 	bool success = converter.convert();
 	return handleError(success, converter.httpErrorCode());

@@ -32,9 +32,6 @@ HEADERS += ../lib/pdfconverter_p.hh
 SOURCES += ../lib/pdfsettings.cc ../lib/pdfconverter.cc \
            ../lib/outline.cc ../lib/tocstylesheet.cc
 
-#Image
-QT += svg
-
 PUBLIC_HEADERS += ../lib/imageconverter.hh ../lib/imagesettings.hh
 HEADERS += ../lib/imageconverter_p.hh
 SOURCES += ../lib/imagesettings.cc ../lib/imageconverter.cc

@@ -45,6 +45,7 @@ ImageConverterPrivate::ImageConverterPrivate(ImageConverter & o, wkhtmltopdf::se
 	settings(s),
 	loader(s.loadGlobal),
 	out(o) {
+	out.emitCheckboxSvgs(s.loadPage);
 	if (data) inputData = *data;
 
 	phaseDescriptions.push_back("Loading page");
@@ -148,6 +149,7 @@ void ImageConverterPrivate::pagesLoaded(bool ok) {
 	} if (settings.out != "-" ) {
 		file.setFileName(settings.out);
 		openOk = file.open(QIODevice::WriteOnly);
+		qDebug() << "HERE" << endl;
 	} else {
 		openOk = file.open(stdout, QIODevice::WriteOnly);
 	}
@@ -166,7 +168,7 @@ void ImageConverterPrivate::pagesLoaded(bool ok) {
 		emit out.error("Will not output an empty image");
 		fail();
 	}
-
+		
 	if (settings.fmt != "svg") {
 		image = QImage(rect.size(), QImage::Format_ARGB32_Premultiplied);
 		painter.begin(&image);

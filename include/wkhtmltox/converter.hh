@@ -24,8 +24,9 @@
 #endif
 
 #include <QObject>
-
+#include <wkhtmltox/loadsettings.hh>
 #include <wkhtmltox/dllbegin.inc>
+
 namespace wkhtmltopdf {
 
 class DLL_LOCAL ConverterPrivate;
@@ -46,11 +47,17 @@ signals:
     void phaseChanged();
     void progressChanged(int progress);
     void finished(bool ok);
+
+	void checkboxSvgChanged(const QString & path);
+	void checkboxCheckedSvgChanged(const QString & path);
+	void radiobuttonSvgChanged(const QString & path);
+	void radiobuttonCheckedSvgChanged(const QString & path);
 public slots:
     void beginConvertion();
 	bool convert();
 	void cancel();
 protected:
+	void emitCheckboxSvgs(const settings::LoadPage & ls);
 	virtual ConverterPrivate & priv() = 0;
 	friend class ConverterPrivate;
 };

@@ -54,6 +54,10 @@ public:
 	static QSvgRenderer * radiobutton_checked;
 public slots:
 	void producingForms(bool f);
+	void setCheckboxSvg(const QString & path);
+	void setCheckboxCheckedSvg(const QString & path);
+	void setRadioButtonSvg(const QString & path);
+	void setRadioButtonCheckedSvg(const QString & path);
 };
 
 DLL_PUBLIC int handleError(bool success, int errorCode);

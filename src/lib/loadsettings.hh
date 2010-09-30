@@ -113,6 +113,11 @@ struct DLL_PUBLIC LoadPage {
 
 	//! Additional javascript to run on a page once it has loaded
 	QList< QString > runScript;
+
+	QString checkboxSvg;
+	QString checkboxCheckedSvg;
+	QString radiobuttonSvg;
+	QString radiobuttonCheckedSvg;
 };
 
 DLL_PUBLIC LoadPage::LoadErrorHandling strToLoadErrorHandling(const char * s, bool * ok=0);

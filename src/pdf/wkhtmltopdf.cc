@@ -169,6 +169,11 @@ int main(int argc, char * argv[]) {
 	//Create the actual page converter to convert the pages
 	PdfConverter converter(globalSettings);
 	QObject::connect(&converter, SIGNAL(producingForms(bool)), style, SLOT(producingForms(bool)));
+	QObject::connect(&converter, SIGNAL(checkboxSvgChanged(const QString &)), style, SLOT(setCheckboxSvg(const QString &)));
+	QObject::connect(&converter, SIGNAL(checkboxCheckedSvgChanged(const QString &)), style, SLOT(setCheckboxCheckedSvg(const QString &)));
+	QObject::connect(&converter, SIGNAL(radiobuttonSvgChanged(const QString &)), style, SLOT(setRadioButtonSvg(const QString &)));
+	QObject::connect(&converter, SIGNAL(radiobuttonCheckedSvgChanged(const QString &)), style, SLOT(setRadioButtonCheckedSvg(const QString &)));
+
 	ProgressFeedback feedback(globalSettings.quiet, converter);
 	foreach (const PdfObject & object, objectSettings)
 		converter.addResource(object);
