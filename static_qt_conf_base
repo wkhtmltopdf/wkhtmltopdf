@@ -34,6 +34,10 @@
 -no-3dnow
 -no-sse
 -no-sse2 
+-no-sse3
+-no-ssse3
+-no-sse4.1
+-no-sse4.2
 -qt-zlib
 -qt-gif
 -qt-libtiff
