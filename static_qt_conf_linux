@@ -34,3 +34,7 @@
 # -no-opengl
 -no-xsync
 -no-audio-backend
+-no-sse3
+-no-ssse3
+-no-sse4.1
+-no-sse4.2
