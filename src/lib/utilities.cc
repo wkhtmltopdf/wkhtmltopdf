@@ -25,29 +25,35 @@
 #endif
 
 #include "utilities.hh"
+#include <QDebug>
 #include <QTextStream>
 
 void loadSvg(QSvgRenderer * & ptr, const QString & path, const char * def, int w, int h) {
 	 delete ptr;
+	 ptr = 0;
 	 if (path != "") {
 	 	ptr = new QSvgRenderer(path);
-	 } else {
-		 QByteArray a;
-		 QTextStream s(&a, QIODevice::WriteOnly );
-		 s << "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\"?>\n"
-		   << "<!DOCTYPE svg PUBLIC \"-//W3C//DTD SVG 1.1//EN\" \"http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd\">\n"
-		   << "<svg xmlns=\"http://www.w3.org/2000/svg\"\n"
-		   << "  xmlns:xlink=\"http://www.w3.org/1999/xlink\"\n"
-		   << "  version=\"1.1\"\n"
-		   << "  baseProfile=\"full\"\n"
-		   << "  width=\"" << w << "px\"\n"
-		   << "  height=\"" << h << "px\"\n"
-		   << "  viewBox=\"0 0 " << w << "px " << h << "px\">\n"
-		   << def
-		   << "</svg>\n";
-		 s.flush();
-		 ptr = new QSvgRenderer(a);
+		if (ptr->isValid()) return;
+		qWarning() << "Faild to load " << path;
+		delete ptr;
 	 }
+
+	 QByteArray a;
+	 QTextStream s(&a, QIODevice::WriteOnly );
+	 s << "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\"?>\n"
+	   << "<!DOCTYPE svg PUBLIC \"-//W3C//DTD SVG 1.1//EN\" \"http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd\">\n"
+	   << "<svg xmlns=\"http://www.w3.org/2000/svg\"\n"
+	   << "  xmlns:xlink=\"http://www.w3.org/1999/xlink\"\n"
+	   << "  version=\"1.1\"\n"
+	   << "  baseProfile=\"full\"\n"
+	   << "  width=\"" << w << "px\"\n"
+	   << "  height=\"" << h << "px\"\n"
+	   << "  viewBox=\"0 0 " << w << "px " << h << "px\">\n"
+	   << def
+	   << "</svg>\n";
+	 s.flush();
+	 ptr = new QSvgRenderer(a);
+
 	 if (ptr->isValid()) return;
 	 delete ptr;
 	 ptr = 0;
