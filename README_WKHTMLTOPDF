@@ -1,4 +1,4 @@
-======================> wkhtmltopdf 0.10.0 beta5 Manual <=======================
+=======================> wkhtmltopdf 0.10.0 rc1 Manual <========================
 This file documents wkhtmltopdf, a program capable of converting html documents
 into PDF documents.
 
@@ -142,6 +142,10 @@ Items marked * are only available using patched QT.
                                       folder to be loaded (repeatable)
     --background                      Do print background (default)
     --no-background                   Do not print background
+    --checkbox-checked-svg <path>     Use this SVG file when rendering checked
+                                      checkboxes
+    --checkbox-svg <path>             Use this SVG file when rendering unchecked
+                                      checkboxes
     --cookie <name> <value>           Set an additional cookie (repeatable)
     --custom-header <name> <value>    Set an additional HTTP header (repeatable)
     --custom-header-propagation       Add HTTP headers specified by
@@ -168,7 +172,7 @@ Items marked * are only available using patched QT.
     --disable-internal-links *        Do not make local links
     --enable-internal-links *         Make local links (default)
 -n, --disable-javascript              Do not allow web pages to run javascript
--n, --enable-javascript               Do allow web pages to run javascript
+    --enable-javascript               Do allow web pages to run javascript
                                       (default)
     --javascript-delay <msec>         Wait some milliseconds for javascript
                                       finish (default 200)
@@ -181,6 +185,10 @@ Items marked * are only available using patched QT.
     --enable-local-file-access        Allowed conversion of a local file to read
                                       in other local files. (default)
     --minimum-font-size <int>         Minimum font size
+    --exclude-from-outline *          Do not include the page in the table of
+                                      contents and outlines
+    --include-in-outline *            Include the page in the table of contents
+                                      and outlines (default)
     --password <password>             HTTP Authentication password
     --disable-plugins                 Disable installed plugins (default)
     --enable-plugins                  Enable installed plugins (plugins will
@@ -191,6 +199,12 @@ Items marked * are only available using patched QT.
     --no-print-media-type *           Do not use print media-type instead of
                                       screen (default)
 -p, --proxy <proxy>                   Use a proxy
+    --radiobutton-checked-svg <path>  Use this SVG file when rendering checked
+                                      radiobuttons
+    --radiobutton-svg <path>          Use this SVG file when rendering unchecked
+                                      radiobuttons
+    --run-script <js>                 Run this additional javascript after the
+                                      page is done loading (repeatable)
     --disable-smart-shrinking *       Disable the intelligent shrinking strategy
                                       used by WebKit that makes the pixel/dpi
                                       ratio none constant

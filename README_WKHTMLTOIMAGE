@@ -1,4 +1,4 @@
-=====================> wkhtmltoimage 0.10.0 beta5 Manual <======================
+======================> wkhtmltoimage 0.10.0 rc1 Manual <=======================
 This file documents wkhtmltoimage, a program capable of converting HTML
 documents into images.
 
@@ -27,6 +27,10 @@ wkhtmltoimage [OPTIONS]... <input file> <output file>
 ==============================> General Options <===============================
     --allow <path>                    Allow the file or files from the specified
                                       folder to be loaded (repeatable)
+    --checkbox-checked-svg <path>     Use this SVG file when rendering checked
+                                      checkboxes
+    --checkbox-svg <path>             Use this SVG file when rendering unchecked
+                                      checkboxes
     --cookie <name> <value>           Set an additional cookie (repeatable)
     --cookie-jar <path>               Read and write cookies from and to the
                                       supplied cookie jar file
@@ -51,7 +55,7 @@ wkhtmltoimage [OPTIONS]... <input file> <output file>
     --images                          Do load or print images (default)
     --no-images                       Do not load or print images
 -n, --disable-javascript              Do not allow web pages to run javascript
--n, --enable-javascript               Do allow web pages to run javascript
+    --enable-javascript               Do allow web pages to run javascript
                                       (default)
     --javascript-delay <msec>         Wait some milliseconds for javascript
                                       finish (default 200)
@@ -74,7 +78,13 @@ wkhtmltoimage [OPTIONS]... <input file> <output file>
 -p, --proxy <proxy>                   Use a proxy
     --quality <int>                   Output image quality (between 0 and 100)
                                       (default 94)
+    --radiobutton-checked-svg <path>  Use this SVG file when rendering checked
+                                      radiobuttons
+    --radiobutton-svg <path>          Use this SVG file when rendering unchecked
+                                      radiobuttons
     --readme                          Output program readme
+    --run-script <js>                 Run this additional javascript after the
+                                      page is done loading (repeatable)
 -0, --disable-smart-width *           Use the specified width even if it is not
                                       large enough for the content
     --stop-slow-scripts               Stop slow running javascripts (default)
