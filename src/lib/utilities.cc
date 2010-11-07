@@ -26,14 +26,6 @@
 
 #include "utilities.hh"
 
-#ifdef QT_STATIC
-//When doing a static build, we need to load the plugins to make images work
-Q_IMPORT_PLUGIN(qjpeg)
-Q_IMPORT_PLUGIN(qgif)
-Q_IMPORT_PLUGIN(qtiff)
-Q_IMPORT_PLUGIN(qmng)
-#endif
-
 void loadSvg(QSvgRenderer * & ptr, const QString & path) {
 	delete ptr;
 	if (path != "") {

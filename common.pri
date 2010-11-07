@@ -30,7 +30,6 @@ exists($$QMAKE_LIBDIR_QT/libQtGui.so) {
     DEFINES += QT_SHARED
 } else {
     DEFINES += QT_STATIC
-    QTPLUGIN += qjpeg qgif qtiff qmng
 }
 
 MOC_DIR = ../../build
