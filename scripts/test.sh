@@ -224,6 +224,15 @@ EOF
 	[ -f tmp2.pdf ] && pdftotext tmp2.pdf /dev/stdout | grep -q XFooZ) && good $1 || bad $1
 }
 
+function testWindowPrint() {
+    echo "<html><body>abe <script language=\"javascript\">setTimeout(\"window.print();\",12);</script></body></html>" > tmp.html
+    cp tmp.html abe.html
+    wk --javascript-delay 10000 tmp.html tmp.pdf &
+    p=$!
+    (sleep 5 && kill "$p" 2>/dev/null) &
+    wait $p && good $1 || bad $1
+}
+
 function usage() {
     echo "Usage $0 [OPTIONS] [EXPRESSION]"
     echo ""
