@@ -75,6 +75,9 @@ struct DLL_PUBLIC LoadPage {
 	//! How many milliseconds should we wait for a Javascript redirect
 	int jsdelay;
 
+	//! What window.status value should we wait for
+	QString windowStatus;
+	
 	//! What zoom factor should we apply when printing
 	// TODO MOVE
 	float zoomFactor;

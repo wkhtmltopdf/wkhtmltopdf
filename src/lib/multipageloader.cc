@@ -217,7 +217,18 @@ void ResourceObject::loadFinished(bool ok) {
 		webPage.mainFrame()->evaluateJavaScript(str);
 
 	if (signalPrint || settings.jsdelay == 0) loadDone();
+	else if (!settings.windowStatus.isEmpty()) waitWindowStatus();
 	else QTimer::singleShot(settings.jsdelay, this, SLOT(loadDone()));
+}
+
+void ResourceObject::waitWindowStatus() {
+	QString windowStatus = webPage.mainFrame()->evaluateJavaScript("window.status").toString();
+	warning(QString("window.status:" + windowStatus + " settings.windowStatus:" + settings.windowStatus));
+	if (windowStatus != settings.windowStatus) {
+		QTimer::singleShot(50, this, SLOT(waitWindowStatus()));
+	} else {
+		QTimer::singleShot(settings.jsdelay, this, SLOT(loadDone()));
+	}
 }
 
 void ResourceObject::printRequested(QWebFrame *) {
