@@ -138,7 +138,7 @@ struct DefaultTocFunc {
 struct DefaultHeaderFunc {
 	bool operator()(const char **, CommandLineParserBase & p, char * page) {
 		reinterpret_cast<PdfObject*>(page)->header.left="[webpage]";
-		reinterpret_cast<PdfObject*>(page)->header.right="[page]/[toPdfObject]";
+		reinterpret_cast<PdfObject*>(page)->header.right="[page]/[topage]";
 		reinterpret_cast<PdfObject*>(page)->header.line=true;
 		static_cast<PdfCommandLineParser&>(p).globalSettings.margin.top = strToUnitReal("2cm");
 		return true;
@@ -266,8 +266,7 @@ PdfCommandLineParser::PdfCommandLineParser(PdfGlobal & s, QList<PdfObject> & ps)
 	addarg("disable-toc-back-links",0,"Do not link from section header to toc", new ConstSetter<bool>(od.toc.backLinks,false));
 
 	addPageLoadArgs(od.load);
-// 	addarg("page-offset",0,"Set the starting page number", new IntSetter(s.pageOffset,"offset",1));
-
+ 	addarg("page-offset",0,"Set the starting page number", new IntSetter(s.pageOffset,"offset",1));
 
 	section("Headers And Footer Options");
  	qthack(true);

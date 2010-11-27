@@ -66,6 +66,7 @@ public:
 
 	OutlinePrivate(const settings::PdfGlobal & settings);
 	~OutlinePrivate();
+	void buildPrefixSum();
 	void fillChildAnchors(OutlineItem * item, QHash<QString, QWebElement> & anchors);
 	void outlineChildren(OutlineItem * item, QPrinter * printer, int level);
 	void buildHFCache(OutlineItem * i, int level);

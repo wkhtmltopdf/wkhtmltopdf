@@ -135,7 +135,7 @@ QString escape(QString str) {
 void OutlinePrivate::dumpChildren(QTextStream & stream, const QList<OutlineItem *> & items, int level) const {
 	foreach (OutlineItem * item, items) {
 		for (int i=0; i < level; ++i) stream << "  ";
-		stream << "<item title=\"" << escape(item->value) << "\" page=\"" << (item->page + prefixSum[item->document]) << "\" link=\"" << escape(item->anchor) << "\" backLink=\"" << escape(item->tocAnchor) << "\"";
+		stream << "<item title=\"" << escape(item->value) << "\" page=\"" << (item->page + prefixSum[item->document]+ settings.pageOffset) << "\" link=\"" << escape(item->anchor) << "\" backLink=\"" << escape(item->tocAnchor) << "\"";
 		if (item->children.empty())
 			stream << "/>" << endl;
 		else {
@@ -147,12 +147,15 @@ void OutlinePrivate::dumpChildren(QTextStream & stream, const QList<OutlineItem 
 	}
 }
 
-void Outline::dump(QTextStream & stream, const QString & xsl) const {
-	d->prefixSum.clear();
-	d->prefixSum.push_back(0);
-	foreach (int x, d->documentPages)
-		d->prefixSum.push_back( d->prefixSum.back() + x );
+void OutlinePrivate::buildPrefixSum() {
+	prefixSum.clear();
+	prefixSum.push_back(0);
+	foreach (int x, documentPages)
+		prefixSum.push_back( prefixSum.back() + x);
+}
 
+void Outline::dump(QTextStream & stream, const QString & xsl) const {
+	d->buildPrefixSum();
 	stream << "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" << endl;
 	QString x = xsl;
 	if (!x.isEmpty())
@@ -278,12 +281,7 @@ void Outline::addEmptyWebPage() {
 }
 
 void OutlinePrivate::buildHFCache(OutlineItem * i, int level) {
-	if (prefixSum.empty()) {
-		prefixSum.push_back(0);
-		foreach (int x, documentPages)
-			prefixSum.push_back( prefixSum.back() + x );
-	}
-
+	buildPrefixSum();
 	if (level >= hfCache.size()) return;
 	foreach (OutlineItem * j, i->children) {
 		int page = j->page + prefixSum[j->document];
