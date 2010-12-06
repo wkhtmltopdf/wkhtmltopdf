@@ -82,6 +82,9 @@ struct DLL_PUBLIC ImageGlobal {
 	//! Set the screen width
 	int screenWidth;
 
+	//! Set the screen height
+	int screenHeight;
+
 	//! Image Quality
 	int quality;
 

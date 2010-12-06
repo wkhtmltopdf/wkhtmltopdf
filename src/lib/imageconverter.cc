@@ -133,7 +133,10 @@ void ImageConverterPrivate::pagesLoaded(bool ok) {
 	}
 	loaderObject->page.mainFrame()->setScrollBarPolicy(Qt::Horizontal, Qt::ScrollBarAlwaysOff);
 	//Set the right height
-	loaderObject->page.setViewportSize(QSize(highWidth, frame->contentsSize().height()));
+  if(settings.screenHeight > 0)
+    loaderObject->page.setViewportSize(QSize(highWidth, settings.screenHeight));
+  else
+    loaderObject->page.setViewportSize(QSize(highWidth, frame->contentsSize().height()));
 
 	QPainter painter;
 	QSvgGenerator generator;
