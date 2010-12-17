@@ -318,7 +318,7 @@ void PdfCommandLineParser::outputArgsFromStdin(Outputter * o) const {
 				 "on the given line combined with the arguments given to wkhtmltopdf");
 	o->paragraph("For example one could do the following:");
 	o->verbatim("echo \"http://doc.trolltech.com/4.5/qapplication.html qapplication.pdf\" >> cmds\n"
-				"echo \"--cover google.com http://en.wikipedia.org/wiki/Qt_(toolkit) qt.pdf\" >> cmds\n"
+				"echo \"cover google.com http://en.wikipedia.org/wiki/Qt_(toolkit) qt.pdf\" >> cmds\n"
 				"wkhtmltopdf --read-args-from-stdin --book < cmds\n");
 	o->endSection();
 }
