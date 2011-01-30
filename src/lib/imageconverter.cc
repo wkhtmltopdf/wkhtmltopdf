@@ -147,15 +147,14 @@ void ImageConverterPrivate::pagesLoaded(bool ok) {
 
 	bool openOk=true;
 	// output image
-	if (settings.out.isEmpty()) {
+	if (settings.out.isEmpty())
 		dev =  &buffer;
-		qDebug() << "I am here";
-	} else if (settings.out != "-" ) {
+	else if (settings.out != "-" ) {
 		file.setFileName(settings.out);
 		openOk = file.open(QIODevice::WriteOnly);
-	} else {
+	} else
 		openOk = file.open(stdout, QIODevice::WriteOnly);
-	}
+
 	if (!openOk) {
 		emit out.error("Could not write to output file");
 		fail();
