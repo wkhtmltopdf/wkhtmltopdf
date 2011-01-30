@@ -1,4 +1,4 @@
-=======================> wkhtmltopdf 0.10.0 rc1 Manual <========================
+=======================> wkhtmltopdf 0.10.0 rc2 Manual <========================
 This file documents wkhtmltopdf, a program capable of converting html documents
 into PDF documents.
 
@@ -189,6 +189,7 @@ Items marked * are only available using patched QT.
                                       contents and outlines
     --include-in-outline *            Include the page in the table of contents
                                       and outlines (default)
+    --page-offset <offset>            Set the starting page number (default 0)
     --password <password>             HTTP Authentication password
     --disable-plugins                 Disable installed plugins (default)
     --enable-plugins                  Enable installed plugins (plugins will
@@ -220,6 +221,8 @@ Items marked * are only available using patched QT.
     --user-style-sheet <url>          Specify a user style sheet, to load with
                                       every page
     --username <username>             HTTP Authentication username
+    --window-status <windowStatus>    Wait until window.status is equal to this
+                                      string before rendering page
     --zoom <float>                    Use this zoom factor (default 1)
 
 Items marked * are only available using patched QT.
@@ -414,7 +417,7 @@ given line combined with the arguments given to wkhtmltopdf
 For example one could do the following:
 
 echo "http://doc.trolltech.com/4.5/qapplication.html qapplication.pdf" >> cmds
-echo "--cover google.com http://en.wikipedia.org/wiki/Qt_(toolkit) qt.pdf" >> cmds
+echo "cover google.com http://en.wikipedia.org/wiki/Qt_(toolkit) qt.pdf" >> cmds
 wkhtmltopdf --read-args-from-stdin --book < cmds
 
 ===============================> Static version <===============================

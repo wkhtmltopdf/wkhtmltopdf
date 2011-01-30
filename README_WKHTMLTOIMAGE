@@ -1,4 +1,4 @@
-======================> wkhtmltoimage 0.10.0 rc1 Manual <=======================
+======================> wkhtmltoimage 0.10.0 rc2 Manual <=======================
 This file documents wkhtmltoimage, a program capable of converting HTML
 documents into images.
 
@@ -50,6 +50,8 @@ wkhtmltoimage [OPTIONS]... <input file> <output file>
 -H, --extended-help                   Display more extensive help, detailing
                                       less common command switches
 -f, --format <format>                 Output file format (default is jpg)
+    --height <int>                    Set screen height (default is calculated
+                                      from page content) (default 0)
 -h, --help                            Display help
     --htmldoc                         Output program html help
     --images                          Do load or print images (default)
@@ -99,6 +101,8 @@ wkhtmltoimage [OPTIONS]... <input file> <output file>
 -V, --version                         Output version information an exit
     --width <int>                     Set screen width (default is 1024)
                                       (default 1024)
+    --window-status <windowStatus>    Wait until window.status is equal to this
+                                      string before rendering page
     --zoom <float>                    Use this zoom factor (default 1)
 
 Items marked * are only available using patched QT.
