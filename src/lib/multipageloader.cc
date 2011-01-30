@@ -298,36 +298,46 @@ void ResourceObject::load() {
 	finished=false;
 	++multiPageLoader.loading;
 
-	QString boundary = QUuid::createUuid().toString().remove('-').remove('{').remove('}');
+	bool hasFiles=false;
+	foreach (const settings::PostItem & pi, settings.post) hasFiles |= pi.file;
 	QByteArray postData;
-	foreach (const settings::PostItem & pi, settings.post) {
-		//TODO escape values here
-		postData.append("--");
-		postData.append(boundary);
-		postData.append("\ncontent-disposition: form-data; name=\"");
-		postData.append(pi.name);
-		postData.append('\"');
-		if (pi.file) {
-			QFile f(pi.value);
-			if (!f.open(QIODevice::ReadOnly) ) {
-				error(QString("Unable to open file ")+pi.value);
-				multiPageLoader.fail();
+	QString boundary;
+	if (hasFiles) {
+		boundary = QUuid::createUuid().toString().remove('-').remove('{').remove('}');
+		foreach (const settings::PostItem & pi, settings.post) {
+			//TODO escape values here
+			postData.append("--");
+			postData.append(boundary);
+			postData.append("\ncontent-disposition: form-data; name=\"");
+			postData.append(pi.name);
+			postData.append('\"');
+			if (pi.file) {
+				QFile f(pi.value);
+				if (!f.open(QIODevice::ReadOnly) ) {
+					error(QString("Unable to open file ")+pi.value);
+					multiPageLoader.fail();
+				}
+				postData.append("; filename=\"");
+				postData.append( QFileInfo(pi.value).fileName());
+				postData.append("\"\n\n");
+				postData.append( f.readAll() );
+				//TODO ADD MIME TYPE
+			} else {
+				postData.append("\n\n");
+				postData.append(pi.value);
 			}
-			postData.append("; filename=\"");
-			postData.append( QFileInfo(pi.value).fileName());
-			postData.append("\"\n\n");
-			postData.append( f.readAll() );
-			//TODO ADD MIME TYPE
-		} else {
-			postData.append("\n\n");
-			postData.append(pi.value);
+			postData.append('\n');
 		}
-		postData.append('\n');
-	}
-	if (!postData.isEmpty()) {
-		postData.append("--");
-		postData.append(boundary);
-		postData.append("--\n");
+		if (!postData.isEmpty()) {
+			postData.append("--");
+			postData.append(boundary);
+			postData.append("--\n");
+		}
+	} else {
+		QUrl u;
+		foreach (const settings::PostItem & pi, settings.post)
+			u.addQueryItem(pi.name, pi.value);
+		postData = u.encodedQuery();
 	}
 
 
@@ -343,7 +353,8 @@ void ResourceObject::load() {
 	if (postData.isEmpty())
 		webPage.mainFrame()->load(r);
 	else {
-		r.setHeader(QNetworkRequest::ContentTypeHeader, QString("multipart/form-data, boundary=")+boundary);
+		if (hasFiles)
+			r.setHeader(QNetworkRequest::ContentTypeHeader, QString("multipart/form-data, boundary=")+boundary);
 		webPage.mainFrame()->load(r, QNetworkAccessManager::PostOperation, postData);
 	}
 }
