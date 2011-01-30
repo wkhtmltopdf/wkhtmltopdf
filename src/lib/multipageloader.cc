@@ -1,7 +1,7 @@
 // -*- mode: c++; tab-width: 4; indent-tabs-mode: t; eval: (progn (c-set-style "stroustrup") (c-set-offset 'innamespace 0)); -*-
 // vi:set ts=4 sts=4 sw=4 noet :
 //
-// Copyright 2010 wkhtmltopdf authors
+// Copyright 2010, 2011 wkhtmltopdf authors
 //
 // This file is part of wkhtmltopdf.
 //
@@ -348,13 +348,13 @@ void ResourceObject::load() {
 	}
 }
 
-void MyCookieJar::useCookie(const QUrl & url, const QString & name, const QString & value) {
-	extraCookies[url.toString()].append(QNetworkCookie(name.toUtf8(), value.toUtf8()));
+void MyCookieJar::useCookie(const QUrl &, const QString & name, const QString & value) {
+	extraCookies.push_back(QNetworkCookie(name.toUtf8(), value.toUtf8()));
 }
 
 QList<QNetworkCookie> MyCookieJar::cookiesForUrl(const QUrl & url) const {
 	QList<QNetworkCookie> list = QNetworkCookieJar::cookiesForUrl(url);
-	list.append(extraCookies[url.toString()]);
+	list.append(extraCookies);
 	return list;
 }
 
