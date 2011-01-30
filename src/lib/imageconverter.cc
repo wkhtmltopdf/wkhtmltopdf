@@ -1,7 +1,7 @@
 // -*- mode: c++; tab-width: 4; indent-tabs-mode: t; eval: (progn (c-set-style "stroustrup") (c-set-offset 'innamespace 0)); -*-
 // vi:set ts=4 sts=4 sw=4 noet :
 //
-// Copyright 2010 wkhtmltopdf authors
+// Copyright 2010, 2011 wkhtmltopdf authors
 //
 // This file is part of wkhtmltopdf.
 //
@@ -133,10 +133,10 @@ void ImageConverterPrivate::pagesLoaded(bool ok) {
 	}
 	loaderObject->page.mainFrame()->setScrollBarPolicy(Qt::Horizontal, Qt::ScrollBarAlwaysOff);
 	//Set the right height
-  if(settings.screenHeight > 0)
-    loaderObject->page.setViewportSize(QSize(highWidth, settings.screenHeight));
-  else
-    loaderObject->page.setViewportSize(QSize(highWidth, frame->contentsSize().height()));
+	if (settings.screenHeight > 0)
+		loaderObject->page.setViewportSize(QSize(highWidth, settings.screenHeight));
+	else
+		loaderObject->page.setViewportSize(QSize(highWidth, frame->contentsSize().height()));
 
 	QPainter painter;
 	QSvgGenerator generator;
@@ -149,10 +149,10 @@ void ImageConverterPrivate::pagesLoaded(bool ok) {
 	// output image
 	if (settings.out.isEmpty()) {
 		dev =  &buffer;
-	} if (settings.out != "-" ) {
+		qDebug() << "I am here";
+	} else if (settings.out != "-" ) {
 		file.setFileName(settings.out);
 		openOk = file.open(QIODevice::WriteOnly);
-		qDebug() << "HERE" << endl;
 	} else {
 		openOk = file.open(stdout, QIODevice::WriteOnly);
 	}
@@ -209,7 +209,7 @@ void ImageConverterPrivate::pagesLoaded(bool ok) {
 
 	if (settings.fmt != "svg") {
 		QByteArray fmt=settings.fmt.toLatin1();
-		if (!image.save(&file,fmt.data(), settings.quality)) {
+		if (!image.save(dev,fmt.data(), settings.quality)) {
 			emit out.error("Could not save image");
 			fail();
 		}
