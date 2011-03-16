@@ -44,8 +44,8 @@ void CommandLineParserBase::outputLicense(Outputter * o) const {
 	o->paragraph("Copyright (C) 2010 wkhtmltopdf/wkhtmltoimage Authors.");
 	o->endParagraph();
 	o->beginParagraph();
-	o->text("License GPLv3+: GNU GPL version 3 or later ");
-	o->link("http://gnu.org/licenses/gpl.html");
+	o->text("License LGPLv3+: GNU Lesser General Public License version 3 or later ");
+	o->link("http://gnu.org/licenses/lgpl.html");
 	o->text(". This is free software: you are free to change and redistribute it. "
 			"There is NO WARRANTY, to the extent permitted by law.");
 	o->endParagraph();
