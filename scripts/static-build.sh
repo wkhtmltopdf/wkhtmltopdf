@@ -184,7 +184,7 @@ function packandcopylinux() {
     rm -rf ${WK}/lib
     mkdir -p ${WK}/lib
     cp ${WK}/bin/libwkhtmltox*.so ${WK}/lib || exit 1
-    cd ${WK} && tar -c --lzma -f ${BASE}/bin/libwkhtmltox-$1.tar.lzma lib include examples/Makefile examples/pdf_c_api.c
+    cd ${WK} && tar -c --bzip2 -f ${BASE}/bin/libwkhtmltox-$1.tar.bz2 lib include examples/Makefile examples/pdf_c_api.c examples/image_c_api.c
 }
 
 

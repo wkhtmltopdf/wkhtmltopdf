@@ -36,19 +36,29 @@ InstallDirRegKey HKCU "Software\wkhtmltopdf" ""
 ;--------------------------------
 ;Installer Sections
 
-Section Wkhtmltopdf 
+Section "Wkhtmltopdf" pdf
   SetOutPath "$INSTDIR"
   file wkhtmltopdf.exe
 SectionEnd
 
-Section Wkhtmltoimage
+Section "Wkhtmltoimage" image
   SetOutPath "$INSTDIR"
   file wkhtmltoimage.exe
 SectionEnd
 
-Section \o "Update PATH, WILL BREAK PATH IN VISTA AN WIN7"
+Section /o "Modify PATH" mpath
   ${EnvVarUpdate} $0 "PATH" "A" "HKLM" "$INSTDIR" 
 SectionEnd
+
+LangString DESC_pdf   ${LANG_ENGLISH} "Install wkhtmltopdf"
+LangString DESC_image ${LANG_ENGLISH} "Install wkhtmltoimage"
+LangString DESC_mpath ${LANG_ENGLISH} "Update PATH, WILL BREAK PATH IN VISTA AN WIN7"
+
+!insertmacro MUI_FUNCTION_DESCRIPTION_BEGIN
+    !insertmacro MUI_DESCRIPTION_TEXT ${pdf} $(DESC_pdf)
+    !insertmacro MUI_DESCRIPTION_TEXT ${image} $(DESC_image)
+    !insertmacro MUI_DESCRIPTION_TEXT ${mpath} $(DESC_mpath)
+ !insertmacro MUI_FUNCTION_DESCRIPTION_END
 
 Section
   SetOutPath "$INSTDIR"
