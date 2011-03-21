@@ -44,9 +44,9 @@
 #endif
 
 #ifdef __cplusplus
-  #define CAPI extern "C" DLL_PUBLIC CALLTYPE
+  #define CAPI(type) extern "C" DLL_PUBLIC type CALLTYPE
 #else
-  #define CAPI DLL_PUBLIC CALLTYPE
+  #define CAPI(type) DLL_PUBLIC type CALLTYPE
 #endif
 
 #endif /*__WKHTMLTOPDF_DLLBEGIN__*/

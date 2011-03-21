@@ -24,6 +24,10 @@
 #endif
 #endif
 
+#ifdef _MSC_VER
+#define strcasecmp _stricmp
+#endif
+
 #include "pdfsettings.hh"
 #include "reflect.hh"
 #include <QMap>

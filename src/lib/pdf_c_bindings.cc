@@ -255,7 +255,7 @@ MyPdfConverter::~MyPdfConverter() {
  *
  * \return 1 if the library was build against the wkhtmltopdf version of QT and 0 otherwise
  */
-CAPI int wkhtmltopdf_extended_qt() {
+CAPI(int) wkhtmltopdf_extended_qt() {
 #ifdef __EXTENSIVE_WKHTMLTOPDF_QT_HACK__
 	return 1;
 #else
@@ -272,7 +272,7 @@ CAPI int wkhtmltopdf_extended_qt() {
  *
  * \return Qt version
  */
-CAPI const char * wkhtmltopdf_version() {
+CAPI(const char *) wkhtmltopdf_version() {
 	return STRINGIZE(MAJOR_VERSION)"."STRINGIZE(MINOR_VERSION)"."STRINGIZE(PATCH_VERSION)
 #ifdef BUILD
 		"_"STRINGIZE(BUILD)
@@ -290,7 +290,7 @@ CAPI const char * wkhtmltopdf_version() {
  *
  * \sa wkhtmltopdf_deinit
  */
-CAPI int wkhtmltopdf_init(int use_graphics) {
+CAPI(int) wkhtmltopdf_init(int use_graphics) {
 	++usage;
 
 	if (qApp == 0) {
@@ -323,7 +323,7 @@ CAPI int wkhtmltopdf_init(int use_graphics) {
  *
  * \sa wkhtmltopdf_init
  */
-CAPI int wkhtmltopdf_deinit() {
+CAPI(int) wkhtmltopdf_deinit() {
 	--usage;
 	if (usage != 0) return 1;
 	if (a != 0) delete a;
@@ -339,7 +339,7 @@ CAPI int wkhtmltopdf_deinit() {
  *
  * \returns A wkhtmltopdf global settings object
  */
-CAPI wkhtmltopdf_global_settings * wkhtmltopdf_create_global_settings() {
+CAPI(wkhtmltopdf_global_settings *) wkhtmltopdf_create_global_settings() {
 	return reinterpret_cast<wkhtmltopdf_global_settings *>(new settings::PdfGlobal());
 }
 
@@ -353,7 +353,7 @@ CAPI wkhtmltopdf_global_settings * wkhtmltopdf_create_global_settings() {
  * \param value The new value for the setting
  * \returns 1 if the setting was updated successfully and 0 otherwise.
  */
-CAPI int wkhtmltopdf_set_global_setting(wkhtmltopdf_global_settings * settings, const char * name, const char * value) {
+CAPI(int) wkhtmltopdf_set_global_setting(wkhtmltopdf_global_settings * settings, const char * name, const char * value) {
 	return reinterpret_cast<settings::PdfGlobal *>(settings)->set(name, value);
 }
 
@@ -368,7 +368,7 @@ CAPI int wkhtmltopdf_set_global_setting(wkhtmltopdf_global_settings * settings, 
  * \param vs The length of \a value
  * \returns 1 If the the setting exists and was read successfully and 0 otherwise
  */
-CAPI int wkhtmltopdf_get_global_setting(wkhtmltopdf_global_settings * settings, const char * name, char * value, int vs) {
+CAPI(int) wkhtmltopdf_get_global_setting(wkhtmltopdf_global_settings * settings, const char * name, char * value, int vs) {
 	QString res = reinterpret_cast<settings::PdfGlobal *>(settings)->get(name);
 	if (res.isNull()) return 0;
 	qstrncpy(value, res.toUtf8().constData(), vs);
@@ -385,7 +385,7 @@ CAPI int wkhtmltopdf_get_global_setting(wkhtmltopdf_global_settings * settings, 
  *
  * \returns an object settings instance
  */
-CAPI wkhtmltopdf_object_settings * wkhtmltopdf_create_object_settings() {
+CAPI(wkhtmltopdf_object_settings *) wkhtmltopdf_create_object_settings() {
 	return reinterpret_cast<wkhtmltopdf_object_settings *>(new settings::PdfObject());
 }
 
@@ -399,7 +399,7 @@ CAPI wkhtmltopdf_object_settings * wkhtmltopdf_create_object_settings() {
  * \param value The new value for the setting
  * \returns 1 if the setting was updated successfully and 0 otherwise.
  */
-CAPI int wkhtmltopdf_set_object_setting(wkhtmltopdf_object_settings * settings, const char * name, const char * value) {
+CAPI(int) wkhtmltopdf_set_object_setting(wkhtmltopdf_object_settings * settings, const char * name, const char * value) {
 	return reinterpret_cast<settings::PdfObject *>(settings)->set(name, value);
 }
 
@@ -414,7 +414,7 @@ CAPI int wkhtmltopdf_set_object_setting(wkhtmltopdf_object_settings * settings, 
  * \param vs The length of \a value
  * \returns 1 If the the setting exists and was read successfully and 0 otherwise
  */
-CAPI int wkhtmltopdf_get_object_setting(wkhtmltopdf_object_settings * settings, const char * name, char * value, int vs) {
+CAPI(int) wkhtmltopdf_get_object_setting(wkhtmltopdf_object_settings * settings, const char * name, char * value, int vs) {
 	QString res = reinterpret_cast<settings::PdfObject *>(settings)->get(name);
 	if (res.isNull()) return 0;
 	qstrncpy(value, res.toUtf8().constData(), vs);
@@ -431,7 +431,7 @@ CAPI int wkhtmltopdf_get_object_setting(wkhtmltopdf_object_settings * settings, 
  * \param settings The global settings to use during conversion.
  * \returns A wkhtmltopdf converter object
  */
-CAPI wkhtmltopdf_converter * wkhtmltopdf_create_converter(wkhtmltopdf_global_settings * settings) {
+CAPI(wkhtmltopdf_converter *) wkhtmltopdf_create_converter(wkhtmltopdf_global_settings * settings) {
 
 	return reinterpret_cast<wkhtmltopdf_converter *>(
 		new MyPdfConverter(reinterpret_cast<settings::PdfGlobal *>(settings)));
@@ -445,7 +445,7 @@ CAPI wkhtmltopdf_converter * wkhtmltopdf_create_converter(wkhtmltopdf_global_set
  *
  * \param settings The converter object to destroy
  */
-CAPI void wkhtmltopdf_destroy_converter(wkhtmltopdf_converter * converter) {
+CAPI(void) wkhtmltopdf_destroy_converter(wkhtmltopdf_converter * converter) {
 	delete reinterpret_cast<MyPdfConverter *>(converter);
 }
 
@@ -455,7 +455,7 @@ CAPI void wkhtmltopdf_destroy_converter(wkhtmltopdf_converter * converter) {
  * \param converter The converter object on which errors we want the callback to be called
  * \param cb The function to call when an error occurs
  */
-CAPI void wkhtmltopdf_set_warning_callback(wkhtmltopdf_converter * converter, wkhtmltopdf_str_callback cb) {
+CAPI(void) wkhtmltopdf_set_warning_callback(wkhtmltopdf_converter * converter, wkhtmltopdf_str_callback cb) {
 	reinterpret_cast<MyPdfConverter *>(converter)->warning_cb = cb;
 }
 
@@ -466,7 +466,7 @@ CAPI void wkhtmltopdf_set_warning_callback(wkhtmltopdf_converter * converter, wk
  * \param cb The function to call when warning message is issued
  *
  */
-CAPI void wkhtmltopdf_set_error_callback(wkhtmltopdf_converter * converter, wkhtmltopdf_str_callback cb) {
+CAPI(void) wkhtmltopdf_set_error_callback(wkhtmltopdf_converter * converter, wkhtmltopdf_str_callback cb) {
 	reinterpret_cast<MyPdfConverter *>(converter)->error_cb = cb;
 }
 
@@ -480,7 +480,7 @@ CAPI void wkhtmltopdf_set_error_callback(wkhtmltopdf_converter * converter, wkht
  *
  * \sa wkhtmltopdf_current_phase, wkhtmltopdf_phase_count, wkhtmltopdf_phase_description
  */
-CAPI void wkhtmltopdf_set_phase_changed_callback(wkhtmltopdf_converter * converter, wkhtmltopdf_void_callback cb) {
+CAPI(void) wkhtmltopdf_set_phase_changed_callback(wkhtmltopdf_converter * converter, wkhtmltopdf_void_callback cb) {
 	reinterpret_cast<MyPdfConverter *>(converter)->phase_changed = cb;
 }
 
@@ -494,7 +494,7 @@ CAPI void wkhtmltopdf_set_phase_changed_callback(wkhtmltopdf_converter * convert
  *
  * \sa wkhtmltopdf_progress_description
  */
-CAPI void wkhtmltopdf_set_progress_changed_callback(wkhtmltopdf_converter * converter, wkhtmltopdf_int_callback cb) {
+CAPI(void) wkhtmltopdf_set_progress_changed_callback(wkhtmltopdf_converter * converter, wkhtmltopdf_int_callback cb) {
 	reinterpret_cast<MyPdfConverter *>(converter)->progress_changed = cb;
 }
 
@@ -507,11 +507,11 @@ CAPI void wkhtmltopdf_set_progress_changed_callback(wkhtmltopdf_converter * conv
  *
  * \sa wkhtmltopdf_convert
  */
-CAPI void wkhtmltopdf_set_finished_callback(wkhtmltopdf_converter * converter, wkhtmltopdf_int_callback cb) {
+CAPI(void) wkhtmltopdf_set_finished_callback(wkhtmltopdf_converter * converter, wkhtmltopdf_int_callback cb) {
 	reinterpret_cast<MyPdfConverter *>(converter)->finished_cb = cb;
 }
 
-//CAPI void wkhtmltopdf_begin_conversion(wkhtmltopdf_converter * converter) {
+//CAPI(void) wkhtmltopdf_begin_conversion(wkhtmltopdf_converter * converter) {
 //	reinterpret_cast<MyPdfConverter *>(converter)->converter.beginConvertion();
 //}
 
@@ -529,11 +529,11 @@ CAPI void wkhtmltopdf_set_finished_callback(wkhtmltopdf_converter * converter, w
  *
  * \returns 1 on success and 0 otherwise
  */
-CAPI int wkhtmltopdf_convert(wkhtmltopdf_converter * converter) {
+CAPI(int) wkhtmltopdf_convert(wkhtmltopdf_converter * converter) {
 	return reinterpret_cast<MyPdfConverter *>(converter)->converter.convert();
 }
 
-//CAPI void wkhtmltopdf_cancel(wkhtmltopdf_converter * converter) {
+//CAPI(void) wkhtmltopdf_cancel(wkhtmltopdf_converter * converter) {
 //	reinterpret_cast<MyPdfConverter *>(converter)->converter.cancel();
 //}
 
@@ -550,7 +550,7 @@ CAPI int wkhtmltopdf_convert(wkhtmltopdf_converter * converter) {
  * \param settings The setting describing the object to add
  * \param data HTML content of the object to convert or NULL
  */
-CAPI void wkhtmltopdf_add_object(wkhtmltopdf_converter * converter, wkhtmltopdf_object_settings * settings, const char * data) {
+CAPI(void) wkhtmltopdf_add_object(wkhtmltopdf_converter * converter, wkhtmltopdf_object_settings * settings, const char * data) {
 	QString str= QString::fromUtf8(data);
 	reinterpret_cast<MyPdfConverter *>(converter)->converter.addResource(
 		*reinterpret_cast<settings::PdfObject *>(settings), &str);
@@ -570,7 +570,7 @@ CAPI void wkhtmltopdf_add_object(wkhtmltopdf_converter * converter, wkhtmltopdf_
  * \param converter The converter to find the current phase of
  * \returns The current phase of the supplied converter
  */
-CAPI int wkhtmltopdf_current_phase(wkhtmltopdf_converter * converter) {
+CAPI(int) wkhtmltopdf_current_phase(wkhtmltopdf_converter * converter) {
 	return reinterpret_cast<MyPdfConverter *>(converter)->converter.currentPhase();
 }
 
@@ -582,7 +582,7 @@ CAPI int wkhtmltopdf_current_phase(wkhtmltopdf_converter * converter) {
  *
  * \sa wkhtmltopdf_current_phase, wkhtmltopdf_phase_description
  */
-CAPI int wkhtmltopdf_phase_count(wkhtmltopdf_converter * converter) {
+CAPI(int) wkhtmltopdf_phase_count(wkhtmltopdf_converter * converter) {
 	return reinterpret_cast<MyPdfConverter *>(converter)->converter.phaseCount();
 }
 
@@ -596,7 +596,7 @@ CAPI int wkhtmltopdf_phase_count(wkhtmltopdf_converter * converter) {
  *
  * \sa wkhtmltopdf_current_phase, wkhtmltopdf_phase_description
  */
-CAPI const char * wkhtmltopdf_phase_description(wkhtmltopdf_converter * converter, int phase) {
+CAPI(const char *) wkhtmltopdf_phase_description(wkhtmltopdf_converter * converter, int phase) {
 	return reinterpret_cast<MyPdfConverter *>(converter)->converter.phaseDescription(phase).toUtf8().constData();
 }
 
@@ -610,7 +610,7 @@ CAPI const char * wkhtmltopdf_phase_description(wkhtmltopdf_converter * converte
  *
  * \sa wkhtmltopdf_set_progress_changed_callback
  */
-CAPI const char * wkhtmltopdf_progress_string(wkhtmltopdf_converter * converter) {
+CAPI(const char *) wkhtmltopdf_progress_string(wkhtmltopdf_converter * converter) {
 	return reinterpret_cast<MyPdfConverter *>(converter)->converter.progressString().toUtf8().constData();
 }
 
@@ -624,7 +624,7 @@ CAPI const char * wkhtmltopdf_progress_string(wkhtmltopdf_converter * converter)
  * \param converter The converter to query
  * \returns The HTTP error code.
  */
-CAPI int wkhtmltopdf_http_error_code(wkhtmltopdf_converter * converter) {
+CAPI(int) wkhtmltopdf_http_error_code(wkhtmltopdf_converter * converter) {
 	return reinterpret_cast<MyPdfConverter *>(converter)->converter.httpErrorCode();
 }
 
@@ -638,7 +638,7 @@ CAPI int wkhtmltopdf_http_error_code(wkhtmltopdf_converter * converter) {
  * \param d A pointer to a pointer that will be made to point to the output data
  * \returns The length of the output data
  */
-CAPI long wkhtmltopdf_get_output(wkhtmltopdf_converter * converter, const unsigned char ** d) {
+CAPI(long) wkhtmltopdf_get_output(wkhtmltopdf_converter * converter, const unsigned char ** d) {
 	const QByteArray & out = reinterpret_cast<MyPdfConverter *>(converter)->converter.output();
 	*d = (const unsigned char*)out.constData();
 	return out.size();

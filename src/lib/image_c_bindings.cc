@@ -88,100 +88,100 @@ MyImageConverter::~MyImageConverter() {
 	delete globalSettings;
 }
 
-CAPI int wkhtmltoimage_extended_qt() {
+CAPI(int) wkhtmltoimage_extended_qt() {
 	return wkhtmltopdf_extended_qt();
 }
 
-CAPI const char * wkhtmltoimage_version() {
+CAPI(const char *) wkhtmltoimage_version() {
 	return "NOT IMPLEMENTED";
 }
 
-CAPI int wkhtmltoimage_init(int use_graphics) {
+CAPI(int) wkhtmltoimage_init(int use_graphics) {
 	return wkhtmltopdf_init(use_graphics);
 }
 
-CAPI int wkhtmltoimage_deinit() {
+CAPI(int) wkhtmltoimage_deinit() {
 	return wkhtmltopdf_deinit();
 }
 
-CAPI wkhtmltoimage_global_settings * wkhtmltoimage_create_global_settings() {
+CAPI(wkhtmltoimage_global_settings *) wkhtmltoimage_create_global_settings() {
 	return reinterpret_cast<wkhtmltoimage_global_settings *>(new settings::ImageGlobal());
 }
 
-CAPI int wkhtmltoimage_set_global_setting(wkhtmltoimage_global_settings * settings, const char * name, const char * value) {
+CAPI(int) wkhtmltoimage_set_global_setting(wkhtmltoimage_global_settings * settings, const char * name, const char * value) {
 	return reinterpret_cast<settings::ImageGlobal *>(settings)->set(name, value);
 }
 
-CAPI int wkhtmltoimage_get_global_setting(wkhtmltoimage_global_settings * settings, const char * name, char * value, int vs) {
+CAPI(int) wkhtmltoimage_get_global_setting(wkhtmltoimage_global_settings * settings, const char * name, char * value, int vs) {
 	QString res = reinterpret_cast<settings::ImageGlobal *>(settings)->get(name);
 	if (res.isNull()) return 0;
 	qstrncpy(value, res.toUtf8().constData(), vs);
 	return 1;
 }
 
-CAPI wkhtmltoimage_converter * wkhtmltoimage_create_converter(wkhtmltoimage_global_settings * settings, const char * data) {
+CAPI(wkhtmltoimage_converter *) wkhtmltoimage_create_converter(wkhtmltoimage_global_settings * settings, const char * data) {
 	QString str= QString::fromUtf8(data);
 	return reinterpret_cast<wkhtmltoimage_converter *>(
 		new MyImageConverter(reinterpret_cast<settings::ImageGlobal *>(settings), &str));
 }
 
-CAPI void wkhtmltoimage_destroy_converter(wkhtmltoimage_converter * converter) {
+CAPI(void) wkhtmltoimage_destroy_converter(wkhtmltoimage_converter * converter) {
 	delete reinterpret_cast<MyImageConverter *>(converter);
 }
 
-CAPI void wkhtmltoimage_set_warning_callback(wkhtmltoimage_converter * converter, wkhtmltoimage_str_callback cb) {
+CAPI(void) wkhtmltoimage_set_warning_callback(wkhtmltoimage_converter * converter, wkhtmltoimage_str_callback cb) {
 	reinterpret_cast<MyImageConverter *>(converter)->warning_cb = cb;
 }
 
-CAPI void wkhtmltoimage_set_error_callback(wkhtmltoimage_converter * converter, wkhtmltoimage_str_callback cb) {
+CAPI(void) wkhtmltoimage_set_error_callback(wkhtmltoimage_converter * converter, wkhtmltoimage_str_callback cb) {
 	reinterpret_cast<MyImageConverter *>(converter)->error_cb = cb;
 }
 
-CAPI void wkhtmltoimage_set_phase_changed_callback(wkhtmltoimage_converter * converter, wkhtmltoimage_void_callback cb) {
+CAPI(void) wkhtmltoimage_set_phase_changed_callback(wkhtmltoimage_converter * converter, wkhtmltoimage_void_callback cb) {
 	reinterpret_cast<MyImageConverter *>(converter)->phase_changed = cb;
 }
 
-CAPI void wkhtmltoimage_set_progress_changed_callback(wkhtmltoimage_converter * converter, wkhtmltoimage_int_callback cb) {
+CAPI(void) wkhtmltoimage_set_progress_changed_callback(wkhtmltoimage_converter * converter, wkhtmltoimage_int_callback cb) {
 	reinterpret_cast<MyImageConverter *>(converter)->progress_changed = cb;
 }
 
-CAPI void wkhtmltoimage_set_finished_callback(wkhtmltoimage_converter * converter, wkhtmltoimage_int_callback cb) {
+CAPI(void) wkhtmltoimage_set_finished_callback(wkhtmltoimage_converter * converter, wkhtmltoimage_int_callback cb) {
 	reinterpret_cast<MyImageConverter *>(converter)->finished_cb = cb;
 }
 
-/*CAPI void wkhtmltoimage_begin_convertion(wkhtmltoimage_converter * converter) {
+/*CAPI(void) wkhtmltoimage_begin_convertion(wkhtmltoimage_converter * converter) {
 	reinterpret_cast<MyImageConverter *>(converter)->converter.beginConvertion();
 	}*/
 
-CAPI int wkhtmltoimage_convert(wkhtmltoimage_converter * converter) {
+CAPI(int) wkhtmltoimage_convert(wkhtmltoimage_converter * converter) {
 	return reinterpret_cast<MyImageConverter *>(converter)->converter.convert();
 }
 
-/*CAPI void wkhtmltoimage_cancel(wkhtmltoimage_converter * converter) {
+/*CAPI(void) wkhtmltoimage_cancel(wkhtmltoimage_converter * converter) {
 	reinterpret_cast<MyImageConverter *>(converter)->converter.cancel();
 	}*/
 
-CAPI int wkhtmltoimage_current_phase(wkhtmltoimage_converter * converter) {
+CAPI(int) wkhtmltoimage_current_phase(wkhtmltoimage_converter * converter) {
 	return reinterpret_cast<MyImageConverter *>(converter)->converter.currentPhase();
 }
 
-CAPI int wkhtmltoimage_phase_count(wkhtmltoimage_converter * converter) {
+CAPI(int) wkhtmltoimage_phase_count(wkhtmltoimage_converter * converter) {
 	return reinterpret_cast<MyImageConverter *>(converter)->converter.phaseCount();
 }
 
-CAPI const char * wkhtmltoimage_phase_description(wkhtmltoimage_converter * converter, int phase) {
+CAPI(const char *) wkhtmltoimage_phase_description(wkhtmltoimage_converter * converter, int phase) {
 	return reinterpret_cast<MyImageConverter *>(converter)->converter.phaseDescription(phase).toUtf8().constData();
 }
 
-CAPI const char * wkhtmltoimage_progress_string(wkhtmltoimage_converter * converter) {
+CAPI(const char *) wkhtmltoimage_progress_string(wkhtmltoimage_converter * converter) {
 	return reinterpret_cast<MyImageConverter *>(converter)->converter.progressString().toUtf8().constData();
 }
 
-CAPI int wkhtmltoimage_http_error_code(wkhtmltoimage_converter * converter) {
+CAPI(int) wkhtmltoimage_http_error_code(wkhtmltoimage_converter * converter) {
 	return reinterpret_cast<MyImageConverter *>(converter)->converter.httpErrorCode();
 }
 
-CAPI long wkhtmltoimage_get_output(wkhtmltoimage_converter * converter, const unsigned char ** d) {
+CAPI(long) wkhtmltoimage_get_output(wkhtmltoimage_converter * converter, const unsigned char ** d) {
 	const QByteArray & out = reinterpret_cast<MyImageConverter *>(converter)->converter.output();
 	*d = (const unsigned char*)out.constData();
 	return out.size();

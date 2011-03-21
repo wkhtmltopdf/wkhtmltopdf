@@ -33,34 +33,34 @@ typedef void (*wkhtmltoimage_str_callback)(wkhtmltoimage_converter * converter, 
 typedef void (*wkhtmltoimage_int_callback)(wkhtmltoimage_converter * converter, const int val);
 typedef void (*wkhtmltoimage_void_callback)(wkhtmltoimage_converter * converter);
 
-CAPI int wkhtmltoimage_init(int use_graphics);
-CAPI int wkhtmltoimage_deinit();
-CAPI int wkhtmltoimage_extended_qt();
-CAPI const char * wkhtmltoimage_version();
+CAPI(int) wkhtmltoimage_init(int use_graphics);
+CAPI(int) wkhtmltoimage_deinit();
+CAPI(int) wkhtmltoimage_extended_qt();
+CAPI(const char *)wkhtmltoimage_version();
 
-CAPI wkhtmltoimage_global_settings * wkhtmltoimage_create_global_settings();
+CAPI(wkhtmltoimage_global_settings *) wkhtmltoimage_create_global_settings();
 
-CAPI int wkhtmltoimage_set_global_setting(wkhtmltoimage_global_settings * settings, const char * name, const char * value);
-CAPI int wkhtmltoimage_get_global_setting(wkhtmltoimage_global_settings * settings, const char * name, char * value, int vs);
+CAPI(int) wkhtmltoimage_set_global_setting(wkhtmltoimage_global_settings * settings, const char * name, const char * value);
+CAPI(int) wkhtmltoimage_get_global_setting(wkhtmltoimage_global_settings * settings, const char * name, char * value, int vs);
 
-CAPI wkhtmltoimage_converter * wkhtmltoimage_create_converter(wkhtmltoimage_global_settings * settings, const char * data);
-CAPI void wkhtmltoimage_destroy_converter(wkhtmltoimage_converter * converter);
+CAPI(wkhtmltoimage_converter *) wkhtmltoimage_create_converter(wkhtmltoimage_global_settings * settings, const char * data);
+CAPI(void) wkhtmltoimage_destroy_converter(wkhtmltoimage_converter * converter);
 
-CAPI void wkhtmltoimage_set_warning_callback(wkhtmltoimage_converter * converter, wkhtmltoimage_str_callback cb);
-CAPI void wkhtmltoimage_set_error_callback(wkhtmltoimage_converter * converter, wkhtmltoimage_str_callback cb);
-CAPI void wkhtmltoimage_set_phase_changed_callback(wkhtmltoimage_converter * converter, wkhtmltoimage_void_callback cb);
-CAPI void wkhtmltoimage_set_progress_changed_callback(wkhtmltoimage_converter * converter, wkhtmltoimage_int_callback cb);
-CAPI void wkhtmltoimage_set_finished_callback(wkhtmltoimage_converter * converter, wkhtmltoimage_int_callback cb);
-CAPI int wkhtmltoimage_convert(wkhtmltoimage_converter * converter);
-/* CAPI void wkhtmltoimage_begin_convertion(wkhtmltoimage_converter * converter); */
-/* CAPI void wkhtmltoimage_cancel(wkhtmltoimage_converter * converter); */
+CAPI(void) wkhtmltoimage_set_warning_callback(wkhtmltoimage_converter * converter, wkhtmltoimage_str_callback cb);
+CAPI(void) wkhtmltoimage_set_error_callback(wkhtmltoimage_converter * converter, wkhtmltoimage_str_callback cb);
+CAPI(void) wkhtmltoimage_set_phase_changed_callback(wkhtmltoimage_converter * converter, wkhtmltoimage_void_callback cb);
+CAPI(void) wkhtmltoimage_set_progress_changed_callback(wkhtmltoimage_converter * converter, wkhtmltoimage_int_callback cb);
+CAPI(void) wkhtmltoimage_set_finished_callback(wkhtmltoimage_converter * converter, wkhtmltoimage_int_callback cb);
+CAPI(int) wkhtmltoimage_convert(wkhtmltoimage_converter * converter);
+/* CAPI(void) wkhtmltoimage_begin_convertion(wkhtmltoimage_converter * converter); */
+/* CAPI(void) wkhtmltoimage_cancel(wkhtmltoimage_converter * converter); */
 
-CAPI int wkhtmltoimage_current_phase(wkhtmltoimage_converter * converter);
-CAPI int wkhtmltoimage_phase_count(wkhtmltoimage_converter * converter);
-CAPI const char * wkhtmltoimage_phase_description(wkhtmltoimage_converter * converter, int phase);
-CAPI const char * wkhtmltoimage_progress_string(wkhtmltoimage_converter * converter);
-CAPI int wkhtmltoimage_http_error_code(wkhtmltoimage_converter * converter);
-CAPI long wkhtmltoimage_get_output(wkhtmltoimage_converter * converter, const unsigned char **);
+CAPI(int) wkhtmltoimage_current_phase(wkhtmltoimage_converter * converter);
+CAPI(int) wkhtmltoimage_phase_count(wkhtmltoimage_converter * converter);
+CAPI(const char *) wkhtmltoimage_phase_description(wkhtmltoimage_converter * converter, int phase);
+CAPI(const char *) wkhtmltoimage_progress_string(wkhtmltoimage_converter * converter);
+CAPI(int) wkhtmltoimage_http_error_code(wkhtmltoimage_converter * converter);
+CAPI(long) wkhtmltoimage_get_output(wkhtmltoimage_converter * converter, const unsigned char **);
 
 #include <wkhtmltox/dllend.inc>
 #endif /*__IMAGE_H__*/

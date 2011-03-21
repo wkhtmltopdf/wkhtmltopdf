@@ -24,6 +24,10 @@
 #endif
 #endif
 
+#ifdef _MSC_VER
+#define strcasecmp _stricmp
+#endif
+
 #include "loadsettings.hh"
 #include <QMap>
 #include <stdexcept>
