@@ -223,7 +223,7 @@ void CommandLineParserBase::addPageLoadArgs(LoadPage & s) {
 	addarg("no-debug-javascript", 0,"Do not show javascript debugging output", new ConstSetter<bool>(s.debugJavascript, false));
 #if QT_VERSION >= 0x040600
 	addarg("stop-slow-scripts", 0, "Stop slow running javascripts", new ConstSetter<bool>(s.stopSlowScripts, true));
-	addarg("no-stop-slow-scripts", 0, "Do not Stop slow running javascripts", new ConstSetter<bool>(s.stopSlowScripts, true));
+	addarg("no-stop-slow-scripts", 0, "Do not Stop slow running javascripts", new ConstSetter<bool>(s.stopSlowScripts, false));
 #endif
 	addarg("run-script", 0, "Run this additional javascript after the page is done loading (repeatable)", new StringListSetter(s.runScript, "js"));
 
