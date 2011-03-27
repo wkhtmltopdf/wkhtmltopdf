@@ -31,7 +31,7 @@ ImageCommandLineParser::ImageCommandLineParser(wkhtmltopdf::settings::ImageGloba
 
 	extended(false);
 	qthack(false);
-	addarg("width",0,"Set screen width (default is 1024)", new IntSetter(s.screenWidth,"int"));
+	addarg("width",0,"Set screen width, note that this is used only as a guide line. Use --disable-smart-width to make it strict.", new IntSetter(s.screenWidth,"int"));
   addarg("height",0,"Set screen height (default is calculated from page content)", new IntSetter(s.screenHeight, "int"));
 	// addarg("scale-w",0,"Set width for resizing", new IntSetter(s.scale.width,"int"));
 	// addarg("scale-h",0,"Set height for resizing", new IntSetter(s.scale.height,"int"));
@@ -40,12 +40,13 @@ ImageCommandLineParser::ImageCommandLineParser(wkhtmltopdf::settings::ImageGloba
 	addarg("crop-y",0,"Set y coordinate for croping", new IntSetter(s.crop.top,"int"));
 	addarg("crop-w",0,"Set width for croping", new IntSetter(s.crop.width,"int"));
 	addarg("crop-h",0,"Set height for croping", new IntSetter(s.crop.height,"int"));
-	addarg("format",'f',"Output file format (default is jpg)", new QStrSetter(s.fmt, "format") );
+	addarg("format",'f',"Output file format", new QStrSetter(s.fmt, "format") );
 	addarg("quality",0,"Output image quality (between 0 and 100)", new IntSetter(s.quality, "int") );
 
 	extended(true);
 	qthack(true);
-	addarg("disable-smart-width", '0', "Use the specified width even if it is not large enough for the content", new ConstSetter<bool>(s.smartWidth, false));
+	addarg("disable-smart-width", 0, "Use the specified width even if it is not large enough for the content", new ConstSetter<bool>(s.smartWidth, false));
+	addarg("enable-smart-width", 0, "Extend --width to fit unbreakable content", new ConstSetter<bool>(s.smartWidth, true));
 	addarg("transparent",0,"Make the background transparent in pngs", new ConstSetter<bool>(s.transparent, true));
 #ifdef Q_WS_X11
 	addarg("use-xserver",0,"Use the X server (some plugins and other stuff might not work without X11)", new ConstSetter<bool>(s.useGraphics,true));
