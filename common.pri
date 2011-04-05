@@ -32,9 +32,12 @@ exists($$QMAKE_LIBDIR_QT/libQtGui.so) {
     DEFINES += QT_STATIC
 }
 
-MOC_DIR = ../../build
-OBJECTS_DIR = ../../build
-UI_DIR = ../../build
+win32-msvc2010 {
+} else {
+	MOC_DIR = ../../build
+	OBJECTS_DIR = ../../build
+	UI_DIR = ../../build
+}
 
 INCLUDEPATH += ../../include
 
