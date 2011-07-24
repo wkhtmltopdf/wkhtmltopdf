@@ -393,7 +393,7 @@ void PdfConverterPrivate::findLinks(QWebFrame * frame, QVector<QPair<QWebElement
 		} else {
 			QUrl href(h);
 			if (href.isEmpty()) continue;
-			href=frame->url().resolved(href);
+			href=frame->baseUrl().resolved(href);
 			if (urlToPageObj.contains(href.toString(QUrl::RemoveFragment))) {
 				if (ulocal) {
 					PageObject * p = urlToPageObj[href.toString(QUrl::RemoveFragment)];
