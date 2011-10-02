@@ -64,6 +64,7 @@ int main() {
 	/* We want the result to be storred in the file called test.pdf */
 	wkhtmltopdf_set_global_setting(gs, "out", "test.pdf");
 
+	wkhtmltopdf_set_global_setting(gs, "load.cookieJar", "myjar.jar");
 	/*
 	 * Create a input object settings object that is used to store settings
 	 * related to a input object, note again that control of this object is parsed to
