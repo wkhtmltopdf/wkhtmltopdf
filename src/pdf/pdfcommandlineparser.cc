@@ -205,5 +205,5 @@ void PdfCommandLineParser::parseArguments(int argc, const char ** argv, bool fro
 		usage(stderr, false);
 		exit(1);
 	}
-	globalSettings.out = argv[argc-1];
+	globalSettings.out = QString::fromUtf8(argv[argc-1]);
 }
