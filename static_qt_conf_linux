@@ -38,3 +38,5 @@
 -no-ssse3
 -no-sse4.1
 -no-sse4.2
+-no-avx
+-no-neon
