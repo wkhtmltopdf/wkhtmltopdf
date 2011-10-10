@@ -1,7 +1,7 @@
 // -*- mode: c++; tab-width: 4; indent-tabs-mode: t; eval: (progn (c-set-style "stroustrup") (c-set-offset 'innamespace 0)); -*-
 // vi:set ts=4 sts=4 sw=4 noet :
 //
-// Copyright 2010 wkhtmltopdf authors
+// Copyright 2010, 2011 wkhtmltopdf authors
 //
 // This file is part of wkhtmltopdf.
 //
@@ -316,6 +316,8 @@ void PdfConverterPrivate::loadHeaders() {
 			if (!ps.header.htmlUrl.isEmpty() || !ps.footer.htmlUrl.isEmpty()) {
 				QHash<QString, QString> parms;
 				fillParms(parms, pageNumber, obj);
+				parms["sitepage"] = QString::number(op+1);
+				parms["sitepages"] = QString::number(obj.pageCount);
 				hf = true;
 				if (!ps.header.htmlUrl.isEmpty())
 					obj.headers.push_back(loadHeaderFooter(ps.header.htmlUrl, parms, ps) );

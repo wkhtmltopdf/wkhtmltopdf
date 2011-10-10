@@ -185,6 +185,8 @@ void PdfCommandLineParser::outputHeaderFooterDoc(Outputter * o) const {
 " * [time]       Replaced by the current time in system local format\n"
 " * [title]      Replaced by the title of the of the current page object\n"
 " * [doctitle]   Replaced by the title of the output document\n"
+" * [sitepage]   Replaced by the number of the page in the current site being converted\n"
+" * [sitepages]  Replaced by the number of pages in the current site being converted\n"
 "\n");
 	o->paragraph("As an example specifying --header-right \"Page [page] of [toPage]\", "
 				 "will result in the text \"Page x of y\" where x is the number of the "
