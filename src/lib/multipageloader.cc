@@ -138,7 +138,7 @@ ResourceObject::ResourceObject(MultiPageLoaderPrivate & mpl, const QUrl & u, con
 	connect(&webPage, SIGNAL(loadFinished(bool)), this, SLOT(loadFinished(bool)));
 	connect(&webPage, SIGNAL(printRequested(QWebFrame*)), this, SLOT(printRequested(QWebFrame*)));
 
-	//If some ssl error occures we want sslErrors to be called, so the we can ignore it
+	//If some ssl error occurs we want sslErrors to be called, so the we can ignore it
 	connect(&networkAccessManager, SIGNAL(sslErrors(QNetworkReply*, const QList<QSslError>&)),this,
 	        SLOT(sslErrors(QNetworkReply*, const QList<QSslError>&)));
 
@@ -245,7 +245,7 @@ void ResourceObject::loadDone() {
 }
 
 /*!
- * Called when the page requires authentication, filles in the username
+ * Called when the page requires authentication, fills in the username
  * and password supplied on the command line
  */
 void ResourceObject::handleAuthenticationRequired(QNetworkReply *reply, QAuthenticator *authenticator) {
@@ -285,7 +285,7 @@ void ResourceObject::amfinished(QNetworkReply * reply) {
 }
 
 /*!
- * Handel any ssl error by ignoring
+ * Handle any ssl error by ignoring
  */
 void ResourceObject::sslErrors(QNetworkReply *reply, const QList<QSslError> &) {
 	//We ignore any ssl error, as it is next to impossible to send or receive
@@ -492,7 +492,7 @@ LoaderObject * MultiPageLoader::addResource(const QString & string, const settin
 		url = d->tempIn.create(".html");
 		QFile tmp(url);
 		if (!tmp.open(QIODevice::WriteOnly) || tmp.write(data->toUtf8())==0) {
-			emit error("Unable to create temporery file");
+			emit error("Unable to create temporary file");
 			return NULL;
 		}
 	} else if (url == "-") {
@@ -501,7 +501,7 @@ LoaderObject * MultiPageLoader::addResource(const QString & string, const settin
 		url = d->tempIn.create(".html");
 		QFile tmp(url);
 		if (!tmp.open(QIODevice::WriteOnly) || !copyFile(in, tmp)) {
-			emit error("Unable to create temporery file");
+			emit error("Unable to create temporary file");
 			return NULL;
 		}
 	}
@@ -612,30 +612,30 @@ void MultiPageLoader::cancel() {
 
 /*!
   \fn MultiPageLoader::loadFinished(bool ok)
-  \brief Signal emmited when all pages have been loaded
+  \brief Signal emitted when all pages have been loaded
   \param ok True if all the pages have been loaded sucessfully
 */
 
 /*!
   \fn MultiPageLoader::loadProgress(int progress)
-  \brief Signal emmited once load has progressed
+  \brief Signal emitted once load has progressed
   \param progress Progress in percent
 */
 
 /*!
   \fn MultiPageLoader::loadStarted()
-  \brief Signal emmited when loading has started
+  \brief Signal emitted when loading has started
 */
 
 /*!
   \fn void MultiPageLoader::warning(QString text)
-  \brief Signal emmitted when a none fatal warning has occured
-  \param text A string descripting the warning
+  \brief Signal emitted when a none fatal warning has occured
+  \param text A string describing the warning
 */
 
 /*!
   \fn void MultiPageLoader::error(QString text)
-  \brief Signal emmitted when a fatel error has occured
+  \brief Signal emitted when a fatal error has occured
   \param text A string describing the error
 */
 }

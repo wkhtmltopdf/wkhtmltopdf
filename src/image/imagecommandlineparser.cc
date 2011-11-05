@@ -91,7 +91,7 @@ void ImageCommandLineParser::readme(FILE * fd, bool html) const {
 // 	foreach (ArgHandler * h, d->longToHandler)
 // 		h->useDefault(*d);
 
-// 	//Load configuration from enviornment
+// 	//Load configuration from environment
 // 	char * val;
 // 	const char * vars[] = {"proxy","all_proxy","http_proxy", NULL};
 // 	for (int i=0; vars[i]; ++i) {

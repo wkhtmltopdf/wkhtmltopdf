@@ -24,7 +24,7 @@
 #include <cstdio>
 #include <wkhtmltox/imagesettings.hh>
 
-/*! \brief The class is responcible for parsing command line information
+/*! \brief The class is responsible for parsing command line information
 */
 class ImageCommandLineParser: public CommandLineParserBase {
 public:

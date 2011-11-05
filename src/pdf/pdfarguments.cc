@@ -300,7 +300,7 @@ PdfCommandLineParser::PdfCommandLineParser(PdfGlobal & s, QList<PdfObject> & ps)
 
 	addarg("toc-header-text",0,"The header text of the toc", new QStrSetter(od.toc.captionText, "text"));
 	addarg("disable-toc-links",0,"Do not link from toc to sections", new ConstSetter<bool>(od.toc.forwardLinks, false));
-	addarg("disable-dotted-lines",0,"Do not use dottet lines in the toc", new ConstSetter<bool>(od.toc.useDottedLines,false));
-	addarg("toc-text-size-shrink",0,"For each level of headings in the toc the font is scaled by this facter", new FloatSetter(od.toc.fontScale, "real"));
+	addarg("disable-dotted-lines",0,"Do not use dotted lines in the toc", new ConstSetter<bool>(od.toc.useDottedLines,false));
+	addarg("toc-text-size-shrink",0,"For each level of headings in the toc the font is scaled by this factor", new FloatSetter(od.toc.fontScale, "real"));
 	addarg("toc-level-indentation",0,"For each level of headings in the toc indent by this length", new QStrSetter(od.toc.indentation, "width"));
 }

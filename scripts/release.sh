@@ -60,7 +60,7 @@ BUILD=\"$4\"
 DEFINES += MAJOR_VERSION=\$\$MAJOR_VERSION MINOR_VERSION=\$\$MINOR_VERSION PATCH_VERSION=\$\$PATCH_VERSION BUILD=\$\$BUILD" > version.pri
 
 HEAD="$(git log --pretty=oneline  -n 1 | sed -e 's/ .*//')"
-git commit -m "TEMPORERY DO NOT COMMIT $v" version.pri
+git commit -m "TEMPORARY DO NOT COMMIT $v" version.pri
 
 rm -rf bin
 mkdir bin

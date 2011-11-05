@@ -33,7 +33,7 @@
 namespace wkhtmltopdf {
 namespace settings {
 
-/*! \brief Settings consdering proxy */
+/*! \brief Settings considering proxy */
 struct DLL_PUBLIC Proxy {
 	Proxy();
 	//! Type of proxy to use
@@ -85,7 +85,7 @@ struct DLL_PUBLIC LoadPage {
 	// TODO MOVE
 	float zoomFactor;
 
-	//! Map of custum header variables
+	//! Map of custom header variables
 	QList< QPair<QString, QString> > customHeaders;
 
 	//! Set if the custom header should be repeated for each resource request

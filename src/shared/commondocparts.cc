@@ -100,7 +100,7 @@ void CommandLineParserBase::outputProxyDoc(Outputter * o) const {
 	o->verbatim(
 		"<type> := \"http://\" | \"socks5://\"\n"
 		"<serif> := <username> (\":\" <password>)? \"@\"\n"
-		"<proxy> := \"None\" | <type>? <sering>? <host> (\":\" <port>)?\n");
+		"<proxy> := \"None\" | <type>? <string>? <host> (\":\" <port>)?\n");
 	o->paragraph("Here are some examples (In case you are unfamiliar with the BNF):");
 	o->verbatim("http://user:password@myproxyserver:8080\n"
 				"socks5://myproxyserver\n"

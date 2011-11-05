@@ -75,7 +75,7 @@
  *
  * \section RESTH The rest of the headers.
  *
- * The rest of the headers directly exposes the C++ QT dependant class
+ * The rest of the headers directly exposes the C++ QT dependent class
  * used internally by wkhtmltopdf and wkhtmltoimage. They are not
  * fairly well documented and are not guaranteed to remain stable.
  * unless you know what you are doing you should not use these bindings.

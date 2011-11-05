@@ -52,7 +52,7 @@ CAPI(void) wkhtmltoimage_set_phase_changed_callback(wkhtmltoimage_converter * co
 CAPI(void) wkhtmltoimage_set_progress_changed_callback(wkhtmltoimage_converter * converter, wkhtmltoimage_int_callback cb);
 CAPI(void) wkhtmltoimage_set_finished_callback(wkhtmltoimage_converter * converter, wkhtmltoimage_int_callback cb);
 CAPI(int) wkhtmltoimage_convert(wkhtmltoimage_converter * converter);
-/* CAPI(void) wkhtmltoimage_begin_convertion(wkhtmltoimage_converter * converter); */
+/* CAPI(void) wkhtmltoimage_begin_conversion(wkhtmltoimage_converter * converter); */
 /* CAPI(void) wkhtmltoimage_cancel(wkhtmltoimage_converter * converter); */
 
 CAPI(int) wkhtmltoimage_current_phase(wkhtmltoimage_converter * converter);
