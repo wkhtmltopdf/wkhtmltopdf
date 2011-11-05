@@ -25,14 +25,14 @@
  * - \b crop.left left/x coordinate of the window to capture in pixels. E.g. "200"
  * - \b crop.top top/y coordinate of the window to capture in pixels. E.g. "200"
  * - \b crop.width Width of the window to capture in pixels. E.g. "200"
- * - \b crop.height Heigt of the window to capture in pixels. E.g. "200"
+ * - \b crop.height Height of the window to capture in pixels. E.g. "200"
  * - \b load.cookieJar Path of file used to load and store cookies.
  * - \b load.* Page specific settings related to loading content, see \ref pageLoad.
  * - \b web.* See \ref pageWeb.
  * - \b transparent When outputting a PNG or SVG, make the white background transparent.
  *      Must be either "true" or "false"
  * - \b in The URL or path of the input file, if "-" stdin is used. E.g. "http://google.com"
- * - \b out The path of the output file, if "-" stdout is used, if empty the content is storred
+ * - \b out The path of the output file, if "-" stdout is used, if empty the content is stored
  *      to a internalBuffer.
  * - \b fmt The output format to use, must be either "", "jpg", "png", "bmp" or "svg".
  * - \b screenWidth The with of the screen used to render is pixels, e.g "800".
@@ -149,8 +149,8 @@ CAPI(void) wkhtmltoimage_set_finished_callback(wkhtmltoimage_converter * convert
 	reinterpret_cast<MyImageConverter *>(converter)->finished_cb = cb;
 }
 
-/*CAPI(void) wkhtmltoimage_begin_convertion(wkhtmltoimage_converter * converter) {
-	reinterpret_cast<MyImageConverter *>(converter)->converter.beginConvertion();
+/*CAPI(void) wkhtmltoimage_begin_conversion(wkhtmltoimage_converter * converter) {
+	reinterpret_cast<MyImageConverter *>(converter)->converter.beginConversion();
 	}*/
 
 CAPI(int) wkhtmltoimage_convert(wkhtmltoimage_converter * converter) {

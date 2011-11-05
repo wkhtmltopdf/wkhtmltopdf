@@ -37,8 +37,8 @@
 /**
  * \page pagesettings Setting
  * Settings can be supplied to PDF and image c-bindings using utf-8 encoded strings.
- * This is done by relatively simple reflection on the CropSettins, HeaderFooter, Margin,
- * ImageGlobal, PdfGlobal, PdfObject, Size, and TabelOfContent classes.
+ * This is done by relatively simple reflection on the CropSettings, HeaderFooter, Margin,
+ * ImageGlobal, PdfGlobal, PdfObject, Size, and TableOfContent classes.
  *
  * - The \ref wkhtmltopdf_global_settings corresponds to the PdfGlobal class and is documented in \ref pagePdfGlobal.
  * - The \ref wkhtmltopdf_object_settings corresponds to the PdfGlobal class and is documented in \ref pagePdfObject.
@@ -55,7 +55,7 @@
  * - \b web.printMediaType Should the content be printed using the print media type instead
  *      of the screen media type. Must be either "true" or "false". Has no effect for wkhtmltoimage.
  * - \b web.defaultEncoding What encoding should we guess content is using if they do not
- *      specify it propperly? E.g. "utf-8"
+ *      specify it properly? E.g. "utf-8"
  * - \b web.userStyleSheet Url er path to a user specified style sheet.
  * - \b web.enablePlugins Should we enable NS plugins, must be either "true" or "false".
  *      Enabling this will have limited success.
@@ -65,24 +65,24 @@
  * - \b load.username The user name to use when loging into a website, E.g. "bart"
  * - \b load.password The password to used when logging into a website, E.g. "elbarto"
  * - \b load.jsdelay The mount of time in milliseconds to wait after a page has done loading until
- *      it is actualy printed. E.g. "1200". We will wait this amount of time or until, javascript
- *      calles window.print().
+ *      it is actually printed. E.g. "1200". We will wait this amount of time or until, javascript
+ *      calls window.print().
  * - \b load.zoomFactor How much should we zoom in on the content? E.g. "2.2".
  * - \b load.customHeaders TODO
- * - \b load.repertCustomHeaders Should the custom headers be sendt all elements loaded instead of
+ * - \b load.repertCustomHeaders Should the custom headers be sent all elements loaded instead of
  *       only the main page? Must be either "true" or "false".
  * - \b load.cookies TODO
  * - \b load.post TODO
- * - \b load.blockLocalFileAccess Dissalow local and piped files to acces other local files. Must
+ * - \b load.blockLocalFileAccess Disallow local and piped files to access other local files. Must
  *      be either "true" or "false".
  * - \b load.stopSlowScript Stop slow running javascript. Must be either "true" or "false".
  * - \b load.debugJavascript Forward javascript warnings and errors to the warning callback.
  *      Must be either "true" or "false".
- * - \b load.loadErrorHandling How should we handel obejcts that fail to load. Must be one of:
+ * - \b load.loadErrorHandling How should we handle obejcts that fail to load. Must be one of:
  *      - "abort" Abort the convertion process
  *      - "skip" Do not add the object to the final output
  *      - "ignore" Try to add the object to the final output.
- * - \b load.proxy String describing whact proxy to use when loading the object.
+ * - \b load.proxy String describing what proxy to use when loading the object.
  * - \b load.runScript TODO
  *
  * \section pageHeaderFooter Header and footer settings
@@ -647,8 +647,8 @@ CAPI(long) wkhtmltopdf_get_output(wkhtmltopdf_converter * converter, const unsig
 //  LocalWords:  eval progn stroustrup innamespace sts sw noet wkhtmltopdf DLL
 //  LocalWords:  ifdef WKHTMLTOX UNDEF undef endif pdf dllbegin namespace const
 //  LocalWords:  QString cb bool ok globalSettings phaseChanged progressChanged
-//  LocalWords:  objectSettings utf CropSettins HeaderFooter ImageGlobal dpi sa
-//  LocalWords:  PdfGlobal PdfObject TabelOfContent pagePdfGlobal pagePdfObject
+//  LocalWords:  objectSettings utf CropSettings HeaderFooter ImageGlobal dpi sa
+//  LocalWords:  PdfGlobal PdfObject TableOfContent pagePdfGlobal pagePdfObject
 //  LocalWords:  pageImageGlobal pageGlobalLoad paperSize colorMode Grayscale
 //  LocalWords:  pageOffset outlineDepth dumpOutline stdout pageLoad pageWeb aa
 //  LocalWords:  includeInOutline pagesCount tocXsl xsl struct typedef str CAPI

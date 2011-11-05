@@ -58,7 +58,7 @@ CAPI(void) wkhtmltopdf_set_error_callback(wkhtmltopdf_converter * converter, wkh
 CAPI(void) wkhtmltopdf_set_phase_changed_callback(wkhtmltopdf_converter * converter, wkhtmltopdf_void_callback cb);
 CAPI(void) wkhtmltopdf_set_progress_changed_callback(wkhtmltopdf_converter * converter, wkhtmltopdf_int_callback cb);
 CAPI(void) wkhtmltopdf_set_finished_callback(wkhtmltopdf_converter * converter, wkhtmltopdf_int_callback cb);
-/* CAPI(void) wkhtmltopdf_begin_convertion(wkhtmltopdf_converter * converter); */
+/* CAPI(void) wkhtmltopdf_begin_conversion(wkhtmltopdf_converter * converter); */
 /* CAPI(void) wkhtmltopdf_cancel(wkhtmltopdf_converter * converter); */
 CAPI(int) wkhtmltopdf_convert(wkhtmltopdf_converter * converter);
 CAPI(void) wkhtmltopdf_add_object(

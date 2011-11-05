@@ -36,10 +36,10 @@ ImageCommandLineParser::ImageCommandLineParser(wkhtmltopdf::settings::ImageGloba
 	// addarg("scale-w",0,"Set width for resizing", new IntSetter(s.scale.width,"int"));
 	// addarg("scale-h",0,"Set height for resizing", new IntSetter(s.scale.height,"int"));
 
-	addarg("crop-x",0,"Set x coordinate for croping", new IntSetter(s.crop.left,"int"));
-	addarg("crop-y",0,"Set y coordinate for croping", new IntSetter(s.crop.top,"int"));
-	addarg("crop-w",0,"Set width for croping", new IntSetter(s.crop.width,"int"));
-	addarg("crop-h",0,"Set height for croping", new IntSetter(s.crop.height,"int"));
+	addarg("crop-x",0,"Set x coordinate for cropping", new IntSetter(s.crop.left,"int"));
+	addarg("crop-y",0,"Set y coordinate for cropping", new IntSetter(s.crop.top,"int"));
+	addarg("crop-w",0,"Set width for cropping", new IntSetter(s.crop.width,"int"));
+	addarg("crop-h",0,"Set height for cropping", new IntSetter(s.crop.height,"int"));
 	addarg("format",'f',"Output file format", new QStrSetter(s.fmt, "format") );
 	addarg("quality",0,"Output image quality (between 0 and 100)", new IntSetter(s.quality, "int") );
 

@@ -86,7 +86,7 @@ void CommandLineParserBase::version(FILE * fd) const {
 
 void CommandLineParserBase::parseArg(int sections, const int argc, const char ** argv, bool & defaultMode, int & arg, char * page) {
 	if (argv[arg][1] == '-') { //We have a long style argument
-		//After an -- apperas in the argument list all that follows is interpited as default arguments
+		//After an -- apperas in the argument list all that follows is interpreted as default arguments
 		if (argv[arg][2] == '0') {
 			defaultMode=true;
 			return;
@@ -118,7 +118,7 @@ void CommandLineParserBase::parseArg(int sections, const int argc, const char **
 		if (j.value()->qthack)
 			fprintf(stderr, "The switch %s, is not support using unpatched qt, and will be ignored.", argv[arg]);
 #endif
-		//Skip allredy handled switch arguments
+		//Skip already handled switch arguments
 		arg += j.value()->argn.size();
 	} else {
 		int c=arg;//Remember the current argument we are parsing
@@ -151,7 +151,7 @@ void CommandLineParserBase::parseArg(int sections, const int argc, const char **
  			if (k.value()->qthack)
  				fprintf(stderr, "The switch -%c, is not support using unpatched qt, and will be ignored.", argv[c][j]);
 #endif
-			//Skip allredy handled switch arguments
+			//Skip already handled switch arguments
 			arg += k.value()->argn.size();
 		}
 	}

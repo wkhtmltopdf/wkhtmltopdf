@@ -43,7 +43,7 @@ using namespace wkhtmltopdf;
  * reading commandline options from stdin
  * \param buff the line to parse
  * \param nargc on return will hold the number of arguments read
- * \param nargv on return will hold the argumenst read and be NULL terminated
+ * \param nargv on return will hold the arguments read and be NULL terminated
  */
 enum State {skip, tok, q1, q2, q1_esc, q2_esc, tok_esc};
 void parseString(char * buff, int &nargc, char **nargv) {
@@ -88,7 +88,7 @@ void parseString(char * buff, int &nargc, char **nargv) {
 			else buff[write++] = buff[read];
 			break;
 		case tok_esc:
-			//Escape one char and return to the tokan parsing state
+			//Escape one char and return to the token parsing state
 			next_state=tok;
 			buff[write++] = buff[read];
 			break;

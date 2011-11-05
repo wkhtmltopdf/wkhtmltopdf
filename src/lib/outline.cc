@@ -95,7 +95,7 @@ bool OutlineItem::differentFrom(const OutlineItem * other) const {
 
 /*!
   \class OutlinePrivate
-  \brief Class providing implemenation details of Outline
+  \brief Class providing implementation details of Outline
 */
 
 OutlinePrivate::OutlinePrivate(const settings::PdfGlobal & s):
@@ -167,12 +167,12 @@ void Outline::dump(QTextStream & stream, const QString & xsl) const {
 
 /*!
   \file outline.hh
-  \brief Defiens the Outline class
+  \brief Defines the Outline class
 */
 
 /*!
   \class Outline
-  \brief Class responcible for building and keeping an outline of a document.
+  \brief Class responsible for building and keeping an outline of a document.
 */
 
 /*!
@@ -203,7 +203,7 @@ bool Outline::replaceWebPage(int document,
 		headings[ qMakePair(location.first, qMakePair(location.second.y(), location.second.x()) ) ] = e;
 	}
 
-	//This huristic is a little strange, it tries to create a real tree,
+	//This heuristic is a little strange, it tries to create a real tree,
 	//even though someone puts a h5 below a h1 or stuff like that
 	//The way this is handled is having a level stack, indicating what h-tags
 	//a level level in the tree currently represents

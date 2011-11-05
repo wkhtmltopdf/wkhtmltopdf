@@ -150,7 +150,7 @@ void PdfCommandLineParser::outputPageBreakDoc(Outputter * o) const {
 		"display the top half on one page. And the bottom half on another page. "
 		"It will also break image in two and so on.  If you are using the patched version of "
 		"QT you can use the CSS page-break-inside property to remedy this somewhat. "
-		"There is no easy solution to this problem, until this is solved try organising "
+		"There is no easy solution to this problem, until this is solved try organizing "
 		"your HTML documents such that it contains many lines on which pages can be cut "
 		"cleanly.");
 	o->beginParagraph();
@@ -414,7 +414,7 @@ void PdfCommandLineParser::outputPageSizes(Outputter * o) const {
   Output examples on how to use wkhtmltopdf
   \param o The outputter to output to
 */
-void PdfCommandLineParser::outputExampels(Outputter * o) const {
+void PdfCommandLineParser::outputExamples(Outputter * o) const {
 	o->beginSection("Examples");
 	o->paragraph("This section presents a number of examples of how to invoke wkhtmltopdf.");
 	o->paragraph("To convert a remote HTML file to PDF:");
