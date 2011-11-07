@@ -176,7 +176,7 @@ public:
 /*!
   Create a raw text outputter, used for outputting --help and readme
   \param fd A file description to output to
-  \param doc Ouput in readme format
+  \param doc Output in readme format
   \param extended Output extended options
 */
 Outputter * Outputter::text(FILE * fd, bool doc, bool extended) {

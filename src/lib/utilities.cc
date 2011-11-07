@@ -34,7 +34,7 @@ void loadSvg(QSvgRenderer * & ptr, const QString & path, const char * def, int w
 	 if (path != "") {
 	 	ptr = new QSvgRenderer(path);
 		if (ptr->isValid()) return;
-		qWarning() << "Faild to load " << path;
+		qWarning() << "Failed to load " << path;
 		delete ptr;
 	 }
 

@@ -215,7 +215,7 @@ void CommandLineParserBase::addPageLoadArgs(LoadPage & s) {
 	addarg("post", 0, "Add an additional post field (repeatable)", new MapSetter<PostItemCreator<false> >(s.post, "name", "value"));
 	addarg("post-file", 0, "Post an additional file (repeatable)", new MapSetter<PostItemCreator<true> >(s.post, "name", "path"));
 
-	addarg("disable-local-file-access", 0, "Do not allowed conversion of a local file to read in other local files, unless explecitily allowed with --allow", new ConstSetter<bool>(s.blockLocalFileAccess, true));
+	addarg("disable-local-file-access", 0, "Do not allowed conversion of a local file to read in other local files, unless explicitly allowed with --allow", new ConstSetter<bool>(s.blockLocalFileAccess, true));
 	addarg("enable-local-file-access", 0, "Allowed conversion of a local file to read in other local files.", new ConstSetter<bool>(s.blockLocalFileAccess, false));
 	addarg("allow", 0, "Allow the file or files from the specified folder to be loaded (repeatable)", new StringListSetter(s.allowed,"path"));
 

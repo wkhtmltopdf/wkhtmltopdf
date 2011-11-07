@@ -38,7 +38,7 @@ namespace settings {
 
 typedef QPair<qreal, QPrinter::Unit> UnitReal;
 
-/*! \brief Settings consdering margins */
+/*! \brief Settings considering margins */
 struct DLL_PUBLIC Margin {
 	Margin();
 	//!Margin applied to the top of the page
@@ -62,7 +62,7 @@ struct DLL_PUBLIC Size {
 	UnitReal width;
 };
 
-/*! \brief Settings considdirng the table of content */
+/*! \brief Settings considering the table of content */
 struct DLL_PUBLIC TableOfContent {
 	TableOfContent();
 	//! Should we print dots between the name and the page number?
@@ -114,7 +114,7 @@ struct DLL_PUBLIC PdfGlobal {
 	//! How many copies do we wan to print
 	int copies;
 
-	//! Should be print a whole copy before beginnig the next
+	//! Should be print a whole copy before beginning the next
 	bool collate;
 
 	//! Should we generate an outline and put it into the pdf file

@@ -109,7 +109,7 @@ void PdfCommandLineParser::readme(FILE * fd, bool html) const {
 	outputStaticProblems(o);
 	outputCompilation(o);
 	outputInstallation(o);
-	outputExampels(o);
+	outputExamples(o);
 	delete o;
 }
 
@@ -122,7 +122,7 @@ void PdfCommandLineParser::readme(FILE * fd, bool html) const {
 	//foreach(ArgHandler * h, longToHandler)
 	//	h->useDefault(*d);
 
-	//Load configuration from enviornment
+	//Load configuration from environment
 	//char * val;
 	//const char * vars[] = {"proxy","all_proxy","http_proxy", NULL};
 	//for(int i=0; vars[i]; ++i) {
@@ -175,7 +175,7 @@ void PdfCommandLineParser::parseArguments(int argc, const char ** argv, bool fro
 			ps.header.htmlUrl = ps.footer.htmlUrl = "";
 			ps.includeInOutline = false;
 
-			//Setup varius cover settings her
+			//Setup various cover settings here
 			++arg;
 		} else if (!strcmp(argv[arg],"toc")) {
 			++arg;

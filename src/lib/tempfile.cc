@@ -38,7 +38,7 @@
 
 /*!
   \class TempFile
-  \brief Class responsible for creating and deleting temporery files
+  \brief Class responsible for creating and deleting temporary files
 */
 TempFile::TempFile() {
 }
@@ -48,9 +48,9 @@ TempFile::~TempFile() {
 }
 
 /*!
-  \brief Create a new temporery file, deleteing the old if one exists
-  \param ext The extention of the temporery file
-  \returns Path of the new temporery file
+  \brief Create a new temporary file, deleting the old if one exists
+  \param ext The extention of the temporary file
+  \returns Path of the new temporary file
 */
 QString TempFile::create(const QString & ext) {
 	remove();
@@ -59,7 +59,7 @@ QString TempFile::create(const QString & ext) {
 }
 
 /*!
-  \brief Remove the temporery file hold by this object it it exists
+  \brief Remove the temporary file hold by this object it it exists
 */
 void TempFile::remove() {
 	if (!path.isEmpty())

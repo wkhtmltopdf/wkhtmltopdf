@@ -98,7 +98,7 @@ void ImageConverterPrivate::pagesLoaded(bool ok) {
 //	test.setFormat(settings.fmt);
 //	if (!test.canWrite()) {
 //		if (!settings.quiet)printf("error: file format not supported\n");
-//		httpErrorCode=EFAULT;
+//		httpErrorCode=DEFAULT;
 //		return false;
 //	}
 	// create webkit frame and load website
