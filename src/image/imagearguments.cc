@@ -31,8 +31,9 @@ ImageCommandLineParser::ImageCommandLineParser(wkhtmltopdf::settings::ImageGloba
 
 	extended(false);
 	qthack(false);
+	addarg("quiet", 'q', "Be less verbose", new ConstSetter<bool>(s.quiet,true));
 	addarg("width",0,"Set screen width, note that this is used only as a guide line. Use --disable-smart-width to make it strict.", new IntSetter(s.screenWidth,"int"));
-  addarg("height",0,"Set screen height (default is calculated from page content)", new IntSetter(s.screenHeight, "int"));
+	addarg("height",0,"Set screen height (default is calculated from page content)", new IntSetter(s.screenHeight, "int"));
 	// addarg("scale-w",0,"Set width for resizing", new IntSetter(s.scale.width,"int"));
 	// addarg("scale-h",0,"Set height for resizing", new IntSetter(s.scale.height,"int"));
 
