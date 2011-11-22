@@ -250,6 +250,8 @@ PdfCommandLineParser::PdfCommandLineParser(PdfGlobal & s, QList<PdfObject> & ps)
 	addarg("disable-smart-shrinking", 0, "Disable the intelligent shrinking strategy used by WebKit that makes the pixel/dpi ratio none constant",new ConstSetter<bool>(od.web.enableIntelligentShrinking, false));
  	addarg("enable-smart-shrinking", 0, "Enable the intelligent shrinking strategy used by WebKit that makes the pixel/dpi ratio none constant",new ConstSetter<bool>(od.web.enableIntelligentShrinking, true));
 
+	extended(false);
+ 	qthack(true);
 	addarg("print-media-type",0,"Use print media-type instead of screen", new ConstSetter<bool>(od.web.printMediaType,true));
 	addarg("no-print-media-type",0,"Do not use print media-type instead of screen", new ConstSetter<bool>(od.web.printMediaType, false));
 
