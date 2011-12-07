@@ -198,7 +198,7 @@ void PdfCommandLineParser::outputHeaderFooterDoc(Outputter * o) const {
 "<html><head><script>\n"
 "function subst() {\n"
 "  var vars={};\n"
-"  var x=document.location.search.substring(1).split('&');\n"
+"  var x=window.location.search.substring(1).split('&');\n"
 "  for (var i in x) {var z=x[i].split('=',2);vars[z[0]] = unescape(z[1]);}\n"
 "  var x=['frompage','topage','page','webpage','section','subsection','subsubsection'];\n"
 "  for (var i in x) {\n"
