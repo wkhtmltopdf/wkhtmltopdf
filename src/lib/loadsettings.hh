@@ -121,6 +121,8 @@ struct DLL_PUBLIC LoadPage {
 	QString checkboxCheckedSvg;
 	QString radiobuttonSvg;
 	QString radiobuttonCheckedSvg;
+
+	QString cacheDir;
 };
 
 DLL_PUBLIC LoadPage::LoadErrorHandling strToLoadErrorHandling(const char * s, bool * ok=0);

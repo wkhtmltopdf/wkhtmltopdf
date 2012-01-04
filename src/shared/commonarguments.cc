@@ -219,6 +219,8 @@ void CommandLineParserBase::addPageLoadArgs(LoadPage & s) {
 	addarg("enable-local-file-access", 0, "Allowed conversion of a local file to read in other local files.", new ConstSetter<bool>(s.blockLocalFileAccess, false));
 	addarg("allow", 0, "Allow the file or files from the specified folder to be loaded (repeatable)", new StringListSetter(s.allowed,"path"));
 
+	addarg("cache-dir", 0, "Web cache directory", new QStrSetter(s.cacheDir,"path"));
+
 	addarg("debug-javascript", 0,"Show javascript debugging output", new ConstSetter<bool>(s.debugJavascript, true));
 	addarg("no-debug-javascript", 0,"Do not show javascript debugging output", new ConstSetter<bool>(s.debugJavascript, false));
 #if QT_VERSION >= 0x040600

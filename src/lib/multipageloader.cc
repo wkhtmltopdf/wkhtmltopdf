@@ -28,6 +28,7 @@
 #include <QFile>
 #include <QFileInfo>
 #include <QNetworkCookie>
+#include <QNetworkDiskCache>
 #include <QTimer>
 #include <QUuid>
 
@@ -45,7 +46,13 @@ namespace wkhtmltopdf {
 
 LoaderObject::LoaderObject(QWebPage & p): page(p), skip(false) {};
 
-MyNetworkAccessManager::MyNetworkAccessManager(const settings::LoadPage & s): settings(s) {}
+MyNetworkAccessManager::MyNetworkAccessManager(const settings::LoadPage & s): settings(s) {
+	if ( !s.cacheDir.isEmpty() ){
+		QNetworkDiskCache *cache = new QNetworkDiskCache(this);
+		cache->setCacheDirectory(s.cacheDir);
+		QNetworkAccessManager::setCache(cache);
+	}
+}
 
 void MyNetworkAccessManager::allow(QString path) {
 	QString x = QFileInfo(path).canonicalFilePath();
