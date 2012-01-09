@@ -134,6 +134,7 @@ LoadGlobal::LoadGlobal():
 LoadPage::LoadPage():
 	jsdelay(200),
 	windowStatus(""),
+	cacheDir(""),
 	zoomFactor(1.0),
 	repeatCustomHeaders(false),
 	blockLocalFileAccess(false),
