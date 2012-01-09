@@ -1,6 +1,9 @@
 # ignore mac build files
 build/
 *.plist
+*~
+\#*\#
+bin
 wkhtmltopdf.app/
 wkhtmltopdf.xcodeproj/
 release*/
