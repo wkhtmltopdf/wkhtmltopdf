@@ -436,12 +436,6 @@ void PdfConverterPrivate::fillParms(QHash<QString, QString> & parms, int page, c
 	parms["date"] = t.date().toString(Qt::SystemLocaleShortDate);
 }
 
-void PdfConverterPrivate::beginPage(int actualPage) {
-	progressString = QString("Page ") + QString::number(actualPage) + QString(" of ") + QString::number(actualPages);
-	emit out.progressChanged(actualPage * 100 / actualPages);
-	if (actualPage != 1)
-		printer->newPage();
-}
 
 void PdfConverterPrivate::endPage(PageObject & object, bool hasHeaderFooter, int objectPage, int pageNumber) {
 	typedef QPair<QWebElement, QString> p_t;
@@ -613,6 +607,115 @@ void PdfConverterPrivate::headersLoaded(bool ok) {
 }
 
 
+void PdfConverterPrivate::spoolPage(size_t page) {
+	progressString = QString("Page ") + QString::number(actualPage) + QString(" of ") + QString::number(actualPages);
+	emit out.progressChanged(actualPage * 100 / actualPages);
+	if (actualPage != 1)
+		printer->newPage();
+
+	webPrinter->spoolPage(page+1);
+	foreach (QWebElement elm, pageFormElements[page+1]) {
+		QString type = elm.attribute("type");
+		QString tn = elm.tagName();
+		QString name = elm.attribute("name");
+		if (tn == "TEXTAREA" || type == "text" || type == "password") {
+			painter->addTextField(
+				webPrinter->elementLocation(elm).second,
+				tn == "TEXTAREA"?elm.toPlainText():elm.attribute("value"),
+				name,
+				tn == "TEXTAREA",
+				type == "password",
+				elm.evaluateJavaScript("this.readonly;").toBool(),
+				elm.hasAttribute("maxlength")?elm.attribute("maxlength").toInt():-1
+				);
+		} else if (type == "checkbox") {
+			painter->addCheckBox(
+				webPrinter->elementLocation(elm).second,
+				elm.evaluateJavaScript("this.checked;").toBool(),
+				name,
+				elm.evaluateJavaScript("this.readonly;").toBool());
+		}
+	}
+	for (QHash<QString, QWebElement>::iterator i=pageAnchors[page+1].begin();
+		 i != pageAnchors[page+1].end(); ++i) {
+		QRectF r = webPrinter->elementLocation(i.value()).second;
+		painter->addAnchor(r, i.key());
+	}
+	for (QVector< QPair<QWebElement,QString> >::iterator i=pageLocalLinks[page+1].begin();
+		 i != pageLocalLinks[page+1].end(); ++i) {
+		QRectF r = webPrinter->elementLocation(i->first).second;
+		painter->addLink(r, i->second);
+	}
+	for (QVector< QPair<QWebElement,QString> >::iterator i=pageExternalLinks[page+1].begin();
+		 i != pageExternalLinks[page+1].end(); ++i) {
+		QRectF r = webPrinter->elementLocation(i->first).second;
+		painter->addHyperlink(r, QUrl(i->second));
+	}
+	endPage(objects[currentObject], pageHasHeaderFooter, page, pageNumber);
+	actualPage++;
+}
+
+void PdfConverterPrivate::beginPrintObject(PageObject & obj) {
+	if (obj.number != 0) 
+		endPrintObject(objects[obj.number-1]);
+	currentObject = obj.number;
+	
+	if (!obj.loaderObject || obj.loaderObject->skip) return;
+	const settings::PdfObject & ps = obj.settings;
+	pageHasHeaderFooter = ps.header.line || ps.footer.line ||
+		!ps.header.left.isEmpty() || !ps.footer.left.isEmpty() ||
+		!ps.header.center.isEmpty() || !ps.footer.center.isEmpty() ||
+		!ps.header.right.isEmpty() || !ps.footer.right.isEmpty();
+	painter->save();
+
+	if (ps.produceForms) {
+		foreach (QWebElement elm, obj.page->mainFrame()->findAllElements("input"))
+			elm.setStyleProperty("color","white");
+		foreach (QWebElement elm, obj.page->mainFrame()->findAllElements("textarea"))
+			elm.setStyleProperty("color","white");
+	}
+	
+	//output
+	webPrinter = new QWebPrinter(obj.page->mainFrame(), printer, *painter);
+	QString l1=obj.page->mainFrame()->url().path().split("/").back()+"#";
+	QString l2=obj.page->mainFrame()->url().toString() + "#";
+	
+	outline->fillAnchors(obj.number, obj.anchors);
+
+	//Sort anchors and links by page
+	for (QHash<QString, QWebElement>::iterator i=obj.anchors.begin();
+		 i != obj.anchors.end(); ++i)
+		pageAnchors[webPrinter->elementLocation(i.value()).first][i.key()] = i.value();
+	
+	for (QVector< QPair<QWebElement,QString> >::iterator i=obj.localLinks.begin();
+		 i != obj.localLinks.end(); ++i)
+		pageLocalLinks[webPrinter->elementLocation(i->first).first].push_back(*i);
+	
+	for (QVector< QPair<QWebElement,QString> >::iterator i=obj.externalLinks.begin();
+		 i != obj.externalLinks.end(); ++i)
+		pageExternalLinks[webPrinter->elementLocation(i->first).first].push_back(*i);
+	
+	if (ps.produceForms) {
+		foreach (const QWebElement & elm, obj.page->mainFrame()->findAllElements("input"))
+			pageFormElements[webPrinter->elementLocation(elm).first].push_back(elm);
+		foreach (const QWebElement & elm, obj.page->mainFrame()->findAllElements("textarea"))
+			pageFormElements[webPrinter->elementLocation(elm).first].push_back(elm);
+	}
+	emit out.producingForms(obj.settings.produceForms);
+	out.emitCheckboxSvgs(obj.settings.load);
+}
+
+
+void PdfConverterPrivate::endPrintObject(PageObject & obj) {
+	pageAnchors.clear();
+	pageLocalLinks.clear();
+	pageExternalLinks.clear();
+	pageFormElements.clear();
+	delete webPrinter;
+	painter->restore();
+}
+			
+
 void PdfConverterPrivate::printDocument() {
 #ifndef __EXTENSIVE_WKHTMLTOPDF_QT_HACK__
 	currentPhase = 1;
@@ -621,7 +724,7 @@ void PdfConverterPrivate::printDocument() {
 	progressString = "";
 	emit out.progressChanged(-1);
 #else
- 	int actualPage=1;
+	actualPage=1;
 
  	int cc=settings.collate?settings.copies:1;
  	int pc=settings.collate?1:settings.copies;
@@ -631,108 +734,19 @@ void PdfConverterPrivate::printDocument() {
 
 	progressString = "Preparing";
 	emit out.progressChanged(0);
-
+	
 	for (int cc_=0; cc_ < cc; ++cc_) {
-		int pageNumber=1;
+		pageNumber=1;
 		for (int d=0; d < objects.size(); ++d) {
-			PageObject & obj = objects[d];
-			if (!obj.loaderObject || obj.loaderObject->skip) continue;
-			const settings::PdfObject & ps = obj.settings;
-			bool hasHeaderFooter = ps.header.line || ps.footer.line ||
-				!ps.header.left.isEmpty() || !ps.footer.left.isEmpty() ||
-				!ps.header.center.isEmpty() || !ps.footer.center.isEmpty() ||
-				!ps.header.right.isEmpty() || !ps.footer.right.isEmpty();
-
-			painter->save();
-
-			if (ps.produceForms) {
-				foreach (QWebElement elm, obj.page->mainFrame()->findAllElements("input"))
-				 	elm.setStyleProperty("color","white");
-				foreach (QWebElement elm, obj.page->mainFrame()->findAllElements("textarea"))
-				 	elm.setStyleProperty("color","white");
-			}
-
-			//output
-			QWebPrinter wp(obj.page->mainFrame(), printer, *painter);
-			QString l1=obj.page->mainFrame()->url().path().split("/").back()+"#";
-			QString l2=obj.page->mainFrame()->url().toString() + "#";
-
-			outline->fillAnchors(d, obj.anchors);
-
-			//Sort anchors and links by page
-			QHash<int, QHash<QString, QWebElement> > myAnchors;
-			QHash<int, QVector< QPair<QWebElement,QString> > > myLocalLinks;
-			QHash<int, QVector< QPair<QWebElement,QString> > > myExternalLinks;
-			for (QHash<QString, QWebElement>::iterator i=obj.anchors.begin();
-				i != obj.anchors.end(); ++i)
-				myAnchors[ wp.elementLocation(i.value()).first][i.key()] = i.value();
-
-			for (QVector< QPair<QWebElement,QString> >::iterator i=obj.localLinks.begin();
-				i != obj.localLinks.end(); ++i)
-				myLocalLinks[wp.elementLocation(i->first).first].push_back(*i);
-
-			for (QVector< QPair<QWebElement,QString> >::iterator i=obj.externalLinks.begin();
-				i != obj.externalLinks.end(); ++i)
-				myExternalLinks[wp.elementLocation(i->first).first].push_back(*i);
-
-			QHash<int, QVector<QWebElement> > myFormElements;
-			if (ps.produceForms) {
-				foreach (const QWebElement & elm, obj.page->mainFrame()->findAllElements("input"))
-					myFormElements[wp.elementLocation(elm).first].push_back(elm);
-				foreach (const QWebElement & elm, obj.page->mainFrame()->findAllElements("textarea"))
-					myFormElements[wp.elementLocation(elm).first].push_back(elm);
-			}
-			emit out.producingForms(obj.settings.produceForms);
-			out.emitCheckboxSvgs(obj.settings.load);
-			for (int p=0; p < wp.pageCount(); ++p) {
-				for (int pc_=0; pc_ < pc; ++pc_) {
-					beginPage(actualPage);
-					wp.spoolPage(p+1);
-
-					foreach (QWebElement elm, myFormElements[p+1]) {
-						QString type = elm.attribute("type");
-						QString tn = elm.tagName();
-						QString name = elm.attribute("name");
-						if (tn == "TEXTAREA" || type == "text" || type == "password") {
-							painter->addTextField(
-								wp.elementLocation(elm).second,
-								tn == "TEXTAREA"?elm.toPlainText():elm.attribute("value"),
-								name,
-								tn == "TEXTAREA",
-								type == "password",
-								elm.evaluateJavaScript("this.readonly;").toBool(),
-								elm.hasAttribute("maxlength")?elm.attribute("maxlength").toInt():-1
-								);
-						} else if (type == "checkbox") {
-							painter->addCheckBox(
-								wp.elementLocation(elm).second,
-								elm.evaluateJavaScript("this.checked;").toBool(),
-								name,
-								elm.evaluateJavaScript("this.readonly;").toBool());
-						}
-					}
-					for (QHash<QString, QWebElement>::iterator i=myAnchors[p+1].begin();
-						i != myAnchors[p+1].end(); ++i) {
-						QRectF r = wp.elementLocation(i.value()).second;
-						painter->addAnchor(r, i.key());
-					}
-					for (QVector< QPair<QWebElement,QString> >::iterator i=myLocalLinks[p+1].begin();
-						i != myLocalLinks[p+1].end(); ++i) {
-						QRectF r = wp.elementLocation(i->first).second;
-						painter->addLink(r, i->second);
-					}
-					for (QVector< QPair<QWebElement,QString> >::iterator i=myExternalLinks[p+1].begin();
-						i != myExternalLinks[p+1].end(); ++i) {
-						QRectF r = wp.elementLocation(i->first).second;
-						painter->addHyperlink(r, QUrl(i->second));
-					}
-					endPage(obj, hasHeaderFooter, p, pageNumber);
-					actualPage++;
-				}
+			beginPrintObject(objects[d]);
+			const settings::PdfObject & ps = objects[d].settings;
+			for (int p=0; p < webPrinter->pageCount(); ++p) {
+				for (int pc_=0; pc_ < pc; ++pc_)
+					spoolPage(p);
 				if (ps.pagesCount) ++pageNumber;
 			}
-			painter->restore();
 		}
+		endPrintObject(objects[objects.size()-1]);
  	}
 	outline->printOutline(printer);
 

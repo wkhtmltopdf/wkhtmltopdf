@@ -123,6 +123,15 @@ private:
 	int pageCount;
 	int tocPages;
 	bool tocChanged;
+	int actualPage;
+	int pageNumber;
+	QWebPrinter * webPrinter;
+		
+	QHash<int, QHash<QString, QWebElement> > pageAnchors;
+	QHash<int, QVector< QPair<QWebElement,QString> > > pageLocalLinks;
+	QHash<int, QVector< QPair<QWebElement,QString> > > pageExternalLinks;
+	QHash<int, QVector<QWebElement> > pageFormElements;
+	bool pageHasHeaderFooter;
 	
 #ifdef __EXTENSIVE_WKHTMLTOPDF_QT_HACK__
 	MultiPageLoader hfLoader;
@@ -136,7 +145,6 @@ private:
 
 	Outline * outline;
 	void findLinks(QWebFrame * frame, QVector<QPair<QWebElement, QString> > & local, QVector<QPair<QWebElement, QString> > & external, QHash<QString, QWebElement> & anchors);
-	void beginPage(int actualPage);
 	void endPage(PageObject & object, bool hasHeaderFooter, int objectPage,  int pageNumber);
 	void fillParms(QHash<QString, QString> & parms, int page, const PageObject & object);
 	QString hfreplace(const QString & q, const QHash<QString, QString> & parms);
@@ -144,6 +152,10 @@ private:
 #endif
 	void handleTocPage(PageObject & obj);
 	void preprocessPage(PageObject & obj);
+	void spoolPage(size_t page);
+
+	void beginPrintObject(PageObject & obj);
+	void endPrintObject(PageObject & obj);
 
 	void loadTocs();
 	void loadHeaders();
