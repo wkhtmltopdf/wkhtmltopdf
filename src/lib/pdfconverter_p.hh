@@ -56,6 +56,7 @@ public:
 	LoaderObject * loaderObject;
 	QWebPage * page;
 	QString data;
+	int number;
 
 #ifdef __EXTENSIVE_WKHTMLTOPDF_QT_HACK__
 	QHash<QString, QWebElement> anchors;
@@ -117,12 +118,12 @@ private:
 	QPainter * painter;
 	QString lout;
 	QString title;
-
+	int currentObject;
 	int actualPages;
 	int pageCount;
-
 	int tocPages;
-
+	bool tocChanged;
+	
 #ifdef __EXTENSIVE_WKHTMLTOPDF_QT_HACK__
 	MultiPageLoader hfLoader;
 	MultiPageLoader tocLoader1;
@@ -141,6 +142,8 @@ private:
 	QString hfreplace(const QString & q, const QHash<QString, QString> & parms);
 	QWebPage * loadHeaderFooter(QString url, const QHash<QString, QString> & parms, const settings::PdfObject & ps);
 #endif
+	void handleTocPage(PageObject & obj);
+	void preprocessPage(PageObject & obj);
 
 	void loadTocs();
 	void loadHeaders();

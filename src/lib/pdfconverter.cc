@@ -170,6 +170,33 @@ void PdfConverterPrivate::beginConvert() {
 }
 
 
+void PdfConverterPrivate::preprocessPage(PageObject & obj) {
+	currentObject++;
+	if (obj.settings.isTableOfContent) {
+		obj.pageCount = 1;
+		pageCount += 1;
+		outline->addEmptyWebPage();
+		return;
+	}
+	if (!obj.loaderObject || obj.loaderObject->skip) return;
+
+	int tot = objects.size();
+	progressString = QString("Object ")+QString::number(currentObject)+QString(" of ")+QString::number(tot);
+	emit out.progressChanged((currentObject)*100 / tot);
+	
+	painter->save();
+	QWebPrinter wp(obj.page->mainFrame(), printer, *painter);
+	obj.pageCount = obj.settings.pagesCount? wp.pageCount(): 0;
+	pageCount += obj.pageCount;
+	
+	if (obj.settings.includeInOutline)
+		outline->addWebPage(obj.page->mainFrame()->title(), wp, obj.page->mainFrame(),
+							obj.settings, obj.localLinks, obj.anchors);
+	else
+		outline->addEmptyWebPage();
+	painter->restore();
+}
+
 
 /*!
  * Prepares printing out the document to the pdf file
@@ -267,33 +294,9 @@ void PdfConverterPrivate::pagesLoaded(bool ok) {
 	// * A visual ordering of the header element
 	// * The location and page number of each header
 	pageCount = 0;
-	for (int d=0; d < objects.size(); ++d) {
-		PageObject & obj = objects[d];
-		if (obj.settings.isTableOfContent) {
-			obj.pageCount = 1;
-			pageCount += 1;
-			outline->addEmptyWebPage();
-			continue;
-		}
-		if (!obj.loaderObject || obj.loaderObject->skip) continue;
-
-		int tot = objects.size();
-		progressString = QString("Object ")+QString::number(d+1)+QString(" of ")+QString::number(tot);
-		emit out.progressChanged((d+1)*100 / tot);
-
-		painter->save();
-		QWebPrinter wp(obj.page->mainFrame(), printer, *painter);
-		obj.pageCount = obj.settings.pagesCount? wp.pageCount(): 0;
-		pageCount += obj.pageCount;
-
-		if (obj.settings.includeInOutline)
-			outline->addWebPage(obj.page->mainFrame()->title(), wp, obj.page->mainFrame(),
-								obj.settings, obj.localLinks, obj.anchors);
-		else
-			outline->addEmptyWebPage();
-		painter->restore();
-	}
-
+	currentObject = 0;
+	for (int d=0; d < objects.size(); ++d)
+		preprocessPage(objects[d]);
 	actualPages = pageCount * settings.copies;
 
 	loadTocs();
@@ -335,12 +338,13 @@ void PdfConverterPrivate::loadHeaders() {
 #endif
 }
 
+
 void PdfConverterPrivate::loadTocs() {
 #ifdef __EXTENSIVE_WKHTMLTOPDF_QT_HACK__
 	std::swap(tocLoaderOld, tocLoader);
 	tocLoader->clearResources();
 
-	bool toc=false;
+	bool toc;
 	for (int d=0; d < objects.size(); ++d) {
 		PageObject & obj = objects[d];
 		settings::PdfObject & ps = obj.settings;
@@ -533,6 +537,21 @@ void PdfConverterPrivate::endPage(PageObject & object, bool hasHeaderFooter, int
 }
 #endif
 
+
+void PdfConverterPrivate::handleTocPage(PageObject & obj) {
+	painter->save();
+	QWebPrinter wp(obj.page->mainFrame(), printer, *painter);
+	int pc = obj.settings.pagesCount? wp.pageCount(): 0;
+	if (pc != obj.pageCount) {
+		obj.pageCount = pc;
+		tocChanged=true;
+	}
+	pageCount += obj.pageCount;
+	tocChanged = outline->replaceWebPage(obj.number, obj.settings.toc.captionText, wp, obj.page->mainFrame(), obj.settings, obj.localLinks, obj.anchors) || tocChanged;
+	painter->restore();
+}
+
+
 void PdfConverterPrivate::tocLoaded(bool ok) {
 #ifdef __EXTENSIVE_WKHTMLTOPDF_QT_HACK__
 	if (errorCode == 0) errorCode = tocLoader->httpErrorCode();
@@ -542,30 +561,21 @@ void PdfConverterPrivate::tocLoaded(bool ok) {
 		return;
 	}
 #ifdef __EXTENSIVE_WKHTMLTOPDF_QT_HACK__
-	bool changed=false;
+	tocChanged = false;
 	pageCount = 0;
+	currentObject = 0;
 	for (int d=0; d < objects.size(); ++d) {
+		++currentObject;
 		if (!objects[d].loaderObject || objects[d].loaderObject->skip) continue;
-
 		if (!objects[d].settings.isTableOfContent) {
 			pageCount += objects[d].pageCount;
 			continue;
 		}
-
-		painter->save();
-		QWebPrinter wp(objects[d].page->mainFrame(), printer, *painter);
-		int pc = objects[d].settings.pagesCount? wp.pageCount(): 0;
-		if (pc != objects[d].pageCount) {
-			objects[d].pageCount = pc;
-			changed=true;
-		}
-		pageCount += objects[d].pageCount;
-		changed = outline->replaceWebPage(d, objects[d].settings.toc.captionText, wp, objects[d].page->mainFrame(), objects[d].settings, objects[d].localLinks, objects[d].anchors) || changed;
-		painter->restore();
+		handleTocPage(objects[d]);
 	}
 
 	actualPages = pageCount * settings.copies;
-	if (changed)
+	if (tocChanged)
 		loadTocs();
 	else {
 		//Find and resolve all local links
@@ -602,8 +612,8 @@ void PdfConverterPrivate::headersLoaded(bool ok) {
 	printDocument();
 }
 
-void PdfConverterPrivate::printDocument() {
 
+void PdfConverterPrivate::printDocument() {
 #ifndef __EXTENSIVE_WKHTMLTOPDF_QT_HACK__
 	currentPhase = 1;
 	emit out.phaseChanged();
@@ -841,6 +851,7 @@ PdfConverter::~PdfConverter() {
 */
 void PdfConverter::addResource(const settings::PdfObject & page, const QString * data) {
   d->objects.push_back( PageObject(page, data) );
+  d->objects.back().number = d->objects.size()-1;
 }
 
 const QByteArray & PdfConverter::output() {
