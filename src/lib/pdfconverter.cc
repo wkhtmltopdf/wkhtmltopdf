@@ -480,8 +480,10 @@ void PdfConverterPrivate::endPage(PageObject & object, bool hasHeaderFooter, int
 		painter->restore();
 	}
 
-	if (!object.headers.empty()) {
-		QWebPage * header = object.headers[objectPage];
+	//if (!object.headers.empty()) {
+	//object.headers[objectPage];
+	if (currentHeader) {
+		QWebPage * header = currentHeader;
 		painter->save();
 		painter->resetTransform();
 		double spacing = s.header.spacing * printer->height() / printer->heightMM();
@@ -502,10 +504,11 @@ void PdfConverterPrivate::endPage(PageObject & object, bool hasHeaderFooter, int
 		}
 		wp.spoolPage(1);
 		painter->restore();
+		
 	}
 
-	if (!object.footers.empty()) {
-		QWebPage * footer = object.footers[objectPage];
+	if (currentFooter) {
+		QWebPage * footer=currentFooter;
 		painter->save();
 		painter->resetTransform();
 		double spacing = s.footer.spacing * printer->height() / printer->heightMM();
@@ -530,7 +533,6 @@ void PdfConverterPrivate::endPage(PageObject & object, bool hasHeaderFooter, int
 
 }
 #endif
-
 
 void PdfConverterPrivate::handleTocPage(PageObject & obj) {
 	painter->save();
@@ -655,6 +657,21 @@ void PdfConverterPrivate::spoolPage(size_t page) {
 	actualPage++;
 }
 
+void PdfConverterPrivate::spoolTo(size_t page) {
+	int pc=settings.collate?1:settings.copies;
+	const settings::PdfObject & ps = objects[currentObject].settings;
+	while (objectPage < page) {
+		for (int pc_=0; pc_ < pc; ++pc_)
+			spoolPage(objectPage);
+		if (ps.pagesCount) ++pageNumber;
+		++objectPage;
+		
+		//TODO free header and footer
+		currentHeader=NULL;
+		currentFooter=NULL;
+	}
+}
+
 void PdfConverterPrivate::beginPrintObject(PageObject & obj) {
 	if (obj.number != 0) 
 		endPrintObject(objects[obj.number-1]);
@@ -703,10 +720,23 @@ void PdfConverterPrivate::beginPrintObject(PageObject & obj) {
 	}
 	emit out.producingForms(obj.settings.produceForms);
 	out.emitCheckboxSvgs(obj.settings.load);
+
+	objectPage = 0;
 }
 
 
+void PdfConverterPrivate::handleHeader(QWebPage * frame, size_t page) {
+	spoolTo(page);
+	currentHeader = frame;
+}
+
+void PdfConverterPrivate::handleFooter(QWebPage * frame, size_t page) {
+	spoolTo(page);
+	currentFooter = frame;
+}
+
 void PdfConverterPrivate::endPrintObject(PageObject & obj) {
+	spoolTo(webPrinter->pageCount());
 	pageAnchors.clear();
 	pageLocalLinks.clear();
 	pageExternalLinks.clear();
@@ -727,7 +757,7 @@ void PdfConverterPrivate::printDocument() {
 	actualPage=1;
 
  	int cc=settings.collate?settings.copies:1;
- 	int pc=settings.collate?1:settings.copies;
+
 
 	currentPhase = 5;
 	emit out.phaseChanged();
@@ -740,11 +770,14 @@ void PdfConverterPrivate::printDocument() {
 		for (int d=0; d < objects.size(); ++d) {
 			beginPrintObject(objects[d]);
 			const settings::PdfObject & ps = objects[d].settings;
-			for (int p=0; p < webPrinter->pageCount(); ++p) {
-				for (int pc_=0; pc_ < pc; ++pc_)
-					spoolPage(p);
-				if (ps.pagesCount) ++pageNumber;
+
+			for(size_t i=0; i < webPrinter->pageCount(); ++i) {
+				if (!objects[d].headers.empty())
+					handleHeader(objects[d].headers[i], i);
+				if (!objects[d].footers.empty())
+					handleFooter(objects[d].footers[i], i);
 			}
+
 		}
 		endPrintObject(objects[objects.size()-1]);
  	}

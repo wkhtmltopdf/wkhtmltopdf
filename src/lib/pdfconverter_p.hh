@@ -126,7 +126,10 @@ private:
 	int actualPage;
 	int pageNumber;
 	QWebPrinter * webPrinter;
-		
+	int objectPage;
+	QWebPage * currentHeader;
+	QWebPage * currentFooter;
+
 	QHash<int, QHash<QString, QWebElement> > pageAnchors;
 	QHash<int, QVector< QPair<QWebElement,QString> > > pageLocalLinks;
 	QHash<int, QVector< QPair<QWebElement,QString> > > pageExternalLinks;
@@ -153,7 +156,9 @@ private:
 	void handleTocPage(PageObject & obj);
 	void preprocessPage(PageObject & obj);
 	void spoolPage(size_t page);
-
+	void spoolTo(size_t page);
+	void handleHeader(QWebPage * frame, size_t page);
+	void handleFooter(QWebPage * frame, size_t page);
 	void beginPrintObject(PageObject & obj);
 	void endPrintObject(PageObject & obj);
 
