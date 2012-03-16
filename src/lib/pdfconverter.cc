@@ -149,7 +149,7 @@ void PdfConverterPrivate::beginConvert() {
 		}
 
 		if (!s.footer.htmlUrl.isEmpty() && looksLikeHtmlAndNotAUrl(s.footer.htmlUrl)) {
-			emit out.error("--header-html should be a URL and not a string containing HTML code.");
+			emit out.error("--footer-html should be a URL and not a string containing HTML code.");
 			fail();
 			return;
 		}
