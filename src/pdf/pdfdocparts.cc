@@ -225,7 +225,7 @@ void PdfCommandLineParser::outputHeaderFooterDoc(Outputter * o) const {
 
 void PdfCommandLineParser::outputTableOfContentDoc(Outputter * o) const {
 	o->beginSection("Table Of Content");
-	o->paragraph("A table of content can be added to the document by adding a toc object"
+	o->paragraph("A table of content can be added to the document by adding a toc object "
 				 "to the command line. For example:");
 	o->verbatim("wkhtmltopdf toc http://doc.trolltech.com/4.6/qstring.html qstring.pdf\n");
 	o->paragraph("The table of content is generated based on the H tags in the input "
