@@ -81,6 +81,13 @@ void CommandLineParserBase::version(FILE * fd) const {
   	outputName(o);
   	outputLicense(o);
   	outputAuthors(o);
+	o->beginParagraph();
+#ifdef __EXTENSIVE_WKHTMLTOPDF_QT_HACK__
+	o->text("Compiled against wkhtmltopdf patched qt.");
+#else
+	o->bold("Not");
+	o->text(" compiled against wkhtmltopdf patched qt.");
+#endif
 	delete o;
 }
 
