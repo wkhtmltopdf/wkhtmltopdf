@@ -162,6 +162,7 @@ void PdfConverterPrivate::beginConvert() {
                     MultiPageLoader::guessUrlFromString(s.header.htmlUrl), s.load)->page;
             } else {
                 // or just set static values
+                // add spacing to prevent moving header out of page
                 o.headerReserveHeight = settings.margin.top.first + s.header.spacing;
             }
         }
@@ -180,6 +181,7 @@ void PdfConverterPrivate::beginConvert() {
                     MultiPageLoader::guessUrlFromString(s.footer.htmlUrl), s.load)->page;
             } else {
                 // or just set static values
+                // add spacing to prevent moving footer out of page
                 o.footerReserveHeight = settings.margin.bottom.first + s.footer.spacing;
             }
         }
@@ -702,10 +704,12 @@ void PdfConverterPrivate::measuringHeadersLoaded(bool ok) {
     for (int d=0; d < objects.size(); ++d) {
         PageObject & obj = objects[d];
         if (obj.measuringHeader) {
+            // add spacing to prevent moving header out of page
             obj.headerReserveHeight = calculateHeaderHeight(obj, *obj.measuringHeader) + obj.settings.header.spacing;
         }
 
         if (obj.measuringFooter) {
+            // add spacing to prevent moving footer out of page
             obj.footerReserveHeight = calculateHeaderHeight(obj, *obj.measuringFooter) + obj.settings.header.spacing;
         }
     }
