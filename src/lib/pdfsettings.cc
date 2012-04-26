@@ -391,7 +391,7 @@ PdfGlobal::PdfGlobal():
 
 TableOfContent::TableOfContent():
 	useDottedLines(true),
-	captionText("Table of Content"),
+	captionText("Table of Contents"),
 	forwardLinks(true),
 	backLinks(false),
 	indentation("1em"),
