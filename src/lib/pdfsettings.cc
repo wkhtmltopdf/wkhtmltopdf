@@ -365,9 +365,9 @@ HeaderFooter::HeaderFooter():
 	spacing(0.0) {}
 
 Margin::Margin():
-	top(UnitReal(10,QPrinter::Millimeter)),
+    top(UnitReal(-1,QPrinter::Millimeter)),
 	right(UnitReal(10,QPrinter::Millimeter)),
-	bottom(UnitReal(10,QPrinter::Millimeter)),
+    bottom(UnitReal(-1,QPrinter::Millimeter)),
 	left(UnitReal(10,QPrinter::Millimeter)) {}
 
 PdfGlobal::PdfGlobal():
