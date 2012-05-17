@@ -256,7 +256,7 @@ Items marked * are only available using patched QT.
 Items marked * are only available using patched QT.
 
 ================================> TOC Options <=================================
-    --disable-dotted-lines *          Do not use dottet lines in the toc
+    --disable-dotted-lines *          Do not use dotted lines in the toc
     --toc-header-text * <text>        The header text of the toc (default Table
                                       of Content)
     --toc-level-indentation * <width> For each level of headings in the toc
