@@ -35,97 +35,98 @@ namespace settings {
 
 /*! \brief Settings considering proxy */
 struct DLL_PUBLIC Proxy {
-	Proxy();
-	//! Type of proxy to use
-	QNetworkProxy::ProxyType type;
-	//! The port of the proxy to use
-	int port;
-	//! The host name of the proxy to use or NULL
-	QString host;
-	//! Username for the said proxy or NULL
-	QString user;
-	//! Password for the said proxy or NULL
-	QString password;
+    Proxy();
+    //! Type of proxy to use
+    QNetworkProxy::ProxyType type;
+    //! The port of the proxy to use
+    int port;
+    //! The host name of the proxy to use or NULL
+    QString host;
+    //! Username for the said proxy or NULL
+    QString user;
+    //! Password for the said proxy or NULL
+    QString password;
 };
 
 struct DLL_PUBLIC PostItem {
-	QString name;
-	QString value;
-	bool file;
+    QString name;
+    QString value;
+    bool file;
 };
 
 struct DLL_PUBLIC LoadGlobal {
-	LoadGlobal();
-	//! Path of the cookie jar file
-	QString cookieJar;
+    LoadGlobal();
+    //! Path of the cookie jar file
+    QString cookieJar;
 
-	size_t maxParallelRequests;
-	size_t maxLoadedPages;
+    size_t maxParallelRequests;
+    size_t maxLoadedPages;
 };
 
 struct DLL_PUBLIC LoadPage {
-	LoadPage();
+    LoadPage();
 
-	enum LoadErrorHandling {
-		abort,
-		skip,
-		ignore
-	};
+    enum LoadErrorHandling {
+        abort,
+        skip,
+        ignore
+    };
 
-	//! Username used for http auth login
-	QString username;
+    //! Username used for http auth login
+    QString username;
 
-	//! Password used for http auth login
-	QString password;
+    //! Password used for http auth login
+    QString password;
 
-	//! How many milliseconds should we wait for a Javascript redirect
-	int jsdelay;
+    //! How many milliseconds should we wait for a Javascript redirect
+    int jsdelay;
 
-	//! What window.status value should we wait for
-	QString windowStatus;
+    //! What window.status value should we wait for
+    QString windowStatus;
 
-	//! What zoom factor should we apply when printing
-	// TODO MOVE
-	float zoomFactor;
+    //! What zoom factor should we apply when printing
+    // TODO MOVE
+    float zoomFactor;
 
-	//! Map of custom header variables
-	QList< QPair<QString, QString> > customHeaders;
+    //! Map of custom header variables
+    QList< QPair<QString, QString> > customHeaders;
 
-	//! Set if the custom header should be repeated for each resource request
-	bool repeatCustomHeaders;
+    //! Set if the custom header should be repeated for each resource request
+    bool repeatCustomHeaders;
 
-	//! Map of cookies
-	QList< QPair<QString, QString> > cookies;
+    //! Map of cookies
+    QList< QPair<QString, QString> > cookies;
 
-	QList< PostItem > post;
+    QList< PostItem > post;
 
-	//! Block access to local files for the given page
-	bool blockLocalFileAccess;
+    //! Block access to local files for the given page
+    bool blockLocalFileAccess;
 
-	//! If access to local files is not allowed in general, allow it for these files
-	QList< QString > allowed;
+    //! If access to local files is not allowed in general, allow it for these files
+    QList< QString > allowed;
 
-	//! Stop Javascript from running too long
-	bool stopSlowScripts;
+    //! Stop Javascript from running too long
+    bool stopSlowScripts;
 
-	//! Output Javascript debug messages
-	bool debugJavascript;
+    //! Output Javascript debug messages
+    bool debugJavascript;
 
-	//! What should we do about load errors
-	LoadErrorHandling loadErrorHandling;
+    //! What should we do about load errors
+    LoadErrorHandling loadErrorHandling;
+    LoadErrorHandling mediaLoadErrorHandling;
+    //! Proxy related settings
+    Proxy proxy;
 
-	//! Proxy related settings
-	Proxy proxy;
+    //! Additional javascript to run on a page once it has loaded
+    QList< QString > runScript;
 
-	//! Additional javascript to run on a page once it has loaded
-	QList< QString > runScript;
+    QString checkboxSvg;
+    QString checkboxCheckedSvg;
+    QString radiobuttonSvg;
+    QString radiobuttonCheckedSvg;
 
-	QString checkboxSvg;
-	QString checkboxCheckedSvg;
-	QString radiobuttonSvg;
-	QString radiobuttonCheckedSvg;
-
-	QString cacheDir;
+    QString cacheDir;
+    static QList<QString> mediaFilesExtensions;
 };
 
 DLL_PUBLIC LoadPage::LoadErrorHandling strToLoadErrorHandling(const char * s, bool * ok=0);
