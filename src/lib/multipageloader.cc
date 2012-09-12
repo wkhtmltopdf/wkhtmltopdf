@@ -302,7 +302,7 @@ void ResourceObject::amfinished(QNetworkReply * reply) {
             error(QString("Failed to load ") + reply->url().toString() + " (sometimes it will work just to ignore this error with --load-media-error-handling ignore)");
         }
         else {
-            warning(QString("Failed loading page %1 (%2d)")
+            warning(QString("Failed to load %1 (%2)")
                     .arg(reply->url().toString())
                     .arg(settings::loadErrorHandlingToStr(settings.loadErrorHandling))
                     );
