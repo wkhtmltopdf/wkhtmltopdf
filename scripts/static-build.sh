@@ -220,7 +220,7 @@ function setup_chroot() {
 
 function build_linux_chroot() {
     cd ${BUILD}
-    setup_chroot lenny $1
+    setup_chroot squeeze $1
     cd linux-$1/build
     setup_build linux
     if [  "$1" == 'i386' ]; then
