@@ -214,7 +214,10 @@ function setup_chroot() {
 	sudo chroot linux-$2 apt-get -y update || exit 1
 	sudo chroot linux-$2 apt-get -y build-dep libqt4-core && sudo touch linux-$2/installed || exit 1
     fi
-    echo "cd /build && ./build.sh" > linux-$2/build/buildw.sh
+    cat > linux-$2/build/buildw.sh <<EOF
+#!/bin/bash
+cd /build && ./build.sh
+EOF
     chmod +x linux-$2/build/buildw.sh || exit 1
 }
 
