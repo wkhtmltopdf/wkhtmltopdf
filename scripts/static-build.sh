@@ -22,7 +22,7 @@
 
 #Configuration for the static build
 
-MIRROR=kent
+MIRROR=garr
 MINGWFILES="binutils-2.19.1-mingw32-bin.tar.gz \
 mingw32-make-3.81-20090910.tar.gz \
 gcc-full-4.4.0-mingw32-bin-2.tar.lzma \
