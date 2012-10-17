@@ -138,9 +138,7 @@ Proxy::Proxy():
 	password() {}
 
 LoadGlobal::LoadGlobal():
-	cookieJar(""),
-	maxParallelRequests(0),
-	maxLoadedPages(0) {}
+	cookieJar("") {}
 
 LoadPage::LoadPage():
 	jsdelay(200),

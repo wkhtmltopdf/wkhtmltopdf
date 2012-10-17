@@ -58,9 +58,6 @@ struct DLL_PUBLIC LoadGlobal {
 	LoadGlobal();
 	//! Path of the cookie jar file
 	QString cookieJar;
-
-	size_t maxParallelRequests;
-	size_t maxLoadedPages;
 };
 
 struct DLL_PUBLIC LoadPage {
