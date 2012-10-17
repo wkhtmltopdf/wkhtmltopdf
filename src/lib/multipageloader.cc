@@ -514,7 +514,6 @@ MultiPageLoader::~MultiPageLoader() {
 LoaderObject * MultiPageLoader::addResource(const QString & string, const settings::LoadPage & s, const QString * data) {
     QString url=string;
     if (data && !data->isEmpty()) {
-        qDebug() << data;
         url = d->tempIn.create(".html");
         QFile tmp(url);
         if (!tmp.open(QIODevice::WriteOnly) || tmp.write(data->toUtf8())==0) {
