@@ -86,7 +86,7 @@ int main() {
 	/* Call the error function when an error occures */
 	wkhtmltopdf_set_error_callback(c, error);
 
-	/* Call the waring function when a warning is issued */
+	/* Call the warning function when a warning is issued */
 	wkhtmltopdf_set_warning_callback(c, warning);
 
 	/*
