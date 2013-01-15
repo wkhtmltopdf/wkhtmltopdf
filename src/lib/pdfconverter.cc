@@ -210,8 +210,8 @@ void PdfConverterPrivate::beginConvert() {
         }
         
         // set static header/footer reserve heights
-        o.headerReserveHeight = settings.margin.top.first;
-        o.footerReserveHeight = settings.margin.bottom.first;
+        objects[0].headerReserveHeight = settings.margin.top.first;
+        objects[0].footerReserveHeight = settings.margin.bottom.first;
 
         pageLoader.load();
     }
