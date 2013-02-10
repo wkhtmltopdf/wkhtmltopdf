@@ -203,6 +203,7 @@ void CommandLineParserBase::addPageLoadArgs(LoadPage & s) {
 	addarg("username",0,"HTTP Authentication username", new QStrSetter(s.username, "username"));
 	addarg("password",0,"HTTP Authentication password", new QStrSetter(s.password, "password"));
 	addarg("load-error-handling", 0, "Specify how to handle pages that fail to load: abort, ignore or skip", new LoadErrorHandlingSetting(s.loadErrorHandling, "handler"));
+	addarg("load-media-error-handling", 0, "Specify how to handle media files that fail to load: abort, ignore or skip", new LoadErrorHandlingSetting(s.mediaLoadErrorHandling, "handler"));
 	addarg("custom-header",0,"Set an additional HTTP header (repeatable)", new MapSetter<>(s.customHeaders, "name", "value"));
 	addarg("custom-header-propagation",0,"Add HTTP headers specified by --custom-header for each resource request.", new ConstSetter<bool>(s.repeatCustomHeaders, true));
 	addarg("no-custom-header-propagation",0,"Do not add HTTP headers specified by --custom-header for each resource request.", new ConstSetter<bool>(s.repeatCustomHeaders, true));

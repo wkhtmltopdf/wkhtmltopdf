@@ -122,6 +122,14 @@ PdfConverterPrivate::PdfConverterPrivate(PdfGlobal & s, PdfConverter & o) :
 	connect(&tocLoader2, SIGNAL(error(QString)), this, SLOT(forwardError(QString)));
 	connect(&tocLoader2, SIGNAL(warning(QString)), this, SLOT(forwardWarning(QString)));
 #endif
+
+	if ( ! settings.viewportSize.isEmpty())
+	{
+		QStringList viewportSizeList = settings.viewportSize.split("x");
+		int width = viewportSizeList.first().toInt();
+		int height = viewportSizeList.last().toInt();
+		viewportSize = QSize(width,height);
+	}
 }
 
 PdfConverterPrivate::~PdfConverterPrivate() {
@@ -272,6 +280,14 @@ void PdfConverterPrivate::preprocessPage(PageObject & obj) {
 	emit out.progressChanged((currentObject)*100 / tot);
 	
 	painter->save();
+
+	if (viewportSize.isValid() && ! viewportSize.isEmpty()) {
+		obj.page->setViewportSize(viewportSize);
+		obj.page->mainFrame()->setScrollBarPolicy(Qt::Vertical,Qt::ScrollBarAlwaysOff);
+		obj.page->mainFrame()->setScrollBarPolicy(Qt::Horizontal,Qt::ScrollBarAlwaysOff);
+	}
+
+
 	QWebPrinter wp(obj.page->mainFrame(), printer, *painter);
 	obj.pageCount = obj.settings.pagesCount? wp.pageCount(): 0;
 	pageCount += obj.pageCount;

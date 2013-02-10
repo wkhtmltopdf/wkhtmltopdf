@@ -58,9 +58,6 @@ struct DLL_PUBLIC LoadGlobal {
 	LoadGlobal();
 	//! Path of the cookie jar file
 	QString cookieJar;
-
-	size_t maxParallelRequests;
-	size_t maxLoadedPages;
 };
 
 struct DLL_PUBLIC LoadPage {
@@ -113,6 +110,7 @@ struct DLL_PUBLIC LoadPage {
 
 	//! What should we do about load errors
 	LoadErrorHandling loadErrorHandling;
+	LoadErrorHandling mediaLoadErrorHandling;
 
 	//! Proxy related settings
 	Proxy proxy;
@@ -126,6 +124,7 @@ struct DLL_PUBLIC LoadPage {
 	QString radiobuttonCheckedSvg;
 
 	QString cacheDir;
+	static QList<QString> mediaFilesExtensions;
 };
 
 DLL_PUBLIC LoadPage::LoadErrorHandling strToLoadErrorHandling(const char * s, bool * ok=0);
