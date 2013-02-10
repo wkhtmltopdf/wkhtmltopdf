@@ -1,0 +1,117 @@
+From 26c2bffb27c718c71374f3d3f19b6c5bdfc870ca Mon Sep 17 00:00:00 2001
+From: pussbb <pussbb@gmail.com>
+Date: Sun, 10 Feb 2013 10:05:19 +0200
+Subject: [PATCH] added options load-media-error-handling to ignore bad status
+ codes for media files
+
+---
+ include/wkhtmltox/loadsettings.hh |    1 +
+ src/lib/loadsettings.cc           |   12 +++++++++++-
+ src/lib/loadsettings.hh           |    1 +
+ src/lib/multipageloader.cc        |   21 ++++++++++++++++++++-
+ src/shared/commonarguments.cc     |    3 ++-
+ 5 files changed, 35 insertions(+), 3 deletions(-)
+
+diff --git a/include/wkhtmltox/loadsettings.hh b/include/wkhtmltox/loadsettings.hh
+index 0c3925c..dde46c2 100644
+--- a/include/wkhtmltox/loadsettings.hh
++++ b/include/wkhtmltox/loadsettings.hh
+@@ -120,6 +120,7 @@ struct DLL_PUBLIC LoadPage {
+   QString radiobuttonCheckedSvg;
+ 
+ 	QString cacheDir;
++    static QList<QString> mediaFilesExtensions;
+ };
+ 
+ DLL_PUBLIC LoadPage::LoadErrorHandling strToLoadErrorHandling(const char * s, bool * ok=0);
+diff --git a/src/lib/loadsettings.cc b/src/lib/loadsettings.cc
+index 54225ea..aa4458c 100644
+--- a/src/lib/loadsettings.cc
++++ b/src/lib/loadsettings.cc
+@@ -34,6 +34,15 @@
+ namespace wkhtmltopdf {
+ namespace settings {
+ 
++QList<QString> LoadPage::mediaFilesExtensions = QList<QString> ()
++        << "css"
++        << "js"
++        << "png"
++        << "jpg"
++        << "jpeg"
++        << "gif";
++
++
+ LoadPage::LoadErrorHandling strToLoadErrorHandling(const char * s, bool * ok) {
+ 	if (ok) *ok = true;
+ 	if (!strcasecmp(s, "abort")) return LoadPage::abort;
+@@ -142,7 +151,8 @@ LoadPage::LoadPage():
+ 	blockLocalFileAccess(false),
+ 	stopSlowScripts(true),
+ 	debugJavascript(false),
+-	loadErrorHandling(abort) {};
++    loadErrorHandling(abort) {},
++    mediaLoadErrorHandling(ignore) {};
+ 
+ }
+ }
+diff --git a/src/lib/loadsettings.hh b/src/lib/loadsettings.hh
+index a96b9fb..e2f044e 100644
+--- a/src/lib/loadsettings.hh
++++ b/src/lib/loadsettings.hh
+@@ -126,6 +126,7 @@ struct DLL_PUBLIC LoadPage {
+ 	QString radiobuttonCheckedSvg;
+ 
+ 	QString cacheDir;
++    static QList<QString> mediaFilesExtensions;
+ };
+ 
+ DLL_PUBLIC LoadPage::LoadErrorHandling strToLoadErrorHandling(const char * s, bool * ok=0);
+diff --git a/src/lib/multipageloader.cc b/src/lib/multipageloader.cc
+index aff0b94..bf47ae6 100644
+--- a/src/lib/multipageloader.cc
++++ b/src/lib/multipageloader.cc
+@@ -288,7 +288,26 @@ void ResourceObject::error(const QString & str) {
+  */
+ void ResourceObject::amfinished(QNetworkReply * reply) {
+ 	int error = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
+-	if (error > 399 && httpErrorCode == 0) httpErrorCode = error;
++    if (errorCode > 399 && httpErrorCode == 0)
++    {
++        QFileInfo fi(reply->url().toString());
++        bool mediaFile = settings::LoadPage::mediaFilesExtensions.contains(fi.completeSuffix().toLower());
++        if ( ! mediaFile) {
++            httpErrorCode = errorCode;
++            return;
++        }
++        if (settings.mediaLoadErrorHandling == settings::LoadPage::abort)
++        {
++            httpErrorCode = errorCode;
++            error(QString("Failed to load ") + reply->url().toString() + " (sometimes it will work just to ignore this error with --load-media-error-handling ignore)");
++        }
++        else {
++            warning(QString("Fail to load %1 (%2)")
++                    .arg(reply->url().toString())
++                    .arg(settings::loadErrorHandlingToStr(settings.loadErrorHandling))
++                    );
++        }
++    }
+ }
+ 
+ /*!
+diff --git a/src/shared/commonarguments.cc b/src/shared/commonarguments.cc
+index 0b2fd3d..28c1ab5 100644
+--- a/src/shared/commonarguments.cc
++++ b/src/shared/commonarguments.cc
+@@ -203,7 +203,8 @@ void CommandLineParserBase::addPageLoadArgs(LoadPage & s) {
+ 	addarg("username",0,"HTTP Authentication username", new QStrSetter(s.username, "username"));
+ 	addarg("password",0,"HTTP Authentication password", new QStrSetter(s.password, "password"));
+ 	addarg("load-error-handling", 0, "Specify how to handle pages that fail to load: abort, ignore or skip", new LoadErrorHandlingSetting(s.loadErrorHandling, "handler"));
+-	addarg("custom-header",0,"Set an additional HTTP header (repeatable)", new MapSetter<>(s.customHeaders, "name", "value"));
++    addarg("load-media-error-handling", 0, "Specify how to handle media files that fail to load: abort, ignore or skip", new LoadErrorHandlingSetting(s.mediaLoadErrorHandling, "handler"));
++    addarg("custom-header",0,"Set an additional HTTP header (repeatable)", new MapSetter<>(s.customHeaders, "name", "value"));
+ 	addarg("custom-header-propagation",0,"Add HTTP headers specified by --custom-header for each resource request.", new ConstSetter<bool>(s.repeatCustomHeaders, true));
+ 	addarg("no-custom-header-propagation",0,"Do not add HTTP headers specified by --custom-header for each resource request.", new ConstSetter<bool>(s.repeatCustomHeaders, true));
+ 
+-- 
+1.7.10.4
+

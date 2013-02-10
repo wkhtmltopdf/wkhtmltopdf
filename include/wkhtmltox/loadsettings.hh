@@ -32,94 +32,98 @@ namespace settings {
 
 /*! \brief Settings consdering proxy */
 struct DLL_PUBLIC Proxy {
-	Proxy();
-	//! Type of proxy to use
-	QNetworkProxy::ProxyType type;
-	//! The port of the proxy to use
-	int port;
-	//! The host name of the proxy to use or NULL
-	QString host;
-	//! Username for the said proxy or NULL
-	QString user;
-	//! Password for the said proxy or NULL
-	QString password;
+    Proxy();
+    //! Type of proxy to use
+    QNetworkProxy::ProxyType type;
+    //! The port of the proxy to use
+    int port;
+    //! The host name of the proxy to use or NULL
+    QString host;
+    //! Username for the said proxy or NULL
+    QString user;
+    //! Password for the said proxy or NULL
+    QString password;
 };
 
 struct DLL_PUBLIC PostItem {
-	QString name;
-	QString value;
-	bool file;
+    QString name;
+    QString value;
+    bool file;
 };
 
 struct DLL_PUBLIC LoadGlobal {
-	LoadGlobal();
-	//! Path of the cookie jar file
-	QString cookieJar;
+    LoadGlobal();
+    //! Path of the cookie jar file
+    QString cookieJar;
 };
 
 struct DLL_PUBLIC LoadPage {
-	LoadPage();
+    LoadPage();
 
-	enum LoadErrorHandling {
-		abort,
-		skip,
-		ignore
-	};
+    enum LoadErrorHandling {
+        abort,
+        skip,
+        ignore
+    };
 
-	//! Username used for http auth login
-	QString username;
+    //! Username used for http auth login
+    QString username;
 
-	//! Password used for http auth login
-	QString password;
+    //! Password used for http auth login
+    QString password;
 
-	//! How many milliseconds should we wait for a Javascript redirect
-	int jsdelay;
+    //! How many milliseconds should we wait for a Javascript redirect
+    int jsdelay;
 
-	//! What window.status value should we wait for
-	QString windowStatus;
-	
-	//! What zoom factor should we apply when printing
-	// TODO MOVE
-	float zoomFactor;
+    //! What window.status value should we wait for
+    QString windowStatus;
 
-	//! Map of custum header variables
-	QList< QPair<QString, QString> > customHeaders;
+    //! What zoom factor should we apply when printing
+    // TODO MOVE
+    float zoomFactor;
 
-	//! Set if the custom header should be repeated for each resource request
-	bool repeatCustomHeaders;
+    //! Map of custum header variables
+    QList< QPair<QString, QString> > customHeaders;
 
-	//! Map of cookies
-	QList< QPair<QString, QString> > cookies;
+    //! Set if the custom header should be repeated for each resource request
+    bool repeatCustomHeaders;
 
-	QList< PostItem > post;
+    //! Map of cookies
+    QList< QPair<QString, QString> > cookies;
 
-	//! Block access to local files for the given page
-	bool blockLocalFileAccess;
+    QList< PostItem > post;
 
-	//! If access to local files is not allowed in general, allow it for these files
-	QList< QString > allowed;
+    //! Block access to local files for the given page
+    bool blockLocalFileAccess;
 
-	//! Stop Javascript from running too long
-	bool stopSlowScripts;
+    //! If access to local files is not allowed in general, allow it for these files
+    QList< QString > allowed;
 
-	//! Output Javascript debug messages
-	bool debugJavascript;
+    //! Stop Javascript from running too long
+    bool stopSlowScripts;
 
-	//! What should we do about load errors
-	LoadErrorHandling loadErrorHandling;
+    //! Output Javascript debug messages
+    bool debugJavascript;
 
-	//! Proxy related settings
-	Proxy proxy;
+    //! What should we do about load errors
+    LoadErrorHandling loadErrorHandling;
+    LoadErrorHandling mediaLoadErrorHandling;
 
-	//! Additional javascript to run on a page once it has loaded
-	QList< QString > runScript;
+    //! What should we do about load errors
+    ////LoadErrorHandling mediaLoadErrorHandling;
+    //! Proxy related settings
+    Proxy proxy;
 
-	QString checkboxSvg;
-	QString checkboxCheckedSvg;
-	QString radiobuttonSvg;
-	QString radiobuttonCheckedSvg;
+    //! Additional javascript to run on a page once it has loaded
+    QList< QString > runScript;
 
-	QString cacheDir;
+    QString checkboxSvg;
+    QString checkboxCheckedSvg;
+    QString radiobuttonSvg;
+    QString radiobuttonCheckedSvg;
+
+    QString cacheDir;
+    static QList<QString> mediaFilesExtensions;
 };
 
 DLL_PUBLIC LoadPage::LoadErrorHandling strToLoadErrorHandling(const char * s, bool * ok=0);
