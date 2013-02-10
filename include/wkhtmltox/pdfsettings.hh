@@ -136,6 +136,8 @@ struct DLL_PUBLIC PdfGlobal {
 	//! Specify the output format we should use
 	QString outputFormat;
 
+	QString viewportSize;
+
 	int imageDPI;
 	int imageQuality;
 

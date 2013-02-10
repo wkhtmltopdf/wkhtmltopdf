@@ -122,7 +122,7 @@ private:
 	QByteArray outputData;
 
 	QList<PageObject> objects;
-
+	QSize viewportSize;
 	QPrinter * printer;
 	QPainter * painter;
 	QString lout;

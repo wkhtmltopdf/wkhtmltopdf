@@ -387,7 +387,8 @@ PdfGlobal::PdfGlobal():
 	documentTitle(""),
 	useCompression(true),
 	imageDPI(600),
-	imageQuality(94) {};
+	imageQuality(94),
+	viewportSize(""){};
 
 TableOfContent::TableOfContent():
 	useDottedLines(true),
