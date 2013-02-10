@@ -113,6 +113,7 @@ struct DLL_PUBLIC LoadPage {
 
 	//! What should we do about load errors
 	LoadErrorHandling loadErrorHandling;
+	LoadErrorHandling mediaLoadErrorHandling;
 
 	//! Proxy related settings
 	Proxy proxy;
@@ -126,6 +127,7 @@ struct DLL_PUBLIC LoadPage {
 	QString radiobuttonCheckedSvg;
 
 	QString cacheDir;
+	static QList<QString> mediaFilesExtensions;
 };
 
 DLL_PUBLIC LoadPage::LoadErrorHandling strToLoadErrorHandling(const char * s, bool * ok=0);

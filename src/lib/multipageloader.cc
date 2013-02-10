@@ -287,8 +287,27 @@ void ResourceObject::error(const QString & str) {
  * \param reply The networkreply that has finished
  */
 void ResourceObject::amfinished(QNetworkReply * reply) {
-	int error = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
-	if (error > 399 && httpErrorCode == 0) httpErrorCode = error;
+	int errorCode = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
+	if (errorCode > 399 && httpErrorCode == 0)
+	{
+		QFileInfo fi(reply->url().toString());
+		bool mediaFile = settings::LoadPage::mediaFilesExtensions.contains(fi.completeSuffix().toLower());
+		if ( ! mediaFile) {
+			httpErrorCode = errorCode;
+			return;
+		}
+		if (settings.mediaLoadErrorHandling == settings::LoadPage::abort)
+		{
+			httpErrorCode = errorCode;
+			error(QString("Failed to load ") + reply->url().toString() + " (sometimes it will work just to ignore this error with --load-media-error-handling ignore)");
+		}
+		else {
+			warning(QString("Failed to load %1 (%2)")
+					.arg(reply->url().toString())
+					.arg(settings::loadErrorHandlingToStr(settings.loadErrorHandling))
+					);
+		}
+	}
 }
 
 /*!

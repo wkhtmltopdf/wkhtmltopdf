@@ -34,6 +34,15 @@
 namespace wkhtmltopdf {
 namespace settings {
 
+QList<QString> LoadPage::mediaFilesExtensions = QList<QString> ()
+		<< "css"
+		<< "js"
+		<< "png"
+		<< "jpg"
+		<< "jpeg"
+		<< "gif";
+
+
 LoadPage::LoadErrorHandling strToLoadErrorHandling(const char * s, bool * ok) {
 	if (ok) *ok = true;
 	if (!strcasecmp(s, "abort")) return LoadPage::abort;
@@ -142,7 +151,8 @@ LoadPage::LoadPage():
 	blockLocalFileAccess(false),
 	stopSlowScripts(true),
 	debugJavascript(false),
-	loadErrorHandling(abort) {};
+	loadErrorHandling(abort),
+	mediaLoadErrorHandling(ignore) {};
 
 }
 }
