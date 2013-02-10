@@ -34,6 +34,15 @@
 namespace wkhtmltopdf {
 namespace settings {
 
+QList<QString> LoadPage::mediaFilesExtensions = QList<QString> ()
+		<< "css"
+		<< "js"
+		<< "png"
+		<< "jpg"
+		<< "jpeg"
+		<< "gif";
+
+
 LoadPage::LoadErrorHandling strToLoadErrorHandling(const char * s, bool * ok) {
 	if (ok) *ok = true;
 	if (!strcasecmp(s, "abort")) return LoadPage::abort;
@@ -129,9 +138,7 @@ Proxy::Proxy():
 	password() {}
 
 LoadGlobal::LoadGlobal():
-	cookieJar(""),
-	maxParallelRequests(0),
-	maxLoadedPages(0) {}
+	cookieJar("") {}
 
 LoadPage::LoadPage():
 	jsdelay(200),
@@ -142,7 +149,8 @@ LoadPage::LoadPage():
 	blockLocalFileAccess(false),
 	stopSlowScripts(true),
 	debugJavascript(false),
-	loadErrorHandling(abort) {};
+	loadErrorHandling(abort),
+	mediaLoadErrorHandling(ignore) {};
 
 }
 }
