@@ -34,7 +34,8 @@ GNUWIN32FILES="openssl-0.9.8h-1-lib.zip \
 openssl-0.9.8h-1-bin.zip "
 #freetype-2.3.5-1-bin.zip \
 #freetype-2.3.5-1-lib.zip "
-QTBRANCH=
+QTREPO=git://gitorious.org/~antialize/qt/antializes-qt.git
+QTBRANCH=4.8.4
 J="$((1 + $(cat /proc/cpuinfo | grep -c processor)))"
 
 function usage() {
@@ -52,7 +53,7 @@ function usage() {
 	echo "windows       Compile windows binary using wine"
 }
 VERSION=""
-QTBRANCH="staging"
+
 
 while getopts hq:v: O; do
 	case "$O" in
@@ -120,7 +121,7 @@ function checkout() {
 
     #Fetch most recent version of qt
     echo "Updating qt from remote"
-    git_fetch_and_update qt git://gitorious.org/+wkhtml2pdf/qt/wkhtmltopdf-qt.git "$QTBRANCH" || exit 1
+    git_fetch_and_update qt "$QTREPO" "$QTBRANCH" || exit 1
     cd qt
 }
 
