@@ -455,6 +455,7 @@ time, depending on what arguments you use to configure qt
 
 cd wkhtmltopdf-qt
 ./configure -nomake tools,examples,demos,docs,translations -opensource -prefix ../wkqt
+git checkout 4.8.4
 make -j3
 make install
 cd ..
