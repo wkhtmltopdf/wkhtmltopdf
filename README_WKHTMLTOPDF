@@ -449,12 +449,13 @@ named differently.
 
 First you must check out the modified version of QT
 
-git clone git://gitorious.org/+wkhtml2pdf/qt/wkhtmltopdf-qt.git wkhtmltopdf-qt
+git clone git://gitorious.org/~antialize/qt/antializes-qt.git wkhtmltopdf-qt
 Next you must configure, compile and install QT, note this will take quite some
 time, depending on what arguments you use to configure qt
 
 cd wkhtmltopdf-qt
 ./configure -nomake tools,examples,demos,docs,translations -opensource -prefix ../wkqt
+git checkout 4.8.4
 make -j3
 make install
 cd ..
