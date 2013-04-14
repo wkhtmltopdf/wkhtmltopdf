@@ -70,18 +70,33 @@ public slots:
 	bool shouldInterruptJavaScript();
 };
 
+struct ResourceType
+{
+	enum _
+	{
+		Url,
+		String
+	};
+};
+
 class DLL_LOCAL ResourceObject: public QObject {
 	Q_OBJECT
 private:
 	MyNetworkAccessManager networkAccessManager;
 	QUrl url;
+	QString data;
 	int loginTry;
 	int progress;
 	bool finished;
 	bool signalPrint;
 	MultiPageLoaderPrivate & multiPageLoader;
+	ResourceType::_ type;
+	void sharedUrlSetup(MultiPageLoaderPrivate & mpl, const QUrl & u, const settings::LoadPage & s);
+	void loadForUrl();
+	void loadForString();
 public:
 	ResourceObject(MultiPageLoaderPrivate & mpl, const QUrl & u, const settings::LoadPage & s);
+	ResourceObject(MultiPageLoaderPrivate & mpl, const QUrl & fileUrl, const QString & dataIn, const settings::LoadPage & s);
 	MyQWebPage webPage;
 	LoaderObject lo;
 	int httpErrorCode;

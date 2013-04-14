@@ -24,6 +24,8 @@
 #endif
 #endif
 
+#include <iostream>
+
 #include "multipageloader_p.hh"
 #include <QFile>
 #include <QFileInfo>
@@ -131,8 +133,33 @@ ResourceObject::ResourceObject(MultiPageLoaderPrivate & mpl, const QUrl & u, con
 	webPage(*this),
 	lo(webPage),
 	httpErrorCode(0),
-	settings(s) {
+	settings(s),
+	type(ResourceType::Url)	{
 
+	sharedUrlSetup(mpl, u, s);
+}
+
+ResourceObject::ResourceObject(MultiPageLoaderPrivate & mpl, const QUrl & dataUrl, const QString & dataIn, const settings::LoadPage & s):
+	networkAccessManager(s),
+	url(dataUrl),
+	loginTry(0),
+	progress(0),
+	finished(false),
+	signalPrint(false),
+	multiPageLoader(mpl),
+	webPage(*this),
+	lo(webPage),
+	httpErrorCode(0),
+	settings(s),
+	type(ResourceType::String),
+	data(dataIn) {
+
+	sharedUrlSetup(mpl, dataUrl, s);
+	
+	
+}
+
+void ResourceObject::sharedUrlSetup(MultiPageLoaderPrivate & mpl, const QUrl & u, const settings::LoadPage & s) {
 	connect(&networkAccessManager, SIGNAL(authenticationRequired(QNetworkReply*, QAuthenticator *)),this,
 	        SLOT(handleAuthenticationRequired(QNetworkReply *, QAuthenticator *)));
 	foreach (const QString & path, s.allowed)
@@ -320,10 +347,7 @@ void ResourceObject::sslErrors(QNetworkReply *reply, const QList<QSslError> &) {
 	warning("SSL error ignored");
 }
 
-void ResourceObject::load() {
-	finished=false;
-	++multiPageLoader.loading;
-
+void ResourceObject::loadForUrl() {
 	bool hasFiles=false;
 	foreach (const settings::PostItem & pi, settings.post) hasFiles |= pi.file;
 	QByteArray postData;
@@ -383,6 +407,31 @@ void ResourceObject::load() {
 			r.setHeader(QNetworkRequest::ContentTypeHeader, QString("multipart/form-data, boundary=")+boundary);
 		webPage.mainFrame()->load(r, QNetworkAccessManager::PostOperation, postData);
 	}
+}
+
+void ResourceObject::loadForString() {
+	//no complicated logic here, just loadHtml()
+	if (!settings.effectiveUrl.isNull() && !settings.effectiveUrl.isEmpty())
+	{
+		QUrl effUrl(settings.effectiveUrl);
+		if (effUrl.isValid())
+			webPage.mainFrame()->setHtml(data, effUrl);
+		else
+			webPage.mainFrame()->setHtml(data);
+	}
+	else {
+		webPage.mainFrame()->setHtml(data);
+	}
+}
+
+void ResourceObject::load() {
+	finished=false;
+	++multiPageLoader.loading;
+
+	if (type == ResourceType::String)
+		loadForString();
+	else
+		loadForUrl();
 }
 
 void MyCookieJar::useCookie(const QUrl &, const QString & name, const QString & value) {
@@ -513,24 +562,44 @@ MultiPageLoader::~MultiPageLoader() {
 */
 LoaderObject * MultiPageLoader::addResource(const QString & string, const settings::LoadPage & s, const QString * data) {
 	QString url=string;
+	
+	const QString* indata;
+	QString inBuffer;
+	
 	if (data && !data->isEmpty()) {
-		url = d->tempIn.create(".html");
-		QFile tmp(url);
-		if (!tmp.open(QIODevice::WriteOnly) || tmp.write(data->toUtf8())==0) {
-			emit error("Unable to create temporary file");
-			return NULL;
-		}
-	} else if (url == "-") {
-		QFile in;
-		in.open(stdin,QIODevice::ReadOnly);
-		url = d->tempIn.create(".html");
-		QFile tmp(url);
-		if (!tmp.open(QIODevice::WriteOnly) || !copyFile(in, tmp)) {
-			emit error("Unable to create temporary file");
-			return NULL;
-		}
+		indata = data;
 	}
-	return addResource(guessUrlFromString(url), s);
+	else if (url == "-") {
+		QFile in;
+		//std::cout << "About to open input stream\n";
+		in.open(stdin, QIODevice::ReadOnly);
+		QTextStream inText(&in);
+		inText.setCodec("UTF-8");
+		//std::cout << "Stream open; about to set input buffer\n";
+		inBuffer = inText.readAll();
+		indata = &inBuffer;
+	}
+	else {
+		return addResource(QUrl(string), s);
+	}
+	
+	//dump the data into a temporary file
+	//std::cout << "About to create temp file\n";
+	url = d->tempIn.create(".html");
+	//std::cout << "URL: " << url.toUtf8().constData();
+	QFile tmp(url);
+	if (!tmp.open(QIODevice::WriteOnly) || tmp.write(indata->toUtf8())==0) {
+		emit error("Unable to create temporary file");
+		return NULL;
+	}
+	
+	//std::cout << "Temp file created\n";
+	//and pass it on to a new resource object
+	ResourceObject* ro = new ResourceObject(*d, url, *indata, s);
+	d->resources.push_back(ro);
+	
+	//std::cout << "Resource file created\n";
+	return &ro->lo;
 }
 
 /*!

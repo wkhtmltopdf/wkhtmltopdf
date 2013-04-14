@@ -199,6 +199,9 @@ void CommandLineParserBase::addWebArgs(Web & s) {
 void CommandLineParserBase::addPageLoadArgs(LoadPage & s) {
 	extended(true);
 	qthack(false);
+	
+	addarg("effective-url", 0, "Effective URL of data", new QStrSetter(s.effectiveUrl, "effectiveUrl"));
+	
 	addarg("proxy",'p',"Use a proxy", new ProxySetter(s.proxy, "proxy"));
 	addarg("username",0,"HTTP Authentication username", new QStrSetter(s.username, "username"));
 	addarg("password",0,"HTTP Authentication password", new QStrSetter(s.password, "password"));
