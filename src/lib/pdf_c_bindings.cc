@@ -33,6 +33,8 @@
 #include <QApplication>
 #include <QWebFrame>
 
+#include <QHash>
+
 #include "dllbegin.inc"
 /**
  * \page pagesettings Setting
@@ -597,7 +599,14 @@ CAPI(int) wkhtmltopdf_phase_count(wkhtmltopdf_converter * converter) {
  * \sa wkhtmltopdf_current_phase, wkhtmltopdf_phase_description
  */
 CAPI(const char *) wkhtmltopdf_phase_description(wkhtmltopdf_converter * converter, int phase) {
-	return reinterpret_cast<MyPdfConverter *>(converter)->converter.phaseDescription(phase).toUtf8().constData();
+  MyPdfConverter* conv = reinterpret_cast<MyPdfConverter *>(converter);
+	QString pd = conv->converter.phaseDescription(phase);
+	if (!conv->utf8StringCache.contains(pd))
+	{
+		return conv->utf8StringCache.insert(pd, pd.toUtf8()).value().constData();
+	}
+	else
+		return conv->utf8StringCache[pd].constData();
 }
 
 /**
@@ -611,7 +620,12 @@ CAPI(const char *) wkhtmltopdf_phase_description(wkhtmltopdf_converter * convert
  * \sa wkhtmltopdf_set_progress_changed_callback
  */
 CAPI(const char *) wkhtmltopdf_progress_string(wkhtmltopdf_converter * converter) {
-	return reinterpret_cast<MyPdfConverter *>(converter)->converter.progressString().toUtf8().constData();
+  MyPdfConverter* conv = reinterpret_cast<MyPdfConverter *>(converter);
+	QString ps = conv->converter.progressString();
+	if (!conv->utf8StringCache.contains(ps))
+		return conv->utf8StringCache.insert(ps, ps.toUtf8()).value().constData();
+	else
+		return conv->utf8StringCache[ps].constData();
 }
 
 /**
