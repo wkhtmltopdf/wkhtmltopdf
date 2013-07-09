@@ -49,7 +49,7 @@ function usage() {
 	echo "Target:"
 	echo "linux-local   Compile under local linux distro"
 	echo "linux-amd64   Compile under debian 64bit chroot"
-	echo "linux-i368    Compile under debian 32bit chroot"
+	echo "linux-i386    Compile under debian 32bit chroot"
 	echo "windows       Compile windows binary using wine"
 }
 VERSION=""
