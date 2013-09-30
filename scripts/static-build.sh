@@ -178,7 +178,7 @@ EOF
 }
 
 function packandcopylinux() {
-	mkdir -p ${BASE}/bin
+    mkdir -p ${BASE}/bin
     WK=${BUILD}/linux-$1/build/wkhtmltopdf
     rm -rf  ${BASE}/bin/wkhtmltopdf-$1  ${BASE}/bin/wkhtmltoimage-$1 ${BASE}/bin/libwkhtmltopdf-$1.tar.lzma
     ${BUILD}/${UPX}/upx --best ${WK}/bin/wkhtmltopdf -o ${BASE}/bin/wkhtmltopdf-$1 || exit 1
@@ -192,11 +192,10 @@ function packandcopylinux() {
 
 function build_linux_local() {
     cd ${BUILD}
-    mkdir -p linux-local
-    cd linux-local
+    mkdir -p linux-local/build
+    cd linux-local/build
     setup_build linux
     ./build.sh || exit 1
-    cd ..
     packandcopylinux local
 }
 
