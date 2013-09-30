@@ -230,7 +230,7 @@ void ResourceObject::loadFinished(bool ok) {
 
 void ResourceObject::waitWindowStatus() {
 	QString windowStatus = webPage.mainFrame()->evaluateJavaScript("window.status").toString();
-	warning(QString("window.status:" + windowStatus + " settings.windowStatus:" + settings.windowStatus));
+	//warning(QString("window.status:" + windowStatus + " settings.windowStatus:" + settings.windowStatus));
 	if (windowStatus != settings.windowStatus) {
 		QTimer::singleShot(50, this, SLOT(waitWindowStatus()));
 	} else {
