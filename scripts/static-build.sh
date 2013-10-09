@@ -132,6 +132,9 @@ function setup_build() {
     if ! [ -z "$VERSION" ] ; then
 		git checkout wkhtmltopdf-$VERSION || exit 1
     fi
+    patch -p1 < ${BASE}/qtwebkit-static.diff
+    patch -p1 < ${BASE}/qtwebkit-time_t.diff
+    patch -p1 < ${BASE}/qtwebkit-nodll.diff
     touch conf
     cat ${BASE}/static_qt_conf_base ${BASE}/static_qt_conf_${1} | sed -re 's/#.*//' | sed -re '/^[ \t]*$/d' | sort -u > conf_new
     cd ..
@@ -264,6 +267,10 @@ EOF
 
     cd ..
     setup_build win
+    if [ ! -f windows/perl.exe ]; then
+        echo 'int main(){return 0;}' > windows/perl.c
+        wine 'c:\mingw\bin\gcc.exe' -o 'c:\windows\perl.exe' 'c:\windows\perl.c'
+    fi
 
     unset CPLUS_INCLUDE_PATH
     unset C_INCLUDE_PATH

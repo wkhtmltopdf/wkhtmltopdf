@@ -1,0 +1,39 @@
+diff --git a/src/3rdparty/webkit/Source/WebCore/loader/icon/IconRecord.h b/src/3rdparty/webkit/Source/WebCore/loader/icon/IconRecord.h
+index 50ef7f7..67e7b82 100644
+--- a/src/3rdparty/webkit/Source/WebCore/loader/icon/IconRecord.h
++++ b/src/3rdparty/webkit/Source/WebCore/loader/icon/IconRecord.h
+@@ -38,7 +38,7 @@
+ #include <wtf/OwnPtr.h>
+ #include <wtf/text/StringHash.h>
+ 
+-#if OS(SOLARIS)
++#if OS(SOLARIS) || OS(WINDOWS)
+ #include <sys/types.h> // For time_t structure.
+ #endif
+ 
+diff --git a/src/3rdparty/webkit/Source/WebCore/page/Page.h b/src/3rdparty/webkit/Source/WebCore/page/Page.h
+index bdea870..68c9b76 100644
+--- a/src/3rdparty/webkit/Source/WebCore/page/Page.h
++++ b/src/3rdparty/webkit/Source/WebCore/page/Page.h
+@@ -29,7 +29,7 @@
+ #include <wtf/HashSet.h>
+ #include <wtf/Noncopyable.h>
+ 
+-#if OS(SOLARIS)
++#if OS(SOLARIS) || OS(WINDOWS)
+ #include <sys/time.h> // For time_t structure.
+ #endif
+ 
+diff --git a/src/3rdparty/webkit/Source/WebCore/platform/network/ResourceResponseBase.h b/src/3rdparty/webkit/Source/WebCore/platform/network/ResourceResponseBase.h
+index 250411c..9d9344e 100644
+--- a/src/3rdparty/webkit/Source/WebCore/platform/network/ResourceResponseBase.h
++++ b/src/3rdparty/webkit/Source/WebCore/platform/network/ResourceResponseBase.h
+@@ -35,7 +35,7 @@
+ #include <wtf/PassOwnPtr.h>
+ #include <wtf/RefPtr.h>
+ 
+-#if OS(SOLARIS)
++#if OS(SOLARIS) || OS(WINDOWS)
+ #include <sys/time.h> // For time_t structure.
+ #endif
+ 
