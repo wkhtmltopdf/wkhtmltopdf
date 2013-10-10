@@ -29,6 +29,7 @@
 -no-phonon
 -no-phonon-backend
 -webkit
+-xrender
 -no-scripttools
 -no-mmx
 -no-3dnow
