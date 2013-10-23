@@ -168,7 +168,8 @@ ResourceObject::ResourceObject(MultiPageLoaderPrivate & mpl, const QUrl & u, con
 		// by proxies administrators.
 #if QT_VERSION >= 0x040500
 		if (settings.proxy.type == QNetworkProxy::HttpProxy)
-			proxy.setCapabilities(QNetworkProxy::CachingCapability);
+			proxy.setCapabilities(QNetworkProxy::CachingCapability |
+			                      QNetworkProxy::TunnelingCapability);
 #endif
 		if (!settings.proxy.user.isEmpty())
 			proxy.setUser(settings.proxy.user);
