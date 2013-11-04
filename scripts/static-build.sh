@@ -34,7 +34,7 @@ GNUWIN32FILES="openssl-0.9.8h-1-lib.zip \
 openssl-0.9.8h-1-bin.zip "
 #freetype-2.3.5-1-bin.zip \
 #freetype-2.3.5-1-lib.zip "
-QTREPO=git://gitorious.org/~antialize/qt/antializes-qt.git
+QTREPO=git://gitorious.org/qt/trvrnrths-qt.git
 QTBRANCH=4.8.4
 J="$((1 + $(cat /proc/cpuinfo | grep -c processor)))"
 
@@ -132,6 +132,9 @@ function setup_build() {
     if ! [ -z "$VERSION" ] ; then
 		git checkout wkhtmltopdf-$VERSION || exit 1
     fi
+    patch -p1 < ${BASE}/qtwebkit-static.diff
+    patch -p1 < ${BASE}/qtwebkit-time_t.diff
+    patch -p1 < ${BASE}/qtwebkit-nodll.diff
     touch conf
     cat ${BASE}/static_qt_conf_base ${BASE}/static_qt_conf_${1} | sed -re 's/#.*//' | sed -re '/^[ \t]*$/d' | sort -u > conf_new
     cd ..
@@ -178,8 +181,8 @@ EOF
 }
 
 function packandcopylinux() {
-    mkdir -p ${BASE}/bin
-    WK=${BUILD}/linux-$1/build/wkhtmltopdf
+	mkdir -p ${BASE}/bin
+    WK=${BUILD}/linux-$1/wkhtmltopdf
     rm -rf  ${BASE}/bin/wkhtmltopdf-$1  ${BASE}/bin/wkhtmltoimage-$1 ${BASE}/bin/libwkhtmltopdf-$1.tar.lzma
     ${BUILD}/${UPX}/upx --best ${WK}/bin/wkhtmltopdf -o ${BASE}/bin/wkhtmltopdf-$1 || exit 1
     ${BUILD}/${UPX}/upx --best ${WK}/bin/wkhtmltoimage -o ${BASE}/bin/wkhtmltoimage-$1 || exit 1
@@ -192,10 +195,11 @@ function packandcopylinux() {
 
 function build_linux_local() {
     cd ${BUILD}
-    mkdir -p linux-local/build
-    cd linux-local/build
+    mkdir -p linux-local
+    cd linux-local
     setup_build linux
     ./build.sh || exit 1
+    cd ..
     packandcopylinux local
 }
 
@@ -264,6 +268,10 @@ EOF
 
     cd ..
     setup_build win
+    if [ ! -f windows/perl.exe ]; then
+        echo 'int main(){return 0;}' > windows/perl.c
+        wine 'c:\mingw\bin\gcc.exe' -o 'c:\windows\perl.exe' 'c:\windows\perl.c'
+    fi
 
     unset CPLUS_INCLUDE_PATH
     unset C_INCLUDE_PATH

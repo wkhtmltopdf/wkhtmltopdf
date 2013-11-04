@@ -247,6 +247,16 @@ void ResourceObject::printRequested(QWebFrame *) {
 void ResourceObject::loadDone() {
 	if (finished) return;
 	finished=true;
+	
+	if (!settings.dumpHtml.isEmpty()) {
+		QFile htmlFile(settings.dumpHtml);
+		if (htmlFile.open(QFile::WriteOnly | QFile::Truncate)) {
+			QTextStream out(&htmlFile);
+			out << webPage.mainFrame()->toHtml();
+			htmlFile.close();
+		}
+	}
+	
 	--multiPageLoader.loading;
 	if (multiPageLoader.loading == 0)
 		multiPageLoader.loadDone();

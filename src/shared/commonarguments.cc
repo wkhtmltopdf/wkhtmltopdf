@@ -234,4 +234,6 @@ void CommandLineParserBase::addPageLoadArgs(LoadPage & s) {
 	addarg("checkbox-checked-svg", 0, "Use this SVG file when rendering checked checkboxes", new QStrSetter(s.checkboxCheckedSvg, "path" ,""));
 	addarg("radiobutton-svg", 0, "Use this SVG file when rendering unchecked radiobuttons", new QStrSetter(s.radiobuttonSvg, "path", ""));
 	addarg("radiobutton-checked-svg", 0, "Use this SVG file when rendering checked radiobuttons", new QStrSetter(s.radiobuttonCheckedSvg, "path", ""));
+
+	addarg("dump-html",0,"Write rendered HTML to a file", new QStrSetter(s.dumpHtml, "file"));
 }
