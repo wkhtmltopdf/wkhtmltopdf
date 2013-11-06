@@ -1017,6 +1017,9 @@ Converter & PdfConverterPrivate::outer() {
   \todo explain something about the conversion process here, and mention stages
 */
 
+
+const qreal PdfConverter::millimeterToPointMultiplier = 2.83464567;
+
 /*!
   \brief Create a page converter object based on the supplied settings
   \param settings Settings for the conversion
