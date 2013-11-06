@@ -447,7 +447,7 @@ void PdfConverterPrivate::loadTocs() {
 	std::swap(tocLoaderOld, tocLoader);
 	tocLoader->clearResources();
 
-	bool toc;
+	bool toc = false;
 	for (int d=0; d < objects.size(); ++d) {
 		PageObject & obj = objects[d];
 		settings::PdfObject & ps = obj.settings;
@@ -1016,6 +1016,9 @@ Converter & PdfConverterPrivate::outer() {
   \brief Class responsible for converting html pages to pdf
   \todo explain something about the conversion process here, and mention stages
 */
+
+
+const qreal PdfConverter::millimeterToPointMultiplier = 2.83464567;
 
 /*!
   \brief Create a page converter object based on the supplied settings
