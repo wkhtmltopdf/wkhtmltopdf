@@ -449,7 +449,7 @@ void PdfConverterPrivate::loadTocs() {
 	std::swap(tocLoaderOld, tocLoader);
 	tocLoader->clearResources();
 
-	bool toc;
+	bool toc = false;
 	for (int d=0; d < objects.size(); ++d) {
 		PageObject & obj = objects[d];
 		settings::PdfObject & ps = obj.settings;
