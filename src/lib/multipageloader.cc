@@ -263,7 +263,9 @@ void ResourceObject::loadFinished(bool ok) {
 	foreach (const QString & str, settings.runScript)
 		webPage.mainFrame()->evaluateJavaScript(str);
 
-	if (signalPrint || settings.jsdelay == 0) loadDone();
+	// XXX: If loading failed there's no need to wait
+	//      for javascript on this resource. (pruiz)
+	if (!ok || signalPrint || settings.jsdelay == 0) loadDone();
 	else if (!settings.windowStatus.isEmpty()) waitWindowStatus();
 	else QTimer::singleShot(settings.jsdelay, this, SLOT(loadDone()));
 }
