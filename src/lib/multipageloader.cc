@@ -305,17 +305,19 @@ void ResourceObject::loadDone() {
  * and password supplied on the command line
  */
 void ResourceObject::handleAuthenticationRequired(QNetworkReply *reply, QAuthenticator *authenticator) {
+
+	// XXX: Avoid calling 'reply->abort()' from within this signal.
+	//      As stated by doc, request would be finished when no
+	//      user/pass properties are assigned to authenticator object.
+	// See: http://qt-project.org/doc/qt-5.0/qtnetwork/qnetworkaccessmanager.html#authenticationRequired
+
 	if (settings.username.isEmpty()) {
 		//If no username is given, complain the such is required
 		error("Authentication Required");
-		reply->abort();
-		multiPageLoader.fail();
 	} else if (loginTry >= 2) {
 		//If the login has failed a sufficient number of times,
 		//the username or password must be wrong
 		error("Invalid username or password");
-		reply->abort();
-		multiPageLoader.fail();
 	} else {
 		authenticator->setUser(settings.username);
 		authenticator->setPassword(settings.password);
@@ -353,7 +355,7 @@ void ResourceObject::amfinished(QNetworkReply * reply) {
 		else {
 			warning(QString("Failed to load %1 (%2)")
 					.arg(reply->url().toString())
-					.arg(settings::loadErrorHandlingToStr(settings.loadErrorHandling))
+					.arg(settings::loadErrorHandlingToStr(settings.mediaLoadErrorHandling))
 					);
 		}
 	}
