@@ -137,8 +137,6 @@ private:
 	QWebPrinter * webPrinter;
 	int objectPage;
 
-	QWebPage * currentHeader;
-	QWebPage * currentFooter;
 
 	QHash<int, QHash<QString, QWebElement> > pageAnchors;
 	QHash<int, QVector< QPair<QWebElement,QString> > > pageLocalLinks;
@@ -168,15 +166,17 @@ private:
 
 
 #endif
+	QWebPage * currentHeader;
+	QWebPage * currentFooter;
     qreal calculateHeaderHeight(PageObject & object, QWebPage & header);
     QPrinter * createPrinter();
 
 	void handleTocPage(PageObject & obj);
 	void preprocessPage(PageObject & obj);
-	void spoolPage(size_t page);
-	void spoolTo(size_t page);
-	void handleHeader(QWebPage * frame, size_t page);
-	void handleFooter(QWebPage * frame, size_t page);
+	void spoolPage(int page);
+	void spoolTo(int page);
+	void handleHeader(QWebPage * frame, int page);
+	void handleFooter(QWebPage * frame, int page);
 	void beginPrintObject(PageObject & obj);
 	void endPrintObject(PageObject & obj);
 

@@ -46,12 +46,19 @@ namespace wkhtmltopdf {
 
 LoaderObject::LoaderObject(QWebPage & p): page(p), skip(false) {};
 
-MyNetworkAccessManager::MyNetworkAccessManager(const settings::LoadPage & s): settings(s) {
+MyNetworkAccessManager::MyNetworkAccessManager(const settings::LoadPage & s): 
+	disposed(false),
+	settings(s) {
+
 	if ( !s.cacheDir.isEmpty() ){
 		QNetworkDiskCache *cache = new QNetworkDiskCache(this);
 		cache->setCacheDirectory(s.cacheDir);
 		QNetworkAccessManager::setCache(cache);
 	}
+}
+
+void MyNetworkAccessManager::dispose() {
+	disposed = true;
 }
 
 void MyNetworkAccessManager::allow(QString path) {
@@ -61,6 +68,18 @@ void MyNetworkAccessManager::allow(QString path) {
 }
 
 QNetworkReply * MyNetworkAccessManager::createRequest(Operation op, const QNetworkRequest & req, QIODevice * outgoingData) {
+
+	if (disposed)
+	{
+		qFatal("Received createRequest signal on a disposed ResourceObject's NetworkAccessManager. "
+			"This is an unexpected behaviour. Please, report this along with your use case details.");
+		// Needed to avoid race conditions by spurious
+		// JS scripts which has been already disposed.
+		//QNetworkRequest r2 = req;
+		//r2.setUrl(QUrl("about:blank"));
+		//return QNetworkAccessManager::createRequest(op, r2, outgoingData);
+	}
+
 	if (req.url().scheme() == "file" && settings.blockLocalFileAccess) {
 		bool ok=false;
 		QString path = QFileInfo(req.url().toLocalFile()).canonicalFilePath();
@@ -201,10 +220,23 @@ void ResourceObject::loadStarted() {
  * \param progress the loading progress in percent
  */
 void ResourceObject::loadProgress(int p) {
+	// If we are finished, ignore this signal.
+	if (finished) {
+		warning("A finished ResourceObject received a loading progress signal. "
+			"This migth be an indication of an unexpected bug. (Signal ignored)");
+		return;
+	}
+
 	multiPageLoader.progressSum -= progress;
 	progress = p;
 	multiPageLoader.progressSum += progress;
-	emit multiPageLoader.outer.loadProgress(multiPageLoader.progressSum / multiPageLoader.resources.size());
+
+	if (multiPageLoader.resources.size() <= 0) {
+		qFatal("ResourceObject::loadProgress() signaled with resources count = 0. "
+			"Please fill a bug detailing your use case, as this is surelly a bug");
+ 	} else {
+		emit multiPageLoader.outer.loadProgress(multiPageLoader.progressSum / multiPageLoader.resources.size());
+	}
 }
 
 

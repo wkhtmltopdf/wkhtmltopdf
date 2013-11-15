@@ -162,6 +162,8 @@ int handleError(bool success, int errorCode) {
 		if (cm.contains(errorCode)) m = cm[errorCode];
 		fprintf(stderr, "Exit with code %d due to http error: %d %s\n", c, errorCode, m);
 		return c;
+	} else if (!success) {
+		fprintf(stderr, "Exit with code %d, due to unknown error.\n", EXIT_FAILURE);
 	}
 	return success?EXIT_SUCCESS:EXIT_FAILURE;
 }
