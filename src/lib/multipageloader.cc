@@ -338,19 +338,28 @@ void ResourceObject::error(const QString & str) {
  * \param reply The networkreply that has finished
  */
 void ResourceObject::amfinished(QNetworkReply * reply) {
-	int errorCode = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
-	if (errorCode > 399 && httpErrorCode == 0)
+	int networkStatus = reply->error();
+	int httpStatus = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
+	if (networkStatus > 0 || (httpStatus > 399 && httpErrorCode == 0))
 	{
 		QFileInfo fi(reply->url().toString());
 		bool mediaFile = settings::LoadPage::mediaFilesExtensions.contains(fi.completeSuffix().toLower());
 		if ( ! mediaFile) {
-			httpErrorCode = errorCode;
+			// XXX: Notify network errors as higher priority than HTTP errors.
+			//      QT's QNetworkReply::NetworkError enum uses values overlapping
+			//      HTTP status codes, so adding 1000 to QT's codes will avoid
+			//      confusion. Also a network error at this point will probably mean
+			//      no HTTP access at all, so we want network errors to be reported
+			//      with a higher priority than HTTP ones. (pruiz)
+			//      See: http://doc-snapshot.qt-project.org/4.8/qnetworkreply.html#NetworkError-enum
+			httpErrorCode = networkStatus > 0 ? (networkStatus + 1000) : httpStatus;
 			return;
 		}
 		if (settings.mediaLoadErrorHandling == settings::LoadPage::abort)
 		{
-			httpErrorCode = errorCode;
-			error(QString("Failed to load ") + reply->url().toString() + " (sometimes it will work just to ignore this error with --load-media-error-handling ignore)");
+			httpErrorCode = networkStatus > 0 ? (networkStatus + 1000) : httpStatus;
+			error(QString("Failed to load ") + reply->url().toString() + ", with code: " + QString::number(httpErrorCode) + 
+				" (sometimes it will work just to ignore this error with --load-media-error-handling ignore)");
 		}
 		else {
 			warning(QString("Failed to load %1 (%2)")
