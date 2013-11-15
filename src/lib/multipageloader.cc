@@ -241,6 +241,13 @@ void ResourceObject::loadProgress(int p) {
 
 
 void ResourceObject::loadFinished(bool ok) {
+	// If we are finished, this migth be a potential bug.
+	if (finished || multiPageLoader.resources.size() <= 0) {
+		warning("A finished ResourceObject received a loading finished signal. "
+			"This migth be an indication of an unexpected bug. (Signal ignored)");
+		return;
+	}
+
 	multiPageLoader.hasError = multiPageLoader.hasError || (!ok && settings.loadErrorHandling == settings::LoadPage::abort);
 	if (!ok) {
 		if (settings.loadErrorHandling == settings::LoadPage::abort)
@@ -511,9 +518,17 @@ void MultiPageLoaderPrivate::load() {
 }
 
 void MultiPageLoaderPrivate::clearResources() {
-	for (int i=0; i < resources.size(); ++i)
-		resources[i]->deleteLater();
-	resources.clear();
+	while (resources.size() > 0)
+	{
+		// XXX: Using deleteLater() to dispose
+		// resources, to avoid race conditions with
+		// pending signals reaching a deleted resource.
+		// Also, and we must avoid calling clear()
+		// on resources list, is it tries to delete
+		// each objet on removal. (pruiz)
+		ResourceObject *tmp = resources.takeFirst();
+		tmp->deleteLater();
+	}
 	tempIn.remove();
 }
 
@@ -537,7 +552,9 @@ MultiPageLoader::MultiPageLoader(settings::LoadGlobal & s):
 }
 
 MultiPageLoader::~MultiPageLoader() {
-	delete d;
+	MultiPageLoaderPrivate *tmp = d;
+	d = 0;
+	tmp->deleteLater();
 }
 
 /*!
