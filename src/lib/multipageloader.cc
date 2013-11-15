@@ -286,6 +286,13 @@ void ResourceObject::printRequested(QWebFrame *) {
 void ResourceObject::loadDone() {
 	if (finished) return;
 	finished=true;
+
+	// Ensure no more loading goes..
+	webPage.triggerAction(QWebPage::Stop);
+	webPage.triggerAction(QWebPage::StopScheduledPageRefresh);
+	networkAccessManager.dispose();
+	//disconnect(this, 0, 0, 0);
+
 	--multiPageLoader.loading;
 	if (multiPageLoader.loading == 0)
 		multiPageLoader.loadDone();
