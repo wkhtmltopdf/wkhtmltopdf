@@ -71,13 +71,13 @@ QNetworkReply * MyNetworkAccessManager::createRequest(Operation op, const QNetwo
 
 	if (disposed)
 	{
-		qFatal("Received createRequest signal on a disposed ResourceObject's NetworkAccessManager. "
-			"This is an unexpected behaviour. Please, report this along with your use case details.");
-		// Needed to avoid race conditions by spurious
-		// JS scripts which has been already disposed.
-		//QNetworkRequest r2 = req;
-		//r2.setUrl(QUrl("about:blank"));
-		//return QNetworkAccessManager::createRequest(op, r2, outgoingData);
+		emit warning("Received createRequest signal on a disposed ResourceObject's NetworkAccessManager. "
+			     "This migth be an indication of an iframe taking to long to load.");
+		// Needed to avoid race conditions by spurious network requests
+		// by scripts or iframes taking too long to load. (pruiz)
+		QNetworkRequest r2 = req;
+		r2.setUrl(QUrl("about:blank"));
+		return QNetworkAccessManager::createRequest(op, r2, outgoingData);
 	}
 
 	if (req.url().scheme() == "file" && settings.blockLocalFileAccess) {
@@ -221,9 +221,9 @@ void ResourceObject::loadStarted() {
  */
 void ResourceObject::loadProgress(int p) {
 	// If we are finished, ignore this signal.
-	if (finished) {
+	if (finished || multiPageLoader.resources.size() <= 0) {
 		warning("A finished ResourceObject received a loading progress signal. "
-			"This migth be an indication of an unexpected bug. (Signal ignored)");
+			"This migth be an indication of an iframe taking to long to load.");
 		return;
 	}
 
@@ -231,12 +231,7 @@ void ResourceObject::loadProgress(int p) {
 	progress = p;
 	multiPageLoader.progressSum += progress;
 
-	if (multiPageLoader.resources.size() <= 0) {
-		qFatal("ResourceObject::loadProgress() signaled with resources count = 0. "
-			"Please fill a bug detailing your use case, as this is surelly a bug");
- 	} else {
-		emit multiPageLoader.outer.loadProgress(multiPageLoader.progressSum / multiPageLoader.resources.size());
-	}
+	emit multiPageLoader.outer.loadProgress(multiPageLoader.progressSum / multiPageLoader.resources.size());
 }
 
 
@@ -244,7 +239,7 @@ void ResourceObject::loadFinished(bool ok) {
 	// If we are finished, this migth be a potential bug.
 	if (finished || multiPageLoader.resources.size() <= 0) {
 		warning("A finished ResourceObject received a loading finished signal. "
-			"This migth be an indication of an unexpected bug. (Signal ignored)");
+			"This migth be an indication of an iframe taking to long to load.");
 		return;
 	}
 
