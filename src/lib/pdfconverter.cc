@@ -76,7 +76,7 @@ bool DLL_LOCAL looksLikeHtmlAndNotAUrl(QString str) {
 
 PdfConverterPrivate::PdfConverterPrivate(PdfGlobal & s, PdfConverter & o) :
 	settings(s), pageLoader(s.load),
-	out(o), printer(0), painter(0)
+	out(o), printer(0), painter(0), webPrinter(0)
 #ifdef __EXTENSIVE_WKHTMLTOPDF_QT_HACK__
     , measuringHFLoader(s.load), hfLoader(s.load), tocLoader1(s.load), tocLoader2(s.load)
 	, tocLoader(&tocLoader1), tocLoaderOld(&tocLoader2)
@@ -229,7 +229,7 @@ void PdfConverterPrivate::beginConvert() {
 // returns millimeters
 qreal PdfConverterPrivate::calculateHeaderHeight(PageObject & object, QWebPage & header) {
     typedef QPair<QWebElement, QString> p_t;
-    settings::PdfObject & s = object.settings;
+    //settings::PdfObject & s = object.settings;
     QPainter * testPainter = new QPainter();
     QPrinter * testPrinter = createPrinter();
 
@@ -749,7 +749,7 @@ void PdfConverterPrivate::headersLoaded(bool ok) {
 }
 
 
-void PdfConverterPrivate::spoolPage(size_t page) {
+void PdfConverterPrivate::spoolPage(int page) {
 	progressString = QString("Page ") + QString::number(actualPage) + QString(" of ") + QString::number(actualPages);
 	emit out.progressChanged(actualPage * 100 / actualPages);
 	if (actualPage != 1)
@@ -797,7 +797,7 @@ void PdfConverterPrivate::spoolPage(size_t page) {
 	actualPage++;
 }
 
-void PdfConverterPrivate::spoolTo(size_t page) {
+void PdfConverterPrivate::spoolTo(int page) {
 	int pc=settings.collate?1:settings.copies;
 	const settings::PdfObject & ps = objects[currentObject].settings;
 	while (objectPage < page) {
@@ -865,24 +865,34 @@ void PdfConverterPrivate::beginPrintObject(PageObject & obj) {
 }
 
 
-void PdfConverterPrivate::handleHeader(QWebPage * frame, size_t page) {
+void PdfConverterPrivate::handleHeader(QWebPage * frame, int page) {
 	spoolTo(page);
 	currentHeader = frame;
 }
 
-void PdfConverterPrivate::handleFooter(QWebPage * frame, size_t page) {
+void PdfConverterPrivate::handleFooter(QWebPage * frame, int page) {
 	spoolTo(page);
 	currentFooter = frame;
 }
 
 void PdfConverterPrivate::endPrintObject(PageObject & obj) {
-	spoolTo(webPrinter->pageCount());
+	// If this page was skipped, we might not have
+	// anything to spool to printer..
+	if (webPrinter != 0) spoolTo(webPrinter->pageCount());
+
 	pageAnchors.clear();
 	pageLocalLinks.clear();
 	pageExternalLinks.clear();
 	pageFormElements.clear();
-	delete webPrinter;
-	painter->restore();
+
+	if (webPrinter != 0) {
+		QWebPrinter *tmp = webPrinter;
+		webPrinter = 0; 
+		delete tmp;
+
+		painter->restore();
+	}
+
 }
 			
 
@@ -909,9 +919,12 @@ void PdfConverterPrivate::printDocument() {
 		pageNumber=1;
 		for (int d=0; d < objects.size(); ++d) {
 			beginPrintObject(objects[d]);
-			const settings::PdfObject & ps = objects[d].settings;
+			// XXX: In some cases nothing gets loaded at all,
+			//      so we would get no webPrinter instance.
+			int pageCount = webPrinter != 0 ? webPrinter->pageCount() : 0;
+			//const settings::PdfObject & ps = objects[d].settings;
 
-			for(size_t i=0; i < webPrinter->pageCount(); ++i) {
+			for(int i=0; i < pageCount; ++i) {
 				if (!objects[d].headers.empty())
 					handleHeader(objects[d].headers[i], i);
 				if (!objects[d].footers.empty())
@@ -995,16 +1008,25 @@ void PdfConverterPrivate::clearResources() {
 	tocLoader1.clearResources();
 	tocLoader2.clearResources();
 
-	if (outline) delete outline;
-	outline=0;
+	if (outline) {
+		Outline * tmp = outline;
+		outline = 0;
+		delete tmp;
+	}
 
 #endif
 
-	if (printer) delete printer;
-	printer = 0;
+	if (printer) {
+		QPrinter * tmp = printer;
+		printer = 0;
+		delete tmp;
+	}
 
-	if (painter) delete painter;
-	painter = 0;
+	if (painter) {
+		QPainter * tmp = painter;
+		painter = 0;
+		delete tmp;
+	}
 }
 
 Converter & PdfConverterPrivate::outer() {
@@ -1029,7 +1051,9 @@ PdfConverter::PdfConverter(settings::PdfGlobal & settings):
   \brief The destructor for the page converter object
 */
 PdfConverter::~PdfConverter() {
-	delete d;
+	PdfConverterPrivate *tmp = d;
+	d = 0;
+	tmp->deleteLater();;
 }
 
 /*!

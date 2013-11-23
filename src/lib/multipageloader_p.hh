@@ -43,9 +43,11 @@ namespace wkhtmltopdf {
 class DLL_LOCAL MyNetworkAccessManager: public QNetworkAccessManager {
 	Q_OBJECT
 private:
+	bool disposed;
 	QSet<QString> allowed;
 	const settings::LoadPage & settings;
 public:
+	void dispose();
 	void allow(QString path);
 	MyNetworkAccessManager(const settings::LoadPage & s);
 	QNetworkReply * createRequest(Operation op, const QNetworkRequest & req, QIODevice * outgoingData = 0);

@@ -448,7 +448,7 @@ CAPI(wkhtmltopdf_converter *) wkhtmltopdf_create_converter(wkhtmltopdf_global_se
  * \param settings The converter object to destroy
  */
 CAPI(void) wkhtmltopdf_destroy_converter(wkhtmltopdf_converter * converter) {
-	delete reinterpret_cast<MyPdfConverter *>(converter);
+	reinterpret_cast<MyPdfConverter *>(converter)->deleteLater();
 }
 
 /**

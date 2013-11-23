@@ -46,12 +46,19 @@ namespace wkhtmltopdf {
 
 LoaderObject::LoaderObject(QWebPage & p): page(p), skip(false) {};
 
-MyNetworkAccessManager::MyNetworkAccessManager(const settings::LoadPage & s): settings(s) {
+MyNetworkAccessManager::MyNetworkAccessManager(const settings::LoadPage & s): 
+	disposed(false),
+	settings(s) {
+
 	if ( !s.cacheDir.isEmpty() ){
 		QNetworkDiskCache *cache = new QNetworkDiskCache(this);
 		cache->setCacheDirectory(s.cacheDir);
 		QNetworkAccessManager::setCache(cache);
 	}
+}
+
+void MyNetworkAccessManager::dispose() {
+	disposed = true;
 }
 
 void MyNetworkAccessManager::allow(QString path) {
@@ -61,6 +68,18 @@ void MyNetworkAccessManager::allow(QString path) {
 }
 
 QNetworkReply * MyNetworkAccessManager::createRequest(Operation op, const QNetworkRequest & req, QIODevice * outgoingData) {
+
+	if (disposed)
+	{
+		emit warning("Received createRequest signal on a disposed ResourceObject's NetworkAccessManager. "
+			     "This migth be an indication of an iframe taking to long to load.");
+		// Needed to avoid race conditions by spurious network requests
+		// by scripts or iframes taking too long to load.
+		QNetworkRequest r2 = req;
+		r2.setUrl(QUrl("about:blank"));
+		return QNetworkAccessManager::createRequest(op, r2, outgoingData);
+	}
+
 	if (req.url().scheme() == "file" && settings.blockLocalFileAccess) {
 		bool ok=false;
 		QString path = QFileInfo(req.url().toLocalFile()).canonicalFilePath();
@@ -201,14 +220,29 @@ void ResourceObject::loadStarted() {
  * \param progress the loading progress in percent
  */
 void ResourceObject::loadProgress(int p) {
+	// If we are finished, ignore this signal.
+	if (finished || multiPageLoader.resources.size() <= 0) {
+		warning("A finished ResourceObject received a loading progress signal. "
+			"This migth be an indication of an iframe taking to long to load.");
+		return;
+	}
+
 	multiPageLoader.progressSum -= progress;
 	progress = p;
 	multiPageLoader.progressSum += progress;
+
 	emit multiPageLoader.outer.loadProgress(multiPageLoader.progressSum / multiPageLoader.resources.size());
 }
 
 
 void ResourceObject::loadFinished(bool ok) {
+	// If we are finished, this migth be a potential bug.
+	if (finished || multiPageLoader.resources.size() <= 0) {
+		warning("A finished ResourceObject received a loading finished signal. "
+			"This migth be an indication of an iframe taking to long to load.");
+		return;
+	}
+
 	multiPageLoader.hasError = multiPageLoader.hasError || (!ok && settings.loadErrorHandling == settings::LoadPage::abort);
 	if (!ok) {
 		if (settings.loadErrorHandling == settings::LoadPage::abort)
@@ -224,7 +258,9 @@ void ResourceObject::loadFinished(bool ok) {
 	foreach (const QString & str, settings.runScript)
 		webPage.mainFrame()->evaluateJavaScript(str);
 
-	if (signalPrint || settings.jsdelay == 0) loadDone();
+	// XXX: If loading failed there's no need to wait
+	//      for javascript on this resource.
+	if (!ok || signalPrint || settings.jsdelay == 0) loadDone();
 	else if (!settings.windowStatus.isEmpty()) waitWindowStatus();
 	else QTimer::singleShot(settings.jsdelay, this, SLOT(loadDone()));
 }
@@ -247,6 +283,13 @@ void ResourceObject::printRequested(QWebFrame *) {
 void ResourceObject::loadDone() {
 	if (finished) return;
 	finished=true;
+
+	// Ensure no more loading goes..
+	webPage.triggerAction(QWebPage::Stop);
+	webPage.triggerAction(QWebPage::StopScheduledPageRefresh);
+	networkAccessManager.dispose();
+	//disconnect(this, 0, 0, 0);
+
 	--multiPageLoader.loading;
 	if (multiPageLoader.loading == 0)
 		multiPageLoader.loadDone();
@@ -257,17 +300,19 @@ void ResourceObject::loadDone() {
  * and password supplied on the command line
  */
 void ResourceObject::handleAuthenticationRequired(QNetworkReply *reply, QAuthenticator *authenticator) {
+
+	// XXX: Avoid calling 'reply->abort()' from within this signal.
+	//      As stated by doc, request would be finished when no
+	//      user/pass properties are assigned to authenticator object.
+	// See: http://qt-project.org/doc/qt-5.0/qtnetwork/qnetworkaccessmanager.html#authenticationRequired
+
 	if (settings.username.isEmpty()) {
 		//If no username is given, complain the such is required
 		error("Authentication Required");
-		reply->abort();
-		multiPageLoader.fail();
 	} else if (loginTry >= 2) {
 		//If the login has failed a sufficient number of times,
 		//the username or password must be wrong
 		error("Invalid username or password");
-		reply->abort();
-		multiPageLoader.fail();
 	} else {
 		authenticator->setUser(settings.username);
 		authenticator->setPassword(settings.password);
@@ -288,24 +333,33 @@ void ResourceObject::error(const QString & str) {
  * \param reply The networkreply that has finished
  */
 void ResourceObject::amfinished(QNetworkReply * reply) {
-	int errorCode = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
-	if (errorCode > 399 && httpErrorCode == 0)
+	int networkStatus = reply->error();
+	int httpStatus = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
+	if (networkStatus > 0 || (httpStatus > 399 && httpErrorCode == 0))
 	{
 		QFileInfo fi(reply->url().toString());
 		bool mediaFile = settings::LoadPage::mediaFilesExtensions.contains(fi.completeSuffix().toLower());
 		if ( ! mediaFile) {
-			httpErrorCode = errorCode;
+			// XXX: Notify network errors as higher priority than HTTP errors.
+			//      QT's QNetworkReply::NetworkError enum uses values overlapping
+			//      HTTP status codes, so adding 1000 to QT's codes will avoid
+			//      confusion. Also a network error at this point will probably mean
+			//      no HTTP access at all, so we want network errors to be reported
+			//      with a higher priority than HTTP ones.
+			//      See: http://doc-snapshot.qt-project.org/4.8/qnetworkreply.html#NetworkError-enum
+			httpErrorCode = networkStatus > 0 ? (networkStatus + 1000) : httpStatus;
 			return;
 		}
 		if (settings.mediaLoadErrorHandling == settings::LoadPage::abort)
 		{
-			httpErrorCode = errorCode;
-			error(QString("Failed to load ") + reply->url().toString() + " (sometimes it will work just to ignore this error with --load-media-error-handling ignore)");
+			httpErrorCode = networkStatus > 0 ? (networkStatus + 1000) : httpStatus;
+			error(QString("Failed to load ") + reply->url().toString() + ", with code: " + QString::number(httpErrorCode) + 
+				" (sometimes it will work just to ignore this error with --load-media-error-handling ignore)");
 		}
 		else {
 			warning(QString("Failed to load %1 (%2)")
 					.arg(reply->url().toString())
-					.arg(settings::loadErrorHandlingToStr(settings.loadErrorHandling))
+					.arg(settings::loadErrorHandlingToStr(settings.mediaLoadErrorHandling))
 					);
 		}
 	}
@@ -479,9 +533,17 @@ void MultiPageLoaderPrivate::load() {
 }
 
 void MultiPageLoaderPrivate::clearResources() {
-	for (int i=0; i < resources.size(); ++i)
-		resources[i]->deleteLater();
-	resources.clear();
+	while (resources.size() > 0)
+	{
+		// XXX: Using deleteLater() to dispose
+		// resources, to avoid race conditions with
+		// pending signals reaching a deleted resource.
+		// Also, and we must avoid calling clear()
+		// on resources list, is it tries to delete
+		// each objet on removal.
+		ResourceObject *tmp = resources.takeFirst();
+		tmp->deleteLater();
+	}
 	tempIn.remove();
 }
 
@@ -505,7 +567,9 @@ MultiPageLoader::MultiPageLoader(settings::LoadGlobal & s):
 }
 
 MultiPageLoader::~MultiPageLoader() {
-	delete d;
+	MultiPageLoaderPrivate *tmp = d;
+	d = 0;
+	tmp->deleteLater();
 }
 
 /*!
