@@ -50,9 +50,9 @@ Section /o "Modify PATH" mpath
   ${EnvVarUpdate} $0 "PATH" "A" "HKLM" "$INSTDIR" 
 SectionEnd
 
-LangString DESC_pdf   ${LANG_ENGLISH} "Install wkhtmltopdf"
-LangString DESC_image ${LANG_ENGLISH} "Install wkhtmltoimage"
-LangString DESC_mpath ${LANG_ENGLISH} "Update PATH, WILL BREAK PATH IN VISTA AN WIN7"
+LangString DESC_pdf   ${LANG_ENGLISH} "Install wkhtmltopdf."
+LangString DESC_image ${LANG_ENGLISH} "Install wkhtmltoimage."
+LangString DESC_mpath ${LANG_ENGLISH} "Updating PATH will break the PATH in Windows Vista and Windows 7."
 
 !insertmacro MUI_FUNCTION_DESCRIPTION_BEGIN
     !insertmacro MUI_DESCRIPTION_TEXT ${pdf} $(DESC_pdf)
