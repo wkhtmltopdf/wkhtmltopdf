@@ -32,6 +32,10 @@
 #include <QTimer>
 #include <QUuid>
 
+#if QT_VERSION >= QT_VERSION_CHECK(5,0,0)
+#   include <QUrlQuery>
+#endif
+
 namespace wkhtmltopdf {
 /*!
   \file multipageloader.hh
@@ -103,7 +107,7 @@ QNetworkReply * MyNetworkAccessManager::createRequest(Operation op, const QNetwo
 	if (settings.repeatCustomHeaders) {
 		typedef QPair<QString, QString> HT;
 		foreach (const HT & j, settings.customHeaders)
-			r3.setRawHeader(j.first.toAscii(), j.second.toAscii());
+            r3.setRawHeader(j.first.toUtf8(), j.second.toUtf8());
 	}
 	return QNetworkAccessManager::createRequest(op, r3, outgoingData);
 }
@@ -415,10 +419,17 @@ void ResourceObject::load() {
 			postData.append("--\n");
 		}
 	} else {
-		QUrl u;
-		foreach (const settings::PostItem & pi, settings.post)
-			u.addQueryItem(pi.name, pi.value);
-		postData = u.encodedQuery();
+#if QT_VERSION < QT_VERSION_CHECK(5,0,0)
+        QUrl u;
+        foreach (const settings::PostItem & pi, settings.post)
+            u.addQueryItem(pi.name, pi.value);
+        postData = u.encodedQuery();
+#else
+        QUrlQuery u;
+        foreach (const settings::PostItem & pi, settings.post)
+            u.addQueryItem(pi.name, pi.value);
+        postData = u.query(QUrl::FullyEncoded).toUtf8();
+#endif
 	}
 
 
@@ -429,7 +440,7 @@ void ResourceObject::load() {
 	QNetworkRequest r = QNetworkRequest(url);
 	typedef QPair<QString, QString> HT;
 	foreach (const HT & j, settings.customHeaders)
-		r.setRawHeader(j.first.toAscii(), j.second.toAscii());
+        r.setRawHeader(j.first.toUtf8(), j.second.toUtf8());
 
 	if (postData.isEmpty())
 		webPage.mainFrame()->load(r);
@@ -634,7 +645,7 @@ QUrl MultiPageLoader::guessUrlFromString(const QString &string) {
 
 		QUrl url;
 		if (isAscii) {
-			url = QUrl::fromEncoded(urlStr.toAscii(), QUrl::TolerantMode);
+            url = QUrl::fromEncoded(urlStr.toUtf8(), QUrl::TolerantMode);
 		} else {
 			url = QUrl(urlStr, QUrl::TolerantMode);
 		}

@@ -26,8 +26,14 @@
 #endif
 #endif
 
-#include <QCleanlooksStyle>
-#include <QCommonStyle>
+#include <QtGlobal>
+
+#if QT_VERSION < QT_VERSION_CHECK(5,0,0)
+#   include <QCleanlooksStyle>
+#else
+#   include <QCommonStyle>
+#endif
+
 #include <QFile>
 #include <QFileInfo>
 #include <QImageWriter>
@@ -40,10 +46,19 @@
 /**
  * Custom simplistic style
  */
+
+#if QT_VERSION < QT_VERSION_CHECK(5,0,0)
 class DLL_PUBLIC MyLooksStyle: public QCleanlooksStyle {
+#else
+class DLL_PUBLIC MyLooksStyle: public QCommonStyle {
+#endif
 	Q_OBJECT
 public:
-	typedef QCleanlooksStyle parent_t;
+#if QT_VERSION < QT_VERSION_CHECK(5,0,0)
+    typedef QCleanlooksStyle parent_t;
+#else
+    typedef QCommonStyle parent_t;
+#endif
 	MyLooksStyle();
 	void drawPrimitive( PrimitiveElement element, const QStyleOption * option, QPainter * painter, const QWidget * widget = 0 ) const;
 	bool weAreDrawingForms;
