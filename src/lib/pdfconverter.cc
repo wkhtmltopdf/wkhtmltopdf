@@ -877,7 +877,7 @@ void PdfConverterPrivate::handleFooter(QWebPage * frame, int page) {
 
 void PdfConverterPrivate::endPrintObject(PageObject & obj) {
 	// If this page was skipped, we might not have
-	// anything to spool to printer.. (pruiz)
+	// anything to spool to printer..
 	if (webPrinter != 0) spoolTo(webPrinter->pageCount());
 
 	pageAnchors.clear();
@@ -920,7 +920,7 @@ void PdfConverterPrivate::printDocument() {
 		for (int d=0; d < objects.size(); ++d) {
 			beginPrintObject(objects[d]);
 			// XXX: In some cases nothing gets loaded at all,
-			//      so we would get no webPrinter instance. (pruiz)
+			//      so we would get no webPrinter instance.
 			int pageCount = webPrinter != 0 ? webPrinter->pageCount() : 0;
 			//const settings::PdfObject & ps = objects[d].settings;
 

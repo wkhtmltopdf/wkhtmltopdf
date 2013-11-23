@@ -74,7 +74,7 @@ QNetworkReply * MyNetworkAccessManager::createRequest(Operation op, const QNetwo
 		emit warning("Received createRequest signal on a disposed ResourceObject's NetworkAccessManager. "
 			     "This migth be an indication of an iframe taking to long to load.");
 		// Needed to avoid race conditions by spurious network requests
-		// by scripts or iframes taking too long to load. (pruiz)
+		// by scripts or iframes taking too long to load.
 		QNetworkRequest r2 = req;
 		r2.setUrl(QUrl("about:blank"));
 		return QNetworkAccessManager::createRequest(op, r2, outgoingData);
@@ -259,7 +259,7 @@ void ResourceObject::loadFinished(bool ok) {
 		webPage.mainFrame()->evaluateJavaScript(str);
 
 	// XXX: If loading failed there's no need to wait
-	//      for javascript on this resource. (pruiz)
+	//      for javascript on this resource.
 	if (!ok || signalPrint || settings.jsdelay == 0) loadDone();
 	else if (!settings.windowStatus.isEmpty()) waitWindowStatus();
 	else QTimer::singleShot(settings.jsdelay, this, SLOT(loadDone()));
@@ -345,7 +345,7 @@ void ResourceObject::amfinished(QNetworkReply * reply) {
 			//      HTTP status codes, so adding 1000 to QT's codes will avoid
 			//      confusion. Also a network error at this point will probably mean
 			//      no HTTP access at all, so we want network errors to be reported
-			//      with a higher priority than HTTP ones. (pruiz)
+			//      with a higher priority than HTTP ones.
 			//      See: http://doc-snapshot.qt-project.org/4.8/qnetworkreply.html#NetworkError-enum
 			httpErrorCode = networkStatus > 0 ? (networkStatus + 1000) : httpStatus;
 			return;
@@ -540,7 +540,7 @@ void MultiPageLoaderPrivate::clearResources() {
 		// pending signals reaching a deleted resource.
 		// Also, and we must avoid calling clear()
 		// on resources list, is it tries to delete
-		// each objet on removal. (pruiz)
+		// each objet on removal.
 		ResourceObject *tmp = resources.takeFirst();
 		tmp->deleteLater();
 	}
