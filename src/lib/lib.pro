@@ -34,6 +34,10 @@ unix {
    INSTALLS += headers
 }
 
+windows {
+   TARGET_EXT=.dll
+}
+
 VERSION=$${MAJOR_VERSION}.$${MINOR_VERSION}.$${PATCH_VERSION}
 
 TARGET=wkhtmltox
