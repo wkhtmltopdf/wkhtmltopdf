@@ -19,6 +19,7 @@ include(../../version.pri)
 include(../../common.pri)
 
 TEMPLATE = app
+VERSION = $${MAJOR_VERSION}.$${MINOR_VERSION}.$${PATCH_VERSION}
 TARGET = wkhtmltoimage
 DESTDIR = ../../bin
 DEPENDPATH += . ../shared
