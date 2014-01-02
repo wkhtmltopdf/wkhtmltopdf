@@ -47,7 +47,8 @@ Section "Wkhtmltoimage" image
 SectionEnd
 
 Section /o "Modify PATH" mpath
-  ${EnvVarUpdate} $0 "PATH" "A" "HKLM" "$INSTDIR" 
+	;Commented out because it's overwriting and not appending
+  ;${EnvVarUpdate} $0 "PATH" "A" "HKLM" "$INSTDIR" 
 SectionEnd
 
 LangString DESC_pdf   ${LANG_ENGLISH} "Install wkhtmltopdf."
