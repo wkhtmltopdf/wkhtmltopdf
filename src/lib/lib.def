@@ -1,4 +1,4 @@
-LIBRARY WKHTMLTOX
+LIBRARY wkhtmltox
 EXPORTS
 wkhtmltopdf_init
 wkhtmltopdf_deinit

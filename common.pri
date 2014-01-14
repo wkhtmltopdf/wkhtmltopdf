@@ -45,4 +45,4 @@ win32 {
     CONFIG += console
 }
 
-QT += webkit network xmlpatterns svg
+QT += webkit network svg
