@@ -169,7 +169,7 @@ private:
 	QWebPage * currentHeader;
 	QWebPage * currentFooter;
     qreal calculateHeaderHeight(PageObject & object, QWebPage & header);
-    QPrinter * createPrinter();
+    QPrinter * createPrinter(const QString & tempFile);
 
 	void handleTocPage(PageObject & obj);
 	void preprocessPage(PageObject & obj);

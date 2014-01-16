@@ -231,9 +231,17 @@ void PdfConverterPrivate::beginConvert() {
 // returns millimeters
 qreal PdfConverterPrivate::calculateHeaderHeight(PageObject & object, QWebPage & header) {
     typedef QPair<QWebElement, QString> p_t;
-    //settings::PdfObject & s = object.settings;
+
+    TempFile   tempObj;
+    QString    tempFile = tempObj.create(settings.outputFormat == "ps"?".ps":".pdf");
+
     QPainter * testPainter = new QPainter();
-    QPrinter * testPrinter = createPrinter();
+    QPrinter * testPrinter = createPrinter(tempFile);
+
+    if (!testPainter->begin(testPrinter)) {
+        emit out.error("Unable to write to temp location");
+        return 0.0;
+    }
 
     QWebPrinter wp(header.mainFrame(), testPrinter, *testPainter);
     qreal height = wp.elementLocation(header.mainFrame()->findFirstElement("body")).second.height();
@@ -244,7 +252,7 @@ qreal PdfConverterPrivate::calculateHeaderHeight(PageObject & object, QWebPage &
     return (height / PdfConverter::millimeterToPointMultiplier);
 }
 
-QPrinter * PdfConverterPrivate::createPrinter() {
+QPrinter * PdfConverterPrivate::createPrinter(const QString & tempFile) {
     QPrinter * printer = new QPrinter(settings.resolution);
     if (settings.dpi != -1) printer->setResolution(settings.dpi);
     //Tell the printer object to print the file <out>
@@ -253,7 +261,7 @@ QPrinter * PdfConverterPrivate::createPrinter() {
         (settings.outputFormat == "ps" || (settings.outputFormat == "" && settings.out.endsWith(".ps", Qt::CaseInsensitive)))?
         QPrinter::PostScriptFormat : QPrinter::PdfFormat
         );
-    printer->setOutputFileName(lout);
+    printer->setOutputFileName(tempFile);
 
     if ((settings.size.height.first != -1) && (settings.size.width.first != -1)) {
         printer->setPaperSize(QSizeF(settings.size.width.first,settings.size.height.first + 100), settings.size.height.second);
