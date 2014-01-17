@@ -13,5 +13,7 @@ static-build/
 doc/
 man1/
 Makefile
+Makefile.*
+*_resource.rc
 gitcontrol.bat
 gitcmd.lnk
