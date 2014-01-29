@@ -34,8 +34,8 @@ GNUWIN32FILES="openssl-0.9.8h-1-lib.zip \
 openssl-0.9.8h-1-bin.zip "
 #freetype-2.3.5-1-bin.zip \
 #freetype-2.3.5-1-lib.zip "
-QTREPO=git://gitorious.org/~antialize/qt/antializes-qt.git
-QTBRANCH=4.8.4
+QTREPO=https://github.com/wkhtmltopdf/qt.git
+QTBRANCH=wk_4.8.5
 J="$((1 + $(cat /proc/cpuinfo | grep -c processor)))"
 
 function usage() {
