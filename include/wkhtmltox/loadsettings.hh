@@ -1,4 +1,4 @@
-// Copyright 2010 wkhtmltopdf authors
+// Copyright 2010, 2012 wkhtmltopdf authors
 //
 // This file is part of wkhtmltopdf.
 //
@@ -30,7 +30,7 @@
 namespace wkhtmltopdf {
 namespace settings {
 
-/*! \brief Settings consdering proxy */
+/*! \brief Settings considering proxy */
 struct DLL_PUBLIC Proxy {
 	Proxy();
 	//! Type of proxy to use
@@ -77,12 +77,12 @@ struct DLL_PUBLIC LoadPage {
 
 	//! What window.status value should we wait for
 	QString windowStatus;
-	
+
 	//! What zoom factor should we apply when printing
 	// TODO MOVE
 	float zoomFactor;
 
-	//! Map of custum header variables
+	//! Map of custom header variables
 	QList< QPair<QString, QString> > customHeaders;
 
 	//! Set if the custom header should be repeated for each resource request

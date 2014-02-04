@@ -42,6 +42,7 @@ public:
 	void addResource(const settings::PdfObject & pageSettings, const QString * data=0);
 	const settings::PdfGlobal & globalSettings() const;
 	const QByteArray & output();
+    static const qreal millimeterToPointMultiplier;
 private:
 	PdfConverterPrivate * d;
 	virtual ConverterPrivate & priv();
