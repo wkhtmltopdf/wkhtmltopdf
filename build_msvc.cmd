@@ -4,6 +4,29 @@ set OPENSSL_REPO=https://github.com/openssl/openssl.git
 set OPENSSL_BRANCH=OpenSSL_1_0_1-stable
 set OPENSSL_TAG=OpenSSL_1_0_1f
 
+if not "%Configuration%"  =="Release" goto config_bad
+if not "%TARGET_PLATFORM%"=="LHS"     goto config_bad
+if     "%TARGET_CPU%"     =="x86"     goto config_x86
+if     "%TARGET_CPU%"     =="x64"     goto config_x64
+
+:config_bad
+echo You should start the "Windows SDK 7.1 Command Prompt" while
+echo targeting Windows Server 2008 Release (either x86 or x64)
+exit /b 1
+
+:config_x86
+set ARCH=win32
+set SSL_CFG=VC-WIN32 no-asm
+set SSL_CMD=do_ms
+goto start_build
+
+:config_x64
+set ARCH=win64
+set SSL_CFG=VC-WIN64A
+set SSL_CMD=do_win64a
+goto start_build
+
+:start_build
 set BUILD_DIR=%~dp0static-build
 mkdir %BUILD_DIR% 2> nul
 cd /d %BUILD_DIR%
@@ -19,8 +42,9 @@ git checkout %OPENSSL_TAG%
 :openssl_build
 echo ================ building OpenSSL
 cd /d %BUILD_DIR%\openssl
-perl Configure VC-WIN32 no-asm --prefix=%BUILD_DIR%\openssl_dist
-call ms\do_ms.bat
+
+perl Configure %SSL_CFG% --prefix=%BUILD_DIR%\openssl_dist
+call ms\%SSL_CMD%.bat
 nmake /f ms\nt.mak install
 git clean -fdx
 
@@ -49,7 +73,7 @@ IF NOT EXIST bin\qmake.exe goto build_qt
 IF NOT EXIST Makefile      goto build_qt
 goto build_app
 
-:configure_qt
+:build_qt
 set QT_CFG=
 set QT_CFG=%QT_CFG% -opensource
 set QT_CFG=%QT_CFG% -confirm-license
@@ -153,7 +177,7 @@ exit /b 0
 :build_installer
 echo ================ building installer
 cd /d %BUILD_DIR%
-"%ProgramFiles%\NSIS\makensis.exe" /DVERSION=%WK_VERSION% /DWK_HASH=%WK_HASH% /DARCH=win32 ..\wkhtmltox.nsi
+"%ProgramFiles%\NSIS\makensis.exe" /DVERSION=%WK_VERSION% /DWK_HASH=%WK_HASH% /DARCH=%ARCH% ..\wkhtmltox.nsi
 cd /d %~dp0
 exit /b 0
 
