@@ -3,7 +3,11 @@
 
 Name             "wkhtmltox ${VERSION} (${WK_HASH})"
 OutFile          "static-build\wkhtmltox-${ARCH}_${VERSION}-${WK_HASH}.exe"
+!if ${ARCH} == "win64"
+InstallDir       "$PROGRAMFILES64\wkhtmltopdf"
+!else
 InstallDir       "$PROGRAMFILES\wkhtmltopdf"
+!endif
 InstallDirRegKey HKLM "Software\wkhtmltopdf" "InstallPath"
 VIProductVersion "${VERSION}.0"
 VIAddVersionKey  "ProductName"     "wkhtmltox"

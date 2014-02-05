@@ -165,12 +165,20 @@ cd /d %~dp0
 FOR /F "delims=" %%v IN ('type VERSION')               DO set WK_VERSION=%%v
 FOR /F "delims=" %%h IN ('git rev-parse --short HEAD') DO set WK_HASH=%%h
 
-if exist "%ProgramFiles%\NSIS\makensis.exe" goto build_installer
-if exist "%ProgramFiles%\7-zip\7z.exe"      goto build_archive
+if exist "%ProgramFiles%\NSIS\makensis.exe"      goto build_installer
+if exist "%ProgramFiles(x86)%\NSIS\makensis.exe" goto build_installer_x86
+if exist "%ProgramFiles%\7-zip\7z.exe"           goto build_archive
 
 echo Unable to detect either NSIS or 7-Zip; please examine folder
 echo   %BUILD_DIR%\dist
 echo to see the output.
+cd /d %~dp0
+exit /b 0
+
+:build_installer_x86
+echo ================ building installer
+cd /d %BUILD_DIR%
+"%ProgramFiles(x86)%\NSIS\makensis.exe" /DVERSION=%WK_VERSION% /DWK_HASH=%WK_HASH% /DARCH=%ARCH% ..\wkhtmltox.nsi
 cd /d %~dp0
 exit /b 0
 
