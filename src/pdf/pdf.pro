@@ -46,7 +46,6 @@ unix {
 
 macx {
     CONFIG -= app_bundle
-    CONFIG += x86
 }
 
 INSTALLS += target
