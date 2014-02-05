@@ -153,7 +153,7 @@ exit /b 0
 :build_installer
 echo ================ building installer
 cd /d %BUILD_DIR%
-"%ProgramFiles%\NSIS\makensis.exe" /DVERSION=%WK_VERSION% /DWK_HASH=%WK_HASH% ..\wkhtmltox.nsi
+"%ProgramFiles%\NSIS\makensis.exe" /DVERSION=%WK_VERSION% /DWK_HASH=%WK_HASH% /DARCH=win32 ..\wkhtmltox.nsi
 cd /d %~dp0
 exit /b 0
 

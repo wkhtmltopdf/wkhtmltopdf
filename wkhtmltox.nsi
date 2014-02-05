@@ -2,7 +2,7 @@
 !include "x64.nsh"
 
 Name             "wkhtmltox ${VERSION} (${WK_HASH})"
-OutFile          "static-build\wkhtmltox-${VERSION}_${WK_HASH}.exe"
+OutFile          "static-build\wkhtmltox-${ARCH}_${VERSION}-${WK_HASH}.exe"
 InstallDir       "$PROGRAMFILES\wkhtmltopdf"
 InstallDirRegKey HKLM "Software\wkhtmltopdf" "InstallPath"
 VIProductVersion "${VERSION}.0"
