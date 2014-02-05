@@ -113,12 +113,14 @@ case "$1" in
 	setup_chroot  i386
 	setup_build   i386
 	sudo linux32 chroot ${BUILD}/linux-i386/ /build/build.sh /source /build /dist || exit 1
+	sudo umount ${BUILD}/linux-$1/source
 	package_build i386
 	;;
 'linux-amd64')
 	setup_chroot  amd64
 	setup_build   amd64
 	sudo chroot ${BUILD}/linux-amd64/ /build/build.sh  /source /build /dist || exit 1
+	sudo umount ${BUILD}/linux-$1/source
 	package_build amd64
 	;;
 "linux-local")
