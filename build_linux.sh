@@ -87,8 +87,8 @@ if [ ! -f \$DST/qt/bin/qmake ]; then
 fi
 cd \$BLD/app
 cp \$BLD/qt/.qmake.cache .
-\$DST/qt/bin/qmake \$SRC/wkhtmltopdf.pro
-GIT_DIR=\$SRC/.git make -j${J} -q || exit 1
+GIT_DIR=\$SRC/.git \$DST/qt/bin/qmake \$SRC/wkhtmltopdf.pro
+make -j${J} || exit 1
 strip bin/wkhtmltopdf bin/wkhtmltoimage
 rm -fR \$DST/wkhtmltox
 mkdir -p \$DST/wkhtmltox \$DST/wkhtmltox/bin \$DST/wkhtmltox/lib \$DST/wkhtmltox/include/wkhtmltox
@@ -102,10 +102,7 @@ EOF
 
 function package_build() {
 	cd ${BUILD}
-	head -3 ${BASE}/version.pri > version.sh
-	. ${BUILD}/version.sh
-	rm -f . ${BUILD}/version.sh
-	RELEASE_VERSION=${MAJOR_VERSION}.${MINOR_VERSION}.${PATCH_VERSION}-`git --git-dir=$BASE/.git rev-parse --short HEAD`
+	RELEASE_VERSION=`cat $BASE/VERSION`-`git --git-dir=$BASE/.git rev-parse --short HEAD`
 	cd ${BUILD}/linux-$1/dist
 	tar -c -v --xz -f ${BUILD}/wkhtmltox-linux-$1_${RELEASE_VERSION}.tar.xz wkhtmltox/
 }

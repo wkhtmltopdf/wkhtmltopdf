@@ -18,7 +18,6 @@
 TEMPLATE = lib
 CONFIG += dll
 
-include(../../version.pri)
 include(../../common.pri)
 include(lib.pri)
 

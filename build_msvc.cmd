@@ -134,15 +134,11 @@ copy  %~dp0include\wkhtmltox\dllend.inc   dist\include\wkhtmltox
 copy  %~dp0include\wkhtmltox\pdf.h        dist\include\wkhtmltox
 copy  %~dp0include\wkhtmltox\image.h      dist\include\wkhtmltox
 
-set MAJOR_VERSION=
-set MINOR_VERSION=
-set PATCH_VERSION=
 set WK_VERSION=
 set WK_HASH=
 
 cd /d %~dp0
-FOR /F %%v IN (version.pri) DO SET %%v
-set WK_VERSION=%MAJOR_VERSION%.%MINOR_VERSION%.%PATCH_VERSION%
+FOR /F "delims=" %%v IN ('type VERSION')               DO set WK_VERSION=%%v
 FOR /F "delims=" %%h IN ('git rev-parse --short HEAD') DO set WK_HASH=%%h
 
 if exist "%ProgramFiles%\NSIS\makensis.exe" goto build_installer
