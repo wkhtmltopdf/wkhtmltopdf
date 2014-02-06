@@ -4,42 +4,42 @@ set OPENSSL_REPO=https://github.com/openssl/openssl.git
 set OPENSSL_BRANCH=OpenSSL_1_0_1-stable
 set OPENSSL_TAG=OpenSSL_1_0_1f
 
-if not "%Configuration%"  =="Release" goto config_bad
-if not "%TARGET_PLATFORM%"=="LHS"     goto config_bad
-if     "%TARGET_CPU%"     =="x86"     goto config_x86
-if     "%TARGET_CPU%"     =="x64"     goto config_x64
+if not "%Configuration%"  =="Release" goto cfg_bad
+if not "%TARGET_PLATFORM%"=="LHS"     goto cfg_bad
+if     "%TARGET_CPU%"     =="x86"     goto cfg_x86
+if     "%TARGET_CPU%"     =="x64"     goto cfg_x64
 
-:config_bad
+:cfg_bad
 echo You should start the "Windows SDK 7.1 Command Prompt" while
 echo targeting Windows Server 2008 Release (either x86 or x64)
 exit /b 1
 
-:config_x86
+:cfg_x86
 set ARCH=win32
 set SSL_CFG=VC-WIN32 no-asm
 set SSL_CMD=do_ms
-goto start_build
+goto do_build
 
-:config_x64
+:cfg_x64
 set ARCH=win64
 set SSL_CFG=VC-WIN64A
 set SSL_CMD=do_win64a
-goto start_build
+goto do_build
 
-:start_build
+:do_build
 set BUILD_DIR=%~dp0static-build
 mkdir %BUILD_DIR% 2> nul
 cd /d %BUILD_DIR%
 
-if exist %BUILD_DIR%\openssl_dist goto openssl_check
-if exist %BUILD_DIR%\openssl      goto openssl_build
+if exist %BUILD_DIR%\openssl_dist goto ssl_check
+if exist %BUILD_DIR%\openssl      goto ssl_build
 
 echo ================ downloading OpenSSL
 git clone --branch %OPENSSL_BRANCH% --single-branch %OPENSSL_REPO% openssl
 cd /d %BUILD_DIR%\openssl
 git checkout %OPENSSL_TAG%
 
-:openssl_build
+:ssl_build
 echo ================ building OpenSSL
 cd /d %BUILD_DIR%\openssl
 
@@ -48,21 +48,21 @@ call ms\%SSL_CMD%.bat
 nmake /f ms\nt.mak install
 git clean -fdx
 
-:openssl_check
+:ssl_check
 cd /d %BUILD_DIR%\openssl_dist
-if not exist include\openssl\ssl.h goto openssl_error
-if not exist lib\libeay32.lib      goto openssl_error
-if not exist lib\ssleay32.lib      goto openssl_error
-goto openssl_done
+if not exist include\openssl\ssl.h goto ssl_error
+if not exist lib\libeay32.lib      goto ssl_error
+if not exist lib\ssleay32.lib      goto ssl_error
+goto ssl_done
 
-:openssl_error
+:ssl_error
 echo OpenSSL was not compiled properly; please remove the directory
 echo   %BUILD_DIR%\openssl_dist
 echo and try to compile again.
 cd /d %~dp0
 exit /b 1
 
-:openssl_done
+:ssl_done
 
 echo ================ building patched QT
 cd /d %BUILD_DIR%
@@ -165,9 +165,9 @@ cd /d %~dp0
 FOR /F "delims=" %%v IN ('type VERSION')               DO set WK_VERSION=%%v
 FOR /F "delims=" %%h IN ('git rev-parse --short HEAD') DO set WK_HASH=%%h
 
-if exist "%ProgramFiles%\NSIS\makensis.exe"      goto build_installer
-if exist "%ProgramFiles(x86)%\NSIS\makensis.exe" goto build_installer_x86
-if exist "%ProgramFiles%\7-zip\7z.exe"           goto build_archive
+if exist "%ProgramFiles%\NSIS\makensis.exe"      goto inst_32bit
+if exist "%ProgramFiles(x86)%\NSIS\makensis.exe" goto inst_64bit
+if exist "%ProgramFiles%\7-zip\7z.exe"           goto make_archive
 
 echo Unable to detect either NSIS or 7-Zip; please examine folder
 echo   %BUILD_DIR%\dist
@@ -175,21 +175,21 @@ echo to see the output.
 cd /d %~dp0
 exit /b 0
 
-:build_installer_x86
+:inst_64bit
 echo ================ building installer
 cd /d %BUILD_DIR%
 "%ProgramFiles(x86)%\NSIS\makensis.exe" /DVERSION=%WK_VERSION% /DWK_HASH=%WK_HASH% /DARCH=%ARCH% ..\wkhtmltox.nsi
 cd /d %~dp0
 exit /b 0
 
-:build_installer
+:inst_32bit
 echo ================ building installer
 cd /d %BUILD_DIR%
 "%ProgramFiles%\NSIS\makensis.exe" /DVERSION=%WK_VERSION% /DWK_HASH=%WK_HASH% /DARCH=%ARCH% ..\wkhtmltox.nsi
 cd /d %~dp0
 exit /b 0
 
-:build_archive
+:make_archive
 echo ================ building archive
 cd /d %BUILD_DIR%\dist
 "%ProgramFiles%\7-zip\7z.exe" a ..\wkhtmltox-%WK_VERSION%_%WK_HASH%.7z -mx9 -r *
