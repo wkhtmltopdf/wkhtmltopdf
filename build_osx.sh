@@ -150,10 +150,7 @@ cd -
 
 # create release?
 if [ "$CREATE_RELEASE" -eq "1" ]; then
-    MAJOR_VERSION=`head -3 version.pri | grep MAJOR_VERSION | sed 's/MAJOR_VERSION=//'`
-    MINOR_VERSION=`head -3 version.pri | grep MINOR_VERSION | sed 's/MINOR_VERSION=//'`
-    PATCH_VERSION=`head -3 version.pri | grep PATCH_VERSION | sed 's/PATCH_VERSION=//'`
-    RELEASE_VERSION="${MAJOR_VERSION}.${MINOR_VERSION}.${PATCH_VERSION}"
+    RELEASE_VERSION=`cat VERSION`
     if [ -d ".git" ]; then
         RELEASE_VERSION="${RELEASE_VERSION}-`git rev-parse --short HEAD`"
     fi
