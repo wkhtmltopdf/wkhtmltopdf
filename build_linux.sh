@@ -46,14 +46,24 @@ function setup_chroot() {
 	fi
 
 	if [ ! -f linux-$1/is_installed ]; then
-		echo -e "deb http://ftp.us.debian.org/debian/ $SUITE main non-free contrib\ndeb-src http://ftp.us.debian.org/debian/ $SUITE main non-free contrib" | sudo tee linux-$1/etc/apt/sources.list || exit 1
+		sudo rm -f linux-$1/etc/apt/sources.list
+		echo "deb     http://ftp.debian.org/debian/ $SUITE         main contrib non-free" | sudo tee -a linux-$1/etc/apt/sources.list || exit 1
+		echo "deb     http://ftp.debian.org/debian/ $SUITE-updates main contrib non-free" | sudo tee -a linux-$1/etc/apt/sources.list || exit 1
+		echo "deb     http://security.debian.org/   $SUITE/updates main contrib non-free" | sudo tee -a linux-$1/etc/apt/sources.list || exit 1
+		echo "deb-src http://ftp.debian.org/debian/ $SUITE         main contrib non-free" | sudo tee -a linux-$1/etc/apt/sources.list || exit 1
+		echo "deb-src http://ftp.debian.org/debian/ $SUITE-updates main contrib non-free" | sudo tee -a linux-$1/etc/apt/sources.list || exit 1
+		echo "deb-src http://security.debian.org/   $SUITE/updates main contrib non-free" | sudo tee -a linux-$1/etc/apt/sources.list || exit 1
 		sudo chroot linux-$1 apt-get -y update || exit 1
 		sudo chroot linux-$1 apt-get -y build-dep libqt4-core && sudo touch linux-$1/is_installed
 	fi
 
-	sudo mkdir -p linux-$1/source
-	sudo umount linux-$1/source
-	sudo mount --bind ${BASE} linux-$1/source || exit 1
+	sudo rm -fR linux-$1/source
+	sudo chown --reference=${BASE} linux-$1
+	git clone -s ${BASE} linux-$1/source
+	git clone -s ${BASE}/qt linux-$1/source/qt
+	cd ${BUILD}/linux-$1/source
+	git submodule init
+	git submodule update --no-fetch
 }
 
 function setup_build() {
@@ -113,14 +123,12 @@ case "$1" in
 	setup_chroot  i386
 	setup_build   i386
 	sudo linux32 chroot ${BUILD}/linux-i386/ /build/build.sh /source /build /dist || exit 1
-	sudo umount ${BUILD}/linux-$1/source
 	package_build i386
 	;;
 'linux-amd64')
 	setup_chroot  amd64
 	setup_build   amd64
 	sudo chroot ${BUILD}/linux-amd64/ /build/build.sh  /source /build /dist || exit 1
-	sudo umount ${BUILD}/linux-$1/source
 	package_build amd64
 	;;
 "linux-local")
