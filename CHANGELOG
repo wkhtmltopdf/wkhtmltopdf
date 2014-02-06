@@ -1,0 +1,273 @@
+﻿
+v0.12.0:
+* #443: add "sitepage" and "sitepages" support for headers
+* #175: add ability to auto calculate header/footer heights
+* #1086: don't return freed memory; instead use a string cache
+* #648: delete infinite warnings into console about window status
+* #550: enable tunneling to use a HTTP proxy for HTTPS
+* #1277: avoid crash due to premature deletion of ResourceObject
+* lots of fixes/enhancements for memory and error management
+* add --quiet option to wkhtmltoimage
+* add --cache-dir option for configuring web cache directory
+* add --load-media-error-handling to for media files
+* add --viewport-size to specify viewport size
+* reserve heights when not using HTML header/footer
+* lots of improvements in the build system
+* lots of typos were fixed in various places
+* [qt] rebase patch series on QT 4.8.5 (now hosted on github)
+* [qt] fixes to get static builds working for MSVC 2010 (32/64 bit)
+* [qt] prevent page breaks in table rows
+* [qt] repeat THEAD/TFOOT when table contains page breaks
+* [qt] improve font kerning as per Webkit bug 92363
+* [qt] various table page-break improvements
+* [qt] fix rendering due to incorrect page height computation
+* [qt] implement "page-break-inside: avoid" for non-floating block elements
+* [qt] enable WOFF file support
+* [qt] add support for CSS widows and orphans for block elements
+
+v0.11.0 rc2:
+* #354: Propper handling of directly embedded grayscale jpeg images
+* #429: output filenames interperted as latin1 instead of utf8
+* #441: Gif images do not work
+* #463: Null byte in anchor name
+* #635: Make /dests an indirect object
+* #730: Do not assume that QPixmap requiers GUI
+
+v0.11.0 rc1:
+* #149: Use base url to resolve links
+* #667: Expose load settings in image c binding
+* #707: Relative links are converted to absolute links
+* Update to newer version of qt
+
+v0.10.0 rc2:
+* Relicense under LGPL
+* #349: HTTP POST format
+* #365: isLoaded Flag
+* #414: Release bz2 files instead of xz files
+* #426: Reenable --page-offset
+* #428: toimage buffer does no work
+
+v0.10.0 rc1:
+* #171, #307: Javascript does not work well in i386 static binaries
+* #226, #326: Absolute path are broken on windows
+* #310: Sections in headers only work for the first document
+* #315: Allow arbitrery javascript to be run
+* #332: Also used names to resolve local links
+* #333: Segmentation fault when plugins are not enabled
+* #345 double escaping of html entries in toc
+* Partly #366: allow for custum SVG for checkboxes and radio button
+* #378: the -n switch is ambigius
+* Fix issue: Do not include covers in the outline and toc
+
+v0.10.0 beta5:
+* Create a libwkhtmltox an relicense under LGPL
+* Add missing --header-line switch
+* #271: Image quality in wkhtmltoimage is not good when using --zoom.
+* #286: Outlines have incorrect page numbers
+* #288: -s, --page-size command line switch broken
+* #328: Ignores supplied xsl stylesheet for to
+
+v0.10.0 beta4:
+* Added wkhtmtoimage to the source tree, thanks to Christian Sciberras.
+* Added width parameter to wkhtmloimage
+* Added svg support to wkhtmlimage
+* Command line layout reworked
+* Allow for options to be parsed on a per page section
+* Table of content is now generated via XSLT
+* Updated to use QT 4.7
+* Mac binary no longer displayes in dock.
+* #72: the font spacing issues on linux solved when using --use-xserver
+* #55: wkhtmltopdf dies on unavaliable url or network disconnection
+* #114: Add option to for not loading images.
+* #122: No output to stderr describing HTTP 500 server error
+* #143: Add wkhtmltoimage
+* #144: User stylesheet is not working
+* #161: Better image handling
+* #170: Allow for table of content to be placed anywhere
+* #184: wkhtmltopdf crashes with rigt to left texts.
+* #188: Allow for greater TOC customization
+* #205: Add support for local timezone in creation date
+* #238: Add option to force output format
+* #244: Outline contains headers from hidden content
+* #249: Spelling
+* #258: Likns and references to the right pages.
+* #265: mingwm10.dll is empty
+* #267: Sizing problem with wkhtmltoimage and page with no particular width
+* #268: --scale-w doesn't work as expected
+* #270: Do not print crosses and circles in ALL the form fields
+* #273: (Hack) Do not draw the content of a textbox when using forms
+* #278: wkhtmltoimage exits with none existing http error codes.
+* #280: Incorrect page numbering
+* Implement issue 281: Support of page title in header/footer
+* #284: Wrong width when dealing with an invalid html file
+
+v0.9.7
+* Fix bug: Use \- some more places in the man page.
+* #220: Allowing the good load check to be disabled.
+* #223: Replace date and time in headers and footers.
+* #225: Add support for links in headers and footers.
+
+v0.9.6
+* #191: Add support for not compressing pdf.
+* #210: PATH is overridden by windows 7 install
+* #228: Unable to use none ASCII pdf titles
+* Add nicer rendering for text fields and checkboxes
+* Added initial support for HTML forms
+
+v0.9.5
+* #196: Unable to use none ASCII file names.
+* Fix multiple issues with links in the pdf file
+
+v0.9.4
+* Fix --toc-header-font-size implementation, added --toc-header-font-name
+* Added a --dump-outline option (Patch by Douglas Bagnall)
+* Added a minimal font size option (Patch by Dmitry Teslenko)
+* Fix pdf outline parent ID (Patch by Douglas Bagnall)
+
+v0.9.3
+* #141: wkhtmltopdf does not terminate properly on OSX. (Jan Harbermann)
+* #176: Properly escape strings in the pdf engine. (Patch by Douglas Bagnall)
+* #181: Properly encode string in pdf outline. (Patch by Douglas Bagnall)
+* Fix some spelling in the manual
+
+v0.9.2
+* #160: Handle slow scripts instead of terminating with a no X warning. The
+  new default is to just let the scripts run for as long as they want.
+  Unless --stop-slow-scripts is specified.
+* #164: Text read from standard in is interpreted as ASCII, not as local 8bit. (utf8)
+* #165: Add a title to the pdf document.
+* Fix page numbers in TOC when pageOffset has been specified.
+* Fixed faults in documentation.
+* Handle javascript alert, confirm and prompt gracefully.
+* Added a switch --debug-javascript to output javascript errors and warnings to stderr.
+
+v0.9.1
+* Added change log to release tar ball
+* Fixed up man page
+* #140: --disable-javascript shod not affect --header-html
+* #142: We now wait for --redirect-delay microseconds before printing a page,
+  allowing for javascript redirects to occure, or dynamic content to be
+  generated. However if a window.print() javascript statement is executed
+  we wait no longer.
+* #147: Detect if --header-html is html
+* #155: Cookie support is broken
+* Add support for userdefined replacements in headers and footers.
+* Fix bug where the header line would not be horizontal
+
+v0.9.0
+* Complete code rewrite.
+* Add support for HTML headers and footers.
+* Do not exit 0 when a 404 has occured
+* Added a manual/readme
+* Added an installer under windows
+* #47: Give better error message if destination is not writeble
+* #56: with checkboxes printed badly
+* #61: PDF's send to stdout are broken on windows
+* #74: Scale of output is not fixed
+* #92: Support space between headers and contest
+* #125: Html documents from stdin does not work under windows
+* Allow headers and footers to be utf8
+* Add zoom support
+* Add support for internal and external links
+* Add links and back links to the table of content
+* Links in the table of content, and outline now point at the correct location.
+* Fixed multiple issues with wrong TOC and outlines
+* Add support for custom HTML headers
+* Add support for loading and saving cookies
+* Add support for POST requests
+* Make static build work with older versions of libc
+* Much more that I have now forgotten.
+* Add support for custom page sizes
+* Upgrade to qt4.6 fixing issues with not beeing able to copy text in acroread
+* Upgrade to qt4.6 fixing issues with only one font family working.
+
+v0.8.3
+* Allow custom page numbering (patch by Refael Bedia)
+* Add options to support HTTP authentication
+* Fix yet another leek in batch mode (patch by Mário Silva)
+* #when compiling with OT4.4
+* #regarding X11 with unpatched Qt
+
+v0.8.2
+* #with batch mode (patch by Mário Silva)
+* #with locale support in units
+* Added optional support for using X11 server, try this if no X11 fails.
+* Attempt to add support for NS Plugins
+* Fix issues when compiling with GCC 4.4
+
+v0.8.1
+* Static Linux version no longer requires X11
+
+v0.8.0
+* Added support for changing default input encoding (static binary only)
+* Added support for supplying user style sheet
+
+v0.7.5
+* Fixed bug with proxy not working as it should
+* Added proxy information to the man page
+* Corrected some spelling
+
+v0.7.4
+* Fixed bug: stdin input does not work, stdout does not work on windows
+* Fixed bug: minus not minus on a man page
+
+v0.7.2
+* Fixed bug: Unable to compile with CMake
+* Default to printing in screen media-type, switch added to restore old default paper (static binary only)
+* Added an experimental windows executable
+* Fixed bud: Logic invertion in --disable-javascript
+
+v0.7.1
+* Fixed bug: h1 and h6 not included in outline
+* Fixed bug: Page calculation not correct for none toplevel h1 tags
+* Fixed bug: Outline page coordinates are wrong (and inverted)
+* Fixed bug: Outline depth setting has no effect
+
+v0.7.0
+* Added support for pdf outlines (static version only)
+* Added support for cover pages (static version only)
+* Added support for Table of Contents (static version only)
+* Added support for putting multiple files into one pdf (static version only)
+* Extensive rewrite of the argument parsing code
+* Several arguments have been renamed
+* Added support for disabling javascript
+
+v0.6.4
+* Fix a bug regarding writing pages to stdout
+* Fixed spelling
+
+v0.6.2
+* Fixed bugs regarding header and footer line in static build
+* Made the qmake file generate and install manpage
+* The Source tarball now actually contains the source
+
+v0.6.1
+* Added a manpage
+* Fixed bug that disabled local page support
+* Update: The static binary has now been fixed.
+
+v0.6
+* Added support for headers and footers (static binary only)
+* Added support for js-redirects
+* More code documentation added
+
+v0.5
+* Added support for reading command line options from stdin, to do multiple conversions fast.
+* Added options to set page margins.
+* Now shipping a binary statically compiled against QT4.5rc1, that shuld run as is on just about any Linux System.
+
+v0.4
+* Added support for generation deb packages
+* Added option for dpi, low resolution and grayscale
+* Added (untested) support for removing background image when running under QT 4.5
+
+v0.3
+* Added support for printing sites with self signed certificates
+* Added options for pageSize and orientation
+
+v0.2
+* Added proxy support
+* Commandline parsing and quiet support
+
+v0.1.1
+* Initial release
