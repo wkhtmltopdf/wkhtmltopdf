@@ -260,11 +260,15 @@ QPrinter * PdfConverterPrivate::createPrinter(const QString & tempFile) {
     if (settings.dpi != -1) printer->setResolution(settings.dpi);
     //Tell the printer object to print the file <out>
 
+    printer->setOutputFileName(tempFile);
     printer->setOutputFormat(
         (settings.outputFormat == "ps" || (settings.outputFormat == "" && settings.out.endsWith(".ps", Qt::CaseInsensitive)))?
+#ifdef Q_WS_MACX
+        QPrinter::PostScriptFormat : QPrinter::NativeFormat
+#else
         QPrinter::PostScriptFormat : QPrinter::PdfFormat
+#endif
         );
-    printer->setOutputFileName(tempFile);
 
     if ((settings.size.height.first != -1) && (settings.size.width.first != -1)) {
         printer->setPaperSize(QSizeF(settings.size.width.first,settings.size.height.first + 100), settings.size.height.second);
@@ -341,11 +345,15 @@ void PdfConverterPrivate::pagesLoaded(bool ok) {
 	if (settings.dpi != -1) printer->setResolution(settings.dpi);
 	//Tell the printer object to print the file <out>
 
+	printer->setOutputFileName(lout);
 	printer->setOutputFormat(
 		(settings.outputFormat == "ps" || (settings.outputFormat == "" && settings.out.endsWith(".ps", Qt::CaseInsensitive)))?
-	    QPrinter::PostScriptFormat : QPrinter::PdfFormat
+#ifdef Q_WS_MACX
+		QPrinter::PostScriptFormat : QPrinter::NativeFormat
+#else
+		QPrinter::PostScriptFormat : QPrinter::PdfFormat
+#endif
 		);
-	printer->setOutputFileName(lout);
 
 	//We currently only support margins with the same unit
 	if (settings.margin.left.second != settings.margin.right.second ||
