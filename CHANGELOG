@@ -9,7 +9,7 @@ v0.12.0:
 * lots of fixes/enhancements for memory and error management
 * add --quiet option to wkhtmltoimage
 * add --cache-dir option for configuring web cache directory
-* add --load-media-error-handling to for media files
+* add --load-media-error-handling to handle errors for media files
 * add --viewport-size to specify viewport size
 * reserve heights when not using HTML header/footer
 * lots of improvements in the build system
@@ -18,7 +18,7 @@ v0.12.0:
 * [qt] fixes to get static builds working for MSVC 2010 (32/64 bit)
 * [qt] prevent page breaks in table rows
 * [qt] repeat THEAD/TFOOT when table contains page breaks
-* [qt] improve font kerning as per Webkit bug 92363
+* [qt] improve font kerning as per Webkit bug 93263
 * [qt] various table page-break improvements
 * [qt] fix rendering due to incorrect page height computation
 * [qt] implement "page-break-inside: avoid" for non-floating block elements
