@@ -59,8 +59,8 @@ function setup_chroot() {
 
 	sudo rm -fR linux-$1/source
 	sudo chown --reference=${BASE} linux-$1
-	git clone -s ${BASE} linux-$1/source
-	git clone -s ${BASE}/qt linux-$1/source/qt
+	git clone ${BASE} linux-$1/source
+	git clone ${BASE}/qt linux-$1/source/qt
 	cd ${BUILD}/linux-$1/source
 	git submodule init
 	git submodule update --no-fetch
