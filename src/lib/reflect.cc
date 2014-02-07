@@ -60,6 +60,7 @@ ReflectImpl<LoadGlobal>::ReflectImpl(LoadGlobal & c) {
 }
 
 ReflectImpl<LoadPage>::ReflectImpl(LoadPage & c) {
+	WKHTMLTOPDF_REFLECT(effectiveUrl);
 	WKHTMLTOPDF_REFLECT(username);
 	WKHTMLTOPDF_REFLECT(password);
 	WKHTMLTOPDF_REFLECT(jsdelay);

@@ -65,7 +65,7 @@ struct DLL_PUBLIC LoadPage {
 		skip,
 		ignore
 	};
-
+	
 	//! Username used for http auth login
 	QString username;
 
@@ -122,6 +122,9 @@ struct DLL_PUBLIC LoadPage {
 
 	QString cacheDir;
 	static QList<QString> mediaFilesExtensions;
+	
+	//! URL that this page should be considered to live at (only for pages specified by html)
+	QString effectiveUrl;
 };
 
 DLL_PUBLIC LoadPage::LoadErrorHandling strToLoadErrorHandling(const char * s, bool * ok=0);
