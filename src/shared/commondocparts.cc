@@ -30,7 +30,7 @@
 */
 void CommandLineParserBase::outputName(Outputter * o) const {
 	o->beginSection("Name");
-	o->paragraph(appName()+" "+QString::number(MAJOR_VERSION)+"."+QString::number(MINOR_VERSION)+"."+QString::number(PATCH_VERSION)+(QString(STRINGIZE(BUILD)).isEmpty()?"":" ")+STRINGIZE(BUILD));
+	o->paragraph(appName()+" " STRINGIZE(FULL_VERSION));
 	o->endSection();
 
 }

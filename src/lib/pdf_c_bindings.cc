@@ -270,16 +270,12 @@ CAPI(int) wkhtmltopdf_extended_qt() {
 
 /**
  * \brief Return the version of wkhtmltopdf
- * Example: 0.10.0_beta4. The string is utf8 encoded and is owned by wkhtmltopdf.
+ * Example: 0.12.1-development. The string is utf8 encoded and is owned by wkhtmltopdf.
  *
  * \return Qt version
  */
 CAPI(const char *) wkhtmltopdf_version() {
-	return STRINGIZE(MAJOR_VERSION)"."STRINGIZE(MINOR_VERSION)"."STRINGIZE(PATCH_VERSION)
-#ifdef BUILD
-		"_"STRINGIZE(BUILD)
-#endif
-		;
+	return STRINGIZE(FULL_VERSION);
 }
 
 /**

@@ -49,11 +49,15 @@ QT += webkit network svg
 
 # version related information
 VERSION_TEXT=$$cat($$PWD/VERSION)
-FULL_VERSION=$$split(VERSION_TEXT, ".")
-MAJOR_VERSION=$$member(FULL_VERSION, 0)
-MINOR_VERSION=$$member(FULL_VERSION, 1)
-PATCH_VERSION=$$member(FULL_VERSION, 2)
-BUILD=$$system(git rev-parse HEAD)
-system(git describe --tags --exact-match HEAD):BUILD="final"
+VERSION_LIST=$$split(VERSION_TEXT, "-")
+count(VERSION_LIST, 1) {
+    VERSION=$$VERSION_TEXT
+    FULL_VERSION=$$VERSION
+} else {
+    VERSION=$$member(VERSION_LIST, 0)
+    BUILD=$$member(VERSION_LIST, 1)
+    system(git rev-parse HEAD):BUILD=$$system(git rev-parse HEAD)
+    FULL_VERSION=$$VERSION-$$BUILD
+}
 
-DEFINES += MAJOR_VERSION=$$MAJOR_VERSION MINOR_VERSION=$$MINOR_VERSION PATCH_VERSION=$$PATCH_VERSION BUILD=$$BUILD
+DEFINES += VERSION=$$VERSION FULL_VERSION=$$FULL_VERSION

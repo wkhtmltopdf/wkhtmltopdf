@@ -18,7 +18,6 @@
 include(../../common.pri)
 
 TEMPLATE = app
-VERSION = $${MAJOR_VERSION}.$${MINOR_VERSION}.$${PATCH_VERSION}
 TARGET = wkhtmltopdf
 DESTDIR = ../../bin
 DEPENDPATH += . ../shared

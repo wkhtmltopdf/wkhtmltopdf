@@ -37,8 +37,6 @@ windows {
    TARGET_EXT=.dll
 }
 
-VERSION=$${MAJOR_VERSION}.$${MINOR_VERSION}.$${PATCH_VERSION}
-
 TARGET=wkhtmltox
 INSTALLS += target
 wkhtmltox.path=$$INSTALLBASE/lib

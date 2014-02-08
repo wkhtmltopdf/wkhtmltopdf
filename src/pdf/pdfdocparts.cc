@@ -301,7 +301,7 @@ void PdfCommandLineParser::outputContact(Outputter * o) const {
   \param o The outputter to output to
 */
 void PdfCommandLineParser::outputDocStart(Outputter * o) const {
-	o->beginSection(QString("wkhtmltopdf ")+QString::number(MAJOR_VERSION)+"."+QString::number(MINOR_VERSION)+"."+QString::number(PATCH_VERSION)+(QString(STRINGIZE(BUILD)).isEmpty()?"":" ")+STRINGIZE(BUILD) + " Manual");
+	o->beginSection("wkhtmltopdf " STRINGIZE(FULL_VERSION) " Manual");
 	o->paragraph("This file documents wkhtmltopdf, a program capable of converting html "
 				 "documents into PDF documents.");
 	o->endSection();

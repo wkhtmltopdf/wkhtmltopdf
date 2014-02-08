@@ -78,7 +78,7 @@ void ImageCommandLineParser::outputContact(Outputter * o) const {
   \param o The outputter to output to
 */
 void ImageCommandLineParser::outputDocStart(Outputter * o) const {
-	o->beginSection(QString("wkhtmltoimage ")+QString::number(MAJOR_VERSION)+"."+QString::number(MINOR_VERSION)+"."+QString::number(PATCH_VERSION)+(QString(STRINGIZE(BUILD)).isEmpty()?"":" ")+STRINGIZE(BUILD) + " Manual");
+	o->beginSection("wkhtmltoimage " STRINGIZE(FULL_VERSION) " Manual");
 	o->paragraph("This file documents wkhtmltoimage, a program capable of converting HTML "
 				 "documents into images.");
 	o->endSection();
