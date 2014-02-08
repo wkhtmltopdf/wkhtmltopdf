@@ -21,7 +21,7 @@
 # configurable options
 QT_DOWNLOAD_URL="https://api.github.com/repos/wkhtmltopdf/qt/tarball"
 BUILD_DIR_BASE="static-build"
-PLATFORM_NAME="macosx-`sw_vers -productVersion`"
+PLATFORM_NAME="macosx-$(sw_vers -productVersion)"
 
 function usage() {
     echo "Usage: $0 [OPTIONS]"
@@ -60,13 +60,13 @@ while getopts "hr:" opt; do
 done
 
 # store current dir for reference
-WKHTMLTOPDF_DIR=`pwd`
+WKHTMLTOPDF_DIR=$(pwd)
 
 # build processes is number of cores
-J=`sysctl -n hw.ncpu`
+J=$(sysctl -n hw.ncpu)
 
 # libc++ for mavericks and higher, otherwise clang
-MAVERICKS=`uname -r | awk -F. '$1 >= 13'`
+MAVERICKS=$(uname -r | awk -F. '$1 >= 13')
 if ! [ -z "$MAVERICKS" ]; then
     PLATFORM="unsupported/macx-clang-libc++"
 else
@@ -150,14 +150,18 @@ cd -
 
 # create release?
 if [ "$CREATE_RELEASE" -eq "1" ]; then
-    RELEASE_VERSION=`cat VERSION`
+    echo "Creating release"
+    RELEASE_VERSION=$(cat VERSION | tr -d '\n')
     if [ -d ".git" ]; then
-        RELEASE_VERSION="${RELEASE_VERSION}-`git rev-parse --short HEAD`"
+        RELEASE_VERSION="${RELEASE_VERSION}-$(git rev-parse --short HEAD)"
     fi
     INSTALL_ROOT=${WKHTMLTOPDF_DIR}/${BUILD_DIR_BASE}/install-${PLATFORM_NAME}-${ARCH}-${RELEASE_VERSION}
     mkdir -p ${INSTALL_ROOT}
     # install
     INSTALL_ROOT=${INSTALL_ROOT} make install
     # build tarball
-    cd "${INSTALL_ROOT}" && tar -czvf "${WKHTMLTOPDF_DIR}/${BUILD_DIR_BASE}/wkhtmltox-${PLATFORM_NAME}-${ARCH}-${RELEASE_VERSION}.tar.gz" * || exit 1
+    RELEASE_TARBALL="${BUILD_DIR_BASE}/wkhtmltox-${PLATFORM_NAME}-${ARCH}-${RELEASE_VERSION}.tar.xz"
+    cd "${INSTALL_ROOT}" && tar -cJvf "${WKHTMLTOPDF_DIR}/${RELEASE_TARBALL}" * || exit 1
+    echo "Release tarball created: ${RELEASE_TARBALL}"
 fi
+
