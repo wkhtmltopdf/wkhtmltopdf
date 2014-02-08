@@ -47,6 +47,9 @@
 using namespace wkhtmltopdf;
 using namespace wkhtmltopdf::settings;
 
+#define STRINGIZE_(x) #x
+#define STRINGIZE(x) STRINGIZE_(x)
+
 const qreal PdfConverter::millimeterToPointMultiplier = 2.83464567;
 
 DLL_LOCAL QMap<QWebPage *, PageObject *> PageObject::webPageToObject;
@@ -218,7 +221,7 @@ void PdfConverterPrivate::beginConvert() {
         if (settings.margin.bottom.first == -1) {
             settings.margin.bottom.first = 10;
         }
-        
+
         // set static header/footer reserve heights
         objects[0].headerReserveHeight = settings.margin.top.first;
         objects[0].footerReserveHeight = settings.margin.bottom.first;
@@ -271,6 +274,8 @@ QPrinter * PdfConverterPrivate::createPrinter(const QString & tempFile) {
 
     printer->setOrientation(settings.orientation);
     printer->setColorMode(settings.colorMode);
+    printer->setCreator("wkhtmltopdf " STRINGIZE(MAJOR_VERSION) "." STRINGIZE(MINOR_VERSION)
+                        "." STRINGIZE(PATCH_VERSION) " " STRINGIZE(BUILD));
 
     return printer;
 }
@@ -288,7 +293,7 @@ void PdfConverterPrivate::preprocessPage(PageObject & obj) {
 	int tot = objects.size();
 	progressString = QString("Object ")+QString::number(currentObject)+QString(" of ")+QString::number(tot);
 	emit out.progressChanged((currentObject)*100 / tot);
-	
+
 	painter->save();
 
 	if (viewportSize.isValid() && ! viewportSize.isEmpty()) {
@@ -301,7 +306,7 @@ void PdfConverterPrivate::preprocessPage(PageObject & obj) {
 	QWebPrinter wp(obj.page->mainFrame(), printer, *painter);
 	obj.pageCount = obj.settings.pagesCount? wp.pageCount(): 0;
 	pageCount += obj.pageCount;
-	
+
 	if (obj.settings.includeInOutline)
 		outline->addWebPage(obj.page->mainFrame()->title(), wp, obj.page->mainFrame(),
 							obj.settings, obj.localLinks, obj.anchors);
@@ -365,6 +370,8 @@ void PdfConverterPrivate::pagesLoaded(bool ok) {
 
 	printer->setOrientation(settings.orientation);
 	printer->setColorMode(settings.colorMode);
+	printer->setCreator("wkhtmltopdf " STRINGIZE(MAJOR_VERSION) "." STRINGIZE(MINOR_VERSION)
+						"." STRINGIZE(PATCH_VERSION) " " STRINGIZE(BUILD));
 
 	if (!printer->isValid()) {
 		emit out.error("Unable to write to destination");
@@ -815,7 +822,7 @@ void PdfConverterPrivate::spoolTo(int page) {
 			spoolPage(objectPage);
 		if (ps.pagesCount) ++pageNumber;
 		++objectPage;
-		
+
 		//TODO free header and footer
 		currentHeader=NULL;
 		currentFooter=NULL;
@@ -823,10 +830,10 @@ void PdfConverterPrivate::spoolTo(int page) {
 }
 
 void PdfConverterPrivate::beginPrintObject(PageObject & obj) {
-	if (obj.number != 0) 
+	if (obj.number != 0)
 		endPrintObject(objects[obj.number-1]);
 	currentObject = obj.number;
-	
+
 	if (!obj.loaderObject || obj.loaderObject->skip) return;
 	const settings::PdfObject & ps = obj.settings;
 	pageHasHeaderFooter = ps.header.line || ps.footer.line ||
@@ -841,27 +848,27 @@ void PdfConverterPrivate::beginPrintObject(PageObject & obj) {
 		foreach (QWebElement elm, obj.page->mainFrame()->findAllElements("textarea"))
 			elm.setStyleProperty("color","white");
 	}
-	
+
 	//output
 	webPrinter = new QWebPrinter(obj.page->mainFrame(), printer, *painter);
 	QString l1=obj.page->mainFrame()->url().path().split("/").back()+"#";
 	QString l2=obj.page->mainFrame()->url().toString() + "#";
-	
+
 	outline->fillAnchors(obj.number, obj.anchors);
 
 	//Sort anchors and links by page
 	for (QHash<QString, QWebElement>::iterator i=obj.anchors.begin();
 		 i != obj.anchors.end(); ++i)
 		pageAnchors[webPrinter->elementLocation(i.value()).first][i.key()] = i.value();
-	
+
 	for (QVector< QPair<QWebElement,QString> >::iterator i=obj.localLinks.begin();
 		 i != obj.localLinks.end(); ++i)
 		pageLocalLinks[webPrinter->elementLocation(i->first).first].push_back(*i);
-	
+
 	for (QVector< QPair<QWebElement,QString> >::iterator i=obj.externalLinks.begin();
 		 i != obj.externalLinks.end(); ++i)
 		pageExternalLinks[webPrinter->elementLocation(i->first).first].push_back(*i);
-	
+
 	if (ps.produceForms) {
 		foreach (const QWebElement & elm, obj.page->mainFrame()->findAllElements("input"))
 			pageFormElements[webPrinter->elementLocation(elm).first].push_back(elm);
@@ -897,14 +904,14 @@ void PdfConverterPrivate::endPrintObject(PageObject & obj) {
 
 	if (webPrinter != 0) {
 		QWebPrinter *tmp = webPrinter;
-		webPrinter = 0; 
+		webPrinter = 0;
 		delete tmp;
 
 		painter->restore();
 	}
 
 }
-			
+
 
 void PdfConverterPrivate::printDocument() {
 #ifndef __EXTENSIVE_WKHTMLTOPDF_QT_HACK__
@@ -924,7 +931,7 @@ void PdfConverterPrivate::printDocument() {
 
 	progressString = "Preparing";
 	emit out.progressChanged(0);
-	
+
 	for (int cc_=0; cc_ < cc; ++cc_) {
 		pageNumber=1;
 		for (int d=0; d < objects.size(); ++d) {
