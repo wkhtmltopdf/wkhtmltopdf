@@ -335,7 +335,7 @@ void ResourceObject::error(const QString & str) {
 void ResourceObject::amfinished(QNetworkReply * reply) {
 	int networkStatus = reply->error();
 	int httpStatus = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
-	if (networkStatus > 0 || (httpStatus > 399 && httpErrorCode == 0))
+	if ((networkStatus != 0 && networkStatus != 5) || (httpStatus > 399 && httpErrorCode == 0))
 	{
 		QFileInfo fi(reply->url().toString());
 		bool mediaFile = settings::LoadPage::mediaFilesExtensions.contains(fi.completeSuffix().toLower());
