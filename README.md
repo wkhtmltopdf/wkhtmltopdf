@@ -63,9 +63,9 @@ You can also convert to PS files if you like:
 
     wkhtmltopdf my.html my.ps
 
-Printing a book with a table of content:
+Printing a book with a cover page and table of content:
 
-    wkhtmltopdf -H cover cover.html toc chapter1.html chapter2.html chapter3.html book.pdf
+    wkhtmltopdf cover cover.html toc chapter1.html chapter2.html chapter3.html book.pdf
 
 To convert a remote webpage to PNG:
 
