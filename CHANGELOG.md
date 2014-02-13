@@ -1,10 +1,13 @@
 v0.12.1 (unreleased)
 --------------------
 * **#1502**: fix spurious "exit with code 1 due to http error: 1xxx" errors
+* **#1504**: **[qt]** fix rendering issues for JPEG with XMP metadata
 * **#1507**: **[qt]** fix crash when CSS widows are specified
+* **#1509**: fix TOC support which was broken after upgrade to latest QT
+* produce selectable text when printing to PDF on Mac OSX
 * generate API documentation for libwkhtmltox (on the website)
 * display version in compiled binary properly under various scenarios
-* minor improvements in the OS X build scripts
+* minor improvements in the Windows/OS X build scripts
 
 v0.12.0 (2014-02-06)
 --------------------
