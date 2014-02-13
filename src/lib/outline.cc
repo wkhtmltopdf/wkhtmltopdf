@@ -154,13 +154,10 @@ void OutlinePrivate::buildPrefixSum() {
 		prefixSum.push_back( prefixSum.back() + x);
 }
 
-void Outline::dump(QTextStream & stream, const QString & xsl) const {
+void Outline::dump(QTextStream & stream) const {
 	d->buildPrefixSum();
 	stream << "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" << endl;
-	QString x = xsl;
-	if (!x.isEmpty())
-		stream << "<?xml-stylesheet type=\"text/xsl\" href=\"" << escape(x) << "\"?>" << endl;
-	stream << "<outline xmlns=\"http://code.google.com/p/wkhtmltopdf/outline\">" << endl;
+	stream << "<outline xmlns=\"http://wkhtmltopdf.org/outline\">" << endl;
 	d->dumpChildren(stream, d->documentOutlines, 1);
 	stream << "</outline>" << endl;
 }

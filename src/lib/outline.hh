@@ -49,7 +49,7 @@ public:
 	int pageCount();
 	void printOutline(QPrinter * printer);
 
-	void dump(QTextStream & stream, const QString & xsl) const;
+	void dump(QTextStream & stream) const;
 private:
 	OutlinePrivate * d;
 	friend class TocPrinter;

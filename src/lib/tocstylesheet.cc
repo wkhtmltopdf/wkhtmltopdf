@@ -32,9 +32,9 @@ namespace wkhtmltopdf {
 
 void dumpDefaultTOCStyleSheet(QTextStream & stream, settings::TableOfContent & s) {
     stream << "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" << endl
-		   << "<xsl:stylesheet version=\"1.0\"" << endl
+		   << "<xsl:stylesheet version=\"2.0\"" << endl
 		   << "                xmlns:xsl=\"http://www.w3.org/1999/XSL/Transform\"" << endl
-		   << "                xmlns:outline=\"http://code.google.com/p/wkhtmltopdf/outline\"" << endl
+		   << "                xmlns:outline=\"http://wkhtmltopdf.org/outline\"" << endl
 		   << "                xmlns=\"http://www.w3.org/1999/xhtml\">" << endl
 		   << "  <xsl:output doctype-public=\"-//W3C//DTD XHTML 1.0 Strict//EN\"" << endl
 	       << "              doctype-system=\"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd\"" << endl
@@ -87,6 +87,7 @@ void dumpDefaultTOCStyleSheet(QTextStream & stream, settings::TableOfContent & s
 		   << "        </div>" << endl
 		   << "      </xsl:if>" << endl
 		   << "      <ul>" << endl
+		   << "        <xsl:comment>added to prevent self-closing tags in QtXmlPatterns</xsl:comment>" << endl
 		   << "        <xsl:apply-templates select=\"outline:item\"/>" << endl
 		   << "      </ul>" << endl
 		   << "    </li>" << endl

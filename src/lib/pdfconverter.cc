@@ -35,6 +35,7 @@
 #include <QWebFrame>
 #include <QWebPage>
 #include <QWebSettings>
+#include <QXmlQuery>
 #include <algorithm>
 #include <qapplication.h>
 #include <qfileinfo.h>
@@ -482,14 +483,37 @@ void PdfConverterPrivate::loadTocs() {
 			style = obj.tocStyleFile.create(".xsl");
 			StreamDumper styleDump(style);
 			dumpDefaultTOCStyleSheet(styleDump.stream, ps.toc);
-		} else
-			style = MultiPageLoader::guessUrlFromString(style).toString();
+		}
 
 		QString path = obj.tocFile.create(".xml");
 		StreamDumper sd(path);
-		outline->dump(sd.stream, style);
+		outline->dump(sd.stream);
 
-		obj.loaderObject = tocLoader->addResource(path, ps.load);
+		QFile styleFile(style);
+		if (!styleFile.open(QIODevice::ReadOnly)) {
+			emit out.error("Could not read the TOC XSL");
+			fail();
+		}
+
+		QFile xmlFile(path);
+		if (!xmlFile.open(QIODevice::ReadOnly)) {
+			emit out.error("Could not read the TOC XML");
+			fail();
+		}
+
+		QString htmlPath = obj.tocFile.create(".html");
+		QFile htmlFile(htmlPath);
+		if (!htmlFile.open(QIODevice::WriteOnly)) {
+			emit out.error("Could not open the TOC for writing");
+			fail();
+		}
+
+		QXmlQuery query(QXmlQuery::XSLT20);
+		query.setFocus(&xmlFile);
+		query.setQuery(&styleFile);
+		query.evaluateTo(&htmlFile);
+
+		obj.loaderObject = tocLoader->addResource(htmlPath, ps.load);
 		obj.page = &obj.loaderObject->page;
 		PageObject::webPageToObject[obj.page] = &obj;
 		updateWebSettings(obj.page->settings(), ps.web);
@@ -517,9 +541,11 @@ void PdfConverterPrivate::findLinks(QWebFrame * frame, QVector<QPair<QWebElement
 	if (!ulocal && !uexternal) return;
 	foreach (const QWebElement & elm, frame->findAllElements("a")) {
 		QString n=elm.attribute("name");
+		if (n.isEmpty()) n=elm.attribute("ns0:name");
 		if (n.startsWith("__WKANCHOR_")) anchors[n] = elm;
 
 		QString h=elm.attribute("href");
+		if (h.isEmpty()) h=elm.attribute("ns0:href");
 		if (h.startsWith("__WKANCHOR_")) {
 			local.push_back( qMakePair(elm, h) );
 		} else {
@@ -961,7 +987,7 @@ void PdfConverterPrivate::printDocument() {
 
 	if (!settings.dumpOutline.isEmpty()) {
 		StreamDumper sd(settings.dumpOutline);
-		outline->dump(sd.stream, "");
+		outline->dump(sd.stream);
 	}
 
  	painter->end();
