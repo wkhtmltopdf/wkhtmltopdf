@@ -82,7 +82,7 @@ if [ ! -f \$DST/qt/bin/qmake ]; then
 	cd \$BLD/qt
 	\$SRC/qt/configure -opensource -confirm-license -fast -release -static -graphicssystem raster -exceptions \\
 		-no-accessibility -no-stl -no-sql-ibase -no-sql-mysql -no-sql-odbc -no-sql-psql -no-sql-sqlite -no-sql-sqlite2 \\
-		-no-qt3support -no-xmlpatterns -no-phonon -no-phonon-backend -no-opengl -no-declarative -no-script -no-scripttools \\
+		-no-qt3support -xmlpatterns -no-phonon -no-phonon-backend -no-opengl -no-declarative -no-script -no-scripttools \\
 		-no-mmx -no-3dnow -no-sse -no-sse2 -no-multimedia -no-dbus -qt-zlib -qt-libpng -qt-libjpeg -no-libmng -no-libtiff \\
 		-openssl -xrender -webkit -largefile -rpath --prefix=\$DST/qt \\
 		-nomake demos -nomake docs -nomake examples -nomake tools -nomake tests -nomake translations \\

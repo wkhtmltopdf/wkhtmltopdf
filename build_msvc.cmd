@@ -81,7 +81,7 @@ set QT_CFG=%QT_CFG% -release
 set QT_CFG=%QT_CFG% -static
 set QT_CFG=%QT_CFG% -graphicssystem raster
 set QT_CFG=%QT_CFG% -mp
-set QT_CFG=%QT_CFG% -no-exceptions
+set QT_CFG=%QT_CFG% -exceptions
 set QT_CFG=%QT_CFG% -no-accessibility
 set QT_CFG=%QT_CFG% -no-stl
 set QT_CFG=%QT_CFG% -no-sql-ibase
@@ -91,7 +91,7 @@ set QT_CFG=%QT_CFG% -no-sql-psql
 set QT_CFG=%QT_CFG% -no-sql-sqlite
 set QT_CFG=%QT_CFG% -no-sql-sqlite2
 set QT_CFG=%QT_CFG% -no-qt3support
-set QT_CFG=%QT_CFG% -no-xmlpatterns
+set QT_CFG=%QT_CFG% -xmlpatterns
 set QT_CFG=%QT_CFG% -no-phonon
 set QT_CFG=%QT_CFG% -no-phonon-backend
 set QT_CFG=%QT_CFG% -no-qt3support
@@ -129,7 +129,7 @@ set QT_CFG=%QT_CFG% -I %BUILD_DIR%\openssl_dist\include
 set QT_CFG=%QT_CFG% -L %BUILD_DIR%\openssl_dist\lib
 set QT_CFG=%QT_CFG% -l libeay32
 set QT_CFG=%QT_CFG% -l ssleay32
-set QT_CFG=%QT_CFG% OPENSSL_LIBS="-L%BUILD_DIR%\openssl_dist\lib -lssleay32 -llibeay32 -lUser32 -lAdvapi32 -lGdi32 -lCrypt32"
+set QT_CFG=%QT_CFG% OPENSSL_LIBS="-L%BUILD_DIR:\=\\%\\openssl_dist\\lib -lssleay32 -llibeay32 -lUser32 -lAdvapi32 -lGdi32 -lCrypt32"
 
 %BUILD_DIR%\..\qt\configure %QT_CFG%
 nmake

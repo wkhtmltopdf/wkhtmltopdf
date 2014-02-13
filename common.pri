@@ -45,7 +45,7 @@ win32 {
     CONFIG += console
 }
 
-QT += webkit network svg
+QT += webkit network xmlpatterns svg
 
 # version related information
 VERSION_TEXT=$$cat($$PWD/VERSION)
