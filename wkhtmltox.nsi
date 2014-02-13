@@ -9,11 +9,11 @@ InstallDir       "$PROGRAMFILES64\wkhtmltopdf"
 InstallDir       "$PROGRAMFILES\wkhtmltopdf"
 !endif
 InstallDirRegKey HKLM "Software\wkhtmltopdf" "InstallPath"
-VIProductVersion "${VERSION}.0"
+VIProductVersion "${SIMPLE_VERSION}.0"
 VIAddVersionKey  "ProductName"     "wkhtmltox"
 VIAddVersionKey  "FileDescription" "wkhtmltox ${VERSION} (${WK_HASH})"
 VIAddVersionKey  "LegalCopyright"  "wkhtmltopdf authors"
-VIAddVersionKey  "FileVersion"     "${VERSION}.0"
+VIAddVersionKey  "FileVersion"     "${VERSION}"
 
 CRCCheck             force
 SetCompressor /SOLID lzma
@@ -32,18 +32,18 @@ Section "Install"
   RMDir /r "$INSTDIR"
 
   SetOutPath "$INSTDIR\bin"
-  File static-build\dist\bin\wkhtmltoimage.exe
-  File static-build\dist\bin\wkhtmltopdf.exe
-  File static-build\dist\bin\wkhtmltox.dll
+  File static-build\dist_${ARCH}\bin\wkhtmltoimage.exe
+  File static-build\dist_${ARCH}\bin\wkhtmltopdf.exe
+  File static-build\dist_${ARCH}\bin\wkhtmltox.dll
 
   SetOutPath "$INSTDIR\lib"
-  File static-build\dist\lib\wkhtmltox.lib
+  File static-build\dist_${ARCH}\lib\wkhtmltox.lib
 
   SetOutPath "$INSTDIR\include\wkhtmltox"
-  File static-build\dist\include\wkhtmltox\dllbegin.inc
-  File static-build\dist\include\wkhtmltox\dllend.inc
-  File static-build\dist\include\wkhtmltox\pdf.h
-  File static-build\dist\include\wkhtmltox\image.h
+  File static-build\dist_${ARCH}\include\wkhtmltox\dllbegin.inc
+  File static-build\dist_${ARCH}\include\wkhtmltox\dllend.inc
+  File static-build\dist_${ARCH}\include\wkhtmltox\pdf.h
+  File static-build\dist_${ARCH}\include\wkhtmltox\image.h
 
   WriteRegStr HKLM "Software\wkhtmltopdf" "InstallPath" "$INSTDIR"
   WriteRegStr HKLM "Software\wkhtmltopdf" "PdfPath"     "$INSTDIR\bin\wkhtmltopdf.exe"

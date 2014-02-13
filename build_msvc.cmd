@@ -31,8 +31,8 @@ set BUILD_DIR=%~dp0static-build
 mkdir %BUILD_DIR% 2> nul
 cd /d %BUILD_DIR%
 
-if exist %BUILD_DIR%\openssl_dist goto ssl_check
-if exist %BUILD_DIR%\openssl      goto ssl_build
+if exist %BUILD_DIR%\openssl_%ARCH% goto ssl_check
+if exist %BUILD_DIR%\openssl        goto ssl_build
 
 echo ================ downloading OpenSSL
 git clone --branch %OPENSSL_BRANCH% --single-branch %OPENSSL_REPO% openssl
@@ -43,13 +43,13 @@ git checkout %OPENSSL_TAG%
 echo ================ building OpenSSL
 cd /d %BUILD_DIR%\openssl
 
-perl Configure %SSL_CFG% --prefix=%BUILD_DIR%\openssl_dist
+perl Configure %SSL_CFG% --prefix=%BUILD_DIR%\openssl_%ARCH%
 call ms\%SSL_CMD%.bat
 nmake /f ms\nt.mak install
 git clean -fdx
 
 :ssl_check
-cd /d %BUILD_DIR%\openssl_dist
+cd /d %BUILD_DIR%\openssl_%ARCH%
 if not exist include\openssl\ssl.h goto ssl_error
 if not exist lib\libeay32.lib      goto ssl_error
 if not exist lib\ssleay32.lib      goto ssl_error
@@ -57,7 +57,7 @@ goto ssl_done
 
 :ssl_error
 echo OpenSSL was not compiled properly; please remove the directory
-echo   %BUILD_DIR%\openssl_dist
+echo   %BUILD_DIR%\openssl_%ARCH%
 echo and try to compile again.
 cd /d %~dp0
 exit /b 1
@@ -66,8 +66,8 @@ exit /b 1
 
 echo ================ building patched QT
 cd /d %BUILD_DIR%
-mkdir qt 2> nul
-cd /d %BUILD_DIR%\qt
+mkdir qt_%ARCH% 2> nul
+cd /d %BUILD_DIR%\qt_%ARCH%
 
 IF NOT EXIST bin\qmake.exe goto build_qt
 IF NOT EXIST Makefile      goto build_qt
@@ -125,38 +125,38 @@ set QT_CFG=%QT_CFG% -nomake tests
 set QT_CFG=%QT_CFG% -nomake translations
 
 set QT_CFG=%QT_CFG% -openssl-linked
-set QT_CFG=%QT_CFG% -I %BUILD_DIR%\openssl_dist\include
-set QT_CFG=%QT_CFG% -L %BUILD_DIR%\openssl_dist\lib
+set QT_CFG=%QT_CFG% -I %BUILD_DIR%\openssl_%ARCH%\include
+set QT_CFG=%QT_CFG% -L %BUILD_DIR%\openssl_%ARCH%\lib
 set QT_CFG=%QT_CFG% -l libeay32
 set QT_CFG=%QT_CFG% -l ssleay32
-set QT_CFG=%QT_CFG% OPENSSL_LIBS="-L%BUILD_DIR:\=\\%\\openssl_dist\\lib -lssleay32 -llibeay32 -lUser32 -lAdvapi32 -lGdi32 -lCrypt32"
+set QT_CFG=%QT_CFG% OPENSSL_LIBS="-L%BUILD_DIR:\=\\%\\openssl_%ARCH%\\lib -lssleay32 -llibeay32 -lUser32 -lAdvapi32 -lGdi32 -lCrypt32"
 
 %BUILD_DIR%\..\qt\configure %QT_CFG%
+if not %ERRORLEVEL% == 0 exit /b 1
 nmake
+if not %ERRORLEVEL% == 0 exit /b 1
 
 :build_app
 echo ================ building wkhtmltopdf
 cd /d %BUILD_DIR%
-mkdir app 2> nul
-cd app
-%BUILD_DIR%\qt\bin\qmake %BUILD_DIR%\..\wkhtmltopdf.pro
+mkdir app_%ARCH% 2> nul
+cd app_%ARCH%
+%BUILD_DIR%\qt_%ARCH%\bin\qmake %BUILD_DIR%\..\wkhtmltopdf.pro
+if not %ERRORLEVEL% == 0 exit /b 1
 nmake
+if not %ERRORLEVEL% == 0 exit /b 1
 
 cd /d %BUILD_DIR%
-rd /s /q dist 2>nul
-mkdir dist
-mkdir dist\bin
-mkdir dist\lib
-mkdir dist\include
-mkdir dist\include\wkhtmltox
-copy  app\bin\wkhtmltopdf.exe   dist\bin
-copy  app\bin\wkhtmltoimage.exe dist\bin
-copy  app\bin\wkhtmltox.dll     dist\bin
-copy  app\bin\wkhtmltox.lib     dist\lib
-copy  %~dp0include\wkhtmltox\dllbegin.inc dist\include\wkhtmltox
-copy  %~dp0include\wkhtmltox\dllend.inc   dist\include\wkhtmltox
-copy  %~dp0include\wkhtmltox\pdf.h        dist\include\wkhtmltox
-copy  %~dp0include\wkhtmltox\image.h      dist\include\wkhtmltox
+rd /s /q dist_%ARCH% 2>nul
+mkdir dist_%ARCH% dist_%ARCH%\bin dist_%ARCH%\lib dist_%ARCH%\include dist_%ARCH%\include\wkhtmltox
+copy  app_%ARCH%\bin\wkhtmltopdf.exe   dist_%ARCH%\bin
+copy  app_%ARCH%\bin\wkhtmltoimage.exe dist_%ARCH%\bin
+copy  app_%ARCH%\bin\wkhtmltox.dll     dist_%ARCH%\bin
+copy  app_%ARCH%\bin\wkhtmltox.lib     dist_%ARCH%\lib
+copy  %~dp0include\wkhtmltox\dllbegin.inc dist_%ARCH%\include\wkhtmltox
+copy  %~dp0include\wkhtmltox\dllend.inc   dist_%ARCH%\include\wkhtmltox
+copy  %~dp0include\wkhtmltox\pdf.h        dist_%ARCH%\include\wkhtmltox
+copy  %~dp0include\wkhtmltox\image.h      dist_%ARCH%\include\wkhtmltox
 
 set WK_VERSION=
 set WK_HASH=
@@ -164,6 +164,7 @@ set WK_HASH=
 cd /d %~dp0
 FOR /F "delims=" %%v IN ('type VERSION')               DO set WK_VERSION=%%v
 FOR /F "delims=" %%h IN ('git rev-parse --short HEAD') DO set WK_HASH=%%h
+FOR /F "tokens=1 delims=-" %%v IN ('type VERSION')     DO set WK_SVERSION=%%v
 
 if exist "%ProgramFiles%\NSIS\makensis.exe"      goto inst_32bit
 if exist "%ProgramFiles(x86)%\NSIS\makensis.exe" goto inst_64bit
@@ -178,20 +179,20 @@ exit /b 0
 :inst_64bit
 echo ================ building installer
 cd /d %BUILD_DIR%
-"%ProgramFiles(x86)%\NSIS\makensis.exe" /DVERSION=%WK_VERSION% /DWK_HASH=%WK_HASH% /DARCH=%ARCH% ..\wkhtmltox.nsi
+"%ProgramFiles(x86)%\NSIS\makensis.exe" /DVERSION=%WK_VERSION% /DSIMPLE_VERSION=%WK_SVERSION% /DWK_HASH=%WK_HASH% /DARCH=%ARCH% ..\wkhtmltox.nsi
 cd /d %~dp0
 exit /b 0
 
 :inst_32bit
 echo ================ building installer
 cd /d %BUILD_DIR%
-"%ProgramFiles%\NSIS\makensis.exe" /DVERSION=%WK_VERSION% /DWK_HASH=%WK_HASH% /DARCH=%ARCH% ..\wkhtmltox.nsi
+"%ProgramFiles%\NSIS\makensis.exe" /DVERSION=%WK_VERSION% /DSIMPLE_VERSION=%WK_SVERSION% /DWK_HASH=%WK_HASH% /DARCH=%ARCH% ..\wkhtmltox.nsi
 cd /d %~dp0
 exit /b 0
 
 :make_archive
 echo ================ building archive
-cd /d %BUILD_DIR%\dist
+cd /d %BUILD_DIR%\dist_%ARCH%
 "%ProgramFiles%\7-zip\7z.exe" a ..\wkhtmltox-%WK_VERSION%_%WK_HASH%.7z -mx9 -r *
 cd /d %~dp0
 exit /b 0
