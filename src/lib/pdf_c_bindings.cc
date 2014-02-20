@@ -342,6 +342,16 @@ CAPI(wkhtmltopdf_global_settings *) wkhtmltopdf_create_global_settings() {
 }
 
 /**
+ * \brief Destroy a global settings  object
+ *
+ * Normally one would not need to call this since ownership of the
+ * settings object is transfarred to the converter.
+ */
+CAPI(void) wkhtmltopdf_destroy_global_settings(wkhtmltopdf_global_settings * obj) {
+	delete reinterpret_cast<settings::PdfGlobal *>(obj);
+}
+
+/**
  * \brief Alter a setting in a global settings object
  *
  * \sa \ref pagePdfGlobal, wkhtmltopdf_create_global_settings, wkhtmltopdf_get_global_setting
@@ -386,6 +396,17 @@ CAPI(int) wkhtmltopdf_get_global_setting(wkhtmltopdf_global_settings * settings,
 CAPI(wkhtmltopdf_object_settings *) wkhtmltopdf_create_object_settings() {
 	return reinterpret_cast<wkhtmltopdf_object_settings *>(new settings::PdfObject());
 }
+
+/**
+ * \brief Destroy a global settings  object
+ *
+ * Normally one would not need to call this since ownership of the
+ * settings object is transfarred to the converter.
+ */
+CAPI(void) wkhtmltopdf_destroy_object_settings(wkhtmltopdf_object_settings * obj) {
+	delete reinterpret_cast<settings::PdfObject *>(obj);
+}
+
 
 /**
  * \brief Alter a setting in a object settings object
