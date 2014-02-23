@@ -639,6 +639,7 @@ void PdfConverterPrivate::endPage(PageObject & object, bool hasHeaderFooter, int
 	//object.headers[objectPage];
 	if (currentHeader) {
 		QWebPage * header = currentHeader;
+		updateWebSettings(header->settings(), object.settings.web);
 		painter->save();
 		painter->resetTransform();
 		double spacing = s.header.spacing * printer->height() / printer->heightMM();
@@ -667,6 +668,7 @@ void PdfConverterPrivate::endPage(PageObject & object, bool hasHeaderFooter, int
 
 	if (currentFooter) {
 		QWebPage * footer=currentFooter;
+		updateWebSettings(footer->settings(), object.settings.web);
 		painter->save();
 		painter->resetTransform();
 		double spacing = s.footer.spacing * printer->height() / printer->heightMM();
