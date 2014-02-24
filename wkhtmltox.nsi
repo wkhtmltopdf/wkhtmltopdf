@@ -1,8 +1,8 @@
 !include "MUI2.nsh"
 !include "x64.nsh"
 
-Name             "wkhtmltox ${VERSION} (${WK_HASH})"
-OutFile          "static-build\wkhtmltox-${ARCH}_${VERSION}-${WK_HASH}.exe"
+Name             "wkhtmltox ${VERSION}"
+OutFile          "static-build\wkhtmltox-${VERSION}_${TARGET}.exe"
 !if ${ARCH} == "win64"
 InstallDir       "$PROGRAMFILES64\wkhtmltopdf"
 !else
@@ -11,7 +11,7 @@ InstallDir       "$PROGRAMFILES\wkhtmltopdf"
 InstallDirRegKey HKLM "Software\wkhtmltopdf" "InstallPath"
 VIProductVersion "${SIMPLE_VERSION}.0"
 VIAddVersionKey  "ProductName"     "wkhtmltox"
-VIAddVersionKey  "FileDescription" "wkhtmltox ${VERSION} (${WK_HASH})"
+VIAddVersionKey  "FileDescription" "wkhtmltox ${VERSION}"
 VIAddVersionKey  "LegalCopyright"  "wkhtmltopdf authors"
 VIAddVersionKey  "FileVersion"     "${VERSION}"
 
@@ -32,24 +32,24 @@ Section "Install"
   RMDir /r "$INSTDIR"
 
   SetOutPath "$INSTDIR\bin"
-  File static-build\dist_${ARCH}\bin\wkhtmltoimage.exe
-  File static-build\dist_${ARCH}\bin\wkhtmltopdf.exe
-  File static-build\dist_${ARCH}\bin\wkhtmltox.dll
+  File static-build\${TARGET}\app\bin\wkhtmltoimage.exe
+  File static-build\${TARGET}\app\bin\wkhtmltopdf.exe
+  File static-build\${TARGET}\app\bin\wkhtmltox.dll
 
   SetOutPath "$INSTDIR\lib"
-  File static-build\dist_${ARCH}\lib\wkhtmltox.lib
+  File static-build\${TARGET}\app\bin\wkhtmltox.lib
 
   SetOutPath "$INSTDIR\include\wkhtmltox"
-  File static-build\dist_${ARCH}\include\wkhtmltox\dllbegin.inc
-  File static-build\dist_${ARCH}\include\wkhtmltox\dllend.inc
-  File static-build\dist_${ARCH}\include\wkhtmltox\pdf.h
-  File static-build\dist_${ARCH}\include\wkhtmltox\image.h
+  File include\wkhtmltox\dllbegin.inc
+  File include\wkhtmltox\dllend.inc
+  File include\wkhtmltox\pdf.h
+  File include\wkhtmltox\image.h
 
   WriteRegStr HKLM "Software\wkhtmltopdf" "InstallPath" "$INSTDIR"
   WriteRegStr HKLM "Software\wkhtmltopdf" "PdfPath"     "$INSTDIR\bin\wkhtmltopdf.exe"
   WriteRegStr HKLM "Software\wkhtmltopdf" "ImagePath"   "$INSTDIR\bin\wkhtmltoimage.exe"
   WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\wkhtmltopdf" \
-                   "DisplayName" "wkhtmltox ${VERSION} (${WK_HASH})"
+                   "DisplayName" "wkhtmltox ${VERSION}"
   WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\wkhtmltopdf" \
                    "UninstallString" "$\"$INSTDIR\uninstall.exe$\""
 
