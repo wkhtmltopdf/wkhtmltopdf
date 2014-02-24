@@ -45,6 +45,11 @@ win32 {
     CONFIG += console
 }
 
+win32-g++* {
+    QMAKE_LFLAGS += -static-libgcc
+    QMAKE_LFLAGS += -static-libstdc++
+}
+
 QT += webkit network xmlpatterns svg
 
 # version related information
