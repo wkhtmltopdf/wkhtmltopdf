@@ -4,12 +4,14 @@ Clone this repository by running the following command:
 
 If you are on Windows, make sure that you are cloning in a location without spaces/special characters in the name.
 
-Prerequisites: Debian/Ubuntu
-----------------------------
+Prerequisites: Linux
+--------------------
 
-All linux binaries are built in a chroot environment (Debian 6 "Squeeze"), while the windows binaries can be cross-compiled. The only packages required in the host OS are:
-
-    debootstrap git-core xz-utils build-essential mingw-w64 nsis
+Building is currently supported only on the current 64-bit Debian stable release (```wheezy```), but it should work on other Debian/Ubuntu releases as well. Please run ```scripts/setup-linux.sh``` as root, which will create all the chroot environments and configure them for building properly. A total of 4 chroot environments is created (approx 1GB will need to be downloaded):
+ * Debian-wheezy i386  (should work on Ubuntu 12.04 LTS and later)
+ * Debian-wheezy amd64 (should work on Ubuntu 12.04 LTS and later)
+ * CentOS-5 i386  (should work on systems where older GLIBC is installed)
+ * CentOS-5 amd64 (should work on systems where older GLIBC is installed)
 
 Prerequisites: Windows
 ----------------------
@@ -33,4 +35,4 @@ Prerequisites: Windows
 Building
 --------
 
-Switch to the checked-out folder and run the command ```python scripts/build```. This will present all the options which you can build. Select the appropriate target and all the requisite output will be generated in the ```static-build``` folder. For the linux static builds, it will download download and create a chroot environment for Debian 6 ```squeeze``` (approx 250MB downloaded per architecture)
+Switch to the checked-out folder and run the command ```scripts/build.py``` (or ```scripts\build.py``` if you are on Windows). This will present all the options which you can build. Select the appropriate target and all the requisite output will be generated in the ```static-build``` folder.

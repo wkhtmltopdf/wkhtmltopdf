@@ -107,7 +107,7 @@ QT_CONFIG = {
         '-openssl-linked'           # static linkage for OpenSSL
     ],
 
-    'linux': [
+    'posix': [
         '-silent',                  # perform a silent build
         '-script',                  # "make install" does not copy QtScript/qscriptengine.h
         '-xrender',                 # xrender support is required
@@ -155,9 +155,6 @@ QT_CONFIG = {
 BUILDERS = {
     'msvc2010-win32':    'msvc2010',
     'msvc2010-win64':    'msvc2010',
-    'linux':             'linux',
-    'debian6-chroot32':  'linux_chroot',
-    'debian6-chroot64':  'linux_chroot',
     'mingw-w64-cross32': 'mingw64_cross',
     'mingw-w64-cross64': 'mingw64_cross'
 }
