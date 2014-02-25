@@ -7,11 +7,11 @@ If you are on Windows, make sure that you are cloning in a location without spac
 Prerequisites: Linux
 --------------------
 
-Building is currently supported only on the current 64-bit Debian stable release (```wheezy```), but it should work on other Debian/Ubuntu releases as well. Please run ```scripts/setup-linux.sh``` as root, which will create all the chroot environments and configure them for building properly. A total of 4 chroot environments is created (approx 1GB will need to be downloaded):
+Building is currently supported only on the current 64-bit Debian stable release (**wheezy**), but it could work on other Debian/Ubuntu releases as well. Please run ```scripts/setup-linux.sh``` as root, which will create all the chroot environments and configure them for building properly. A total of 4 chroot environments is created (approx 2GB will need to be downloaded):
  * Debian-wheezy i386  (should work on Ubuntu 12.04 LTS and later)
  * Debian-wheezy amd64 (should work on Ubuntu 12.04 LTS and later)
- * CentOS-5 i386  (should work on systems where older GLIBC is installed)
- * CentOS-5 amd64 (should work on systems where older GLIBC is installed)
+ * CentOS-5 i386  (should work on systems where older GLIBC is present)
+ * CentOS-5 amd64 (should work on systems where older GLIBC is present)
 
 Prerequisites: Windows
 ----------------------
