@@ -40,37 +40,9 @@
 
         <h3><a name="current-release" class="anchor" href="#current-release"><span class="octicon octicon-link"></span></a>Current Release</h3>
 
-        <p>The current release is <a class="version" href="https://github.com/wkhtmltopdf/wkhtmltopdf/releases/tag/0.12.0">0.12.0</a>, which was released on 6-Feb-2014. A development snapshot <a class="version" href="http://sourceforge.net/projects/wkhtmltopdf/files/0.12.1-773cad3/">0.12.1-773cad3</a> is also available. The changes in the 0.12.0 release are:</p>
-        <ul>
-            <li><strong>#443</strong>: add "sitepage" and "sitepages" support for headers</li>
-            <li><strong>#175</strong>: add ability to auto calculate header/footer heights</li>
-            <li><strong>#1086</strong>: don't return freed memory; instead use a string cache</li>
-            <li><strong>#648</strong>: delete infinite warnings into console about window status</li>
-            <li><strong>#550</strong>: enable tunneling to use a HTTP proxy for HTTPS</li>
-            <li><strong>#1277</strong>: avoid crash due to premature deletion of ResourceObject</li>
-            <li>lots of fixes/enhancements for memory and error management</li>
-            <li>add <em>--quiet</em> option to wkhtmltoimage</li>
-            <li>add <em>--cache-dir</em> option for configuring web cache directory</li>
-            <li>add <em>--load-media-error-handling</em> to handle errors for media files</li>
-            <li>add <em>--viewport-size</em> to specify viewport size</li>
-            <li>reserve heights when not using HTML header/footer</li>
-            <li>lots of improvements in the build system</li>
-            <li>lots of typos were fixed in various places</li>
-            <li><strong>[qt]</strong> rebase patch series on QT 4.8.5 (now hosted on github)</li>
-            <li><strong>[qt]</strong> fixes to get static builds working for MSVC 2010 (32/64 bit)</li>
-            <li><strong>[qt]</strong> prevent page breaks in table rows</li>
-            <li><strong>[qt]</strong> repeat THEAD/TFOOT when table contains page breaks</li>
-            <li><strong>[qt]</strong> improve font kerning as per Webkit bug 93263</li>
-            <li><strong>[qt]</strong> various table page-break improvements</li>
-            <li><strong>[qt]</strong> fix rendering due to incorrect page height computation</li>
-            <li><strong>[qt]</strong> implement "page-break-inside: avoid" for non-floating block elements</li>
-            <li><strong>[qt]</strong> enable WOFF file support</li>
-            <li><strong>[qt]</strong> add support for CSS widows and orphans for block elements</li>
-        </ul>
+        <p>The current release is <a class="version" href="https://github.com/wkhtmltopdf/wkhtmltopdf/releases/tag/0.12.0">0.12.0</a>, which was released on 6-Feb-2014. A rolling development snapshot <a class="version" href="http://sourceforge.net/projects/wkhtmltopdf/files/0.12.1-dev/">0.12.1-dev</a> is also available, which includes fixes since the 0.12.0 release. The next release 0.12.1 is likely to happen after QT 4.8.6 is released and after all critical bugs in the current release have been addressed.</p>
 
-        <p>The next release 0.12.1 is likely to happen after QT 4.8.6 is released and after all critical bugs have been addressed.</p>
-
-        <p>You can download the old releases from <a href="http://code.google.com/p/wkhtmltopdf/downloads/list?can=1">Google Code</a>, but no bug reports will be accepted against them.</p>
+        <p>You can download very old releases from <a href="http://code.google.com/p/wkhtmltopdf/downloads/list?can=1">Google Code</a>, but no bug reports will be accepted against them.</p>
 
         <h3><a name="support" class="anchor" href="#support"><span class="octicon octicon-link"></span></a>Support</h3>
         <p>If you encounter any issues, please <a href="https://github.com/wkhtmltopdf/wkhtmltopdf/issues">file an issue</a> at Github. You can also try to post on the <a href="http://groups.google.com/group/wkhtmltopdf-general">mailing list</a>.
