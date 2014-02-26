@@ -7,7 +7,7 @@ v0.12.1 (unreleased)
 * produce selectable text when printing to PDF on Mac OSX
 * generate API documentation for libwkhtmltox (on the website)
 * display version in compiled binary properly under various scenarios
-* minor improvements in the Windows/OS X build scripts
+* introduce a single unified build script for Windows and Linux
 
 v0.12.0 (2014-02-06)
 --------------------
