@@ -131,6 +131,7 @@ QT_CONFIG = {
         '-no-xinput',
         '-no-xkb',
         '-no-glib',
+        '-no-gstreamer',
         '-no-openvg',
         '-no-xsync',
         '-no-audio-backend',
@@ -397,7 +398,7 @@ def build_linux_schroot(config, basedir):
 # --------------------------------------------------------------- command line
 
 def usage():
-    print "Usage: scripts/build [target] where target is one of:\n *",
+    print "Usage: scripts/build.py [target] where target is one of:\n *",
     opts = list(BUILDERS.keys())
     opts.sort()
     print '\n * '.join(opts)
