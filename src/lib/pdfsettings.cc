@@ -126,11 +126,12 @@ struct DLL_LOCAL ReflectImpl<PdfGlobal>: public ReflectClass {
 		WKHTMLTOPDF_REFLECT(out);
 		WKHTMLTOPDF_REFLECT(documentTitle);
 		WKHTMLTOPDF_REFLECT(useCompression);
-		WKHTMLTOPDF_REFLECT(margin);
-		WKHTMLTOPDF_REFLECT(outputFormat);
-		WKHTMLTOPDF_REFLECT(imageDPI);
-		WKHTMLTOPDF_REFLECT(imageQuality);
-		WKHTMLTOPDF_REFLECT(load);
+        WKHTMLTOPDF_REFLECT(margin);
+        WKHTMLTOPDF_REFLECT(outputFormat);
+        WKHTMLTOPDF_REFLECT(imageDPI);
+        WKHTMLTOPDF_REFLECT(imageQuality);
+        WKHTMLTOPDF_REFLECT(useNativeFormatPrinter);
+        WKHTMLTOPDF_REFLECT(load);
 	}
 };
 
@@ -386,9 +387,10 @@ PdfGlobal::PdfGlobal():
 	out(""),
 	documentTitle(""),
 	useCompression(true),
-	imageDPI(600),
-	imageQuality(94),
-	viewportSize(""){};
+    imageDPI(600),
+    imageQuality(94),
+    useNativeFormatPrinter(false),
+    viewportSize(""){};
 
 TableOfContent::TableOfContent():
 	useDottedLines(true),
