@@ -43,6 +43,7 @@ void dumpDefaultTOCStyleSheet(QTextStream & stream, settings::TableOfContent & s
 		   << "    <html>" << endl
 		   << "      <head>" << endl
 		   << "        <title>" << s.captionText << "</title>" << endl
+		   << "        <meta http-equiv=\"Content-Type\" content=\"text/html; charset=utf-8\" />" << endl
 		   << "        <style>" << endl
 		   << "          h1 {" << endl
 		   << "            text-align: center;" << endl
