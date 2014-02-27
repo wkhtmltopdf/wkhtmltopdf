@@ -265,7 +265,7 @@ QPrinter * PdfConverterPrivate::createPrinter(const QString & tempFile) {
     printer->setOutputFormat(
         (settings.outputFormat == "ps" || (settings.outputFormat == "" && settings.out.endsWith(".ps", Qt::CaseInsensitive)))?
 #ifdef Q_WS_MACX
-        QPrinter::PostScriptFormat : QPrinter::NativeFormat
+        QPrinter::PostScriptFormat : settings.useNativeFormatPrinter ? QPrinter::NativeFormat : QPrinter::PdfFormat
 #else
         QPrinter::PostScriptFormat : QPrinter::PdfFormat
 #endif
@@ -350,7 +350,7 @@ void PdfConverterPrivate::pagesLoaded(bool ok) {
 	printer->setOutputFormat(
 		(settings.outputFormat == "ps" || (settings.outputFormat == "" && settings.out.endsWith(".ps", Qt::CaseInsensitive)))?
 #ifdef Q_WS_MACX
-		QPrinter::PostScriptFormat : QPrinter::NativeFormat
+		QPrinter::PostScriptFormat : settings.useNativeFormatPrinter ? QPrinter::NativeFormat : QPrinter::PdfFormat
 #else
 		QPrinter::PostScriptFormat : QPrinter::PdfFormat
 #endif

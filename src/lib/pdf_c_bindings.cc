@@ -127,6 +127,7 @@
  * - \b outputFormat The format of the output document, must be ether "", "pdf" or "ps".
  * - \b imageDPI The maximal DPI to use for images in the pdf document.
  * - \b imageQuality The jpeg compression factor to use when producing the pdf document, e.g. "92".
+ * - \b useNativeFormatPrinter Should we use QPrinter::NativeFormat when creating the pdf file? Must be either "true" or "false". (Mac OS X only).
  * - \b load.cookieJar Path of file used to load and store cookies.
  *
  * \section pagePdfObject Pdf object settings
