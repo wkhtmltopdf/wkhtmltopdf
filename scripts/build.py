@@ -132,6 +132,7 @@ QT_CONFIG = {
         '-no-xkb',
         '-no-glib',
         '-no-gstreamer',
+        '-D ENABLE_VIDEO=0',        # required as otherwise gstreamer gets linked in
         '-no-openvg',
         '-no-xsync',
         '-no-audio-backend',
