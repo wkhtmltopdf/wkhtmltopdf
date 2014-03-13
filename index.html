@@ -1,55 +1,49 @@
-<!doctype html>
-<html>
-  <head>
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="chrome=1">
-    <title>wkhtmltopdf</title>
+---
+layout: default
+---
+<!-- First Band (Image) -->
 
-    <link rel="stylesheet" href="css/site.css">
-    <script src="js/scale.fix.js"></script>
-    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
-    <!--[if lt IE 9]>
-    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
-    <![endif]-->
-  </head>
-  <body>
-    <div class="wrapper">
-      <header>
-        <h1 class="header">wkhtmltopdf</h1>
-        <p class="header">Downloads for <a class="version" href="https://github.com/wkhtmltopdf/wkhtmltopdf/releases/tag/0.12.0">0.12.0</a></p>
+<div class="row">
+  <div class="large-12 columns">
+    <img src="images/banner.jpg">
 
-        <ul>
-          <li class="download"><a class="buttons" href="http://downloads.sourceforge.net/project/wkhtmltopdf/0.12.0/wkhtmltox-win32_0.12.0-03c001d.exe">Windows, 32-bit</a></li>
-          <li class="download"><a class="buttons" href="http://downloads.sourceforge.net/project/wkhtmltopdf/0.12.0/wkhtmltox-win64_0.12.0-03c001d.exe">Windows, 64-bit</a></li>
-          <li class="download"><a class="buttons" href="http://downloads.sourceforge.net/project/wkhtmltopdf/0.12.0/wkhtmltox-linux-i386_0.12.0-03c001d.tar.xz">Linux, 32-bit</a></li>
-          <li class="download"><a class="buttons" href="http://downloads.sourceforge.net/project/wkhtmltopdf/0.12.0/wkhtmltox-linux-amd64_0.12.0-03c001d.tar.xz">Linux, 64-bit</a></li>
-        </ul>
+    <hr>
+  </div>
+</div>
 
-        <p class="header">This project is maintained by <a class="header name" href="https://github.com/antialize">Jakob Truelsen</a> and <a class="header name" href="https://github.com/ashkulz">Ashish Kulkarni</a>.</p>
-        <p class="header">Proudly hosted at <a class="header name" href="https://github.com/wkhtmltopdf">Github</a> and mirrored at <a class="header name" href="https://gitorious.org/wkhtmltopdf">Gitorious</a>.</p>
+<div class="row">
+  <div class="small-12 columns">
+    <h2>What is it?</h2>
+    <p><code>wkhtmltopdf</code> and <code>wkhtmltoimage</code> are open source (LGPL) command line tools to render HTML into PDF and various image formats using the QT Webkit rendering engine. These run entirely &quot;headless&quot; and do not require a display or display service.</p>
+    <p>There is also a C library, if you're into that kind of thing.</p>
 
+    <h2>How do I use it?</h2>
+    <ol>
+      <li><a href="downloads.html">Download a precompiled binary</a> or build <a href="https://github.com/wkthmltopdf/wkhtmltopdf">from source</a></li>
+      <li>Create your HTML document that you want to turn into a PDF (or image)</li>
+      <li>
+        <p>Run your HTML document through the tool.<br>
+        For example, if I really like the treatment <a href="http://google.com">Google</a> has done to their logo today and want to capture it forever as a PDF:</p>
+        <p>
+          <code>wkhtmltopdf http://google.com google.pdf</code>
+        </p>
+      </li>
+    </ol>
 
-      </header>
-      <section>
-        <h3><a name="introduction" class="anchor" href="#introduction"><span class="octicon octicon-link"></span></a>wkhtmltopdf and wkhtmltoimage</h3>
+    <h2>Additional options</h2>
+    <p>That's great, I've always wanted to turn Google's homepage into a PDF, but I want a table of contents as well.</p>
+    <p>There are plenty of command line options. Check out the <a href="usage/wkhtmltopdf.txt">auto-generated wkhtmltopdf manual</a>.
 
-        <p>wkhtmltopdf and wkhtmltoimage are command line tools to render HTML into PDF and various image formats using the QT Webkit rendering engine. These run entirely "headless" and do not require a display or display service.</p>
+    <h2>Get Hardcore</h2>
+    <p>Command line tools are awesome, but I want a C library.</p>
+    <p>No problem. Check out the <a href="libwkhtmltox">library documentation</a>.</p>
 
-        <h3><a name="documentation" class="anchor" href="#documentation"><span class="octicon octicon-link"></span></a>Documentation</h3>
-        <p>It is yet to be fully migrated to this site, so please be patient in the interim period. Please read the <a href="usage/wkhtmltopdf.txt">auto-generated manual for wkhtmltopdf</a>, or <a href="libwkhtmltox/index.html">the API documentation for libwkhtmltox</a>.</p>
+    <h2>Real world examples?</h2>
+    <p>Like we said, if you really like Google's homepage today and want to save it as a PDF, you could use wkhtmltopdf for that.</p>
+    <p>Seriously, you could use it to generate invoices, create birthday cards, or all other sorts of fun things. Just use your imagination!</p>
 
-        <h3><a name="current-release" class="anchor" href="#current-release"><span class="octicon octicon-link"></span></a>Current Release</h3>
-
-        <p>The current release is <a class="version" href="https://github.com/wkhtmltopdf/wkhtmltopdf/releases/tag/0.12.0">0.12.0</a>, which was released on 6-Feb-2014. A rolling development snapshot <a class="version" href="http://sourceforge.net/projects/wkhtmltopdf/files/0.12.1-dev/">0.12.1-dev</a> is also available, which includes fixes since the 0.12.0 release. The next release 0.12.1 is likely to happen after QT 4.8.6 is released and after all critical bugs in the current release have been addressed.</p>
-
-        <p>You can download very old releases from <a href="http://code.google.com/p/wkhtmltopdf/downloads/list?can=1">Google Code</a>, but no bug reports will be accepted against them.</p>
-
-        <h3><a name="support" class="anchor" href="#support"><span class="octicon octicon-link"></span></a>Support</h3>
-        <p>If you encounter any issues, please <a href="https://github.com/wkhtmltopdf/wkhtmltopdf/issues">file an issue</a> at Github. You can also try to post on the <a href="http://groups.google.com/group/wkhtmltopdf-general">mailing list</a>.
-
-      </section>
-    </div>
-    <!--[if !IE]><script>fixScale(document);</script><![endif]-->
-
-  </body>
-</html>
+    <h2>Support</h2>
+    <p>Need help? Try the <a href="http://groups.google.com/group/wkhtmltopdf-general">mailing list</a>.</p>
+    <p>Got an issue? Report it over at <a href="https://github.com/wkhtmltopdf/wkhtmltopdf/issues">GitHub</a>.</p>
+  </div>
+</div>
