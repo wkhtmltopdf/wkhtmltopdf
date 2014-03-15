@@ -94,8 +94,11 @@ public:
 	}
 
 	PageObject(const settings::PdfObject & set, const QString * d=NULL):
-        settings(set), loaderObject(0), page(0), headerReserveHeight(0), footerReserveHeight(0),
-        measuringHeader(0), measuringFooter(0) {
+		settings(set), loaderObject(0), page(0)
+#ifdef __EXTENSIVE_WKHTMLTOPDF_QT_HACK__
+		, headerReserveHeight(0), footerReserveHeight(0), measuringHeader(0), measuringFooter(0)
+#endif
+	{
 		if (d) data=*d;
 	};
 
@@ -134,6 +137,7 @@ private:
 	bool tocChanged;
 	int actualPage;
 	int pageNumber;
+#ifdef __EXTENSIVE_WKHTMLTOPDF_QT_HACK__
 	QWebPrinter * webPrinter;
 	int objectPage;
 
@@ -144,7 +148,6 @@ private:
 	QHash<int, QVector<QWebElement> > pageFormElements;
 	bool pageHasHeaderFooter;
 	
-#ifdef __EXTENSIVE_WKHTMLTOPDF_QT_HACK__
     // loader for measuringHeader and measuringFooter
     MultiPageLoader measuringHFLoader;
 
@@ -163,14 +166,14 @@ private:
 	void fillParms(QHash<QString, QString> & parms, int page, const PageObject & object);
 	QString hfreplace(const QString & q, const QHash<QString, QString> & parms);
 	QWebPage * loadHeaderFooter(QString url, const QHash<QString, QString> & parms, const settings::PdfObject & ps);
-
+    qreal calculateHeaderHeight(PageObject & object, QWebPage & header);
 
 #endif
 	QWebPage * currentHeader;
 	QWebPage * currentFooter;
-    qreal calculateHeaderHeight(PageObject & object, QWebPage & header);
     QPrinter * createPrinter(const QString & tempFile);
 
+#ifdef __EXTENSIVE_WKHTMLTOPDF_QT_HACK__
 	void handleTocPage(PageObject & obj);
 	void preprocessPage(PageObject & obj);
 	void spoolPage(int page);
@@ -179,6 +182,7 @@ private:
 	void handleFooter(QWebPage * frame, int page);
 	void beginPrintObject(PageObject & obj);
 	void endPrintObject(PageObject & obj);
+#endif
 
 	void loadTocs();
 	void loadHeaders();
