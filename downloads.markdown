@@ -2,25 +2,27 @@
 layout: default
 ---
 
-## Current Release (Stable)
+## Stable
 
 The current stable version is [0.12.0](https://github.com/wkhtmltopdf/wkhtmltopdf/releases/tag/0.12.0), which was released on Febuary 6, 2014.
 
-### Windows
-
-[32-bit](http://downloads.sourceforge.net/project/wkhtmltopdf/0.12.0/wkhtmltox-win32_0.12.0-03c001d.exe) &emsp; [64-bit](http://downloads.sourceforge.net/project/wkhtmltopdf/0.12.0/wkhtmltox-win64_0.12.0-03c001d.exe)
-
-### Linux
-
-[32-bit](http://downloads.sourceforge.net/project/wkhtmltopdf/0.12.0/wkhtmltox-linux-i386_0.12.0-03c001d.tar.xz) &emsp; [64-bit](http://downloads.sourceforge.net/project/wkhtmltopdf/0.12.0/wkhtmltox-linux-amd64_0.12.0-03c001d.tar.xz)
-
-### Mac OS X
+OS      | Downloads
+---     | ---------
+Windows | [32-bit](http://downloads.sourceforge.net/project/wkhtmltopdf/0.12.0/wkhtmltox-win32_0.12.0-03c001d.exe)         &emsp; [64-bit](http://downloads.sourceforge.net/project/wkhtmltopdf/0.12.0/wkhtmltox-win64_0.12.0-03c001d.exe)
+Linux   | [32-bit](http://downloads.sourceforge.net/project/wkhtmltopdf/0.12.0/wkhtmltox-linux-i386_0.12.0-03c001d.tar.xz) &emsp; [64-bit](http://downloads.sourceforge.net/project/wkhtmltopdf/0.12.0/wkhtmltox-linux-amd64_0.12.0-03c001d.tar.xz)
 
 Mac OS X builds could not be produced due to issues in QT 4.8.5 &mdash; you will have to use the latest development snapshot instead.
 
-## Latest Development Snapshots
+## Development
 
-A rolling development snapshot [0.12.1-dev](http://sourceforge.net/projects/wkhtmltopdf/files/0.12.1-dev/) of the master branch is available, which includes fixes since the 0.12.0 release.
+A rolling development snapshot [0.12.1-dev](https://github.com/wkhtmltopdf/wkhtmltopdf/tree/b3e000e79544548665006846288c4284ca593e19) of the master branch is available, which includes [fixes since the 0.12.0 release](https://github.com/wkhtmltopdf/wkhtmltopdf/blob/b3e000e79544548665006846288c4284ca593e19/CHANGELOG.md).
+
+OS/Distro             | Downloads
+---------             | ---------
+Windows               | [32-bit](http://downloads.sourceforge.net/project/wkhtmltopdf/0.12.1-dev/wkhtmltox-0.12.1-b3e000e_mingw-w64-cross-win32.exe) &emsp; [64-bit](http://downloads.sourceforge.net/project/wkhtmltopdf/0.12.1-dev/wkhtmltox-0.12.1-b3e000e_mingw-w64-cross-win64.exe)
+Linux (Debian Wheezy) | [32-bit](http://downloads.sourceforge.net/project/wkhtmltopdf/0.12.1-dev/wkhtmltox-0.12.1-b3e000e_linux-wheezy-i386.tar.xz)  &emsp; [64-bit](http://downloads.sourceforge.net/project/wkhtmltopdf/0.12.1-dev/wkhtmltox-0.12.1-b3e000e_linux-wheezy-amd64.tar.xz)
+Linux (CentOS 5)      | [32-bit](http://downloads.sourceforge.net/project/wkhtmltopdf/0.12.1-dev/wkhtmltox-0.12.1-b3e000e_linux-centos5-i386.tar.xz) &emsp; [64-bit](http://downloads.sourceforge.net/project/wkhtmltopdf/0.12.1-dev/wkhtmltox-0.12.1-b3e000e_linux-centos5-amd64.tar.xz)
+Mac OS X              | not available; try an [older snapshot](http://downloads.sourceforge.net/project/wkhtmltopdf/0.12.1-dev/wkhtmltox-macosx-10.9.1-x86_64-0.12.1-development-fef236e.tar.xz)
 
 We expect to release version 0.12.1 after QT 4.8.6 is released and after all critical bugs in the current release have been addressed.
 
