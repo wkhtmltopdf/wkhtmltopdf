@@ -270,12 +270,16 @@ def build_msvc2010(config, basedir):
         (ssldir.replace('\\', '\\\\'), OPENSSL['build'][config]['os_libs']))
 
     os.chdir(qtdir)
-    shell('%s\\..\\qt\\configure.exe %s' % (basedir, ' '.join(args)))
+    if not exists('is_configured'):
+        shell('%s\\..\\qt\\configure.exe %s' % (basedir, ' '.join(args)))
+        open('is_configured', 'w').write('')
     shell('nmake')
 
     appdir = os.path.join(basedir, config, 'app')
     mkdir_p(appdir)
     os.chdir(appdir)
+    rmdir('bin')
+    mkdir_p('bin')
 
     shell('%s\\bin\\qmake %s\\..\\wkhtmltopdf.pro' % (qtdir, basedir))
     shell('nmake')
@@ -325,13 +329,16 @@ def build_mingw64_cross(config, basedir):
     os.environ['OPENSSL_LIBS'] = '-lssl -lcrypto -L %s/lib %s' % (ssldir, OPENSSL['build'][config]['os_libs'])
 
     os.chdir(build)
-    shell('%s/../qt/configure %s' % (basedir, ' '.join(args)))
+    if not exists('is_configured'):
+        shell('%s/../qt/configure %s' % (basedir, ' '.join(args)))
+        shell('touch is_configured')
     shell('make -j%d' % CPU_COUNT)
     shell('make install')
 
     appdir = os.path.join(basedir, config, 'app')
     mkdir_p(appdir)
     os.chdir(appdir)
+    shell('rm -f bin/*')
 
     # set up cross compiling prefix correctly (isn't set by make install)
     os.environ['QTDIR'] = qtdir
@@ -376,10 +383,15 @@ def build_linux_schroot(config, basedir):
     if config == 'centos5-i386':
         lines.append('export CFLAGS=-march=i486')
         lines.append('export CXXFLAGS=-march=i486')
-    lines.append('../../../qt/configure %s || exit 1' % ' '.join(args))
+
+    lines.append('if [ ! -f is_configured ]; then')
+    lines.append('  ../../../qt/configure %s || exit 1' % ' '.join(args))
+    lines.append('  touch is_configured')
+    lines.append('fi')
     lines.append('if ! make -j%d -q; then\n  make -j%d || exit 1\nfi' % (CPU_COUNT, CPU_COUNT))
     lines.append('make install || exit 1')
     lines.append('cd ../app')
+    lines.append('rm -f bin/*')
     lines.append('GIT_DIR=../../../.git ../qt/bin/qmake ../../../wkhtmltopdf.pro')
     lines.append('make -j%d || exit 1' % CPU_COUNT)
     lines.append('strip bin/wkhtmltopdf bin/wkhtmltoimage')
