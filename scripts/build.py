@@ -24,13 +24,13 @@ OPENSSL = {
     'branch'    : 'OpenSSL_1_0_1-stable',
     'tag'       : 'OpenSSL_1_0_1g',
     'build'     : {
-        'msvc2010-win32': {
+        'msvc-winsdk71-win32': {
             'configure' : 'VC-WIN32 no-asm',
             'build'     : ['ms\\do_ms.bat', 'nmake /f ms\\nt.mak install'],
             'libs'      : ['ssleay32.lib', 'libeay32.lib'],
             'os_libs'   : '-lUser32 -lAdvapi32 -lGdi32 -lCrypt32'
         },
-        'msvc2010-win64': {
+        'msvc-winsdk71-win64': {
             'configure' : 'VC-WIN64A',
             'build'     : ['ms\\do_win64a.bat', 'nmake /f ms\\nt.mak install'],
             'libs'      : ['ssleay32.lib', 'libeay32.lib'],
@@ -94,7 +94,7 @@ QT_CONFIG = {
         '-nomake translations'
     ],
 
-    'msvc2010': [
+    'msvc': [
         '-mp',
         '-no-script',
         '-qt-style-windows',
@@ -155,8 +155,8 @@ QT_CONFIG = {
 }
 
 BUILDERS = {
-    'msvc2010-win32':        'msvc2010',
-    'msvc2010-win64':        'msvc2010',
+    'msvc-winsdk71-win32':   'msvc_winsdk71',
+    'msvc-winsdk71-win64':   'msvc_winsdk71',
     'centos5-i386':          'linux_schroot',
     'centos5-amd64':         'linux_schroot',
     'wheezy-i386':           'linux_schroot',
@@ -232,9 +232,9 @@ def build_openssl(config, basedir):
         if not is_compiled():
             error("Unable to compile OpenSSL for your system, aborting.")
 
-# --------------------------------------------------------------- MSVC 2010
+# --------------------------------------------------------------- MSVC via Windows SDK 7.1
 
-def check_msvc2010(config):
+def check_msvc_winsdk71(config):
     for key in ['Configuration', 'TARGET_PLATFORM', 'TARGET_CPU']:
         if not key in os.environ:
             error("Please run under appropriate 'Windows SDK 7.1 Command Prompt'.")
@@ -254,7 +254,7 @@ def check_msvc2010(config):
     if os.environ['TARGET_CPU'] == 'x64' and config == 'msvc2010-win32':
         error("Error: SDK configured for x64 but trying to build 32-bit.")
 
-def build_msvc2010(config, basedir):
+def build_msvc_winsdk71(config, basedir):
     build_openssl(config, basedir)
 
     ssldir = os.path.join(basedir, config, 'openssl')
@@ -263,7 +263,7 @@ def build_msvc2010(config, basedir):
 
     args = []
     args.extend(QT_CONFIG['common'])
-    args.extend(QT_CONFIG['msvc2010'])
+    args.extend(QT_CONFIG['msvc'])
     args.append('-I %s\\include' % ssldir)
     args.append('-L %s\\lib' % ssldir)
     args.append('OPENSSL_LIBS="-L%s -lssleay32 -llibeay32 %s"' % \
