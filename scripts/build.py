@@ -22,7 +22,7 @@
 OPENSSL = {
     'repository': 'https://github.com/openssl/openssl.git',
     'branch'    : 'OpenSSL_1_0_1-stable',
-    'tag'       : 'OpenSSL_1_0_1f',
+    'tag'       : 'OpenSSL_1_0_1g',
     'build'     : {
         'msvc2010-win32': {
             'configure' : 'VC-WIN32 no-asm',
