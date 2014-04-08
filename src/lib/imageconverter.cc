@@ -23,7 +23,7 @@
 #undef QT_DLL
 #endif
 #endif
-
+#include <iostream>
 #include "imageconverter_p.hh"
 #include "imagesettings.hh"
 #include <QBuffer>
@@ -174,7 +174,11 @@ void ImageConverterPrivate::pagesLoaded(bool ok) {
 
 	if (settings.fmt != "svg") {
 		image = QImage(rect.size(), QImage::Format_ARGB32_Premultiplied);
-		painter.begin(&image);
+		if ( !painter.begin(&image) )
+		{
+			emit out.error("Could not begin painting");
+			fail();
+		}
 	} else {
 		generator.setOutputDevice(dev);
 		generator.setSize(rect.size());
@@ -182,7 +186,11 @@ void ImageConverterPrivate::pagesLoaded(bool ok) {
 #ifdef __EXTENSIVE_WKHTMLTOPDF_QT_HACK__
 		generator.setViewBoxClip(true);
 #endif
-		painter.begin(&generator);
+		if ( !painter.begin(&generator) )
+		{
+			emit out.error("Could not begin painting");
+			fail();
+		}
 	}
 
 	if (settings.transparent && (settings.fmt == "png" || settings.fmt == "svg")) {
@@ -224,7 +232,7 @@ void ImageConverterPrivate::pagesLoaded(bool ok) {
 	convertionDone = true;
 	emit out.finished(true);
 
-	qApp->exit(0); // quit qt's event handling
+	//qApp->exit(0); // quit qt's event handling
 }
 
 Converter & ImageConverterPrivate::outer() {

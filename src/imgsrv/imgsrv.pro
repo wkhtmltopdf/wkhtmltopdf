@@ -15,17 +15,25 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with wkhtmltopdf.  If not, see <http:#www.gnu.org/licenses/>.
 
-TEMPLATE = subdirs
+include(../../common.pri)
 
-CONFIG += ordered debug
-SUBDIRS = src/lib src/pdf src/image src/imgsrv
+TEMPLATE = app
+TARGET = imgsrv
+DESTDIR = ../../bin
+DEPENDPATH += . ../shared
+INCLUDEPATH += . ../shared ../image
+CONFIG += debug
 
-readme1.target=README_WKHTMLTOPDF
-readme1.commands=make -C src/pdf/ ../../README_WKHTMLTOPDF
-readme1.depends=sub-src-lib-qmake_all
+INSTALLS += target
+target.path=$$INSTALLBASE/bin
 
-readme2.target=README_WKHTMLTOIMAGE
-readme2.commands=make -C src/image/ ../../README_WKHTMLTOIMAGE
-readme2.depends=sub-src-lib-qmake_all
+include(../shared/shared.pri)
 
-QMAKE_EXTRA_TARGETS += readme1 readme2
+contains(DEFINES, QT_SHARED) {
+  LIBS += -L../../bin -lwkhtmltox
+} else {
+  include(../lib/lib.pri)
+}
+
+HEADERS += srv.h
+SOURCES += main.cpp srv.cpp
