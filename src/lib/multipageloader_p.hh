@@ -93,7 +93,8 @@ public slots:
 	void loadStarted();
 	void loadProgress(int progress);
 	void loadFinished(bool ok);
-	void waitWindowStatus();
+	void waitEvent();
+	void waitWindowStatus(const QString & status);
 	void printRequested(QWebFrame * frame);
 	void loadDone();
 	void handleAuthenticationRequired(QNetworkReply *reply, QAuthenticator *authenticator);

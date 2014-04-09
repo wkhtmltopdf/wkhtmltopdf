@@ -142,6 +142,8 @@ LoadGlobal::LoadGlobal():
 
 LoadPage::LoadPage():
 	jsdelay(200),
+	event(""),
+	eventTarget(""),
 	windowStatus(""),
 	cacheDir(""),
 	zoomFactor(1.0),

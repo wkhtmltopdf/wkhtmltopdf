@@ -261,15 +261,31 @@ void ResourceObject::loadFinished(bool ok) {
 	// XXX: If loading failed there's no need to wait
 	//      for javascript on this resource.
 	if (!ok || signalPrint || settings.jsdelay == 0) loadDone();
-	else if (!settings.windowStatus.isEmpty()) waitWindowStatus();
+	else if (!settings.event.isEmpty()) waitEvent();
+	else if (!settings.windowStatus.isEmpty()) waitWindowStatus(settings.windowStatus);
 	else QTimer::singleShot(settings.jsdelay, this, SLOT(loadDone()));
 }
 
-void ResourceObject::waitWindowStatus() {
+void ResourceObject::waitEvent() {
+	// fetch target
+	QString target = settings.eventTarget;
+	if (target.isEmpty()) target = Qstring("document");
+
+	// add event listener
+	webPage.mainFrame()->evaluateJavaScript(target + ".addEventListener('" + settings.event + "', function () { window.status = '__RENDER_PDF__'; })");
+	// warning(QString("event \"" + settings.event + "\" on \"" + target + "\""));
+
+	// then, wait until the window.status is updated
+	waitWindowStatus("___RENDER_PDF___");
+}
+
+void ResourceObject::waitWindowStatus(const QString & status) {
 	QString windowStatus = webPage.mainFrame()->evaluateJavaScript("window.status").toString();
-	//warning(QString("window.status:" + windowStatus + " settings.windowStatus:" + settings.windowStatus));
-	if (windowStatus != settings.windowStatus) {
-		QTimer::singleShot(50, this, SLOT(waitWindowStatus()));
+	if (status.isEmpty()) status = settings.windowStatus;
+	//warning(QString("window.status:" + windowStatus + " expected:" + status));
+
+	if (windowStatus != status) {
+		QTimer::singleShot(50, this, SLOT(waitWindowStatus(status)));
 	} else {
 		QTimer::singleShot(settings.jsdelay, this, SLOT(loadDone()));
 	}
