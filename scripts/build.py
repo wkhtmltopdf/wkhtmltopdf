@@ -155,6 +155,14 @@ QT_CONFIG = {
 }
 
 BUILDERS = {
+    'msvc2008-win32':        'msvc',
+    'msvc2008-win64':        'msvc',
+    'msvc2010-win32':        'msvc',
+    'msvc2010-win64':        'msvc',
+    'msvc2012-win32':        'msvc',
+    'msvc2012-win64':        'msvc',
+    'msvc2013-win32':        'msvc',
+    'msvc2013-win64':        'msvc',
     'msvc-winsdk71-win32':   'msvc_winsdk71',
     'msvc-winsdk71-win64':   'msvc_winsdk71',
     'centos5-i386':          'linux_schroot',
@@ -238,6 +246,54 @@ def build_openssl(config, basedir):
             error("Unable to compile OpenSSL for your system, aborting.")
 
     return OPENSSL['build'][cfg]['os_libs']
+
+# --------------------------------------------------------------- MSVC (2008-2013)
+
+MSVC_LOCATION = {
+    'msvc2008': 'VS90COMNTOOLS',
+    'msvc2010': 'VS100COMNTOOLS',
+    'msvc2012': 'VS110COMNTOOLS',
+    'msvc2013': 'VS120COMNTOOLS'
+}
+
+def check_msvc(config):
+    version, arch = config.split('-')
+    env_var = MSVC_LOCATION[version]
+    if not env_var in os.environ:
+        error("%s does not seem to be installed." % version)
+
+    vcdir = os.path.join(os.environ[env_var], '..', '..', 'VC')
+    if not exists(os.path.join(vcdir, 'vcvarsall.bat')):
+        error("%s: unable to find vcvarsall.bat" % version)
+
+    if arch == 'win32' and not exists(os.path.join(vcdir, 'bin', 'cl.exe')):
+        error("%s: unable to find the x86 compiler" % version)
+
+    if arch == 'win64' and not exists(os.path.join(vcdir, 'amd64', 'bin', 'cl.exe')) \
+                       and not exists(os.path.join(vcdir, 'x86_amd64', 'bin', 'cl.exe')):
+        error("%s: unable to find the amd64 compiler" % version)
+
+def build_msvc(config, basedir):
+    msvc, arch = config.split('-')
+    vcdir = os.path.join(os.environ[MSVC_LOCATION[msvc]], '..', '..', 'VC')
+    vcarg = 'x86'
+    if arch == 'win64':
+        if exists(os.path.join(vcdir, 'amd64', 'bin', 'cl.exe')):
+            vcarg = 'amd64'
+        else:
+            vcarg = 'x86_amd64'
+
+    python = sys.executable
+    process = subprocess.Popen('("%s" %s>nul)&&"%s" -c "import os; print repr(os.environ)"' % (
+        os.path.join(vcdir, 'vcvarsall.bat'), vcarg, python), stdout=subprocess.PIPE, shell=True)
+    stdout, _ = process.communicate()
+    exitcode = process.wait()
+    if exitcode != 0:
+        error("%s: unable to initialize the environment" % msvc)
+
+    os.environ.update(eval(stdout.strip()))
+
+    build_msvc_winsdk71(config, basedir)
 
 # --------------------------------------------------------------- MSVC via Windows SDK 7.1
 
