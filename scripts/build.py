@@ -24,13 +24,13 @@ OPENSSL = {
     'branch'    : 'OpenSSL_1_0_1-stable',
     'tag'       : 'OpenSSL_1_0_1g',
     'build'     : {
-        'msvc-winsdk71-win32': {
+        'msvc*-win32': {
             'configure' : 'VC-WIN32 no-asm',
             'build'     : ['ms\\do_ms.bat', 'nmake /f ms\\nt.mak install'],
             'libs'      : ['ssleay32.lib', 'libeay32.lib'],
             'os_libs'   : '-lUser32 -lAdvapi32 -lGdi32 -lCrypt32'
         },
-        'msvc-winsdk71-win64': {
+        'msvc*-win64': {
             'configure' : 'VC-WIN64A',
             'build'     : ['ms\\do_win64a.bat', 'nmake /f ms\\nt.mak install'],
             'libs'      : ['ssleay32.lib', 'libeay32.lib'],
@@ -167,7 +167,7 @@ BUILDERS = {
 
 # --------------------------------------------------------------- HELPERS
 
-import os, sys, subprocess, shutil, multiprocessing
+import os, sys, subprocess, shutil, fnmatch, multiprocessing
 
 from os.path import exists
 
@@ -200,7 +200,12 @@ def get_version(basedir):
     return ('%s-%s' % (text, hash), text)
 
 def build_openssl(config, basedir):
-    if not config in OPENSSL['build']:
+    cfg = None
+    for key in OPENSSL['build']:
+        if fnmatch.fnmatch(config, key):
+            cfg = key
+
+    if not cfg:
         return
 
     srcdir = os.path.join(basedir, 'openssl')
@@ -208,7 +213,7 @@ def build_openssl(config, basedir):
 
     def is_compiled():
         compiled = exists(os.path.join(dstdir, 'include', 'openssl', 'ssl.h'))
-        for lib in OPENSSL['build'][config]['libs']:
+        for lib in OPENSSL['build'][cfg]['libs']:
             compiled = compiled and exists(os.path.join(dstdir, 'lib', lib))
         return compiled
 
@@ -224,13 +229,15 @@ def build_openssl(config, basedir):
     shell('git checkout %s' % (OPENSSL['tag']))
 
     if not is_compiled():
-        opts = OPENSSL['build'][config]
+        opts = OPENSSL['build'][cfg]
         shell('perl Configure --openssldir=%s %s' % (dstdir, opts['configure']))
         for cmd in opts['build']:
             shell(cmd)
         shell('git clean -fdx')
         if not is_compiled():
             error("Unable to compile OpenSSL for your system, aborting.")
+
+    return OPENSSL['build'][cfg]['os_libs']
 
 # --------------------------------------------------------------- MSVC via Windows SDK 7.1
 
@@ -255,7 +262,7 @@ def check_msvc_winsdk71(config):
         error("Error: SDK configured for x64 but trying to build 32-bit.")
 
 def build_msvc_winsdk71(config, basedir):
-    build_openssl(config, basedir)
+    ssl_libs = build_openssl(config, basedir)
 
     ssldir = os.path.join(basedir, config, 'openssl')
     qtdir  = os.path.join(basedir, config, 'qt')
@@ -267,7 +274,7 @@ def build_msvc_winsdk71(config, basedir):
     args.append('-I %s\\include' % ssldir)
     args.append('-L %s\\lib' % ssldir)
     args.append('OPENSSL_LIBS="-L%s -lssleay32 -llibeay32 %s"' % \
-        (ssldir.replace('\\', '\\\\'), OPENSSL['build'][config]['os_libs']))
+        (ssldir.replace('\\', '\\\\'), ssl_libs))
 
     os.chdir(qtdir)
     if not exists('is_configured'):
@@ -310,7 +317,7 @@ def check_mingw64_cross(config):
     shell('%s-gcc --version' % MINGW_W64_PREFIX[config])
 
 def build_mingw64_cross(config, basedir):
-    build_openssl(config, basedir)
+    ssl_libs = build_openssl(config, basedir)
 
     ssldir = os.path.join(basedir, config, 'openssl')
     build  = os.path.join(basedir, config, 'qt_build')
@@ -326,7 +333,7 @@ def build_mingw64_cross(config, basedir):
     args.append('-L %s/lib'     % ssldir)
     args.append('-device-option CROSS_COMPILE=%s-' % MINGW_W64_PREFIX[config])
 
-    os.environ['OPENSSL_LIBS'] = '-lssl -lcrypto -L %s/lib %s' % (ssldir, OPENSSL['build'][config]['os_libs'])
+    os.environ['OPENSSL_LIBS'] = '-lssl -lcrypto -L %s/lib %s' % (ssldir, ssl_libs)
 
     os.chdir(build)
     if not exists('is_configured'):
