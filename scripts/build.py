@@ -269,8 +269,8 @@ def check_msvc(config):
     if arch == 'win32' and not exists(os.path.join(vcdir, 'bin', 'cl.exe')):
         error("%s: unable to find the x86 compiler" % version)
 
-    if arch == 'win64' and not exists(os.path.join(vcdir, 'amd64', 'bin', 'cl.exe')) \
-                       and not exists(os.path.join(vcdir, 'x86_amd64', 'bin', 'cl.exe')):
+    if arch == 'win64' and not exists(os.path.join(vcdir, 'bin', 'amd64', 'cl.exe')) \
+                       and not exists(os.path.join(vcdir, 'bin', 'x86_amd64', 'cl.exe')):
         error("%s: unable to find the amd64 compiler" % version)
 
 def build_msvc(config, basedir):
@@ -278,7 +278,7 @@ def build_msvc(config, basedir):
     vcdir = os.path.join(os.environ[MSVC_LOCATION[msvc]], '..', '..', 'VC')
     vcarg = 'x86'
     if arch == 'win64':
-        if exists(os.path.join(vcdir, 'amd64', 'bin', 'cl.exe')):
+        if exists(os.path.join(vcdir, 'bin', 'amd64', 'cl.exe')):
             vcarg = 'amd64'
         else:
             vcarg = 'x86_amd64'
