@@ -9,6 +9,7 @@ v0.12.1 (unreleased)
 * **#1546**: fix problem with non-ASCII characters in output path on Windows
 * **#1585**: delete existing files explicitly in windows installer
 * **#1586**: **[qt]** suppress blank page generated if the first cell spans multiple pages
+* **#1631**: **[qt]** crash when hiding header for a specific page
 * fix compilation failures when not building with patched QT/WebKit
 * generate API documentation for libwkhtmltox (on the website)
 * display version in compiled binary properly under various scenarios
