@@ -174,9 +174,14 @@ BUILDERS = {
 }
 
 BUILDER_FLAGS = {
+    'msvc':          ['clean'],
+    'msvc_winsdk71': ['clean'],
+    'linux_schroot': ['clean'],
+    'mingw64_cross': ['clean'],
 }
 
 FLAG_HELP = {
+    'clean': 'performs a clean build (instead of an incremental build)'
 }
 
 # --------------------------------------------------------------- HELPERS
@@ -279,7 +284,7 @@ def check_msvc(config):
                        and not exists(os.path.join(vcdir, 'bin', 'x86_amd64', 'cl.exe')):
         error("%s: unable to find the amd64 compiler" % version)
 
-def build_msvc(config, basedir):
+def build_msvc(config, basedir, clean):
     msvc, arch = config.split('-')
     vcdir = os.path.join(os.environ[MSVC_LOCATION[msvc]], '..', '..', 'VC')
     vcarg = 'x86'
@@ -299,7 +304,7 @@ def build_msvc(config, basedir):
 
     os.environ.update(eval(stdout.strip()))
 
-    build_msvc_winsdk71(config, basedir)
+    build_msvc_winsdk71(config, basedir, clean)
 
 # --------------------------------------------------------------- MSVC via Windows SDK 7.1
 
@@ -323,7 +328,10 @@ def check_msvc_winsdk71(config):
     if os.environ['TARGET_CPU'] == 'x64' and config == 'msvc2010-win32':
         error("Error: SDK configured for x64 but trying to build 32-bit.")
 
-def build_msvc_winsdk71(config, basedir):
+def build_msvc_winsdk71(config, basedir, clean):
+    if clean:
+        rmdir(os.path.join(basedir, config))
+
     ssl_libs = build_openssl(config, basedir)
 
     ssldir = os.path.join(basedir, config, 'openssl')
@@ -378,7 +386,10 @@ MINGW_W64_PREFIX = {
 def check_mingw64_cross(config):
     shell('%s-gcc --version' % MINGW_W64_PREFIX[config])
 
-def build_mingw64_cross(config, basedir):
+def build_mingw64_cross(config, basedir, clean):
+    if clean:
+        rmdir(os.path.join(basedir, config))
+
     ssl_libs = build_openssl(config, basedir)
 
     ssldir = os.path.join(basedir, config, 'openssl')
@@ -426,7 +437,10 @@ def build_mingw64_cross(config, basedir):
 def check_linux_schroot(config):
     shell('schroot -c wkhtmltopdf-%s -- gcc --version' % config)
 
-def build_linux_schroot(config, basedir):
+def build_linux_schroot(config, basedir, clean):
+    if clean:
+        rmdir(os.path.join(basedir, config))
+
     version, simple_version = get_version(basedir)
 
     dir    = os.path.join(basedir, config)
