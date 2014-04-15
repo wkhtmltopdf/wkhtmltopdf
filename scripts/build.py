@@ -494,7 +494,8 @@ def build_linux_schroot(config, basedir, clean):
     lines.append('cp ../../../include/wkhtmltox/*.h ../wkhtmltox-%s/include/wkhtmltox' % version)
     lines.append('cp ../../../include/wkhtmltox/dll*.inc ../wkhtmltox-%s/include/wkhtmltox' % version)
     lines.append('cd ..')
-    lines.append('tar -c -v --use-compress-program=xz -f ../wkhtmltox-%s_linux-%s.tar.xz wkhtmltox-%s/' % (version, config, version))
+    lines.append('tar -c -v -f ../wkhtmltox-%s_linux-%s.tar wkhtmltox-%s/' % (version, config, version))
+    lines.append('xz --compress -9 ../wkhtmltox-%s_linux-%s.tar' % (version, config))
     lines.append('# end of build script')
 
     open(script, 'w').write('\n'.join(lines))
