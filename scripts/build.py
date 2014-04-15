@@ -24,13 +24,13 @@ OPENSSL = {
     'branch'    : 'OpenSSL_1_0_1-stable',
     'tag'       : 'OpenSSL_1_0_1g',
     'build'     : {
-        'msvc*-win32': {
+        'msvc*-win32*': {
             'configure' : 'VC-WIN32 no-asm',
             'build'     : ['ms\\do_ms.bat', 'nmake /f ms\\nt.mak install'],
             'libs'      : ['ssleay32.lib', 'libeay32.lib'],
             'os_libs'   : '-lUser32 -lAdvapi32 -lGdi32 -lCrypt32'
         },
-        'msvc*-win64': {
+        'msvc*-win64*': {
             'configure' : 'VC-WIN64A',
             'build'     : ['ms\\do_win64a.bat', 'nmake /f ms\\nt.mak install'],
             'libs'      : ['ssleay32.lib', 'libeay32.lib'],
@@ -174,14 +174,15 @@ BUILDERS = {
 }
 
 BUILDER_FLAGS = {
-    'msvc':          ['clean'],
-    'msvc_winsdk71': ['clean'],
+    'msvc':          ['clean', 'debug'],
+    'msvc_winsdk71': ['clean', 'debug'],
     'linux_schroot': ['clean'],
     'mingw64_cross': ['clean'],
 }
 
 FLAG_HELP = {
-    'clean': 'performs a clean build (instead of an incremental build)'
+    'clean': 'performs a clean build (instead of an incremental build)',
+    'debug': 'performs a debug build'
 }
 
 # --------------------------------------------------------------- HELPERS
@@ -284,7 +285,7 @@ def check_msvc(config):
                        and not exists(os.path.join(vcdir, 'bin', 'x86_amd64', 'cl.exe')):
         error("%s: unable to find the amd64 compiler" % version)
 
-def build_msvc(config, basedir, clean):
+def build_msvc(config, basedir, clean, debug):
     msvc, arch = config.split('-')
     vcdir = os.path.join(os.environ[MSVC_LOCATION[msvc]], '..', '..', 'VC')
     vcarg = 'x86'
@@ -304,7 +305,7 @@ def build_msvc(config, basedir, clean):
 
     os.environ.update(eval(stdout.strip()))
 
-    build_msvc_winsdk71(config, basedir, clean)
+    build_msvc_winsdk71(config, basedir, clean, debug)
 
 # --------------------------------------------------------------- MSVC via Windows SDK 7.1
 
@@ -328,7 +329,17 @@ def check_msvc_winsdk71(config):
     if os.environ['TARGET_CPU'] == 'x64' and config == 'msvc2010-win32':
         error("Error: SDK configured for x64 but trying to build 32-bit.")
 
-def build_msvc_winsdk71(config, basedir, clean):
+def build_msvc_winsdk71(config, basedir, clean, debug):
+    if debug:
+        ssl = OPENSSL['build']
+        cfg = QT_CONFIG['common']
+        for key in ssl:
+            if fnmatch.fnmatch(config, key):
+                ssl[key]['configure'] = 'debug-'+ssl[key]['configure']
+        cfg[cfg.index('-release')] = '-debug'
+        cfg[cfg.index('-webkit')]  = '-webkit-debug'
+        config += '-dbg'
+
     if clean:
         rmdir(os.path.join(basedir, config))
 
