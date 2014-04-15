@@ -173,6 +173,12 @@ BUILDERS = {
     'mingw-w64-cross-win64': 'mingw64_cross'
 }
 
+BUILDER_FLAGS = {
+}
+
+FLAG_HELP = {
+}
+
 # --------------------------------------------------------------- HELPERS
 
 import os, sys, subprocess, shutil, fnmatch, multiprocessing
@@ -473,23 +479,46 @@ def build_linux_schroot(config, basedir):
 
 # --------------------------------------------------------------- command line
 
-def usage():
-    print "Usage: scripts/build.py [target] where target is one of:\n *",
+def usage(exit_code=2):
+    print "Usage: scripts/build.py <target> [flags]\n\nThe supported targets and associated flags are:\n",
     opts = list(BUILDERS.keys())
+    size = 1 + max([len(opt) for opt in opts])
     opts.sort()
-    print '\n * '.join(opts)
-    sys.exit(0)
+    for opt in opts:
+        flags = BUILDER_FLAGS.get(BUILDERS[opt])
+        if flags:
+            print '* %s[-%s]' % (opt.ljust(size), '] [-'.join(flags))
+        else:
+            print '* %s' % opt.ljust(size)
+    size = max([len(key) for key in FLAG_HELP])
+    print "\nFlags:"
+    for flag in FLAG_HELP:
+        print "-%s: %s" % (flag.ljust(size), FLAG_HELP[flag])
+    sys.exit(exit_code)
 
 def main():
     basedir = os.path.join(os.path.dirname(os.path.realpath(__file__)), '..', 'static-build')
     mkdir_p(basedir)
 
-    if len(sys.argv) != 2 or sys.argv[1] not in BUILDERS:
-        usage()
+    if len(sys.argv) == 1:
+        usage(0)
 
     config = sys.argv[1]
+    if config not in BUILDERS:
+        usage()
+
+    args   = { 'config': config, 'basedir': os.path.realpath(basedir) }
+    flags  = BUILDER_FLAGS.get(BUILDERS[config]) or []
+
+    for arg in sys.argv[2:]:
+        if not arg.startswith('-') or arg[1:] not in flags:
+            usage()
+
+    for flag in flags:
+        args[flag.replace('-', '_')] = '-'+flag in sys.argv[2:]
+
     globals()['check_%s' % BUILDERS[config]](config)
-    globals()['build_%s' % BUILDERS[config]](config, os.path.realpath(basedir))
+    globals()['build_%s' % BUILDERS[config]](**args)
 
 if __name__ == '__main__':
     main()
