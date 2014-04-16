@@ -346,6 +346,7 @@ def build_msvc_winsdk71(config, basedir, clean, debug):
     if clean:
         rmdir(os.path.join(basedir, config))
 
+    version, simple_version = get_version(basedir)
     ssl_libs = build_openssl(config, basedir)
 
     ssldir = os.path.join(basedir, config, 'openssl')
@@ -372,6 +373,8 @@ def build_msvc_winsdk71(config, basedir, clean, debug):
     rmdir('bin')
     mkdir_p('bin')
 
+    os.environ['WKHTMLTOX_VERSION'] = version
+
     shell('%s\\bin\\qmake %s\\..\\wkhtmltopdf.pro' % (qtdir, basedir))
     shell('nmake')
 
@@ -381,7 +384,6 @@ def build_msvc_winsdk71(config, basedir, clean, debug):
             continue
         found = True
 
-        version, simple_version = get_version(basedir)
         makensis = os.path.join(os.environ[pfile], 'NSIS', 'makensis.exe')
         os.chdir(os.path.join(basedir, '..'))
         shell('"%s" /DVERSION=%s /DSIMPLE_VERSION=%s /DTARGET=%s wkhtmltox.nsi' % \
@@ -404,6 +406,7 @@ def build_mingw64_cross(config, basedir, clean):
     if clean:
         rmdir(os.path.join(basedir, config))
 
+    version, simple_version = get_version(basedir)
     ssl_libs = build_openssl(config, basedir)
 
     ssldir = os.path.join(basedir, config, 'openssl')
@@ -436,12 +439,12 @@ def build_mingw64_cross(config, basedir, clean):
 
     # set up cross compiling prefix correctly (isn't set by make install)
     os.environ['QTDIR'] = qtdir
+    os.environ['WKHTMLTOX_VERSION'] = version
     shell('%s/bin/qmake -set CROSS_COMPILE %s-' % (qtdir, MINGW_W64_PREFIX[config]))
     shell('%s/bin/qmake -spec win32-g++-4.6 %s/../wkhtmltopdf.pro' % (qtdir, basedir))
     shell('make')
     shutil.copy('bin/libwkhtmltox0.a', 'bin/wkhtmltox.lib')
 
-    version, simple_version = get_version(basedir)
     os.chdir(os.path.join(basedir, '..'))
     shell('makensis -DVERSION=%s -DSIMPLE_VERSION=%s -DTARGET=%s wkhtmltox.nsi' % \
             (version, simple_version, config))
@@ -489,7 +492,8 @@ def build_linux_schroot(config, basedir, clean):
     lines.append('make install || exit 1')
     lines.append('cd ../app')
     lines.append('rm -f bin/*')
-    lines.append('GIT_DIR=../../../.git ../qt/bin/qmake ../../../wkhtmltopdf.pro')
+    lines.append('export WKHTMLTOX_VERSION=%s' % version)
+    lines.append('../qt/bin/qmake ../../../wkhtmltopdf.pro')
     lines.append('make -j%d || exit 1' % CPU_COUNT)
     lines.append('strip bin/wkhtmltopdf bin/wkhtmltoimage')
     lines.append('cp bin/wkhtmlto* ../wkhtmltox-%s/bin' % version)

@@ -43,7 +43,8 @@ win32-g++*: QMAKE_LFLAGS += -static-libgcc -static-libstdc++
 QT += webkit network xmlpatterns svg
 
 # version related information
-VERSION_TEXT=$$cat($$PWD/VERSION)
+VERSION_TEXT=$$(WKHTMLTOX_VERSION)
+isEmpty(VERSION_TEXT): $$cat($$PWD/VERSION)
 VERSION_LIST=$$split(VERSION_TEXT, "-")
 count(VERSION_LIST, 1) {
     VERSION=$$VERSION_TEXT
@@ -51,7 +52,6 @@ count(VERSION_LIST, 1) {
 } else {
     VERSION=$$member(VERSION_LIST, 0)
     BUILD=$$member(VERSION_LIST, 1)
-    system(git rev-parse HEAD):BUILD=$$system(git rev-parse HEAD)
     FULL_VERSION=$$VERSION-$$BUILD
 }
 
