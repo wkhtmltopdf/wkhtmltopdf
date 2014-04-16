@@ -214,10 +214,13 @@ def get_version(basedir):
     text = open(os.path.join(basedir, '..', 'VERSION'), 'r').read()
     if '-' not in text:
         return (text, text)
-    text = text[:text.index('-')]
+    version = text[:text.index('-')]
     os.chdir(os.path.join(basedir, '..'))
-    hash = subprocess.check_output(['git', 'rev-parse', '--short', 'HEAD']).strip()
-    return ('%s-%s' % (text, hash), text)
+    try:
+        hash = subprocess.check_output(['git', 'rev-parse', '--short', 'HEAD'], stderr=subprocess.STDOUT).strip()
+    except subprocess.CalledProcessError:
+        return (text, version)
+    return ('%s-%s' % (version, hash), version)
 
 def build_openssl(config, basedir):
     cfg = None
