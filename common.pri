@@ -32,23 +32,13 @@ exists($$QMAKE_LIBDIR_QT/libQtGui.so) {
     DEFINES += QT_STATIC
 }
 
-win32-msvc2010 {
-} else {
-	MOC_DIR = ../../build
-	OBJECTS_DIR = ../../build
-	UI_DIR = ../../build
-}
-
+MOC_DIR      = ../../build
+OBJECTS_DIR  = ../../build
+UI_DIR       = ../../build
 INCLUDEPATH += ../../include
 
-win32 {
-    CONFIG += console
-}
-
-win32-g++* {
-    QMAKE_LFLAGS += -static-libgcc
-    QMAKE_LFLAGS += -static-libstdc++
-}
+win32:      CONFIG += console
+win32-g++*: QMAKE_LFLAGS += -static-libgcc -static-libstdc++
 
 QT += webkit network xmlpatterns svg
 
