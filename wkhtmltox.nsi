@@ -17,7 +17,7 @@ VIAddVersionKey  "FileVersion"     "${VERSION}"
 
 CRCCheck             force
 SetCompressor /SOLID lzma
-
+SetCompressorDictSize 64
 RequestExecutionLevel admin
 
 !insertmacro MUI_PAGE_LICENSE "COPYING"
