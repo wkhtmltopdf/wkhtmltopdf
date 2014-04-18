@@ -308,31 +308,43 @@ def build_msvc(config, basedir, clean, debug):
 
     os.environ.update(eval(stdout.strip()))
 
-    build_msvc_winsdk71(config, basedir, clean, debug)
+    build_msvc_common(config, basedir, clean, debug)
 
 # --------------------------------------------------------------- MSVC via Windows SDK 7.1
 
 def check_msvc_winsdk71(config):
-    for key in ['Configuration', 'TARGET_PLATFORM', 'TARGET_CPU']:
-        if not key in os.environ:
-            error("Please run under appropriate 'Windows SDK 7.1 Command Prompt'.")
-
-    if os.environ['TARGET_PLATFORM'] not in ['XP', 'LH', 'SRV', 'LHS']:
-        error("Please configure for 'Windows Server 2008 Release' or earlier.")
-
-    if os.environ['Configuration'] != 'Release':
-        error("Please configure for release mode.")
-
-    if os.environ['TARGET_CPU'] not in ['x86', 'x64']:
-        error("Please configure CPU for either x86 or x64.")
-
-    if os.environ['TARGET_CPU'] == 'x86' and config == 'msvc2010-win64':
-        error("Error: SDK configured for x86 but trying to build 64-bit.")
-
-    if os.environ['TARGET_CPU'] == 'x64' and config == 'msvc2010-win32':
-        error("Error: SDK configured for x64 but trying to build 32-bit.")
+    for pfile in ['ProgramFiles(x86)', 'ProgramFiles']:
+        if pfile in os.environ and exists(os.path.join(os.environ[pfile], 'Microsoft SDKs', 'Windows', 'v7.1', 'Bin', 'SetEnv.cmd')):
+            return
+    error("Unable to detect the location of Windows SDK 7.1")
 
 def build_msvc_winsdk71(config, basedir, clean, debug):
+    arch = config[config.rindex('-'):]
+    setenv = None
+    for pfile in ['ProgramFiles(x86)', 'ProgramFiles']:
+        if not pfile in os.environ:
+            continue
+        setenv = os.path.join(os.environ[pfile], 'Microsoft SDKs', 'Windows', 'v7.1', 'Bin', 'SetEnv.cmd')
+
+    mode = debug and '/Debug' or '/Release'
+    if arch == 'win64':
+        args = '/2008 /x64 %s' % mode
+    else:
+        args = '/2008 /x86 %s' % mode
+
+    python = sys.executable
+    process = subprocess.Popen('("%s" %s>nul)&&"%s" -c "import os; print repr(os.environ)"' % (
+        setenv, args, python), stdout=subprocess.PIPE, shell=True)
+    stdout, _ = process.communicate()
+    exitcode = process.wait()
+    if exitcode != 0:
+        error("unable to initialize the environment for Windows SDK 7.1")
+
+    os.environ.update(eval(stdout.strip()))
+
+    build_msvc_common(config, basedir, clean, debug)
+
+def build_msvc_common(config, basedir, clean, debug):
     if debug:
         ssl = OPENSSL['build']
         cfg = QT_CONFIG['common']

@@ -16,21 +16,13 @@ Building is currently supported only on the current 64-bit Debian stable release
 Prerequisites: Windows
 ----------------------
 
-* Install Visual Studio ([2013 Express](http://www.microsoft.com/en-US/download/details.aspx?id=40787) is recommended) or follow instructions for [Windows SDK 7.1](http://qt-project.org/wiki/Category:Tools::msvc)
+* Install Visual Studio 2008 or later ([2013 Express](http://www.microsoft.com/en-US/download/details.aspx?id=40787) is recommended) or follow instructions for [Windows SDK 7.1](http://qt-project.org/wiki/Category:Tools::msvc)
 * Do "Windows Update" to ensure that VC/SDK security patches are up-to-date
 * Install latest ActivePerl from http://www.activestate.com/activeperl/downloads
 * Install latest Python 2.7 from http://www.python.org/downloads/windows/
 * Install NSIS 2.46 from http://nsis.sourceforge.net/Download
 * Make sure that you can run "git". If not, add it to the PATH or reinstall
   with option "Run Git from the Windows Command Prompt".
-* **Skip this step if you are using Visual Studio**. If you are using Windows SDK 7.1, then start "Windows SDK 7.1 Command Prompt" for "Windows Server 2008 Release".
-  A 32-bit environment is available by running (all on one line)
-
-      %WINDIR%\System32\cmd.exe /E:ON /V:ON /T:0E /K "%ProgramFiles%\Microsoft SDKs\Windows\v7.1\Bin\SetEnv.cmd" /2008 /Release /x86
-
-  or alternatively, a 64-bit environment can be started by running:
-
-      %WINDIR%\System32\cmd.exe /E:ON /V:ON /T:0E /K "%ProgramFiles%\Microsoft SDKs\Windows\v7.1\Bin\SetEnv.cmd" /2008 /Release /x64
 
 Building
 --------
