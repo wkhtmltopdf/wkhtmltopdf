@@ -28,6 +28,7 @@ if [ $# -ne 1 ]; then
 fi
 
 # install required packages
+apt-get update
 apt-get install --assume-yes git-core xz-utils build-essential mingw-w64 nsis debootstrap schroot rinse
 
 # create the directory which will hold the chroot environments
