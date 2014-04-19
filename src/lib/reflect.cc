@@ -38,15 +38,15 @@ bool ReflectSimple::set(const char * name, const QString & value) {
 QString ReflectClass::get(const char * name) {
 	int i=0;
 	while (name[i] !=0 && name[i] != '.' && name[i] != '[') ++i;
-	if (!elms.contains(QString::fromAscii(name, i))) return QString();
-	return elms[QString::fromAscii(name,i)]->get(name + (name[i] == '.'?i+1:i));
+	if (!elms.contains(QString::fromLatin1(name, i))) return QString();
+	return elms[QString::fromLatin1(name,i)]->get(name + (name[i] == '.'?i+1:i));
 }
 
 bool ReflectClass::set(const char * name, const QString & value) {
 	int i=0;
 	while (name[i] !=0 && name[i] != '.' && name[i] != '[') ++i;
-	if (!elms.contains(QString::fromAscii(name, i))) return false;
-	return elms[QString::fromAscii(name,i)]->set(name + (name[i] == '.'?i+1:i), value);
+	if (!elms.contains(QString::fromLatin1(name, i))) return false;
+	return elms[QString::fromLatin1(name,i)]->set(name + (name[i] == '.'?i+1:i), value);
 }
 
 

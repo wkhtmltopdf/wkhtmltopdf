@@ -21,7 +21,11 @@
 #include "outputter.hh"
 #include <QTextDocument>
 
+#if QT_VERSION >= 0x050000
+#define S(x) x.toHtmlEscaped().toUtf8().constData()
+#else
 #define S(x) Qt::escape(x).toUtf8().constData()
+#endif
 
 class HtmlOutputter: public Outputter {
 private:

@@ -26,8 +26,7 @@
 #endif
 #endif
 
-#include <QCleanlooksStyle>
-#include <QCommonStyle>
+#include <QProxyStyle>
 #include <QFile>
 #include <QFileInfo>
 #include <QImageWriter>
@@ -40,10 +39,10 @@
 /**
  * Custom simplistic style
  */
-class DLL_PUBLIC MyLooksStyle: public QCleanlooksStyle {
+class DLL_PUBLIC MyLooksStyle: public QProxyStyle {
 	Q_OBJECT
 public:
-	typedef QCleanlooksStyle parent_t;
+	typedef QProxyStyle parent_t;
 	MyLooksStyle();
 	void drawPrimitive( PrimitiveElement element, const QStyleOption * option, QPainter * painter, const QWidget * widget = 0 ) const;
 	bool weAreDrawingForms;

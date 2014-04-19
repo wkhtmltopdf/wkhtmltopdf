@@ -229,7 +229,7 @@ struct DLL_LOCAL ReflectImpl< QList< X> >: public Reflect {
 			next = 0;
 			while (name[next] != '\0' && name[next] != ']') ++next;
 			bool ok=true;
-			elm = QString::fromAscii(name+1,next-1).toInt(&ok);
+			elm = QString::fromLatin1(name+1,next-1).toInt(&ok);
 			if (name[next] == ']') ++next;
 			return ok;
 		}

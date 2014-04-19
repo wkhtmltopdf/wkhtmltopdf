@@ -20,7 +20,6 @@
 
 #include "pdfcommandlineparser.hh"
 #include "progressfeedback.hh"
-#include <QCleanlooksStyle>
 #include <QCommonStyle>
 #include <QPainter>
 #include <QStyleOption>

@@ -41,6 +41,7 @@ win32:      CONFIG += console
 win32-g++*: QMAKE_LFLAGS += -static-libgcc -static-libstdc++
 
 QT += webkit network xmlpatterns svg
+greaterThan(QT_MAJOR_VERSION, 4): QT += webkitwidgets
 
 # version related information
 VERSION_TEXT=$$(WKHTMLTOX_VERSION)

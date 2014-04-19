@@ -26,7 +26,7 @@
 
 #include "outline_p.hh"
 #include "pdfsettings.hh"
-#include <QTextOStream>
+#include <QTextStream>
 
 namespace wkhtmltopdf {
 
