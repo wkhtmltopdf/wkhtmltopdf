@@ -44,7 +44,7 @@ QT += webkit network xmlpatterns svg
 
 # version related information
 VERSION_TEXT=$$(WKHTMLTOX_VERSION)
-isEmpty(VERSION_TEXT): $$cat($$PWD/VERSION)
+isEmpty(VERSION_TEXT): VERSION_TEXT=$$cat($$PWD/VERSION)
 VERSION_LIST=$$split(VERSION_TEXT, "-")
 count(VERSION_LIST, 1) {
     VERSION=$$VERSION_TEXT
