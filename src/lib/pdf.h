@@ -42,7 +42,10 @@ CAPI(int) wkhtmltopdf_extended_qt();
 CAPI(const char *) wkhtmltopdf_version();
 
 CAPI(wkhtmltopdf_global_settings *) wkhtmltopdf_create_global_settings();
+CAPI(void) wkhtmltopdf_destroy_global_settings(wkhtmltopdf_global_settings *);
+
 CAPI(wkhtmltopdf_object_settings *) wkhtmltopdf_create_object_settings();
+CAPI(void) wkhtmltopdf_destroy_object_settings(wkhtmltopdf_object_settings *);
 
 CAPI(int) wkhtmltopdf_set_global_setting(wkhtmltopdf_global_settings * settings, const char * name, const char * value);
 CAPI(int) wkhtmltopdf_get_global_setting(wkhtmltopdf_global_settings * settings, const char * name, char * value, int vs);
