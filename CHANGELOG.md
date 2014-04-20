@@ -1,5 +1,6 @@
 v0.12.1 (unreleased)
 --------------------
+* removed support for PostScript output which is not supported in QT5
 * **#1502**: fix spurious "exit with code 1 due to http error: 1xxx" errors
 * **#1504**: **[qt]** fix rendering issues for JPEG with XMP metadata
 * **#1507**: **[qt]** fix crash when CSS widows are specified
@@ -12,6 +13,7 @@ v0.12.1 (unreleased)
 * **#1586**: **[qt]** suppress blank page generated if the first cell spans multiple pages
 * **#1631**: **[qt]** crash when hiding header for a specific page
 * fix compilation failures when not building with patched QT/WebKit
+* support building with non-patched QT5
 * generate API documentation for libwkhtmltox (on the website)
 * display version in compiled binary properly under various scenarios
 * introduce a single unified build script for Windows and Linux (Mac OS X not supported for now)
