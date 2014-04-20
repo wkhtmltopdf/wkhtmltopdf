@@ -124,7 +124,6 @@
  * - \b margin.bottom Size of the bottom margin, e.g. "2cm"
  * - \b margin.left Size of the left margin, e.g. "2cm"
  * - \b margin.right Size of the right margin, e.g. "2cm"
- * - \b outputFormat The format of the output document, must be ether "", "pdf" or "ps".
  * - \b imageDPI The maximal DPI to use for images in the pdf document.
  * - \b imageQuality The jpeg compression factor to use when producing the pdf document, e.g. "92".
  * - \b useNativeFormatPrinter Should we use QPrinter::NativeFormat when creating the pdf file? Must be either "true" or "false". (Mac OS X only).

@@ -136,9 +136,6 @@ struct DLL_PUBLIC PdfGlobal {
 	//! Margin related settings
 	Margin margin;
 
-	//! Specify the output format we should use
-	QString outputFormat;
-
 	QString viewportSize;
 
 	int imageDPI;

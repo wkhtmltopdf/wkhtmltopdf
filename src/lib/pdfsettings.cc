@@ -127,7 +127,6 @@ struct DLL_LOCAL ReflectImpl<PdfGlobal>: public ReflectClass {
 		WKHTMLTOPDF_REFLECT(documentTitle);
 		WKHTMLTOPDF_REFLECT(useCompression);
         WKHTMLTOPDF_REFLECT(margin);
-        WKHTMLTOPDF_REFLECT(outputFormat);
         WKHTMLTOPDF_REFLECT(imageDPI);
         WKHTMLTOPDF_REFLECT(imageQuality);
         WKHTMLTOPDF_REFLECT(useNativeFormatPrinter);

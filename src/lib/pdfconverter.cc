@@ -245,7 +245,7 @@ qreal PdfConverterPrivate::calculateHeaderHeight(PageObject & object, QWebPage &
     typedef QPair<QWebElement, QString> p_t;
 
     TempFile   tempObj;
-    QString    tempFile = tempObj.create(settings.outputFormat == "ps"?".ps":".pdf");
+    QString    tempFile = tempObj.create(".pdf");
 
     QPainter * testPainter = new QPainter();
     QPrinter * testPrinter = createPrinter(tempFile);
@@ -347,10 +347,10 @@ void PdfConverterPrivate::pagesLoaded(bool ok) {
 			 lout = "/dev/stdout";
 		 else
 #endif
-			 lout = tempOut.create(settings.outputFormat == "ps"?".ps":".pdf");
+			 lout = tempOut.create(".pdf");
 	}
 	if (settings.out.isEmpty())
-	  lout = tempOut.create(settings.outputFormat == "ps"?".ps":".pdf");
+	  lout = tempOut.create(".pdf");
 
 	printer = new QPrinter(settings.resolution);
 	if (settings.dpi != -1) printer->setResolution(settings.dpi);
