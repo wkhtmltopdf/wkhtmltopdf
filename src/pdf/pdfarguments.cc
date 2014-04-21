@@ -240,10 +240,8 @@ PdfCommandLineParser::PdfCommandLineParser(PdfGlobal & s, QList<PdfObject> & ps)
 	addWebArgs(od.web);
 	extended(true);
  	qthack(false);
-#if QT_VERSION >= 0x040500 //Not printing the background was added in QT4.5
  	addarg("no-background",0,"Do not print background", new ConstSetter<bool>(od.web.background, false));
  	addarg("background",0,"Do print background", new ConstSetter<bool>(od.web.background, true));
-#endif
 
 	extended(true);
  	qthack(true);

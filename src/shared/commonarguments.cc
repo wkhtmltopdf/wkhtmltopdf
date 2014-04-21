@@ -173,24 +173,16 @@ void CommandLineParserBase::addWebArgs(Web & s) {
  	addarg("disable-plugins",0,"Disable installed plugins", new ConstSetter<bool>(s.enablePlugins,false));
 
 	addarg("minimum-font-size",0,"Minimum font size", new IntSetter(s.minimumFontSize,"int"));
-
-#if QT_VERSION >= 0x040500 //Not printing the background was added in QT4.5
  	addarg("user-style-sheet",0,"Specify a user style sheet, to load with every page", new QStrSetter(s.userStyleSheet,"url"));
-#endif
-
-#if QT_VERSION >= 0x040600
 	addarg("no-images",0,"Do not load or print images", new ConstSetter<bool>(s.loadImages, false));
 	addarg("images",0,"Do load or print images", new ConstSetter<bool>(s.loadImages, true));
-#endif
 
 	addarg("disable-javascript",'n',"Do not allow web pages to run javascript", new ConstSetter<bool>(s.enableJavascript,false));
 	addarg("enable-javascript",0,"Do allow web pages to run javascript", new ConstSetter<bool>(s.enableJavascript,true));
 
 	extended(true);
  	qthack(true);
-#if QT_VERSION >= 0x040600
  	qthack(false);
-#endif
  	addarg("encoding", 0, "Set the default text encoding, for input", new QStrSetter(s.defaultEncoding,"encoding"));
 
 
@@ -224,10 +216,8 @@ void CommandLineParserBase::addPageLoadArgs(LoadPage & s) {
 
 	addarg("debug-javascript", 0,"Show javascript debugging output", new ConstSetter<bool>(s.debugJavascript, true));
 	addarg("no-debug-javascript", 0,"Do not show javascript debugging output", new ConstSetter<bool>(s.debugJavascript, false));
-#if QT_VERSION >= 0x040600
 	addarg("stop-slow-scripts", 0, "Stop slow running javascripts", new ConstSetter<bool>(s.stopSlowScripts, true));
 	addarg("no-stop-slow-scripts", 0, "Do not Stop slow running javascripts", new ConstSetter<bool>(s.stopSlowScripts, false));
-#endif
 	addarg("run-script", 0, "Run this additional javascript after the page is done loading (repeatable)", new StringListSetter(s.runScript, "js"));
 
 	addarg("checkbox-svg", 0, "Use this SVG file when rendering unchecked checkboxes", new QStrSetter(s.checkboxSvg, "path", ""));

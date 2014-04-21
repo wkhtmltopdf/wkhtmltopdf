@@ -188,11 +188,9 @@ ResourceObject::ResourceObject(MultiPageLoaderPrivate & mpl, const QUrl & u, con
 		// to retrieve a web page, it's not needed to use a fully transparent
 		// http proxy. Moreover, the CONNECT() method is frequently disabled
 		// by proxies administrators.
-#if QT_VERSION >= 0x040500
 		if (settings.proxy.type == QNetworkProxy::HttpProxy)
 			proxy.setCapabilities(QNetworkProxy::CachingCapability |
 			                      QNetworkProxy::TunnelingCapability);
-#endif
 		if (!settings.proxy.user.isEmpty())
 			proxy.setUser(settings.proxy.user);
 		if (!settings.proxy.password.isEmpty())
