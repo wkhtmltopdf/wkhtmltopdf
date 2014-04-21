@@ -55,8 +55,8 @@ chroot         /srv/chroot-wkhtmltopdf/wheezy-amd64/ apt-get update
 linux32 chroot /srv/chroot-wkhtmltopdf/wheezy-i386/  apt-get update
 chroot         /srv/chroot-wkhtmltopdf/wheezy-amd64/ apt-get dist-upgrade --assume-yes
 linux32 chroot /srv/chroot-wkhtmltopdf/wheezy-i386/  apt-get dist-upgrade --assume-yes
-chroot         /srv/chroot-wkhtmltopdf/wheezy-amd64/ apt-get install --assume-yes git-core xz-utils
-linux32 chroot /srv/chroot-wkhtmltopdf/wheezy-i386/  apt-get install --assume-yes git-core xz-utils
+chroot         /srv/chroot-wkhtmltopdf/wheezy-amd64/ apt-get install --assume-yes xz-utils
+linux32 chroot /srv/chroot-wkhtmltopdf/wheezy-i386/  apt-get install --assume-yes xz-utils
 chroot         /srv/chroot-wkhtmltopdf/wheezy-amd64/ apt-get build-dep --assume-yes libqt4-core
 linux32 chroot /srv/chroot-wkhtmltopdf/wheezy-i386/  apt-get build-dep --assume-yes libqt4-core
 
@@ -73,8 +73,8 @@ linux32 chroot /srv/chroot-wkhtmltopdf/centos-5-i386  yum update -y
 chroot         /srv/chroot-wkhtmltopdf/centos-5-amd64 rpm -i /epel-release-5-4.noarch.rpm
 linux32 chroot /srv/chroot-wkhtmltopdf/centos-5-i386  rpm -i /epel-release-5-4.noarch.rpm
 echo "exclude = *.i?86">>/srv/chroot-wkhtmltopdf/centos-5-amd64/etc/yum.conf
-chroot         /srv/chroot-wkhtmltopdf/centos-5-amd64 yum install -y gcc gcc-c++ make qt4-devel openssl-devel diffutils perl xz git
-linux32 chroot /srv/chroot-wkhtmltopdf/centos-5-i386  yum install -y gcc gcc-c++ make qt4-devel openssl-devel diffutils perl xz git
+chroot         /srv/chroot-wkhtmltopdf/centos-5-amd64 yum install -y gcc gcc-c++ make qt4-devel openssl-devel diffutils perl xz
+linux32 chroot /srv/chroot-wkhtmltopdf/centos-5-i386  yum install -y gcc gcc-c++ make qt4-devel openssl-devel diffutils perl xz
 rm /srv/chroot-wkhtmltopdf/centos-5-i386/epel-release-5-4.noarch.rpm
 rm /srv/chroot-wkhtmltopdf/centos-5-amd64/epel-release-5-4.noarch.rpm
 
