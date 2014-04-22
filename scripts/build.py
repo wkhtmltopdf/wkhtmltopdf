@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python2.7
 #
 # Copyright 2014 wkhtmltopdf authors
 #
@@ -409,10 +409,10 @@ def build_linux_schroot(config, basedir):
     shell('chmod +x build.sh')
     shell('schroot -c wkhtmltopdf-%s -- ./build.sh' % config)
 
-def check_centos_schroot(config):
+def check_centos(config):
     pass
 
-def build_centos_schroot(config, basedir):
+def build_centos(config, basedir):
     version, simple_version = get_version(basedir)
 
     dir    = os.path.join(basedir, config)
