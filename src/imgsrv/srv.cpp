@@ -12,6 +12,7 @@
 #include <wkhtmltox/imagesettings.hh>
 #include <wkhtmltox/utilities.hh>
 
+#include <QTcpSocket>
 #include <QTemporaryFile>
 #include <QTextStream>
 #include <QImage>

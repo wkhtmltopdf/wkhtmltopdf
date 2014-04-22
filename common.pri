@@ -17,7 +17,7 @@
 
 unix {
     TEMP = $$[QT_INSTALL_LIBS] libQtGui.prl
-    PRL  = $$[QT_INSTALL_LIBS] QtGui.framework/QtGui.prl
+    PRL  = $$[QT_INSTALL_LIBS] libQtGui.prl
     include($$join(TEMP, "/"))
     include($$join(PRL, "/"))
 }
