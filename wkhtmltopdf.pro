@@ -19,13 +19,3 @@ TEMPLATE = subdirs
 
 CONFIG += ordered
 SUBDIRS = src/lib src/pdf src/image
-
-readme1.target=README_WKHTMLTOPDF
-readme1.commands=make -C src/pdf/ ../../README_WKHTMLTOPDF
-readme1.depends=sub-src-lib-qmake_all
-
-readme2.target=README_WKHTMLTOIMAGE
-readme2.commands=make -C src/image/ ../../README_WKHTMLTOIMAGE
-readme2.depends=sub-src-lib-qmake_all
-
-QMAKE_EXTRA_TARGETS += readme1 readme2

@@ -23,12 +23,6 @@ DESTDIR = ../../bin
 DEPENDPATH += . ../shared
 INCLUDEPATH += . ../shared
 
-readme.target=../../README_WKHTMLTOIMAGE
-readme.commands=LD_LIBRARY_PATH=../../bin/ ../../bin/wkhtmltoimage --readme > ../../README_WKHTMLTOIMAGE
-readme.depends=../../bin/wkhtmltoimage
-
-QMAKE_EXTRA_TARGETS += readme
-
 unix {
     man.target=../../wkhtmltoimage.1.gz
     man.commands=LD_LIBRARY_PATH=../../bin/ ../../bin/wkhtmltoimage --manpage | gzip > $@
