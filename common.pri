@@ -15,22 +15,25 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with wkhtmltopdf.  If not, see <http:#www.gnu.org/licenses/>.
 
-unix {
-    TEMP = $$[QT_INSTALL_LIBS] libQtGui.prl
-    PRL  = $$[QT_INSTALL_LIBS] QtGui.framework/QtGui.prl
-    include($$join(TEMP, "/"))
-    include($$join(PRL, "/"))
+QT4_PRL = libQtGui.prl  QtGui.prl  QtGui.framework/QtGui.prl
+QT5_PRL = libQt5Gui.prl Qt5Gui.prl
+
+for(prl, QT4_PRL):exists($$[QT_INSTALL_LIBS]/$${prl}) {
+    include($$[QT_INSTALL_LIBS]/$${prl})
+    CONFIG += qt_gui_prl_found
+}
+for(prl, QT5_PRL):exists($$[QT_INSTALL_LIBS]/$${prl}) {
+    include($$[QT_INSTALL_LIBS]/$${prl})
+    CONFIG += qt_gui_prl_found
 }
 
-exists($$QMAKE_LIBDIR_QT/libQtGui.so) {
-    DEFINES += QT_SHARED
-} else:exists($$QMAKE_LIBDIR_QT/../bin//QtGui4.dll) {
-    DEFINES += QT_SHARED
-} else:contains(QMAKE_PRL_CONFIG, shared) {
-    DEFINES += QT_SHARED
-} else {
-    DEFINES += QT_STATIC
+qt_gui_prl_found {
+    contains(QMAKE_PRL_CONFIG, static): DEFINES += QT_STATIC
+    else:                               DEFINES += QT_SHARED
 }
+
+# if we can't determine, assume that it is shared
+!qt_gui_prl_found: DEFINES += QT_SHARED
 
 MOC_DIR      = ../../build
 OBJECTS_DIR  = ../../build
