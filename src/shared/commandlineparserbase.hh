@@ -75,10 +75,12 @@ public:
 	//commandlineparserbase.cc
 	void outputSwitches(Outputter * o, bool extended, bool doc) const;
 	virtual char * mapAddress(char * d, char *) const {return d;}
+	virtual void license(FILE * fd) const;
 	virtual void version(FILE * fd) const;
 	void parseArg(int sections, const int argc, const char ** argv, bool & defaultMode, int & arg, char * page);
 
 	virtual QString appName() const = 0;
+	const char *appVersion() const;
 	virtual void usage(FILE * fd, bool extended) const = 0;
 	virtual void manpage(FILE * fd) const = 0;
 	virtual void readme(FILE * fd, bool html) const = 0;

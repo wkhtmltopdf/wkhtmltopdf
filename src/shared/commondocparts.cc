@@ -20,9 +20,7 @@
 
 #include "commandlineparserbase.hh"
 #include "outputter.hh"
-
-#define STRINGIZE_(x) #x
-#define STRINGIZE(x) STRINGIZE_(x)
+#include <QFile>
 
 /*!
   Output the name and version of the program, and also whether we are using a patched qt
@@ -30,9 +28,8 @@
 */
 void CommandLineParserBase::outputName(Outputter * o) const {
 	o->beginSection("Name");
-	o->paragraph(appName()+" " STRINGIZE(FULL_VERSION));
+	o->paragraph(appName()+" "+appVersion());
 	o->endSection();
-
 }
 
 /*!
@@ -41,14 +38,12 @@ void CommandLineParserBase::outputName(Outputter * o) const {
 */
 void CommandLineParserBase::outputLicense(Outputter * o) const {
 	o->beginSection("License");
-	o->paragraph("Copyright (C) 2010 wkhtmltopdf/wkhtmltoimage Authors.");
-	o->endParagraph();
-	o->beginParagraph();
-	o->text("License LGPLv3+: GNU Lesser General Public License version 3 or later ");
-	o->link("http://gnu.org/licenses/lgpl.html");
-	o->text(". This is free software: you are free to change and redistribute it. "
-			"There is NO WARRANTY, to the extent permitted by law.");
-	o->endParagraph();
+	o->paragraph("Copyright (c) 2010-2014 wkhtmltopdf authors");
+	QFile file(":/COPYING");
+	file.open(QIODevice::ReadOnly | QIODevice::Text);
+	QTextStream stream(&file);
+	o->verbatim(stream.readAll());
+	o->endSection();
 }
 
 /*!
@@ -57,10 +52,10 @@ void CommandLineParserBase::outputLicense(Outputter * o) const {
 */
 void CommandLineParserBase::outputAuthors(Outputter * o) const {
 	o->beginSection("Authors");
-	o->paragraph(
-		QString::fromUtf8(
-			"Written by Jan Habermann, Christian Sciberras and Jakob Truelsen. "
-			"Patches by Mehdi Abbad, Lyes Amazouz, Pascal Bach, Emmanuel Bouthenot, Benoit Garret and Mário Silva."));
+	QFile file(":/AUTHORS");
+	file.open(QIODevice::ReadOnly | QIODevice::Text);
+	QTextStream stream(&file);
+	o->verbatim(stream.readAll());
 	o->endSection();
 }
 

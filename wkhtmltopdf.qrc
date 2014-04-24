@@ -1,0 +1,6 @@
+<!DOCTYPE RCC><RCC version="1.0">
+  <qresource>
+    <file>AUTHORS</file>
+    <file>COPYING</file>
+  </qresource>
+</RCC>

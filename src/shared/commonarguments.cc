@@ -90,6 +90,16 @@ struct VersionFunc {
 };
 
 /*!
+  Lambda: show the license
+*/
+struct LicenseFunc {
+    bool operator()(const char **, CommandLineParserBase & p, char *) {
+		p.license(stdout);
+		exit(0);
+	}
+};
+
+/*!
   The next arguments we add will belong to this section
   /param s The name of the section
   /param desc A description of the section
@@ -147,7 +157,8 @@ void CommandLineParserBase::addDocArgs() {
 	extended(false);
 	qthack(false);
 	addarg("help", 'h', "Display help", new Caller<HelpFunc<false> >());
-	addarg("version", 'V' ,"Output version information an exit", new Caller<VersionFunc>());
+	addarg("version", 'V' ,"Output version information and exit", new Caller<VersionFunc>());
+	addarg("license", 0 ,"Output license information and exit", new Caller<LicenseFunc>());
 	addarg("extended-help", 'H',"Display more extensive help, detailing less common command switches", new Caller<HelpFunc<true> >());
 
 	extended(true);

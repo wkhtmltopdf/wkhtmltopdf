@@ -72,22 +72,34 @@ void CommandLineParserBase::outputSwitches(Outputter * o, bool extended, bool do
  	}
 }
 
+#define STRINGIZE_(x) #x
+#define STRINGIZE(x) STRINGIZE_(x)
+
+const char *CommandLineParserBase::appVersion() const {
+#ifdef __EXTENSIVE_WKHTMLTOPDF_QT_HACK__
+	return STRINGIZE(FULL_VERSION) " (patched qt)";
+#else
+	return STRINGIZE(FULL_VERSION);
+#endif
+}
+
 /*!
   Output version information aka. --version
   \param fd The file to output to
 */
 void CommandLineParserBase::version(FILE * fd) const {
+	fprintf(fd, "%s %s\n", appName().toLocal8Bit().constData(), appVersion());
+}
+
+/*!
+  Output license information aka. --license
+  \param fd The file to output to
+*/
+void CommandLineParserBase::license(FILE * fd) const {
  	Outputter * o = Outputter::text(fd,false);
   	outputName(o);
-  	outputLicense(o);
   	outputAuthors(o);
-	o->beginParagraph();
-#ifdef __EXTENSIVE_WKHTMLTOPDF_QT_HACK__
-	o->text("Compiled against wkhtmltopdf patched qt.");
-#else
-	o->bold("Not");
-	o->text(" compiled against wkhtmltopdf patched qt.");
-#endif
+  	outputLicense(o);
 	delete o;
 }
 

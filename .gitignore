@@ -13,6 +13,7 @@ static-build/
 doc/
 man1/
 Makefile
+qrc_wkhtmltopdf.cpp
 Makefile.*
 *_resource.rc
 gitcontrol.bat

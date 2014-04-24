@@ -39,6 +39,7 @@ MOC_DIR      = ../../build
 OBJECTS_DIR  = ../../build
 UI_DIR       = ../../build
 INCLUDEPATH += ../../include
+RESOURCES    = $$PWD/wkhtmltopdf.qrc
 
 win32:      CONFIG += console
 win32-g++*: QMAKE_LFLAGS += -static-libgcc -static-libstdc++
