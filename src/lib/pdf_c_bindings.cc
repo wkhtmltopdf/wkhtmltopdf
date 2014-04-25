@@ -298,7 +298,7 @@ CAPI(int) wkhtmltopdf_init(int use_graphics) {
 		int aa = 1;
 
 		bool ug = true;
-#if defined(Q_WS_X11) || defined(Q_WS_MACX)
+#if defined(Q_OS_UNIX) || defined(Q_OS_MAC)
 #ifdef __EXTENSIVE_WKHTMLTOPDF_QT_HACK__
 		ug = use_graphics;
 		if (!ug) QApplication::setGraphicsSystem("raster");

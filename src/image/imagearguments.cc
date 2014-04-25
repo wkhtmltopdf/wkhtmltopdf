@@ -49,7 +49,7 @@ ImageCommandLineParser::ImageCommandLineParser(wkhtmltopdf::settings::ImageGloba
 	addarg("disable-smart-width", 0, "Use the specified width even if it is not large enough for the content", new ConstSetter<bool>(s.smartWidth, false));
 	addarg("enable-smart-width", 0, "Extend --width to fit unbreakable content", new ConstSetter<bool>(s.smartWidth, true));
 	addarg("transparent",0,"Make the background transparent in pngs", new ConstSetter<bool>(s.transparent, true));
-#ifdef Q_WS_X11
+#ifdef Q_OS_UNIX
 	addarg("use-xserver",0,"Use the X server (some plugins and other stuff might not work without X11)", new ConstSetter<bool>(s.useGraphics,true));
 #endif
 	addGlobalLoadArgs(s.loadGlobal);

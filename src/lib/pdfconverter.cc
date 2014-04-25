@@ -273,7 +273,7 @@ QPrinter * PdfConverterPrivate::createPrinter(const QString & tempFile) {
 
     printer->setOutputFileName(tempFile);
     printer->setOutputFormat(
-#ifdef Q_WS_MACX
+#ifdef Q_OS_MAC
         settings.useNativeFormatPrinter ? QPrinter::NativeFormat : QPrinter::PdfFormat
 #else
         QPrinter::PdfFormat
@@ -358,7 +358,7 @@ void PdfConverterPrivate::pagesLoaded(bool ok) {
 
 	printer->setOutputFileName(lout);
 	printer->setOutputFormat(
-#ifdef Q_WS_MACX
+#ifdef Q_OS_MAC
 		settings.useNativeFormatPrinter ? QPrinter::NativeFormat : QPrinter::PdfFormat
 #else
 		QPrinter::PdfFormat
