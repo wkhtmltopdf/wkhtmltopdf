@@ -32,8 +32,6 @@
 #include <wkhtmltox/dllbegin.inc>
 namespace wkhtmltopdf {
 
-DLL_PUBLIC void dumpDefaultTOCStyleSheet(QTextStream & stream, settings::TableOfContent & s);
-
 class DLL_LOCAL PdfConverterPrivate;
 
 class DLL_PUBLIC PdfConverter: public Converter {

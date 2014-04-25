@@ -224,6 +224,8 @@ DLL_PUBLIC QPrinter::ColorMode strToColorMode(const char * s, bool * ok=0);
 DLL_PUBLIC QString colorModeToStr(QPrinter::ColorMode o);
 
 }
+
+DLL_PUBLIC void dumpDefaultTOCStyleSheet(QTextStream & stream, settings::TableOfContent & s);
 }
 #include <wkhtmltox/dllend.inc>
 #endif //__PDFSETTINGS_HH__
