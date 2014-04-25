@@ -26,12 +26,14 @@ OPENSSL = {
     'build'     : {
         'msvc*-win32*': {
             'configure' : 'VC-WIN32 no-asm',
+            'debug'     : 'debug-VC-WIN32 no-asm',
             'build'     : ['ms\\do_ms.bat', 'nmake /f ms\\nt.mak install'],
             'libs'      : ['ssleay32.lib', 'libeay32.lib'],
             'os_libs'   : '-lUser32 -lAdvapi32 -lGdi32 -lCrypt32'
         },
         'msvc*-win64*': {
             'configure' : 'VC-WIN64A',
+            'debug'     : 'debug-VC-WIN64A',
             'build'     : ['ms\\do_win64a.bat', 'nmake /f ms\\nt.mak install'],
             'libs'      : ['ssleay32.lib', 'libeay32.lib'],
             'os_libs'   : '-lUser32 -lAdvapi32 -lGdi32 -lCrypt32'
@@ -173,18 +175,6 @@ BUILDERS = {
     'mingw-w64-cross-win64': 'mingw64_cross'
 }
 
-BUILDER_FLAGS = {
-    'msvc':          ['clean', 'debug'],
-    'msvc_winsdk71': ['clean', 'debug'],
-    'linux_schroot': ['clean'],
-    'mingw64_cross': ['clean'],
-}
-
-FLAG_HELP = {
-    'clean': 'performs a clean build (instead of an incremental build)',
-    'debug': 'performs a debug build'
-}
-
 # --------------------------------------------------------------- HELPERS
 
 import os, sys, subprocess, shutil, fnmatch, multiprocessing
@@ -192,6 +182,11 @@ import os, sys, subprocess, shutil, fnmatch, multiprocessing
 from os.path import exists
 
 CPU_COUNT = max(2, multiprocessing.cpu_count()-1)   # leave one CPU free
+
+def rchop(s, e):
+    if s.endswith(e):
+        return s[:-len(e)]
+    return s
 
 def error(msg):
     print msg
@@ -272,7 +267,7 @@ MSVC_LOCATION = {
 }
 
 def check_msvc(config):
-    version, arch = config.split('-')
+    version, arch = rchop(config, '-dbg').split('-')
     env_var = MSVC_LOCATION[version]
     if not env_var in os.environ:
         error("%s does not seem to be installed." % version)
@@ -288,8 +283,8 @@ def check_msvc(config):
                        and not exists(os.path.join(vcdir, 'bin', 'x86_amd64', 'cl.exe')):
         error("%s: unable to find the amd64 compiler" % version)
 
-def build_msvc(config, basedir, clean, debug):
-    msvc, arch = config.split('-')
+def build_msvc(config, basedir):
+    msvc, arch = rchop(config, '-dbg').split('-')
     vcdir = os.path.join(os.environ[MSVC_LOCATION[msvc]], '..', '..', 'VC')
     vcarg = 'x86'
     if arch == 'win64':
@@ -308,7 +303,7 @@ def build_msvc(config, basedir, clean, debug):
 
     os.environ.update(eval(stdout.strip()))
 
-    build_msvc_common(config, basedir, clean, debug)
+    build_msvc_common(config, basedir)
 
 # --------------------------------------------------------------- MSVC via Windows SDK 7.1
 
@@ -318,7 +313,7 @@ def check_msvc_winsdk71(config):
             return
     error("Unable to detect the location of Windows SDK 7.1")
 
-def build_msvc_winsdk71(config, basedir, clean, debug):
+def build_msvc_winsdk71(config, basedir):
     arch = config[config.rindex('-'):]
     setenv = None
     for pfile in ['ProgramFiles(x86)', 'ProgramFiles']:
@@ -342,22 +337,9 @@ def build_msvc_winsdk71(config, basedir, clean, debug):
 
     os.environ.update(eval(stdout.strip()))
 
-    build_msvc_common(config, basedir, clean, debug)
+    build_msvc_common(config, basedir)
 
-def build_msvc_common(config, basedir, clean, debug):
-    if debug:
-        ssl = OPENSSL['build']
-        cfg = QT_CONFIG['common']
-        for key in ssl:
-            if fnmatch.fnmatch(config, key):
-                ssl[key]['configure'] = 'debug-'+ssl[key]['configure']
-        cfg[cfg.index('-release')] = '-debug'
-        cfg[cfg.index('-webkit')]  = '-webkit-debug'
-        config += '-dbg'
-
-    if clean:
-        rmdir(os.path.join(basedir, config))
-
+def build_msvc_common(config, basedir):
     version, simple_version = get_version(basedir)
     ssl_libs = build_openssl(config, basedir)
 
@@ -412,12 +394,9 @@ MINGW_W64_PREFIX = {
 }
 
 def check_mingw64_cross(config):
-    shell('%s-gcc --version' % MINGW_W64_PREFIX[config])
+    shell('%s-gcc --version' % MINGW_W64_PREFIX[rchop(config, '-dbg')])
 
-def build_mingw64_cross(config, basedir, clean):
-    if clean:
-        rmdir(os.path.join(basedir, config))
-
+def build_mingw64_cross(config, basedir):
     version, simple_version = get_version(basedir)
     ssl_libs = build_openssl(config, basedir)
 
@@ -433,7 +412,7 @@ def build_mingw64_cross(config, basedir, clean):
     args.append('--prefix=%s'   % qtdir)
     args.append('-I %s/include' % ssldir)
     args.append('-L %s/lib'     % ssldir)
-    args.append('-device-option CROSS_COMPILE=%s-' % MINGW_W64_PREFIX[config])
+    args.append('-device-option CROSS_COMPILE=%s-' % MINGW_W64_PREFIX[rchop(config, '-dbg')])
 
     os.environ['OPENSSL_LIBS'] = '-lssl -lcrypto -L %s/lib %s' % (ssldir, ssl_libs)
 
@@ -452,7 +431,7 @@ def build_mingw64_cross(config, basedir, clean):
     # set up cross compiling prefix correctly (isn't set by make install)
     os.environ['QTDIR'] = qtdir
     os.environ['WKHTMLTOX_VERSION'] = version
-    shell('%s/bin/qmake -set CROSS_COMPILE %s-' % (qtdir, MINGW_W64_PREFIX[config]))
+    shell('%s/bin/qmake -set CROSS_COMPILE %s-' % (qtdir, MINGW_W64_PREFIX[rchop(config, '-dbg')]))
     shell('%s/bin/qmake -spec win32-g++-4.6 %s/../wkhtmltopdf.pro' % (qtdir, basedir))
     shell('make')
     shutil.copy('bin/libwkhtmltox0.a', 'bin/wkhtmltox.lib')
@@ -464,12 +443,9 @@ def build_mingw64_cross(config, basedir, clean):
 # -------------------------------------------------- Linux schroot environment
 
 def check_linux_schroot(config):
-    shell('schroot -c wkhtmltopdf-%s -- gcc --version' % config)
+    shell('schroot -c wkhtmltopdf-%s -- gcc --version' % rchop(config, '-dbg'))
 
-def build_linux_schroot(config, basedir, clean):
-    if clean:
-        rmdir(os.path.join(basedir, config))
-
+def build_linux_schroot(config, basedir):
     version, simple_version = get_version(basedir)
 
     dir    = os.path.join(basedir, config)
@@ -520,25 +496,16 @@ def build_linux_schroot(config, basedir, clean):
     open(script, 'w').write('\n'.join(lines))
     os.chdir(dir)
     shell('chmod +x build.sh')
-    shell('schroot -c wkhtmltopdf-%s -- ./build.sh' % config)
+    shell('schroot -c wkhtmltopdf-%s -- ./build.sh' % rchop(config, '-dbg'))
 
 # --------------------------------------------------------------- command line
 
 def usage(exit_code=2):
-    print "Usage: scripts/build.py <target> [flags]\n\nThe supported targets and associated flags are:\n",
+    print "Usage: scripts/build.py <target> [-clean] [-debug]\n\nThe supported targets are:\n",
     opts = list(BUILDERS.keys())
-    size = 1 + max([len(opt) for opt in opts])
     opts.sort()
     for opt in opts:
-        flags = BUILDER_FLAGS.get(BUILDERS[opt])
-        if flags:
-            print '* %s[-%s]' % (opt.ljust(size), '] [-'.join(flags))
-        else:
-            print '* %s' % opt.ljust(size)
-    size = max([len(key) for key in FLAG_HELP])
-    print "\nFlags:"
-    for flag in FLAG_HELP:
-        print "-%s: %s" % (flag.ljust(size), FLAG_HELP[flag])
+        print '* %s' % opt
     sys.exit(exit_code)
 
 def main():
@@ -552,18 +519,28 @@ def main():
     if config not in BUILDERS:
         usage()
 
-    args   = { 'config': config, 'basedir': os.path.realpath(basedir) }
-    flags  = BUILDER_FLAGS.get(BUILDERS[config]) or []
-
     for arg in sys.argv[2:]:
-        if not arg.startswith('-') or arg[1:] not in flags:
+        if not arg in ['-clean', '-debug']:
             usage()
 
-    for flag in flags:
-        args[flag.replace('-', '_')] = '-'+flag in sys.argv[2:]
+    final_config = config
+    if '-debug' in sys.argv[2:]:
+        # use the debug OpenSSL configuration if possible
+        ssl = OPENSSL['build']
+        for key in ssl:
+            if fnmatch.fnmatch(config, key) and 'debug' in ssl[key]:
+                ssl[key]['configure'] = ssl[key]['debug']
+        # use a debug build of QT and WebKit
+        cfg = QT_CONFIG['common']
+        cfg[cfg.index('-release')] = '-debug'
+        cfg[cfg.index('-webkit')]  = '-webkit-debug'
+        final_config += '-dbg'
 
-    globals()['check_%s' % BUILDERS[config]](config)
-    globals()['build_%s' % BUILDERS[config]](**args)
+    if '-clean' in sys.argv[2:]:
+        rmdir(os.path.join(basedir, config))
+
+    globals()['check_%s' % BUILDERS[config]](final_config)
+    globals()['build_%s' % BUILDERS[config]](final_config, os.path.realpath(basedir))
 
 if __name__ == '__main__':
     main()
