@@ -67,7 +67,7 @@ void CommandLineParserBase::outputStaticProblems(Outputter * o) const {
 	o->beginSection("Static version");
 	o->beginParagraph();
 	o->text("On the wkhtmltopdf website you can download a static version of wkhtmltopdf ");
-	o->link("http://code.google.com/p/wkhtmltopdf/downloads/list");
+	o->link("http://wkhtmltopdf.org/downloads.html");
 	o->text(". This static binary will work on most systems and comes with a build in patched QT.");
 	o->endParagraph();
 
@@ -75,9 +75,7 @@ void CommandLineParserBase::outputStaticProblems(Outputter * o) const {
 	o->text("Unfortunately the static binary is not particularly static, on Linux it depends "
 			"on both glibc and openssl, furthermore you will need to have an xserver installed "
 			"but not necessary running. You will need to have different fonts install including "
-			"xfonts-scalable (Type1), and msttcorefonts.  See ");
-	o->link("http://code.google.com/p/wkhtmltopdf/wiki/static");
-	o->text(" for trouble shouting.");
+			"xfonts-scalable (Type1), and msttcorefonts.");
 	o->endParagraph();
 	o->endSection();
 }

@@ -153,15 +153,6 @@ void PdfCommandLineParser::outputPageBreakDoc(Outputter * o) const {
 		"There is no easy solution to this problem, until this is solved try organizing "
 		"your HTML documents such that it contains many lines on which pages can be cut "
 		"cleanly.");
-	o->beginParagraph();
-	o->text("See also: ");
-	o->link("http://code.google.com/p/wkhtmltopdf/issues/detail?id=9");
-	o->text(", ");
-	o->link("http://code.google.com/p/wkhtmltopdf/issues/detail?id=33");
-	o->text(" and ");
-	o->link("http://code.google.com/p/wkhtmltopdf/issues/detail?id=57");
-	o->text(".");
-	o->endParagraph();
 	o->endSection();
 }
 
@@ -227,22 +218,22 @@ void PdfCommandLineParser::outputTableOfContentDoc(Outputter * o) const {
 	o->beginSection("Table Of Content");
 	o->paragraph("A table of content can be added to the document by adding a toc object "
 				 "to the command line. For example:");
-	o->verbatim("wkhtmltopdf toc http://doc.trolltech.com/4.6/qstring.html qstring.pdf\n");
+	o->verbatim("wkhtmltopdf toc http://qt-project.org/doc/qt-4.8/qstring.html qstring.pdf\n");
 	o->paragraph("The table of content is generated based on the H tags in the input "
 				 "documents. First a XML document is generated, then it is converted to "
 				 "HTML using XSLT.");
 	o->paragraph("The generated XML document can be viewed by dumping it to a file using "
 				 "the --dump-outline switch. For example:");
-	o->verbatim("wkhtmltopdf --dump-outline toc.xml http://doc.trolltech.com/4.6/qstring.html qstring.pdf\n");
+	o->verbatim("wkhtmltopdf --dump-outline toc.xml http://qt-project.org/doc/qt-4.8/qstring.html qstring.pdf\n");
 	o->paragraph("The XSLT document can be specified using the --xsl-style-sheet switch. "
 				 "For example:");
-	o->verbatim("wkhtmltopdf toc --xsl-style-sheet my.xsl http://doc.trolltech.com/4.6/qstring.html qstring.pdf\n");
+	o->verbatim("wkhtmltopdf toc --xsl-style-sheet my.xsl http://qt-project.org/doc/qt-4.8/qstring.html qstring.pdf\n");
 	o->paragraph("The --dump-default-toc-xsl switch can be used to dump the default "
 				 "XSLT style sheet to stdout. This is a good start for writing your "
 				 "own style sheet");
 	o->verbatim("wkhtmltopdf --dump-default-toc-xsl");
 	o->paragraph("The XML document is in the namespace "
-				 "\"http://code.google.com/p/wkhtmltopdf/outline\" "
+				 "\"http://wkhtmltopdf.org/outline\" "
 				 "it has a root node called \"outline\" which contains a number of "
 				 "\"item\" nodes. An item can contain any number of item. These are the "
 				 "outline subsections to the section the item represents. A item node "
@@ -289,9 +280,7 @@ void PdfCommandLineParser::outputContact(Outputter * o) const {
 	o->beginSection("Contact");
 	o->beginParagraph();
 	o->text("If you experience bugs or want to request new features please visit ");
-	o->link("http://code.google.com/p/wkhtmltopdf/issues/list");
-	o->text(", if you have any problems or comments please feel free to contact me: see ");
-	o->link("http://www.madalgo.au.dk/~jakobt/#about");
+	o->link("https://github.com/wkhtmltopdf/wkhtmltopdf/issues");
 	o->endParagraph();
 	o->endSection();
 }
@@ -319,58 +308,9 @@ void PdfCommandLineParser::outputArgsFromStdin(Outputter * o) const {
 				 "will act as a separate invocation of wkhtmltopdf, with the arguments specified "
 				 "on the given line combined with the arguments given to wkhtmltopdf");
 	o->paragraph("For example one could do the following:");
-	o->verbatim("echo \"http://doc.trolltech.com/4.5/qapplication.html qapplication.pdf\" >> cmds\n"
-				"echo \"cover google.com http://en.wikipedia.org/wiki/Qt_(toolkit) qt.pdf\" >> cmds\n"
+	o->verbatim("echo \"http://qt-project.org/doc/qt-4.8/qapplication.html qapplication.pdf\" >> cmds\n"
+				"echo \"cover google.com http://en.wikipedia.org/wiki/Qt_(software) qt.pdf\" >> cmds\n"
 				"wkhtmltopdf --read-args-from-stdin --book < cmds\n");
-	o->endSection();
-}
-
-/*!
-  Output information on how to compile
-  \param o The outputter to output to
-*/
-void PdfCommandLineParser::outputCompilation(Outputter * o) const {
-	o->beginSection("Compilation");
-	o->paragraph("It can happen that the static binary does not work for your system "
-				 "for one reason or the other, in that case you might need to compile "
-				 "wkhtmltopdf yourself.");
-	o->beginParagraph();
-	o->bold("GNU/Linux:");
-	o->endParagraph();
-	o->paragraph("Before compilation you will need to install dependencies: X11, gcc, "
-				 "git and openssl. On Debian/Ubuntu this can be done as follows:");
-	o->verbatim("sudo apt-get build-dep libqt4-gui libqt4-network libqt4-webkit\n"
-				"sudo apt-get install openssl build-essential xorg git-core git-doc libssl-dev\n");
-	o->paragraph("On other systems you must use your own package manager, the packages "
-				 "might be named differently.");
-	o->paragraph("First you must check out the modified version of QT");
-	o->verbatim("git clone git://gitorious.org/+wkhtml2pdf/qt/wkhtmltopdf-qt.git wkhtmltopdf-qt");
-	o->paragraph("Next you must configure, compile and install QT, note this will take "
-				 "quite some time, depending on what arguments you use to configure qt");
-	o->verbatim("cd wkhtmltopdf-qt\n"
-				"./configure -nomake tools,examples,demos,docs,translations -opensource -prefix ../wkqt\n"
-				"make -j3\n"
-				"make install\n"
-				"cd ..\n");
-	o->paragraph("All that is needed now is, to compile wkhtmltopdf.");
-	o->verbatim("git clone git://github.com/antialize/wkhtmltopdf.git wkhtmltopdf\n"
-				"cd wkhtmltopdf\n"
-				"../wkqt/bin/qmake\n"
-				"make -j3\n");
-	o->paragraph("You show now have a binary called wkhtmltopdf in the currently folder that "
-				 "you can use, you can optionally install it by running");
-	o->verbatim("make install");
-
-	o->beginParagraph();
-	o->bold("Other operative systems and advanced features");
-	o->endParagraph();
-
-	o->beginParagraph();
-	o->text("If you want more details or want to compile under other operative systems"
-			"other then GNU/Linux, please see");
-	o->link("http://code.google.com/p/wkhtmltopdf/wiki/compilation");
-	o->text(".");
-	o->endParagraph();
 	o->endSection();
 }
 
@@ -402,7 +342,7 @@ void PdfCommandLineParser::outputPageSizes(Outputter * o) const {
 	o->text("The default page size of the rendered document is A4, but using this --page-size option"
 			"this can be changed to almost anything else, such as: A3, Letter and Legal.  "
 			"For a full list of supported pages sizes please see ");
-	o->link("http://doc.trolltech.com/4.6/qprinter.html#PageSize-enum");
+	o->link("http://qt-project.org/doc/qt-4.8/qprinter.html#PaperSize-enum");
 	o->text(".");
 	o->endParagraph();
 	o->paragraph("For a more fine grained control over the page size the "
@@ -421,8 +361,6 @@ void PdfCommandLineParser::outputExamples(Outputter * o) const {
 	o->verbatim("wkhtmltopdf http://www.google.com google.pdf\n");
 	o->paragraph("To convert a local HTML file to PDF:");
 	o->verbatim("wkhtmltopdf my.html my.pdf\n");
-	o->paragraph("You can also convert to PS files if you like:");
-	o->verbatim("wkhtmltopdf my.html my.ps\n");
 	o->paragraph("Produce the eler2.pdf sample file:");
 	o->verbatim("wkhtmltopdf -H  http://geekz.co.uk/lovesraymond/archive/eler-highlights-2008 eler2.pdf\n");
 	o->paragraph("Printing a book with a table of content:");

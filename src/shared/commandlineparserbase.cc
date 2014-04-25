@@ -77,7 +77,7 @@ void CommandLineParserBase::outputSwitches(Outputter * o, bool extended, bool do
 
 const char *CommandLineParserBase::appVersion() const {
 #ifdef __EXTENSIVE_WKHTMLTOPDF_QT_HACK__
-	return STRINGIZE(FULL_VERSION) " (patched qt)";
+	return STRINGIZE(FULL_VERSION) " (with patched qt)";
 #else
 	return STRINGIZE(FULL_VERSION);
 #endif

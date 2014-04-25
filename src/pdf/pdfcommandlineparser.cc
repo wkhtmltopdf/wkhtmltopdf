@@ -107,7 +107,6 @@ void PdfCommandLineParser::readme(FILE * fd, bool html) const {
 	outputPageSizes(o);
 	outputArgsFromStdin(o);
 	outputStaticProblems(o);
-	outputCompilation(o);
 	outputInstallation(o);
 	outputExamples(o);
 	delete o;
