@@ -40,13 +40,13 @@ OPENSSL = {
         },
         'mingw-w64-cross-win32': {
             'configure' : '--cross-compile-prefix=i686-w64-mingw32- no-shared no-asm mingw64',
-            'build'     : ['make', 'make install'],
+            'build'     : ['make', 'make install_sw'],
             'libs'      : ['libssl.a', 'libcrypto.a'],
             'os_libs'   : '-lws2_32 -lgdi32 -lcrypt32'
         },
         'mingw-w64-cross-win64': {
             'configure' : '--cross-compile-prefix=x86_64-w64-mingw32- no-shared no-asm mingw64',
-            'build'     : ['make', 'make install'],
+            'build'     : ['make', 'make install_sw'],
             'libs'      : ['libssl.a', 'libcrypto.a'],
             'os_libs'   : '-lws2_32 -lgdi32 -lcrypt32'
         }
