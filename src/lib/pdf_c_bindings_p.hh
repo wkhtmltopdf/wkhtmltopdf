@@ -20,11 +20,6 @@
 
 #ifndef __PDF_C_BINDINGS_P_HH__
 #define __PDF_C_BINDINGS_P_HH__
-#ifdef __WKHTMLTOX_UNDEF_QT_DLL__
-#ifdef QT_DLL
-#undef QT_DLL
-#endif
-#endif
 
 #include "pdf.h"
 #include "pdfconverter.hh"

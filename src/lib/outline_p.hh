@@ -20,11 +20,6 @@
 
 #ifndef __OUTLINE_P_HH__
 #define __OUTLINE_P_HH__
-#ifdef __WKHTMLTOX_UNDEF_QT_DLL__
-#ifdef QT_DLL
-#undef QT_DLL
-#endif
-#endif
 
 #include "outline.hh"
 #ifdef __EXTENSIVE_WKHTMLTOPDF_QT_HACK__

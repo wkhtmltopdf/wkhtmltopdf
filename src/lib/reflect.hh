@@ -20,11 +20,6 @@
 
 #ifndef __REFLECT_HH__
 #define __REFLECT_HH__
-#ifdef __WKHTMLTOX_UNDEF_QT_DLL__
-#ifdef QT_DLL
-#undef QT_DLL
-#endif
-#endif
 
 #if defined(_MSC_VER) && _MSC_VER == 1500
 namespace msvc_typeof_impl {

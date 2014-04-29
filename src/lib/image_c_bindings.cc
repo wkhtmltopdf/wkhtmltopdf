@@ -41,11 +41,6 @@
  * - \b quality The compression factor to use when outputting a JPEG image. E.g. "94".
  */
 
-#ifdef __WKHTMLTOX_UNDEF_QT_DLL__
-#ifdef QT_DLL
-#undef QT_DLL
-#endif
-#endif
 
 #include "image_c_bindings_p.hh"
 #include "pdf.h"

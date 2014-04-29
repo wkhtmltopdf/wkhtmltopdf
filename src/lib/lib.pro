@@ -22,7 +22,7 @@ include(../../common.pri)
 include(lib.pri)
 
 DEF_FILE = lib.def
-contains(QMAKE_PRL_CONFIG, static): DEFINES += __WKHTMLTOX_UNDEF_QT_DLL__
+contains(QMAKE_PRL_CONFIG, static): DEFINES += QT_NODLL
 
 unix {
    headers.target=headers
