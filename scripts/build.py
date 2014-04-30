@@ -167,12 +167,44 @@ BUILDERS = {
     'msvc2013-win64':        'msvc',
     'msvc-winsdk71-win32':   'msvc_winsdk71',
     'msvc-winsdk71-win64':   'msvc_winsdk71',
+    'setup-schroot-centos5': 'setup_schroot',
+    'setup-schroot-wheezy':  'setup_schroot',
+    'update-all-schroots':   'update_schroot',
     'centos5-i386':          'linux_schroot',
     'centos5-amd64':         'linux_schroot',
     'wheezy-i386':           'linux_schroot',
     'wheezy-amd64':          'linux_schroot',
     'mingw-w64-cross-win32': 'mingw64_cross',
     'mingw-w64-cross-win64': 'mingw64_cross'
+}
+
+HOST_PACKAGES = ['git-core', 'xz-utils', 'build-essential', 'mingw-w64', 'nsis', 'debootstrap', 'schroot', 'rinse']
+CHROOT_SETUP  = {
+    'wheezy': [
+        ('debootstrap', 'wheezy', 'http://ftp.us.debian.org/debian/'),
+        ('write_file', 'etc/apt/sources.list', """
+deb     http://ftp.debian.org/debian/ wheezy         main contrib non-free
+deb     http://ftp.debian.org/debian/ wheezy-updates main contrib non-free
+deb     http://security.debian.org/   wheezy/updates main contrib non-free
+deb-src http://ftp.debian.org/debian/ wheezy         main contrib non-free
+deb-src http://ftp.debian.org/debian/ wheezy-updates main contrib non-free
+deb-src http://security.debian.org/   wheezy/updates main contrib non-free"""),
+        ('shell', 'apt-get update'),
+        ('shell', 'apt-get dist-upgrade --assume-yes'),
+        ('shell', 'apt-get install --assume-yes xz-utils'),
+        ('shell', 'apt-get build-dep --assume-yes libqt4-core'),
+        ('write_file', 'update.sh', 'apt-get update\napt-get dist-upgrade --assume-yes\n'),
+        ('schroot_conf', 'Debian Wheezy')
+    ],
+
+    'centos5': [
+        ('rinse', 'centos-5'),
+        ('shell', 'yum update -y'),
+        ('append_file:amd64', 'etc/yum.conf', 'exclude = *.i?86\n'),
+        ('shell', 'yum install -y gcc gcc-c++ make qt4-devel openssl-devel diffutils perl xz'),
+        ('write_file', 'update.sh', 'yum update -y\n'),
+        ('schroot_conf', 'CentOS 5')
+    ]
 }
 
 # --------------------------------------------------------------- HELPERS
@@ -256,6 +288,90 @@ def build_openssl(config, basedir):
             error("Unable to compile OpenSSL for your system, aborting.")
 
     return OPENSSL['build'][cfg]['os_libs']
+
+# --------------------------------------------------------------- Linux chroot
+
+def check_setup_schroot(config):
+    import platform
+    if not sys.platform.startswith('linux') or \
+       not platform.architecture()[0].startswith('64') or \
+       platform.linux_distribution()[0] not in ['Ubuntu', 'Debian']:
+        error('This can only be run on a 64-bit Debian/Ubuntu distribution, aborting.')
+
+    if os.geteuid() != 0:
+        error('This script must be run as root.')
+
+    try:
+        login = subprocess.check_output(['logname'], stderr=subprocess.STDOUT).strip()
+        if login == 'root':
+            error('Please run via sudo to determine login for which schroot access is to be given.')
+    except subprocess.CalledProcessError:
+        error('Unable to determine the login for which schroot access is to be given.')
+
+def build_setup_schroot(config, basedir):
+    shell('apt-get update')
+    shell('apt-get install --assume-yes %s' % (' '.join(HOST_PACKAGES)))
+
+    login  = subprocess.check_output(['logname'], stderr=subprocess.STDOUT).strip()
+    chroot = config[1+config.rindex('-'):]
+    for arch in ['amd64', 'i386']:
+        print '******************* %s-%s' % (chroot, arch)
+        root_dir = '/opt/wkhtmltopdf-build/%s-%s' % (chroot, arch)
+        rmdir(root_dir)
+        mkdir_p(root_dir)
+        for command in CHROOT_SETUP[chroot]:
+            # handle architecture-specific commands
+            name = command[0]
+            if ':' in name:
+                if name[1+name.rindex(':'):] != arch:
+                    continue
+                else:
+                    name = name[:name.rindex(':')]
+
+            # handle commands
+            if name == 'debootstrap':
+                shell('debootstrap --arch=%(arch)s --variant=buildd %(distro)s %(dir)s %(url)s' % {
+                    'arch': arch, 'dir': root_dir, 'distro': command[1], 'url': command[2] })
+            elif name == 'rinse':
+                cmd = (arch == 'i386' and 'linux32 rinse' or 'rinse')
+                shell('%s --arch %s --distribution %s --directory %s' % (cmd, arch, command[1], root_dir))
+            elif name == 'shell':
+                cmd = (arch == 'i386' and 'linux32 chroot' or 'chroot')
+                shell('%s %s %s' % (cmd, root_dir, command[1]))
+            elif name == 'write_file':
+                open(os.path.join(root_dir, command[1]), 'w').write(command[2].strip())
+            elif name == 'append_file':
+                open(os.path.join(root_dir, command[1]), 'a').write(command[2].strip())
+            elif name == 'schroot_conf':
+                cfg = open('/etc/schroot/chroot.d/wkhtmltopdf-%s-%s' % (chroot, arch), 'w')
+                cfg.write('[wkhtmltopdf-%s-%s]\n' % (chroot, arch))
+                cfg.write('type=directory\ndirectory=%s/\n' % root_dir)
+                cfg.write('description=%s %s for wkhtmltopdf\n' % (command[1], arch))
+                cfg.write('users=%s\nroot-users=root\n' % login)
+                if arch == 'i386':
+                    cfg.write('personality=linux32\n')
+                cfg.close()
+
+def check_update_schroot(config):
+    import platform
+    if not sys.platform.startswith('linux') or \
+       not platform.architecture()[0].startswith('64') or \
+       platform.linux_distribution()[0] not in ['Ubuntu', 'Debian']:
+        error('This can only be run on a 64-bit Debian/Ubuntu distribution, aborting.')
+
+    if os.geteuid() != 0:
+        error('This script must be run as root.')
+
+    try:
+        subprocess.check_output(['schroot', '--list'], stderr=subprocess.STDOUT)
+    except subprocess.CalledProcessError:
+        error('Unable to determine the list of available schroots.')
+
+def build_update_schroot(config, basedir):
+    names = subprocess.check_output(['schroot', '--list'], stderr=subprocess.STDOUT).strip()
+    for name in names.split('\n'):
+        print '******************* %s' % name[name.index('wkhtmltopdf-'):]
+        shell('schroot -c %s -- /bin/bash /update.sh' % name[name.index('wkhtmltopdf-'):])
 
 # --------------------------------------------------------------- MSVC (2008-2013)
 

@@ -7,13 +7,14 @@ If you are on Windows, make sure that you are cloning in a location without spac
 Prerequisites: Linux
 --------------------
 
-Building is currently supported only on recent 64-bit Debian/Ubuntu releases. Please run ```scripts/setup-linux.sh``` as root, which will create 4 chroot environments and configure them for building properly (approx 2GB will need to be downloaded):
- * Debian-wheezy i386  (should work on Ubuntu 12.04 LTS and later)
- * Debian-wheezy amd64 (should work on Ubuntu 12.04 LTS and later)
- * CentOS-5 i386  (should work on systems where older GLIBC is present)
- * CentOS-5 amd64 (should work on systems where older GLIBC is present)
+Building is currently supported only on recent 64-bit Debian/Ubuntu releases. All binaries are produced in a self-contained chroot environment for the target distribution, so you will need to setup it up first by running ```scripts/build.py```. The following distributions are currently supported:
 
-It will also setup a MinGW-w64 toolchain, which can cross-compile Windows binaries from Linux -- useful for running on Windows XP/Windows 2003, which are not supported by default when compiling with MSVC 2013. 
+Distribution   | Command for Setup
+------------   | -----------------
+Debian Wheezy  | ```scripts/build.py setup-schroot-wheezy```
+CentOS 5       | ```scripts/build.py setup-schroot-centos5```
+
+Please note a MinGW-w64 toolchain (which can cross-compile Windows binaries from Linux) is setup by default -- it is useful for targetting Windows XP/Windows 2003, which are not supported by default when compiling with MSVC 2013.
 
 Prerequisites: Windows
 ----------------------
