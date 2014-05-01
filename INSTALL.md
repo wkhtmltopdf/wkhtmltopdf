@@ -17,7 +17,9 @@ Target         | Command for Setup
 ------         | -----------------
 Debian Wheezy  | ```sudo scripts/build.py setup-schroot-wheezy```
 CentOS 5       | ```sudo scripts/build.py setup-schroot-centos5```
+Ubuntu Trusty  | ```sudo scripts/build.py setup-schroot-trusty```
 CentOS 6       | ```sudo scripts/build.py setup-schroot-centos6```
+Ubuntu Precise | ```sudo scripts/build.py setup-schroot-precise```
 MinGW-w64      | ```sudo scripts/build.py setup-mingw-w64```
 
 The MinGW-w64 toolchain can cross-compile 32/64-bit Windows binaries from 

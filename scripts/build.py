@@ -171,6 +171,8 @@ BUILDERS = {
     'setup-schroot-centos5': 'setup_schroot',
     'setup-schroot-centos6': 'setup_schroot',
     'setup-schroot-wheezy':  'setup_schroot',
+    'setup-schroot-trusty':  'setup_schroot',
+    'setup-schroot-precise': 'setup_schroot',
     'update-all-schroots':   'update_schroot',
     'centos5-i386':          'linux_schroot',
     'centos5-amd64':         'linux_schroot',
@@ -178,6 +180,10 @@ BUILDERS = {
     'centos6-amd64':         'linux_schroot',
     'wheezy-i386':           'linux_schroot',
     'wheezy-amd64':          'linux_schroot',
+    'trusty-i386':           'linux_schroot',
+    'trusty-amd64':          'linux_schroot',
+    'precise-i386':          'linux_schroot',
+    'precise-amd64':         'linux_schroot',
     'mingw-w64-cross-win32': 'mingw64_cross',
     'mingw-w64-cross-win64': 'mingw64_cross'
 }
@@ -198,6 +204,40 @@ deb-src http://security.debian.org/   wheezy/updates main contrib non-free"""),
         ('shell', 'apt-get build-dep --assume-yes libqt4-core'),
         ('write_file', 'update.sh', 'apt-get update\napt-get dist-upgrade --assume-yes\n'),
         ('schroot_conf', 'Debian Wheezy')
+    ],
+
+    'trusty': [
+        ('debootstrap', 'trusty', 'http://archive.ubuntu.com/ubuntu/'),
+        ('write_file', 'etc/apt/sources.list', """
+deb     http://archive.ubuntu.com/ubuntu/ trusty          main restricted universe multiverse
+deb     http://archive.ubuntu.com/ubuntu/ trusty-updates  main restricted universe multiverse
+deb     http://archive.ubuntu.com/ubuntu/ trusty-security main restricted universe multiverse
+deb-src http://archive.ubuntu.com/ubuntu/ trusty          main restricted universe multiverse
+deb-src http://archive.ubuntu.com/ubuntu/ trusty-updates  main restricted universe multiverse
+deb-src http://archive.ubuntu.com/ubuntu/ trusty-security main restricted universe multiverse"""),
+        ('shell', 'apt-get update'),
+        ('shell', 'apt-get dist-upgrade --assume-yes'),
+        ('shell', 'apt-get install --assume-yes xz-utils'),
+        ('shell', 'apt-get build-dep --assume-yes libqt4-core'),
+        ('write_file', 'update.sh', 'apt-get update\napt-get dist-upgrade --assume-yes\n'),
+        ('schroot_conf', 'Ubuntu Trusty')
+    ],
+
+    'precise': [
+        ('debootstrap', 'precise', 'http://archive.ubuntu.com/ubuntu/'),
+        ('write_file', 'etc/apt/sources.list', """
+deb     http://archive.ubuntu.com/ubuntu/ precise          main restricted universe multiverse
+deb     http://archive.ubuntu.com/ubuntu/ precise-updates  main restricted universe multiverse
+deb     http://archive.ubuntu.com/ubuntu/ precise-security main restricted universe multiverse
+deb-src http://archive.ubuntu.com/ubuntu/ precise          main restricted universe multiverse
+deb-src http://archive.ubuntu.com/ubuntu/ precise-updates  main restricted universe multiverse
+deb-src http://archive.ubuntu.com/ubuntu/ precise-security main restricted universe multiverse"""),
+        ('shell', 'apt-get update'),
+        ('shell', 'apt-get dist-upgrade --assume-yes'),
+        ('shell', 'apt-get install --assume-yes xz-utils'),
+        ('shell', 'apt-get build-dep --assume-yes libqt4-core'),
+        ('write_file', 'update.sh', 'apt-get update\napt-get dist-upgrade --assume-yes\n'),
+        ('schroot_conf', 'Ubuntu Precise')
     ],
 
     'centos5': [
