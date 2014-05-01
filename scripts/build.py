@@ -169,10 +169,13 @@ BUILDERS = {
     'msvc-winsdk71-win64':   'msvc_winsdk71',
     'setup-mingw-w64':       'setup_mingw64',
     'setup-schroot-centos5': 'setup_schroot',
+    'setup-schroot-centos6': 'setup_schroot',
     'setup-schroot-wheezy':  'setup_schroot',
     'update-all-schroots':   'update_schroot',
     'centos5-i386':          'linux_schroot',
     'centos5-amd64':         'linux_schroot',
+    'centos6-i386':          'linux_schroot',
+    'centos6-amd64':         'linux_schroot',
     'wheezy-i386':           'linux_schroot',
     'wheezy-amd64':          'linux_schroot',
     'mingw-w64-cross-win32': 'mingw64_cross',
@@ -204,6 +207,15 @@ deb-src http://security.debian.org/   wheezy/updates main contrib non-free"""),
         ('shell', 'yum install -y gcc gcc-c++ make qt4-devel openssl-devel diffutils perl xz'),
         ('write_file', 'update.sh', 'yum update -y\n'),
         ('schroot_conf', 'CentOS 5')
+    ],
+
+    'centos6': [
+        ('rinse', 'centos-6'),
+        ('shell', 'yum update -y'),
+        ('append_file:amd64', 'etc/yum.conf', 'exclude = *.i?86\n'),
+        ('shell', 'yum install -y gcc gcc-c++ make qt4-devel openssl-devel diffutils perl tar xz'),
+        ('write_file', 'update.sh', 'yum update -y\n'),
+        ('schroot_conf', 'CentOS 6')
     ]
 }
 
