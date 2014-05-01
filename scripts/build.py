@@ -167,6 +167,7 @@ BUILDERS = {
     'msvc2013-win64':        'msvc',
     'msvc-winsdk71-win32':   'msvc_winsdk71',
     'msvc-winsdk71-win64':   'msvc_winsdk71',
+    'setup-mingw-w64':       'setup_mingw64',
     'setup-schroot-centos5': 'setup_schroot',
     'setup-schroot-wheezy':  'setup_schroot',
     'update-all-schroots':   'update_schroot',
@@ -178,7 +179,6 @@ BUILDERS = {
     'mingw-w64-cross-win64': 'mingw64_cross'
 }
 
-HOST_PACKAGES = ['git-core', 'xz-utils', 'build-essential', 'mingw-w64', 'nsis', 'debootstrap', 'schroot', 'rinse']
 CHROOT_SETUP  = {
     'wheezy': [
         ('debootstrap', 'wheezy', 'http://ftp.us.debian.org/debian/'),
@@ -209,7 +209,7 @@ deb-src http://security.debian.org/   wheezy/updates main contrib non-free"""),
 
 # --------------------------------------------------------------- HELPERS
 
-import os, sys, subprocess, shutil, fnmatch, multiprocessing
+import os, sys, platform, subprocess, shutil, re, fnmatch, multiprocessing
 
 from os.path import exists
 
@@ -229,6 +229,12 @@ def shell(cmd):
     if ret != 0:
         error("command failed: exit code %d" % ret)
 
+def get_output(*cmd):
+    try:
+        return subprocess.check_output(cmd, stderr=subprocess.STDOUT).strip()
+    except subprocess.CalledProcessError:
+        return None
+
 def rmdir(path):
     if exists(path):
         shutil.rmtree(path)
@@ -243,9 +249,8 @@ def get_version(basedir):
         return (text, text)
     version = text[:text.index('-')]
     os.chdir(os.path.join(basedir, '..'))
-    try:
-        hash = subprocess.check_output(['git', 'rev-parse', '--short', 'HEAD'], stderr=subprocess.STDOUT).strip()
-    except subprocess.CalledProcessError:
+    hash = get_output('git', 'rev-parse', '--short', 'HEAD')
+    if not hash:
         return (text, version)
     return ('%s-%s' % (version, hash), version)
 
@@ -289,32 +294,44 @@ def build_openssl(config, basedir):
 
     return OPENSSL['build'][cfg]['os_libs']
 
-# --------------------------------------------------------------- Linux chroot
-
-def check_setup_schroot(config):
-    import platform
-    if not sys.platform.startswith('linux') or \
-       not platform.architecture()[0].startswith('64') or \
-       platform.linux_distribution()[0] not in ['Ubuntu', 'Debian']:
-        error('This can only be run on a 64-bit Debian/Ubuntu distribution, aborting.')
+def check_running_on_debian():
+    if not sys.platform.startswith('linux') or not exists('/etc/apt/sources.list'):
+        error('This can only be run on a Debian/Ubuntu distribution, aborting.')
 
     if os.geteuid() != 0:
         error('This script must be run as root.')
 
-    try:
-        login = subprocess.check_output(['logname'], stderr=subprocess.STDOUT).strip()
-        if login == 'root':
-            error('Please run via sudo to determine login for which schroot access is to be given.')
-    except subprocess.CalledProcessError:
+    if platform.architecture()[0] == '64bit' and 'amd64' not in ARCH:
+        ARCH.insert(0, 'amd64')
+
+PACKAGE_NAME = re.compile(r'ii\s+(.+?)\s+.*')
+def install_packages(*names):
+    lines = get_output('dpkg-query', '--list', *names).split('\n')
+    avail = [PACKAGE_NAME.match(line).group(1) for line in lines if PACKAGE_NAME.match(line)]
+
+    if len(avail) != len(names):
+        shell('apt-get update')
+        shell('apt-get install --assume-yes %s' % (' '.join(names)))
+
+# --------------------------------------------------------------- Linux chroot
+
+ARCH = ['i386']
+
+def check_setup_schroot(config):
+    check_running_on_debian()
+    login = get_output('logname')
+    if not login:
         error('Unable to determine the login for which schroot access is to be given.')
 
-def build_setup_schroot(config, basedir):
-    shell('apt-get update')
-    shell('apt-get install --assume-yes %s' % (' '.join(HOST_PACKAGES)))
+    if login == 'root':
+        error('Please run via sudo to determine login for which schroot access is to be given.')
 
-    login  = subprocess.check_output(['logname'], stderr=subprocess.STDOUT).strip()
+def build_setup_schroot(config, basedir):
+    install_packages('git', 'debootstrap', 'schroot', 'rinse')
+
+    login  = get_output('logname')
     chroot = config[1+config.rindex('-'):]
-    for arch in ['amd64', 'i386']:
+    for arch in ARCH:
         print '******************* %s-%s' % (chroot, arch)
         root_dir = '/opt/wkhtmltopdf-build/%s-%s' % (chroot, arch)
         rmdir(root_dir)
@@ -348,30 +365,25 @@ def build_setup_schroot(config, basedir):
                 cfg.write('type=directory\ndirectory=%s/\n' % root_dir)
                 cfg.write('description=%s %s for wkhtmltopdf\n' % (command[1], arch))
                 cfg.write('users=%s\nroot-users=root\n' % login)
-                if arch == 'i386':
+                if arch == 'i386' and 'amd64' in ARCH:
                     cfg.write('personality=linux32\n')
                 cfg.close()
 
 def check_update_schroot(config):
-    import platform
-    if not sys.platform.startswith('linux') or \
-       not platform.architecture()[0].startswith('64') or \
-       platform.linux_distribution()[0] not in ['Ubuntu', 'Debian']:
-        error('This can only be run on a 64-bit Debian/Ubuntu distribution, aborting.')
-
-    if os.geteuid() != 0:
-        error('This script must be run as root.')
-
-    try:
-        subprocess.check_output(['schroot', '--list'], stderr=subprocess.STDOUT)
-    except subprocess.CalledProcessError:
+    check_running_on_debian()
+    if not get_output('schroot', '--list'):
         error('Unable to determine the list of available schroots.')
 
 def build_update_schroot(config, basedir):
-    names = subprocess.check_output(['schroot', '--list'], stderr=subprocess.STDOUT).strip()
-    for name in names.split('\n'):
+    for name in get_output('schroot', '--list').split('\n'):
         print '******************* %s' % name[name.index('wkhtmltopdf-'):]
         shell('schroot -c %s -- /bin/bash /update.sh' % name[name.index('wkhtmltopdf-'):])
+
+def check_setup_mingw64(config):
+    check_running_on_debian()
+
+def build_setup_mingw64(config, basedir):
+    install_packages('build-essential', 'mingw-w64', 'nsis')
 
 # --------------------------------------------------------------- MSVC (2008-2013)
 
