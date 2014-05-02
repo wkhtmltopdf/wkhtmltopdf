@@ -16,10 +16,10 @@ distribution, so you will need to setup it up first by running
 Target         | Command for Setup
 ------         | -----------------
 Debian Wheezy  | ```sudo scripts/build.py setup-schroot-wheezy```
-CentOS 5       | ```sudo scripts/build.py setup-schroot-centos5```
 Ubuntu Trusty  | ```sudo scripts/build.py setup-schroot-trusty```
-CentOS 6       | ```sudo scripts/build.py setup-schroot-centos6```
 Ubuntu Precise | ```sudo scripts/build.py setup-schroot-precise```
+CentOS 6       | ```sudo scripts/build.py setup-schroot-centos6```
+CentOS 5       | ```sudo scripts/build.py setup-schroot-centos5```
 MinGW-w64      | ```sudo scripts/build.py setup-mingw-w64```
 
 Please note that you should run the above commands while logged in as a
@@ -45,7 +45,14 @@ Prerequisites: Windows
 Building
 --------
 
-Switch to the checked-out folder and run the command ```scripts/build.py```
-(or ```scripts\build.py``` if you are on Windows). This will present all
-the targets which you can build. Select the appropriate target and the
-output package will be generated in the ```static-build``` folder.
+* Ensure that you are using the correct Qt version by running ```git submodule update```
+* Run the command ```scripts/build.py``` (or ```scripts\build.py``` if you
+  are on Windows) to get a list of all targets which can be built.
+* If you want to customize the default Qt configuration options for your
+  target, please set the ```WKHTMLTOX_QT_CONFIG``` environment variable
+  before running the above command. Adding a prefix of ```remove:```
+  will ensure that it will be removed from the options, if already present.
+  e.g. ```WKHTMLTOX_QT_CONFIG="remove:-no-fast"``` will disable the fast
+  makefile generation mode while configuring Qt.
+* After the target has been built, the output installer/package will be
+  available in the ```static-build``` folder.
