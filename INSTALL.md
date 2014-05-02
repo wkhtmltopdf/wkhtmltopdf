@@ -10,7 +10,7 @@ Prerequisites: Linux
 
 Building is currently supported only on recent Debian/Ubuntu releases. All
 binaries are produced in a self-contained chroot environment for the target
-distribution, so you will need to setup it up first by running 
+distribution, so you will need to setup it up first by running
 ```scripts/build.py```. The following targets are currently supported:
 
 Target         | Command for Setup
@@ -22,7 +22,11 @@ CentOS 6       | ```sudo scripts/build.py setup-schroot-centos6```
 Ubuntu Precise | ```sudo scripts/build.py setup-schroot-precise```
 MinGW-w64      | ```sudo scripts/build.py setup-mingw-w64```
 
-The MinGW-w64 toolchain can cross-compile 32/64-bit Windows binaries from 
+Please note that you should run the above commands while logged in as a
+regular user who has ```sudo``` access. **Do not attempt to clone the
+repository or run any other command as root!**
+
+The MinGW-w64 toolchain can cross-compile 32/64-bit Windows binaries from
 Linux -- it is useful for targetting Windows XP/Windows 2003, which are not
 supported by default when compiling with MSVC 2013.
 
@@ -43,5 +47,5 @@ Building
 
 Switch to the checked-out folder and run the command ```scripts/build.py```
 (or ```scripts\build.py``` if you are on Windows). This will present all
-the targets which you can build. Select the appropriate target and the 
+the targets which you can build. Select the appropriate target and the
 output package will be generated in the ```static-build``` folder.
