@@ -185,7 +185,8 @@ BUILDERS = {
     'precise-i386':          'linux_schroot',
     'precise-amd64':         'linux_schroot',
     'mingw-w64-cross-win32': 'mingw64_cross',
-    'mingw-w64-cross-win64': 'mingw64_cross'
+    'mingw-w64-cross-win64': 'mingw64_cross',
+    'posix-local':           'posix_local'
 }
 
 CHROOT_SETUP  = {
@@ -684,6 +685,52 @@ def build_linux_schroot(config, basedir):
     os.chdir(dir)
     shell('chmod +x build.sh')
     shell('schroot -c wkhtmltopdf-%s -- ./build.sh' % rchop(config, '-dbg'))
+
+
+# -------------------------------------------------- POSIX local environment
+
+def check_posix_local(config):
+    pass
+
+def build_posix_local(config, basedir):
+    version, simple_version = get_version(basedir)
+
+    build  = os.path.join(basedir, config, 'qt_build')
+    app    = os.path.join(basedir, config, 'app')
+    qtdir  = os.path.join(basedir, config, 'qt')
+    dist   = os.path.join(basedir, config, 'wkhtmltox-%s' % version)
+
+    mkdir_p(build)
+    mkdir_p(app)
+
+    rmdir(dist)
+    mkdir_p(os.path.join(dist, 'bin'))
+    mkdir_p(os.path.join(dist, 'include', 'wkhtmltox'))
+    mkdir_p(os.path.join(dist, 'lib'))
+
+    os.chdir(build)
+    if not exists('is_configured'):
+        shell('../../../qt/configure %s' % qt_config('posix', '--prefix=../qt'))
+        shell('touch is_configured')
+
+    if subprocess.call(['make', '-j%d' % CPU_COUNT]):
+        shell('make -j%d' % CPU_COUNT)
+
+    shell('make install')
+
+    os.chdir(app)
+    shell('rm -f bin/*')
+    os.environ['WKHTMLTOX_VERSION'] = version
+    shell('../qt/bin/qmake ../../../wkhtmltopdf.pro')
+    shell('make -j%d' % CPU_COUNT)
+    shell('cp bin/wkhtmlto* ../wkhtmltox-%s/bin' % version)
+    shell('cp -P bin/libwkhtmltox*.so.* ../wkhtmltox-%s/lib' % version)
+    shell('cp ../../../include/wkhtmltox/*.h ../wkhtmltox-%s/include/wkhtmltox' % version)
+    shell('cp ../../../include/wkhtmltox/dll*.inc ../wkhtmltox-%s/include/wkhtmltox' % version)
+
+    os.chdir(basedir)
+    shell('tar -c -v -f ../wkhtmltox-%s_local-%s.tar wkhtmltox-%s/' % (version, platform.node(), version))
+    shell('xz --compress -9 ../wkhtmltox-%s_local-%s.tar' % (version, platform.node()))
 
 # --------------------------------------------------------------- command line
 

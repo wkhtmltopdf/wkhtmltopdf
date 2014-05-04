@@ -47,7 +47,10 @@ Building
 
 * Ensure that you are using the correct Qt version by running ```git submodule update```
 * Run the command ```scripts/build.py``` (or ```scripts\build.py``` if you
-  are on Windows) to get a list of all targets which can be built.
+  are on Windows) to get a list of all targets which can be built. If you
+  want to compile on a distribution not listed above or for another
+  Unix-like OS, please use the ```posix-local``` target -- it assumes
+  that you have already installed all build dependencies beforehand.
 * If you want to customize the default Qt configuration options for your
   target, please set the ```WKHTMLTOX_QT_CONFIG``` environment variable
   before running the above command. Adding a prefix of ```remove:```
