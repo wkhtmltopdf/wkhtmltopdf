@@ -20,10 +20,9 @@
 # --------------------------------------------------------------- CONFIGURATION
 
 OPENSSL = {
-    'repository': 'https://github.com/openssl/openssl.git',
-    'branch'    : 'OpenSSL_1_0_1-stable',
-    'tag'       : 'OpenSSL_1_0_1g',
-    'build'     : {
+    'url'   : 'http://www.openssl.org/source/openssl-1.0.1g.tar.gz',
+    'sha1'  : 'b28b3bcb1dc3ee7b55024c9f795be60eb3183e3c',
+    'build' : {
         'msvc*-win32*': {
             'configure' : 'VC-WIN32 no-asm',
             'debug'     : 'debug-VC-WIN32 no-asm',
@@ -262,7 +261,7 @@ deb-src http://archive.ubuntu.com/ubuntu/ precise-security main restricted unive
 
 # --------------------------------------------------------------- HELPERS
 
-import os, sys, platform, subprocess, shutil, re, fnmatch, multiprocessing
+import os, sys, platform, subprocess, shutil, re, fnmatch, multiprocessing, urllib, hashlib, tarfile
 
 from os.path import exists
 
@@ -322,6 +321,29 @@ def qt_config(key, *opts):
             output.remove(arg[1+arg.index(':'):])
     return ' '.join(output)
 
+def download_file(url, dir, sha1):
+    name = url.split('/')[-1]
+    loc  = os.path.join(dir, name)
+    if os.path.exists(loc):
+        hash = hashlib.sha1(open(loc, 'rb').read()).hexdigest()
+        if hash != sha1:
+            error('Checksum mismatch for %s' % name)
+            os.remove(loc)
+        return loc
+    def hook(cnt, bs, total):
+        pct = int(cnt*bs*100/total)
+        sys.stdout.write("\rDownloading: %s [%d%%]" % (name, pct))
+        sys.stdout.flush()
+    urllib.urlretrieve(url, loc, reporthook=hook)
+    sys.stdout.write("\r")
+    sys.stdout.flush()
+    hash = hashlib.sha1(open(loc, 'rb').read()).hexdigest()
+    if hash != sha1:
+        error('Checksum mismatch for %s' % name)
+        os.remove(loc)
+    sys.stdout.write("\rDownloaded: %s [checksum OK]" % name)
+    return loc
+
 def build_openssl(config, basedir):
     cfg = None
     for key in OPENSSL['build']:
@@ -331,8 +353,10 @@ def build_openssl(config, basedir):
     if not cfg:
         return
 
-    srcdir = os.path.join(basedir, 'openssl')
-    dstdir = os.path.join(basedir, config, 'openssl')
+    dstdir   = os.path.join(basedir, config, 'openssl')
+    location = download_file(OPENSSL['url'], basedir, OPENSSL['sha1'])
+    relname  = os.path.basename(location)[:os.path.basename(location).index('.tar')]
+    srcdir   = os.path.join(basedir, relname)
 
     def is_compiled():
         compiled = exists(os.path.join(dstdir, 'include', 'openssl', 'ssl.h'))
@@ -340,23 +364,14 @@ def build_openssl(config, basedir):
             compiled = compiled and exists(os.path.join(dstdir, 'lib', lib))
         return compiled
 
-    if not exists(os.path.join(srcdir, '.git')):
-        rmdir(srcdir)
-        rmdir(dstdir)
-        os.chdir(basedir)
-        shell('git clone --branch %s --single-branch %s openssl' % (OPENSSL['branch'], OPENSSL['repository']))
-
-    os.chdir(srcdir)
-    shell('git clean -fdx')
-    shell('git reset --hard HEAD')
-    shell('git checkout %s' % (OPENSSL['tag']))
-
     if not is_compiled():
+        rmdir(srcdir)
+        tarfile.open(location).extractall(basedir)
+        os.chdir(srcdir)
         opts = OPENSSL['build'][cfg]
         shell('perl Configure --openssldir=%s %s' % (dstdir, opts['configure']))
         for cmd in opts['build']:
             shell(cmd)
-        shell('git clean -fdx')
         if not is_compiled():
             error("Unable to compile OpenSSL for your system, aborting.")
 
