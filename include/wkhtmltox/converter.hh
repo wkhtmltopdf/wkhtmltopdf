@@ -17,11 +17,6 @@
 
 #ifndef __CONVERTER_HH__
 #define __CONVERTER_HH__
-#ifdef __WKHTMLTOX_UNDEF_QT_DLL__
-#ifdef QT_DLL
-#undef QT_DLL
-#endif
-#endif
 
 #include <QObject>
 #include <wkhtmltox/loadsettings.hh>
