@@ -152,6 +152,17 @@ QT_CONFIG = {
         '-no-reduce-exports',
         '-no-rpath',
         '-xplatform win32-g++-4.6'
+    ],
+
+    'mac-osx-x86-64': [
+        '-arch x86_64',
+        '-cocoa',
+        '-xrender',                 # xrender support is required
+        '-openssl',                 # load OpenSSL binaries at runtime
+        '-largefile',
+        '-rpath',
+        '-no-dwarf2',
+        '-no-framework',
     ]
 }
 
@@ -185,7 +196,8 @@ BUILDERS = {
     'precise-amd64':         'linux_schroot',
     'mingw-w64-cross-win32': 'mingw64_cross',
     'mingw-w64-cross-win64': 'mingw64_cross',
-    'posix-local':           'posix_local'
+    'posix-local':           'posix_local',
+    'mac-osx-x86-64':        'mac_osx'
 }
 
 CHROOT_SETUP  = {
@@ -746,6 +758,64 @@ def build_posix_local(config, basedir):
     os.chdir(basedir)
     shell('tar -c -v -f ../wkhtmltox-%s_local-%s.tar wkhtmltox-%s/' % (version, platform.node(), version))
     shell('xz --compress -9 ../wkhtmltox-%s_local-%s.tar' % (version, platform.node()))
+
+# --------------------------------------------------------------- OS X
+
+def check_mac_osx(config):
+    pass
+
+def build_mac_osx(config, basedir):
+    version, simple_version = get_version(basedir)
+
+    build  = os.path.join(basedir, config, 'qt_build')
+    app    = os.path.join(basedir, config, 'app')
+    dist   = os.path.join(basedir, config, 'wkhtmltox-%s' % version)
+
+    mkdir_p(build)
+    mkdir_p(app)
+
+    rmdir(dist)
+
+    # get qt configure options
+    qt_config_opts = qt_config(config, '--prefix=../qt')
+
+    # get OS base version
+    try:
+        os_base_version = int(platform.release().split('.')[0])
+    except:
+        os_base_version = -1
+
+    # determine the platform
+    if os_base_version >= 13:
+        # mavericks (10.9) or higher
+        qt_config_opts += ' -platform unsupported/macx-clang-libc++'
+    else:
+        qt_config_opts += ' -platform unsupported/macx-clang'
+
+    # configure qt
+    os.chdir(build)
+    shell('../../../qt/configure %s' % qt_config_opts)
+
+    # build qt
+    shell('make -j%d' % CPU_COUNT)
+
+    # install qt to build directory
+    shell('make install')
+
+    # build wkhtmltopdf
+    os.chdir(app)
+    shell('rm -f bin/*')
+    os.environ['WKHTMLTOX_VERSION'] = version
+    shell('../qt/bin/qmake ../../../wkhtmltopdf.pro')
+    shell('make -j%d' % CPU_COUNT)
+
+    # install wkhtmltopdf to build directory (so we can create an archive)
+    shell('INSTALL_ROOT=%s make install' % dist)
+
+    # create archive
+    os.chdir(basedir)
+    shell('tar -C %s -c -v -f ../wkhtmltox-%s_%s.tar wkhtmltox-%s/' % (config, version, config, version))
+    shell('xz --verbose --compress -9 ../wkhtmltox-%s_%s.tar' % (version, config))
 
 # --------------------------------------------------------------- command line
 
