@@ -136,8 +136,6 @@ struct DLL_PUBLIC PdfGlobal {
 	int imageDPI;
 	int imageQuality;
 
-	bool useNativeFormatPrinter; // use QPrinter::NativeFormat on Mac OS X?
-
 	LoadGlobal load;
 
 	QString get(const char * name);

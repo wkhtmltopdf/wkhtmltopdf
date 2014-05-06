@@ -267,13 +267,7 @@ QPrinter * PdfConverterPrivate::createPrinter(const QString & tempFile) {
     //Tell the printer object to print the file <out>
 
     printer->setOutputFileName(tempFile);
-    printer->setOutputFormat(
-#ifdef Q_OS_MAC
-        settings.useNativeFormatPrinter ? QPrinter::NativeFormat : QPrinter::PdfFormat
-#else
-        QPrinter::PdfFormat
-#endif
-        );
+    printer->setOutputFormat(QPrinter::PdfFormat);
 
     if ((settings.size.height.first != -1) && (settings.size.width.first != -1)) {
         printer->setPaperSize(QSizeF(settings.size.width.first,settings.size.height.first + 100), settings.size.height.second);
@@ -352,13 +346,7 @@ void PdfConverterPrivate::pagesLoaded(bool ok) {
 	//Tell the printer object to print the file <out>
 
 	printer->setOutputFileName(lout);
-	printer->setOutputFormat(
-#ifdef Q_OS_MAC
-		settings.useNativeFormatPrinter ? QPrinter::NativeFormat : QPrinter::PdfFormat
-#else
-		QPrinter::PdfFormat
-#endif
-		);
+	printer->setOutputFormat(QPrinter::PdfFormat);
 
 	//We currently only support margins with the same unit
 	if (settings.margin.left.second != settings.margin.right.second ||

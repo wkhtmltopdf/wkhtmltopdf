@@ -212,12 +212,7 @@ PdfCommandLineParser::PdfCommandLineParser(PdfGlobal & s, QList<PdfObject> & ps)
 
 	addarg("image-quality", 0, "When jpeg compressing images use this quality", new IntSetter(s.imageQuality,"integer"));
 	addarg("image-dpi", 0, "When embedding images scale them down to this dpi", new IntSetter(s.imageDPI, "integer"));
-
-    addarg("no-pdf-compression", 0 , "Do not use lossless compression on pdf objects", new ConstSetter<bool>(s.useCompression,false));
-
-#ifdef Q_OS_MAC
-	addarg("native-format-printer", 0 , "Use the native Mac OS X PDF printer to produce a PDF with selectable text. Note: This printer breaks some advanced features of wkhtmltopdf. Use at your own risk.", new ConstSetter<bool>(s.useNativeFormatPrinter,true));
-#endif
+	addarg("no-pdf-compression", 0 , "Do not use lossless compression on pdf objects", new ConstSetter<bool>(s.useCompression,false));
 
 #ifdef Q_OS_UNIX
  	addarg("use-xserver",0,"Use the X server (some plugins and other stuff might not work without X11)", new ConstSetter<bool>(s.useGraphics,true));
