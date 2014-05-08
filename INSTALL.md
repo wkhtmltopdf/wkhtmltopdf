@@ -23,8 +23,9 @@ CentOS 5       | ```sudo scripts/build.py setup-schroot-centos5```
 MinGW-w64      | ```sudo scripts/build.py setup-mingw-w64```
 
 Please note that you should run the above commands while logged in as a
-regular user who has ```sudo``` access. **Do not attempt to clone the
-repository or run any other command as root!**
+regular user who has ```sudo``` access and that the cloned respository
+should be in the user's home directory e.g. ```~/wkhtmltopdf```. **Do
+not attempt to clone the repository or run any other command as root!**
 
 The MinGW-w64 toolchain can cross-compile 32/64-bit Windows binaries from
 Linux -- it is useful for targetting Windows XP/Windows 2003, which are not
