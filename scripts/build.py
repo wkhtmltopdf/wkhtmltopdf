@@ -404,7 +404,9 @@ def check_setup_schroot(config):
     check_running_on_debian()
     login = get_output('logname')
     if not login:
-        error('Unable to determine the login for which schroot access is to be given.')
+        login = get_output('echo','$SUDO_USER')
+        if not login:
+            error('Unable to determine the login for which schroot access is to be given.')
 
     if login == 'root':
         error('Please run via sudo to determine login for which schroot access is to be given.')
