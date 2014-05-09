@@ -693,7 +693,7 @@ def build_linux_schroot(config, basedir):
     lines.append('cp ../../../include/wkhtmltox/dll*.inc ../wkhtmltox-%s/include/wkhtmltox' % version)
     lines.append('cd ..')
     lines.append('tar -c -v -f ../wkhtmltox-%s_linux-%s.tar wkhtmltox-%s/' % (version, config, version))
-    lines.append('xz --compress -9 ../wkhtmltox-%s_linux-%s.tar' % (version, config))
+    lines.append('xz --compress --force --verbose -9 ../wkhtmltox-%s_linux-%s.tar' % (version, config))
     lines.append('# end of build script')
 
     open(script, 'w').write('\n'.join(lines))
@@ -745,7 +745,7 @@ def build_posix_local(config, basedir):
 
     os.chdir(basedir)
     shell('tar -c -v -f ../wkhtmltox-%s_local-%s.tar wkhtmltox-%s/' % (version, platform.node(), version))
-    shell('xz --compress -9 ../wkhtmltox-%s_local-%s.tar' % (version, platform.node()))
+    shell('xz --compress --force --verbose -9 ../wkhtmltox-%s_local-%s.tar' % (version, platform.node()))
 
 # --------------------------------------------------------------- command line
 
