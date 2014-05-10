@@ -43,6 +43,20 @@ Prerequisites: Windows
 * Make sure that you can run "git". If not, add it to the PATH or reinstall
   with option "Run Git from the Windows Command Prompt".
 
+Prerequisites: OS X
+-------------------
+
+For the Carbon build, you will need to have the OS X 10.6 SDK installed
+so that running `xcodebuild -sdk macosx10.6 -version Path` returns
+the path of the installed SDK. You may also need to create a symlink for
+`<SDK_DIR>/usr/lib/libstdc++.dylib` -- please run the command
+`cd $SDK_DIR/usr/lib; sudo ln -s libstdc++.6.0.9.dylib libstdc++.dylib`.
+There are no special requirements for the Cocoa build.
+
+Please ensure that you have the latest XCode, git, python 2.7 and xz which
+are available for your OS version. You can install XCode by running
+`xcode-select --install` in the shell if you are on OS X 10.9 or later.
+
 Building
 --------
 
