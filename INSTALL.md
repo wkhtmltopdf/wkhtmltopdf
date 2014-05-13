@@ -46,16 +46,85 @@ Prerequisites: Windows
 Prerequisites: OS X
 -------------------
 
+wkhtmltopdf can be build for the Carbon (32Bit) and Cocoa (64Bit) frameworks.
+Carbon builds can be made on OS X 10.6 and newer, Cocoa builds require OS X 10.7
+or newer. In any case you need to have the following installed:
+
+* The latest Xcode for your OS X version.
+* Python 2.7.x. (Note: OS X 10.6 comes with an older verison, a newer one is
+  available on the [Python downloads](https://www.python.org/download/releases/2.7.6/) page.
+  After installing you should run the `Update Shell Profile.command` in `/Applications/Python 2.7`
+  to make it the default Python in the shell.)
+* Git (For OS X 10.6 please use [git 1.8.4.2](https://code.google.com/p/git-osx-installer/downloads/detail?name=git-1.8.4.2-intel-universal-snow-leopard.dmg)
+  since at the time of writing newer versions fail on execution.)
+* [xz 5.0.5](http://sourceforge.net/projects/macpkg/files/XZ/5.0.5/)
+
+
+### Cocoa
+
+To build wkhtmltopdf for Cocoa make sure to follow the instructions in the
+**Building** section below and start the build with
+
+```
+./scripts/build.py osx-cocoa-x86-64 -clean
+```
+
+from within the directory where you have checked out the Git repository,
+e. g. `~/wkhtmltopdf`. There are no further special requirements for
+the Cocoa build.
+
+### Carbon
+
 For the Carbon build, you will need to have the OS X 10.6 SDK installed
 so that running `xcodebuild -sdk macosx10.6 -version Path` returns
-the path of the installed SDK. You may also need to create a symlink for
-`$SDK_DIR/usr/lib/libstdc++.dylib` -- please run the command
-`cd $SDK_DIR/usr/lib; sudo ln -s libstdc++.6.0.9.dylib libstdc++.dylib`.
-There are no special requirements for the Cocoa build.
+the path of the installed SDK.
 
-Please ensure that you have the latest XCode, git, python 2.7 and xz which
-are available for your OS version. You can install XCode by running
-`xcode-select --install` in the shell if you are on OS X 10.9 or later.
+Newer versions of Xcode no longer contain a 10.6 SDK. It's possible to extract
+the SDK files from an older Xcode download (available with an Apple developer
+account) without installing this old Xcode version. Search for *Xcode 3.2.6* 
+in the downloads section and download *Xcode 3.2.6 and iOS SDK 4.3*. If you've
+downloaded the DMG file to `~/Downloads` you can do the following to extract
+the SDK:
+
+```
+cd ~/Downloads
+mkdir OSX10.6.SDK
+cd OSX10.6.SDK
+hdiutil attach ../xcode_3.2.6_and_ios_sdk_4.3.dmg
+cp /Volumes/Xcode\ and\ iOS\ SDK/Packages/MacOSX10.6.pkg .
+xar -xf MacOSX10.6.pkg .
+cat Payload | gunzip -dc | cpio -i
+mv SDKs/MacOSX10.6.sdk/ .
+rm -df SDKs Bom PackageInfo Payload MacOSX10.6.pkg
+```
+
+There is now a folder named `MacOSX10.6.sdk` in `~/Downloads/OSX10.6.SDK`
+which needs to be moved to `/Developer/SDKs/` or 
+`/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/`,
+depending on the version of your current Xcode installation. Moving the SDK
+normally needs `sudo`.
+
+The Carbon build process also needs `libstdc++.dylib`. Symlinking is
+sufficient, so please run the command:
+
+```
+cd $SDK_DIR/usr/lib
+sudo ln -s libstdc++.6.0.9.dylib libstdc++.dylib
+```
+
+where `$SDK_DIR` is the location of the 10.6 SDK. Symlinking is also possible
+in `/usr/local/lib`, in this case the symlink should point to `/usr/lib/libstdc++.dylib`.
+
+To build wkhtmltopdf for Carbon make sure to follow the instructions in the
+**Building** section below and start the build with
+
+```
+./scripts/build.py osx-carbon-i386 -clean
+```
+
+from within the directory where you have checked out the Git repository,
+e. g. `~/wkhtmltopdf`.
+
 
 Building
 --------
