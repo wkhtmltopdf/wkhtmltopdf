@@ -19,7 +19,7 @@ v0.12.1 (unreleased)
 * update URLs in the internal documentation
 * generate API documentation for libwkhtmltox (on the website)
 * display version in compiled binary properly under various scenarios
-* complete revamp of the build system, which supports only Windows and Linux for now.
+* complete revamp of the build system
 
 v0.12.0 (2014-02-06)
 --------------------
