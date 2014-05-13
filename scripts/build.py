@@ -341,7 +341,8 @@ def download_file(url, dir, sha1):
     if hash != sha1:
         error('Checksum mismatch for %s' % name)
         os.remove(loc)
-    sys.stdout.write("\rDownloaded: %s [checksum OK]" % name)
+    sys.stdout.write("\rDownloaded: %s [checksum OK]\n" % name)
+    sys.stdout.flush()
     return loc
 
 def build_openssl(config, basedir):
