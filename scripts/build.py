@@ -399,10 +399,11 @@ def check_running_on_debian():
 
 PACKAGE_NAME = re.compile(r'ii\s+(.+?)\s+.*')
 def install_packages(*names):
-    lines = get_output('dpkg-query', '--list', *names).split('\n')
+    lines = get_output('dpkg-query', '--list').split('\n')
     avail = [PACKAGE_NAME.match(line).group(1) for line in lines if PACKAGE_NAME.match(line)]
+    inst  = [name for name in names if name in avail]
 
-    if len(avail) != len(names):
+    if len(inst) != len(names):
         shell('apt-get update')
         shell('apt-get install --assume-yes %s' % (' '.join(names)))
 
