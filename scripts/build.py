@@ -427,7 +427,8 @@ def build_setup_schroot(config, basedir):
     chroot = config[1+config.rindex('-'):]
     for arch in ARCH:
         print '******************* %s-%s' % (chroot, arch)
-        root_dir = '/opt/wkhtmltopdf-build/%s-%s' % (chroot, arch)
+        base_dir = os.environ.get('WKHTMLTOX_CHROOT') or '/opt/wkhtmltopdf-build'
+        root_dir = os.path.join(base_dir, '%s-%s' % (chroot, arch))
         rmdir(root_dir)
         mkdir_p(root_dir)
         for command in CHROOT_SETUP[chroot]:

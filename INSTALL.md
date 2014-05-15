@@ -22,6 +22,13 @@ CentOS 6       | ```sudo scripts/build.py setup-schroot-centos6```
 CentOS 5       | ```sudo scripts/build.py setup-schroot-centos5```
 MinGW-w64      | ```sudo scripts/build.py setup-mingw-w64```
 
+The above commands will create the chroot directory under the directory
+`/opt/wkhtmltopdf-build` -- you can change it to some other directory
+by running `export WKHTMLTOX_CHROOT=/some/other/dir` before running the
+above command to create the chroot environment in the specified location.
+At least 1GB of disk space for each target should be available at the 
+above location, or else the process may fail due to insufficient disk space.
+
 Please note that you should run the above commands while logged in as a
 regular user who has ```sudo``` access and that the cloned respository
 should be in the user's home directory e.g. ```~/wkhtmltopdf```. **Do
