@@ -720,6 +720,7 @@ def build_posix_local(config, basedir):
     app    = os.path.join(basedir, config, 'app')
     qtdir  = os.path.join(basedir, config, 'qt')
     dist   = os.path.join(basedir, config, 'wkhtmltox-%s' % version)
+    make   = get_output('which gmake') and 'gmake' or 'make'
 
     mkdir_p(qt)
     mkdir_p(app)
@@ -734,14 +735,14 @@ def build_posix_local(config, basedir):
         shell('../../../qt/configure %s' % qt_config('posix', '--prefix=%s' % qtdir))
         shell('touch is_configured')
 
-    if subprocess.call(['make', '-j%d' % CPU_COUNT]):
-        shell('make -j%d' % CPU_COUNT)
+    if subprocess.call([make, '-j%d' % CPU_COUNT]):
+        shell('%s -j%d' % (make, CPU_COUNT))
 
     os.chdir(app)
     shell('rm -f bin/*')
     os.environ['WKHTMLTOX_VERSION'] = version
     shell('../qt/bin/qmake ../../../wkhtmltopdf.pro')
-    shell('make -j%d' % CPU_COUNT)
+    shell('%s -j%d' % (make, CPU_COUNT))
     shell('cp bin/wkhtmlto* ../wkhtmltox-%s/bin' % version)
     shell('cp -P bin/libwkhtmltox*.so.* ../wkhtmltox-%s/lib' % version)
     shell('cp ../../../include/wkhtmltox/*.h ../wkhtmltox-%s/include/wkhtmltox' % version)
