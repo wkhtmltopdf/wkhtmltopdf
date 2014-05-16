@@ -413,17 +413,14 @@ ARCH = ['i386']
 
 def check_setup_schroot(config):
     check_running_on_debian()
-    login = get_output('logname') or os.environ.get('SUDO_USER')
-    if not login:
+    login = os.environ.get('SUDO_USER') or get_output('logname')
+    if not login or login == 'root':
         error('Unable to determine the login for which schroot access is to be given.')
-
-    if login == 'root':
-        error('Please run via sudo to determine login for which schroot access is to be given.')
 
 def build_setup_schroot(config, basedir):
     install_packages('git', 'debootstrap', 'schroot', 'rinse')
 
-    login  = get_output('logname') or os.environ.get('SUDO_USER')
+    login  = os.environ.get('SUDO_USER') or get_output('logname')
     chroot = config[1+config.rindex('-'):]
     for arch in ARCH:
         print '******************* %s-%s' % (chroot, arch)
