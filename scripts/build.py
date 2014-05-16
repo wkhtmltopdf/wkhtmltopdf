@@ -418,7 +418,7 @@ def check_setup_schroot(config):
         error('Unable to determine the login for which schroot access is to be given.')
 
 def build_setup_schroot(config, basedir):
-    install_packages('git', 'debootstrap', 'schroot', 'rinse')
+    install_packages('git', 'debootstrap', 'schroot', 'rinse', 'debian-archive-keyring')
 
     login  = os.environ.get('SUDO_USER') or get_output('logname')
     chroot = config[1+config.rindex('-'):]
