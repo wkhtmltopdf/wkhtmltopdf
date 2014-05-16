@@ -3,43 +3,76 @@ Clone this repository by running the following command:
     git clone --recursive https://github.com/wkhtmltopdf/wkhtmltopdf.git
 
 If you are on Windows, make sure that you are cloning in a location without
-spaces/special characters in the name.
+spaces/special characters in the name. In case you already have a cloned
+repository, update to the latest version by running the following commands:
 
-Prerequisites: Linux
---------------------
+    git pull
+    git submodule update
 
-Building is currently supported only on recent Debian/Ubuntu releases. All
-binaries are produced in a self-contained chroot environment for the target
-distribution, so you will need to setup it up first by running
-```scripts/build.py```. The following targets are currently supported:
+Please ensure that you have enough disk space in the location you have cloned
+the source code, as it will require approximately 1.2GiB for both the `qt` and
+`wkhtmltopdf` repositories. Each target that is built will require an
+additional 2.5GiB for compiling the source code and producing the final
+installer (for Windows) or tarballs (for other OSes), which will be generated
+in the `static-build/` folder.
 
-Target         | Command for Setup
-------         | -----------------
-Debian Wheezy  | ```sudo scripts/build.py setup-schroot-wheezy```
-Ubuntu Trusty  | ```sudo scripts/build.py setup-schroot-trusty```
-Ubuntu Precise | ```sudo scripts/build.py setup-schroot-precise```
-CentOS 6       | ```sudo scripts/build.py setup-schroot-centos6```
-CentOS 5       | ```sudo scripts/build.py setup-schroot-centos5```
-MinGW-w64      | ```sudo scripts/build.py setup-mingw-w64```
+You can create a debug build by passing the ` -debug` flag to the build script.
+It is recommended to always pass the ` -clean` flag, which removes the
+existing build folder and performs a clean build. Note that passing `-debug`
+may increase the disk space required for the build and final binaries for
+storing the additional debug information.
 
-The above commands will create the chroot directory under the directory
-`/opt/wkhtmltopdf-build` -- you can change it to some other directory
-by running `export WKHTMLTOX_CHROOT=/some/other/dir` before running the
-above command to create the chroot environment in the specified location.
-At least 1GB of disk space for each target should be available at the 
-above location, or else the process may fail due to insufficient disk space.
+Linux
+-----
 
-Please note that you should run the above commands while logged in as a
-regular user who has ```sudo``` access and that the cloned respository
-should be in the user's home directory e.g. ```~/wkhtmltopdf```. **Do
-not attempt to clone the repository or run any other command as root!**
+Please ensure that the cloned repository is in the user's home directory
+e.g. `~/wkhtmltopdf`. If you clone it in a different directory, it may
+fail with `E: Failed to change to directory /your/dir: No such file or directory`.
+
+Building is supported only on the latest stable Debian/Ubuntu releases, and
+the binaries are produced in a self-contained chroot environment for the
+target distribution -- you will need to first setup the build environment
+and then only you can perform the build for a 32-bit or 64-bit binary.
+The following targets are currently supported:
+
+Target         | Setup of Build Environment                    | Building 32-bit binaries                 |  Building 64-bit binaries
+------         | --------------------------                    | ------------------------                 |  ------------------------
+Debian Wheezy  | `sudo scripts/build.py setup-schroot-wheezy`  | `scripts/build.py wheezy-i386`           | `scripts/build.py wheezy-amd64`
+Ubuntu Trusty  | `sudo scripts/build.py setup-schroot-trusty`  | `scripts/build.py trusty-i386`           | `scripts/build.py trusty-amd64`
+Ubuntu Precise | `sudo scripts/build.py setup-schroot-precise` | `scripts/build.py precise-i386`          | `scripts/build.py precise-amd64`
+CentOS 6       | `sudo scripts/build.py setup-schroot-centos6` | `scripts/build.py centos6-i386`          | `scripts/build.py centos6-amd64`
+CentOS 5       | `sudo scripts/build.py setup-schroot-centos5` | `scripts/build.py centos5-i386`          | `scripts/build.py centos5-amd64`
+MinGW-w64      | `sudo scripts/build.py setup-mingw-w64`       | `scripts/build.py mingw-w64-cross-win32` | `scripts/build.py mingw-w64-cross-win64`
 
 The MinGW-w64 toolchain can cross-compile 32/64-bit Windows binaries from
 Linux -- it is useful for targetting Windows XP/Windows 2003, which are not
-supported by default when compiling with MSVC 2013.
+supported by default when compiling with MSVC 2013. You may require a
+working internet connection during the build to download and compile
+the dependent libraries (e.g. OpenSSL).
 
-Prerequisites: Windows
-----------------------
+Each target will require approximately 1.5GiB of disk space to hold both
+the `i386` and `amd64` chroot environments for that target. By default,
+the chroot environments are created under `/var/chroot` -- in case you
+want to create them under another location (e.g. due to insufficient disk
+space), please run the command `export WKHTMLTOX_CHROOT=/some/other/dir`
+**before** the command for setup of the build environment.
+
+While setting up the build environments, please ensure that you are logged
+in as a regular user who has `sudo` access. It is possible to run the script
+without `sudo` but you will need to have root privileges (e.g. via `su`). In
+that scenario, you may get the error `Unable to determine the login for which schroot access is to be given`
+-- you will have to set `export SUDO_USER=<username>` and try to run it again.
+Other than the setup of build environment, **do not run any other command
+with `root` privileges!** The compilation process can be run as a normal
+user and running it as `root` may lead to errors or complete loss of data.
+
+After the build environment is setup, you can run the command mentioned above
+to build either the 32-bit or 64-bit binaries, which should generate a
+compressed tarball using [xz](http://tukaani.org/xz/) in the `static-build/`
+folder.
+
+Windows
+-------
 
 * Install Visual Studio 2008 or later ([2013 Express](http://www.microsoft.com/en-US/download/details.aspx?id=40787)
   is recommended) or follow instructions for [Windows SDK 7.1](http://qt-project.org/wiki/Category:Tools::msvc)
@@ -50,8 +83,25 @@ Prerequisites: Windows
 * Make sure that you can run "git". If not, add it to the PATH or reinstall
   with option "Run Git from the Windows Command Prompt".
 
-Prerequisites: OS X
--------------------
+Target          | Building 32-bit binaries               |  Building 64-bit binaries
+------          | ------------------------               |  ------------------------
+MSVC 2008       | `scripts\build.py msvc2008-win32`      | `scripts/build.py msvc2008-win64`
+MSVC 2010       | `scripts\build.py msvc2010-win32`      | `scripts/build.py msvc2010-win64`
+MSVC 2012       | `scripts\build.py msvc2012-win32`      | `scripts/build.py msvc2012-win64`
+MSVC 2013       | `scripts\build.py msvc2013-win32`      | `scripts/build.py msvc2013-win64`
+Windows SDK 7.1 | `scripts\build.py msvc-winsdk71-win32` | `scripts\build.py msvc-winsdk71-win64`
+
+During the build, a working internet connection is required to download and
+compile the dependent libraries (e.g. OpenSSL). The output installers should
+be generated in the `static-build` folder.
+
+Please note that if you want to target Windows XP/Windows 2003 (i.e. NT 5.x)
+you should use the MinGW-w64 builds cross-compiled from Linux or use MSVC 2008,
+MSVC 2010 or Windows SDK 7.1 -- MSVC 2012 or later target Windows Vista (i.e.
+NT 6.x) by default.
+
+OS X
+----
 
 Building is supported for 32-bit Carbon on OS X 10.6 or newer, and for
 64-bit Cocoa on OS X 10.7 or newer. You will need to have the following
@@ -70,20 +120,20 @@ file sizes and selectable text as compared to the Cocoa version, see
 You will need to have the OS X 10.6 SDK installed for the Carbon build,
 which is not available in later versions of OS X.
 
-Building
---------
+Target          | Build Command
+------          | -------------
+32-bit Carbon   | `scripts\build.py osx-carbon-i386`
+64-bit Cocoa    | `scripts\build.py osx-cocoa-x86-64`
 
-* Ensure that you are using the correct Qt version by running ```git submodule update```
-* Run the command ```scripts/build.py``` (or ```scripts\build.py``` if you
-  are on Windows) to get a list of all targets which can be built.
-* If you want to compile on a distribution not listed above or for another
-  Unix-like OS, please use the ```posix-local``` target -- it assumes
-  that you have already installed all build dependencies beforehand.
-* If you want to customize the default Qt configuration options for your
-  target, please set the ```WKHTMLTOX_QT_CONFIG``` environment variable
-  before running the above command. Adding a prefix of ```remove:```
-  will ensure that it will be removed from the options, if already present.
-  e.g. ```WKHTMLTOX_QT_CONFIG="remove:-no-fast"``` will disable the fast
-  makefile generation mode while configuring Qt.
-* After the target has been built, the output installer/package will be
-  available in the ```static-build``` folder.
+Others
+------
+
+In case you are running on a non-Debian/Ubuntu Linux distribution or want to
+target a Linux distribution not listed above or another Unix-like OS, you
+will need to use the `posix-local` target. It assumes that you already have
+all the build dependencies installed beforehand and will generate a tarball
+with the specification of `local-MACHINENAME` in the `static-build/` folder.
+
+If you are able to get such a build running, contacting the developers via
+the mailing list or submitting a patch with the build instructions would be
+appreciated.
