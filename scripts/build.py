@@ -293,7 +293,7 @@ def shell(cmd):
 def get_output(*cmd):
     try:
         return subprocess.check_output(cmd, stderr=subprocess.STDOUT).strip()
-    except subprocess.CalledProcessError:
+    except:
         return None
 
 def rmdir(path):
@@ -330,15 +330,15 @@ def qt_config(key, *opts):
             output.remove(arg[1+arg.index(':'):])
     return ' '.join(output)
 
-def download_file(url, dir, sha1):
+def download_file(url, sha1, dir):
     name = url.split('/')[-1]
     loc  = os.path.join(dir, name)
     if os.path.exists(loc):
         hash = hashlib.sha1(open(loc, 'rb').read()).hexdigest()
-        if hash != sha1:
-            error('Checksum mismatch for %s' % name)
-            os.remove(loc)
-        return loc
+        if hash == sha1:
+            return loc
+        os.remove(loc)
+        print 'Checksum mismatch for %s, re-downloading.' % name
     def hook(cnt, bs, total):
         pct = int(cnt*bs*100/total)
         sys.stdout.write("\rDownloading: %s [%d%%]" % (name, pct))
@@ -348,11 +348,25 @@ def download_file(url, dir, sha1):
     sys.stdout.flush()
     hash = hashlib.sha1(open(loc, 'rb').read()).hexdigest()
     if hash != sha1:
-        error('Checksum mismatch for %s' % name)
         os.remove(loc)
+        error('Checksum mismatch for %s, aborting.' % name)
     sys.stdout.write("\rDownloaded: %s [checksum OK]\n" % name)
     sys.stdout.flush()
     return loc
+
+def download_tarball(url, sha1, dir, name):
+    loc = download_file(url, sha1, dir)
+    tar = tarfile.open(loc)
+    sub = tar.getnames()[0]
+    if '/' in sub:
+        sub = sub[:sub.index('/')]
+    src = os.path.join(dir, sub)
+    tgt = os.path.join(dir, name)
+    rmdir(src)
+    tar.extractall(dir)
+    rmdir(tgt)
+    os.rename(src, tgt)
+    return tgt
 
 def build_openssl(config, basedir):
     cfg = None
@@ -363,10 +377,8 @@ def build_openssl(config, basedir):
     if not cfg:
         return
 
-    dstdir   = os.path.join(basedir, config, 'openssl')
-    location = download_file(OPENSSL['url'], basedir, OPENSSL['sha1'])
-    relname  = os.path.basename(location)[:os.path.basename(location).index('.tar')]
-    srcdir   = os.path.join(basedir, relname)
+    dstdir = os.path.join(basedir, config, 'winlibs')
+    srcdir = download_tarball(OPENSSL['url'], OPENSSL['sha1'], basedir, os.path.join(config, 'openssl'))
 
     def is_compiled():
         compiled = exists(os.path.join(dstdir, 'include', 'openssl', 'ssl.h'))
@@ -375,16 +387,16 @@ def build_openssl(config, basedir):
         return compiled
 
     if not is_compiled():
-        rmdir(srcdir)
-        tarfile.open(location).extractall(basedir)
         os.chdir(srcdir)
         opts = OPENSSL['build'][cfg]
         shell('perl Configure --openssldir=%s %s' % (dstdir, opts['configure']))
         for cmd in opts['build']:
             shell(cmd)
+        os.chdir(dstdir)
         if not is_compiled():
             error("Unable to compile OpenSSL for your system, aborting.")
 
+    rmdir(srcdir)
     return OPENSSL['build'][cfg]['os_libs']
 
 def check_running_on_debian():
@@ -563,14 +575,14 @@ def build_msvc_common(config, basedir):
     version, simple_version = get_version(basedir)
     ssl_libs = build_openssl(config, basedir)
 
-    ssldir = os.path.join(basedir, config, 'openssl')
+    libdir = os.path.join(basedir, config, 'winlibs')
     qtdir  = os.path.join(basedir, config, 'qt')
     mkdir_p(qtdir)
 
     configure_args = qt_config('msvc',
-        '-I %s\\include' % ssldir,
-        '-L %s\\lib' % ssldir,
-        'OPENSSL_LIBS="-L%s -lssleay32 -llibeay32 %s"' % (ssldir.replace('\\', '\\\\'), ssl_libs))
+        '-I %s\\include' % libdir,
+        '-L %s\\lib' % libdir,
+        'OPENSSL_LIBS="-L%s -lssleay32 -llibeay32 %s"' % (libdir.replace('\\', '\\\\'), ssl_libs))
 
     os.chdir(qtdir)
     if not exists('is_configured'):
@@ -617,16 +629,16 @@ def build_mingw64_cross(config, basedir):
     version, simple_version = get_version(basedir)
     ssl_libs = build_openssl(config, basedir)
 
-    ssldir = os.path.join(basedir, config, 'openssl')
+    libdir = os.path.join(basedir, config, 'winlibs')
     qtdir  = os.path.join(basedir, config, 'qt')
 
     configure_args = qt_config('mingw-w64-cross',
         '--prefix=%s'   % qtdir,
-        '-I %s/include' % ssldir,
-        '-L %s/lib'     % ssldir,
+        '-I %s/include' % libdir,
+        '-L %s/lib'     % libdir,
         '-device-option CROSS_COMPILE=%s-' % MINGW_W64_PREFIX[rchop(config, '-dbg')])
 
-    os.environ['OPENSSL_LIBS'] = '-lssl -lcrypto -L %s/lib %s' % (ssldir, ssl_libs)
+    os.environ['OPENSSL_LIBS'] = '-lssl -lcrypto -L %s/lib %s' % (libdir, ssl_libs)
 
     mkdir_p(qtdir)
     os.chdir(qtdir)
@@ -866,6 +878,7 @@ def main():
     if '-clean' in sys.argv[2:]:
         rmdir(os.path.join(basedir, config))
 
+    mkdir_p(os.path.join(basedir, config))
     globals()['check_%s' % BUILDERS[config]](final_config)
     globals()['build_%s' % BUILDERS[config]](final_config, os.path.realpath(basedir))
 
