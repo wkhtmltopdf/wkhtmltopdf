@@ -41,6 +41,8 @@ struct DLL_PUBLIC Proxy {
 	QString user;
 	//! Password for the said proxy or NULL
 	QString password;
+	//! bypass address list
+	QString bypassList;
 };
 
 struct DLL_PUBLIC PostItem {
