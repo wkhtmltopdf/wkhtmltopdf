@@ -279,8 +279,12 @@ def rchop(s, e):
         return s[:-len(e)]
     return s
 
+def message(msg):
+    sys.stdout.write(msg)
+    sys.stdout.flush()
+
 def error(msg):
-    print msg
+    message(msg+'\n')
     sys.exit(1)
 
 def shell(cmd):
@@ -336,20 +340,17 @@ def download_file(url, sha1, dir):
         if hash == sha1:
             return loc
         os.remove(loc)
-        print 'Checksum mismatch for %s, re-downloading.' % name
+        message('Checksum mismatch for %s, re-downloading.\n' % name)
     def hook(cnt, bs, total):
         pct = int(cnt*bs*100/total)
-        sys.stdout.write("\rDownloading: %s [%d%%]" % (name, pct))
-        sys.stdout.flush()
+        message("\rDownloading: %s [%d%%]" % (name, pct))
     urllib.urlretrieve(url, loc, reporthook=hook)
-    sys.stdout.write("\r")
-    sys.stdout.flush()
+    message("\r")
     hash = hashlib.sha1(open(loc, 'rb').read()).hexdigest()
     if hash != sha1:
         os.remove(loc)
         error('Checksum mismatch for %s, aborting.' % name)
-    sys.stdout.write("\rDownloaded: %s [checksum OK]\n" % name)
-    sys.stdout.flush()
+    message("\rDownloaded: %s [checksum OK]\n" % name)
     return loc
 
 def download_tarball(url, sha1, dir, name):
@@ -433,7 +434,7 @@ def build_setup_schroot(config, basedir):
     login  = os.environ.get('SUDO_USER') or get_output('logname')
     chroot = config[1+config.rindex('-'):]
     for arch in ARCH:
-        print '******************* %s-%s' % (chroot, arch)
+        message('******************* %s-%s\n' % (chroot, arch))
         base_dir = os.environ.get('WKHTMLTOX_CHROOT') or '/var/chroot'
         root_dir = os.path.join(base_dir, 'wkhtmltopdf-%s-%s' % (chroot, arch))
         rmdir(root_dir)
@@ -478,7 +479,7 @@ def check_update_schroot(config):
 
 def build_update_schroot(config, basedir):
     for name in get_output('schroot', '--list').split('\n'):
-        print '******************* %s' % name[name.index('wkhtmltopdf-'):]
+        message('******************* %s\n' % name[name.index('wkhtmltopdf-'):])
         shell('schroot -c %s -- /bin/bash /update.sh' % name[name.index('wkhtmltopdf-'):])
 
 def check_setup_mingw64(config):
@@ -611,7 +612,7 @@ def build_msvc_common(config, basedir):
                 (makensis, version, simple_version, config))
 
     if not found:
-        print "\n\nCould not build installer as NSIS was not found."
+        message("\n\nCould not build installer as NSIS was not found.\n")
 
 # ------------------------------------------------ MinGW-W64 Cross Environment
 
@@ -838,11 +839,11 @@ def build_osx(config, basedir):
 # --------------------------------------------------------------- command line
 
 def usage(exit_code=2):
-    print "Usage: scripts/build.py <target> [-clean] [-debug]\n\nThe supported targets are:\n",
+    message("Usage: scripts/build.py <target> [-clean] [-debug]\n\nThe supported targets are:\n")
     opts = list(BUILDERS.keys())
     opts.sort()
     for opt in opts:
-        print '* %s' % opt
+        message('* %s\n' % opt)
     sys.exit(exit_code)
 
 def main():
