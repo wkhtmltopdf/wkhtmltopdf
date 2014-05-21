@@ -30,9 +30,9 @@ QT_CONFIG = {
         '-webkit',
         '-exceptions',              # required by XmlPatterns
         '-xmlpatterns',             # required for TOC support
-        '-qt-zlib',                 # use bundled versions of libraries
-        '-qt-libpng',
-        '-qt-libjpeg',
+        '-system-zlib',
+        '-system-libpng',
+        '-system-libjpeg',
         '-no-libmng',
         '-no-libtiff',
         '-no-accessibility',
@@ -125,7 +125,11 @@ QT_CONFIG = {
         '-xrender',                 # xrender support is required
         '-openssl',                 # load OpenSSL binaries at runtime
         '-largefile',
-        '-rpath'
+        '-rpath',
+        'remove:-system-libpng',
+        'remove:-system-libjpeg',
+        '-qt-libpng',
+        '-qt-libjpeg'
     ]
 }
 
@@ -261,6 +265,97 @@ DEPENDENT_LIBS = {
                     'perl Configure --openssldir=%(destdir)s --cross-compile-prefix=%(mingw-w64)s- no-shared no-asm mingw64',
                     'make',
                     'make install_sw']
+            }
+        }
+    },
+
+    'zlib': {
+        'order' : 2,
+        'url'   : 'http://downloads.sourceforge.net/libpng/zlib-1.2.8.tar.gz',
+        'sha1'  : 'a4d316c404ff54ca545ea71a27af7dbc29817088',
+        'build' : {
+            'msvc*': {
+                'result': {
+                    'include/zlib.h' : 'zlib.h',
+                    'include/zconf.h': 'zconf.h',
+                    'lib/zdll.lib'   : 'zlib.lib'
+                },
+                'replace':  [('win32/Makefile.msc', '-MD', '-MT')],
+                'commands': ['nmake /f win32/Makefile.msc zlib.lib']
+            },
+            'mingw-w64-cross-win*': {
+                'result': {
+                    'include/zlib.h' : 'zlib.h',
+                    'include/zconf.h': 'zconf.h',
+                    'lib/libz.a'     : 'libz.a'
+                },
+                'replace':  [('win32/Makefile.gcc', 'PREFIX =', 'PREFIX = %(mingw-w64)s-')],
+                'commands': ['make -f win32/Makefile.gcc']
+            }
+        }
+    },
+
+    'libpng': {
+        'order' : 3,
+        'url' : 'http://downloads.sourceforge.net/libpng/libpng-1.6.10.tar.gz',
+        'sha1': 'cf81cf7df631bbfa649600b9a45d966b6bccac25',
+        'build' : {
+            'msvc*': {
+                'result': {
+                    'include/png.h'       : 'png.h',
+                    'include/pngconf.h'   : 'pngconf.h',
+                    'include/pnglibconf.h': 'pnglibconf.h',
+                    'lib/libpng.lib'      : 'libpng.lib'
+                },
+                'replace': [
+                    ('scripts/makefile.vcwin32', '-MD', '-MT'),
+                    ('scripts/makefile.vcwin32', '-I..\\zlib', '-I..\\deplibs\\include'),
+                    ('scripts/makefile.vcwin32', '..\\zlib\\zlib.lib', '..\\deplibs\\lib\\zdll.lib')],
+                'commands': ['nmake /f scripts/makefile.vcwin32 libpng.lib']
+            },
+            'mingw-w64-cross-win*': {
+                'result': {
+                    'include/png.h'       : 'png.h',
+                    'include/pngconf.h'   : 'pngconf.h',
+                    'include/pnglibconf.h': 'pnglibconf.h',
+                    'lib/libpng.a'        : 'libpng.a'
+                },
+                'replace': [
+                    ('scripts/makefile.gcc', 'ZLIBINC = ../zlib', 'ZLIBINC = %(destdir)s/include'),
+                    ('scripts/makefile.gcc', 'ZLIBLIB = ../zlib', 'ZLIBLIB = %(destdir)s/lib'),
+                    ('scripts/makefile.gcc', 'CC = gcc', 'CC = %(mingw-w64)s-gcc'),
+                    ('scripts/makefile.gcc', 'AR_RC = ar', 'AR_RC = %(mingw-w64)s-ar'),
+                    ('scripts/makefile.gcc', 'RANLIB = ranlib', 'RANLIB = %(mingw-w64)s-ranlib')],
+                'commands': ['make -f scripts/makefile.gcc libpng.a']
+            }
+        }
+    },
+
+    'libjpeg': {
+        'order' : 4,
+        'url' : 'http://ijg.org/files/jpegsrc.v9a.tar.gz',
+        'sha1': 'd65ed6f88d318f7380a3a5f75d578744e732daca',
+        'build' : {
+            'msvc*': {
+                'result': {
+                    'include/jpeglib.h' : 'jpeglib.h',
+                    'include/jmorecfg.h': 'jmorecfg.h',
+                    'include/jerror.h'  : 'jerror.h',
+                    'include/jconfig.h' : 'jconfig.h',
+                    'lib/libjpeg.lib'   : 'libjpeg.lib'
+                },
+                'replace':  [('makefile.vc', '!include <win32.mak>', ''),
+                             ('makefile.vc', '$(cc)', 'cl'),
+                             ('makefile.vc', '$(cflags) $(cdebug) $(cvars)', '-c -nologo -D_CRT_SECURE_NO_DEPRECATE -MT -O2 -W3')],
+                'commands': [
+                    'copy /y jconfig.vc jconfig.h',
+                    'nmake /f makefile.vc libjpeg.lib']
+            },
+            'mingw-w64-cross-win*': {
+                'result': ['include/jpeglib.h', 'include/jmorecfg.h', 'include/jerror.h', 'include/jconfig.h', 'lib/libjpeg.a'],
+                'commands': [
+                    './configure --host=%(mingw-w64)s --disable-shared --prefix=%(destdir)s',
+                    'make install']
             }
         }
     }
