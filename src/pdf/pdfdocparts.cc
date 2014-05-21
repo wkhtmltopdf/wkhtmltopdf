@@ -262,7 +262,7 @@ void PdfCommandLineParser::outputOutlineDoc(Outputter * o) const {
 		"book marks, this can be enabled by specifying the --outline switch. "
 		"The outlines are generated based on the <h?> tags, for a in-depth "
 		"description of how this is done see the ");
-	o->sectionLink("Table Of Contest");
+	o->sectionLink("Table Of Contents");
 	o->text(" section. ");
 	o->endParagraph();
 	o->paragraph(
