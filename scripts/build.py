@@ -19,37 +19,6 @@
 
 # --------------------------------------------------------------- CONFIGURATION
 
-OPENSSL = {
-    'url'   : 'http://www.openssl.org/source/openssl-1.0.1g.tar.gz',
-    'sha1'  : 'b28b3bcb1dc3ee7b55024c9f795be60eb3183e3c',
-    'build' : {
-        'msvc*-win32*': {
-            'configure' : 'VC-WIN32 no-asm',
-            'build'     : ['ms\\do_ms.bat', 'nmake /f ms\\nt.mak install'],
-            'libs'      : ['ssleay32.lib', 'libeay32.lib'],
-            'os_libs'   : '-lUser32 -lAdvapi32 -lGdi32 -lCrypt32'
-        },
-        'msvc*-win64*': {
-            'configure' : 'VC-WIN64A',
-            'build'     : ['ms\\do_win64a.bat', 'nmake /f ms\\nt.mak install'],
-            'libs'      : ['ssleay32.lib', 'libeay32.lib'],
-            'os_libs'   : '-lUser32 -lAdvapi32 -lGdi32 -lCrypt32'
-        },
-        'mingw-w64-cross-win32': {
-            'configure' : '--cross-compile-prefix=i686-w64-mingw32- no-shared no-asm mingw64',
-            'build'     : ['make', 'make install_sw'],
-            'libs'      : ['libssl.a', 'libcrypto.a'],
-            'os_libs'   : '-lws2_32 -lgdi32 -lcrypt32'
-        },
-        'mingw-w64-cross-win64': {
-            'configure' : '--cross-compile-prefix=x86_64-w64-mingw32- no-shared no-asm mingw64',
-            'build'     : ['make', 'make install_sw'],
-            'libs'      : ['libssl.a', 'libcrypto.a'],
-            'os_libs'   : '-lws2_32 -lgdi32 -lcrypt32'
-        }
-    }
-}
-
 QT_CONFIG = {
     'common' : [
         '-opensource',
@@ -266,6 +235,37 @@ deb-src http://archive.ubuntu.com/ubuntu/ precise-security main restricted unive
     ]
 }
 
+DEPENDENT_LIBS = {
+    'openssl': {
+        'order' : 1,
+        'url'   : 'http://www.openssl.org/source/openssl-1.0.1g.tar.gz',
+        'sha1'  : 'b28b3bcb1dc3ee7b55024c9f795be60eb3183e3c',
+        'build' : {
+            'msvc*-win32*': {
+                'result': ['include/openssl/ssl.h', 'lib/ssleay32.lib', 'lib/libeay32.lib'],
+                'commands': [
+                    'perl Configure --openssldir=%(destdir)s VC-WIN32 no-asm',
+                    'ms\\do_ms.bat',
+                    'nmake /f ms\\nt.mak install'],
+            },
+            'msvc*-win64*': {
+                'result': ['include/openssl/ssl.h', 'lib/ssleay32.lib', 'lib/libeay32.lib'],
+                'commands': [
+                    'perl Configure --openssldir=%(destdir)s VC-WIN64A',
+                    'ms\\do_ms.bat',
+                    'nmake /f ms\\nt.mak install']
+            },
+            'mingw-w64-cross-win*': {
+                'result': ['include/openssl/ssl.h', 'lib/libssl.a', 'lib/libcrypto.a'],
+                'commands': [
+                    'perl Configure --openssldir=%(destdir)s --cross-compile-prefix=%(mingw-w64)s- no-shared no-asm mingw64',
+                    'make',
+                    'make install_sw']
+            }
+        }
+    }
+}
+
 # --------------------------------------------------------------- HELPERS
 
 import os, sys, platform, subprocess, shutil, re, fnmatch, multiprocessing, urllib, hashlib, tarfile
@@ -367,36 +367,47 @@ def download_tarball(url, sha1, dir, name):
     os.rename(src, tgt)
     return tgt
 
-def build_openssl(config, basedir):
-    cfg = None
-    for key in OPENSSL['build']:
-        if fnmatch.fnmatch(config, key):
-            cfg = key
+def _is_compiled(dst, loc):
+    present = True
+    for name in loc['result']:
+        present = present and exists(os.path.join(dst, name))
+    return present
 
-    if not cfg:
-        return
+def build_deplibs(config, basedir):
+    mkdir_p(os.path.join(basedir, config))
 
-    dstdir = os.path.join(basedir, config, 'winlibs')
-    srcdir = download_tarball(OPENSSL['url'], OPENSSL['sha1'], basedir, os.path.join(config, 'openssl'))
+    dstdir = os.path.join(basedir, config, 'deplibs')
+    vars   = {'destdir': dstdir, 'mingw-w64': MINGW_W64_PREFIX.get(rchop(config, '-dbg'), '')}
+    for lib in sorted(DEPENDENT_LIBS, key=lambda x: DEPENDENT_LIBS[x]['order']):
+        cfg = None
+        for key in DEPENDENT_LIBS[lib]['build']:
+            if fnmatch.fnmatch(config, key):
+                cfg = key
 
-    def is_compiled():
-        compiled = exists(os.path.join(dstdir, 'include', 'openssl', 'ssl.h'))
-        for lib in OPENSSL['build'][cfg]['libs']:
-            compiled = compiled and exists(os.path.join(dstdir, 'lib', lib))
-        return compiled
+        if not cfg or _is_compiled(dstdir, DEPENDENT_LIBS[lib]['build'][cfg]):
+            continue
 
-    if not is_compiled():
+        build_cfg = DEPENDENT_LIBS[lib]['build'][cfg]
+        message('========== building: %s\n' % lib)
+        srcdir = download_tarball(DEPENDENT_LIBS[lib]['url'], DEPENDENT_LIBS[lib]['sha1'],
+                                  basedir, os.path.join(config, lib))
+
+        for location, source, target in build_cfg.get('replace', []):
+            data = open(os.path.join(srcdir, location), 'rb').read()
+            open(os.path.join(srcdir, location), 'wb').write(data.replace(source, target % vars))
+
         os.chdir(srcdir)
-        opts = OPENSSL['build'][cfg]
-        shell('perl Configure --openssldir=%s %s' % (dstdir, opts['configure']))
-        for cmd in opts['build']:
-            shell(cmd)
+        for command in build_cfg['commands']:
+            shell(command % vars)
+        if not type(build_cfg['result']) is list:
+            for target in build_cfg['result']:
+                mkdir_p(os.path.dirname(os.path.join(dstdir, target)))
+                shutil.copy(build_cfg['result'][target], os.path.join(dstdir, target))
         os.chdir(dstdir)
-        if not is_compiled():
-            error("Unable to compile OpenSSL for your system, aborting.")
+        if not _is_compiled(dstdir, build_cfg):
+            error("Unable to compile %s for your system, aborting." % lib)
 
-    rmdir(srcdir)
-    return OPENSSL['build'][cfg]['os_libs']
+        rmdir(srcdir)
 
 def check_running_on_debian():
     if not sys.platform.startswith('linux') or not exists('/etc/apt/sources.list'):
@@ -572,16 +583,16 @@ def build_msvc_winsdk71(config, basedir):
 
 def build_msvc_common(config, basedir):
     version, simple_version = get_version(basedir)
-    ssl_libs = build_openssl(config, basedir)
+    build_deplibs(config, basedir)
 
-    libdir = os.path.join(basedir, config, 'winlibs')
+    libdir = os.path.join(basedir, config, 'deplibs')
     qtdir  = os.path.join(basedir, config, 'qt')
     mkdir_p(qtdir)
 
     configure_args = qt_config('msvc',
         '-I %s\\include' % libdir,
         '-L %s\\lib' % libdir,
-        'OPENSSL_LIBS="-L%s -lssleay32 -llibeay32 %s"' % (libdir.replace('\\', '\\\\'), ssl_libs))
+        'OPENSSL_LIBS="-L%s\\\\lib -lssleay32 -llibeay32 -lUser32 -lAdvapi32 -lGdi32 -lCrypt32"' % libdir.replace('\\', '\\\\'))
 
     os.chdir(qtdir)
     if not exists('is_configured'):
@@ -626,9 +637,9 @@ def check_mingw64_cross(config):
 
 def build_mingw64_cross(config, basedir):
     version, simple_version = get_version(basedir)
-    ssl_libs = build_openssl(config, basedir)
+    build_deplibs(config, basedir)
 
-    libdir = os.path.join(basedir, config, 'winlibs')
+    libdir = os.path.join(basedir, config, 'deplibs')
     qtdir  = os.path.join(basedir, config, 'qt')
 
     configure_args = qt_config('mingw-w64-cross',
@@ -637,7 +648,7 @@ def build_mingw64_cross(config, basedir):
         '-L %s/lib'     % libdir,
         '-device-option CROSS_COMPILE=%s-' % MINGW_W64_PREFIX[rchop(config, '-dbg')])
 
-    os.environ['OPENSSL_LIBS'] = '-lssl -lcrypto -L %s/lib %s' % (libdir, ssl_libs)
+    os.environ['OPENSSL_LIBS'] = '-lssl -lcrypto -L %s/lib -lws2_32 -lgdi32 -lcrypt32' % libdir
 
     mkdir_p(qtdir)
     os.chdir(qtdir)
@@ -869,7 +880,6 @@ def main():
     if '-clean' in sys.argv[2:]:
         rmdir(os.path.join(basedir, config))
 
-    mkdir_p(os.path.join(basedir, config))
     globals()['check_%s' % BUILDERS[config]](final_config)
     globals()['build_%s' % BUILDERS[config]](final_config, os.path.realpath(basedir))
 
