@@ -488,8 +488,8 @@ def build_deplibs(config, basedir):
                                   basedir, os.path.join(config, lib))
 
         for location, source, target in build_cfg.get('replace', []):
-            data = open(os.path.join(srcdir, location), 'rb').read()
-            open(os.path.join(srcdir, location), 'wb').write(data.replace(source, target % vars))
+            data = open(os.path.join(srcdir, location), 'r').read()
+            open(os.path.join(srcdir, location), 'w').write(data.replace(source, target % vars))
 
         os.chdir(srcdir)
         for command in build_cfg['commands']:
@@ -631,7 +631,7 @@ def build_msvc(config, basedir):
             vcarg = 'x86_amd64'
 
     python = sys.executable
-    process = subprocess.Popen('("%s" %s>nul)&&"%s" -c "import os; print repr(os.environ)"' % (
+    process = subprocess.Popen('("%s" %s>nul)&&"%s" -c "import os, sys; sys.stdout.write(repr(dict(os.environ)))"' % (
         os.path.join(vcdir, 'vcvarsall.bat'), vcarg, python), stdout=subprocess.PIPE, shell=True)
     stdout, _ = process.communicate()
     exitcode = process.wait()
@@ -665,7 +665,7 @@ def build_msvc_winsdk71(config, basedir):
         args = '/2008 /x86 %s' % mode
 
     python = sys.executable
-    process = subprocess.Popen('("%s" %s>nul)&&"%s" -c "import os; print repr(os.environ)"' % (
+    process = subprocess.Popen('("%s" %s>nul)&&"%s" -c "import os, sys; sys.stdout.write(repr(dict(os.environ)))"' % (
         setenv, args, python), stdout=subprocess.PIPE, shell=True)
     stdout, _ = process.communicate()
     exitcode = process.wait()
