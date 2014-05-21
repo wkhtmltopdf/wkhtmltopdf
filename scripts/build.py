@@ -25,14 +25,12 @@ OPENSSL = {
     'build' : {
         'msvc*-win32*': {
             'configure' : 'VC-WIN32 no-asm',
-            'debug'     : 'debug-VC-WIN32 no-asm',
             'build'     : ['ms\\do_ms.bat', 'nmake /f ms\\nt.mak install'],
             'libs'      : ['ssleay32.lib', 'libeay32.lib'],
             'os_libs'   : '-lUser32 -lAdvapi32 -lGdi32 -lCrypt32'
         },
         'msvc*-win64*': {
             'configure' : 'VC-WIN64A',
-            'debug'     : 'debug-VC-WIN64A',
             'build'     : ['ms\\do_win64a.bat', 'nmake /f ms\\nt.mak install'],
             'libs'      : ['ssleay32.lib', 'libeay32.lib'],
             'os_libs'   : '-lUser32 -lAdvapi32 -lGdi32 -lCrypt32'
@@ -864,16 +862,8 @@ def main():
 
     final_config = config
     if '-debug' in sys.argv[2:]:
-        # use the debug OpenSSL configuration if possible
-        ssl = OPENSSL['build']
-        for key in ssl:
-            if fnmatch.fnmatch(config, key) and 'debug' in ssl[key]:
-                ssl[key]['configure'] = ssl[key]['debug']
-        # use a debug build of QT and WebKit
-        cfg = QT_CONFIG['common']
-        cfg[cfg.index('-release')] = '-debug'
-        cfg[cfg.index('-webkit')]  = '-webkit-debug'
         final_config += '-dbg'
+        QT_CONFIG['common'].extend(['remove:-release', 'remove:-webkit', '-debug', '-webkit-debug'])
 
     if '-clean' in sys.argv[2:]:
         rmdir(os.path.join(basedir, config))
