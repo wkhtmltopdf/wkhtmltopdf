@@ -238,25 +238,12 @@ void PdfConverterPrivate::beginConvert() {
 // returns millimeters
 qreal PdfConverterPrivate::calculateHeaderHeight(PageObject & object, QWebPage & header) {
     typedef QPair<QWebElement, QString> p_t;
+    //get pixel height from body
+    qreal height = header.mainFrame()->findFirstElement("body").evaluateJavaScript("this.offsetHeight").toDouble();
 
-    TempFile   tempObj;
-    QString    tempFile = tempObj.create(".pdf");
-
-    QPainter * testPainter = new QPainter();
-    QPrinter * testPrinter = createPrinter(tempFile);
-
-    if (!testPainter->begin(testPrinter)) {
-        emit out.error("Unable to write to temp location");
-        return 0.0;
-    }
-
-    QWebPrinter wp(header.mainFrame(), testPrinter, *testPainter);
-    qreal height = wp.elementLocation(header.mainFrame()->findFirstElement("body")).second.height();
-
-    delete testPainter;
-    delete testPrinter;
-
-    return (height / PdfConverter::millimeterToPointMultiplier);
+    //convert from pixel to mm based on dpi
+    
+    return (height*25.4)/settings.dpi;
 }
 
 #endif
