@@ -103,22 +103,18 @@ NT 6.x) by default.
 OS X
 ----
 
-Building is supported for 32-bit Carbon on OS X 10.6 or newer, and for
-64-bit Cocoa on OS X 10.7 or newer. You will need to have the following
-installed:
+Building is supported only on OS X 10.6 or newer. You will need to have the
+the latest Xcode for your OS X version and also install
+[xz 5.0.5](http://downloads.sourceforge.net/project/macpkg/XZ/5.0.5/XZ.pkg).
 
-* The latest Xcode for your OS X version
-* [xz 5.0.5](http://downloads.sourceforge.net/project/macpkg/XZ/5.0.5/XZ.pkg)
-* If you are using OS X 10.6, you will need to install [git 1.8.4.2](https://git-osx-installer.googlecode.com/files/git-1.8.4.2-intel-universal-snow-leopard.dmg)
-  and [Python 2.7.6](https://www.python.org/ftp/python/2.7.6/python-2.7.6-macosx10.6.dmg).
-  After installing, you should run the `Update Shell Profile.command`
-  in `/Applications/Python 2.7` to make it the default Python in the shell.
+If you are using OS X 10.6, you will need to install [git 1.8.4.2](https://git-osx-installer.googlecode.com/files/git-1.8.4.2-intel-universal-snow-leopard.dmg)
+and [Python 2.7.6](https://www.python.org/ftp/python/2.7.6/python-2.7.6-macosx10.6.dmg).
+After installing, you should run the `Update Shell Profile.command`
+in `/Applications/Python 2.7` to make it the default Python in the shell.
 
 The Carbon build is recommended because it generates PDFs with smaller
 file sizes and selectable text as compared to the Cocoa version, see
 [QTBUG-10094](https://bugreports.qt-project.org/browse/QTBUG-10094).
-You will need to have the OS X 10.6 SDK installed for the Carbon build,
-which is not available in later versions of OS X.
 
 Target          | Build Command
 ------          | -------------

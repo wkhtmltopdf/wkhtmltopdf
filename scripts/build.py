@@ -871,41 +871,25 @@ def build_posix_local(config, basedir):
 
 # --------------------------------------------------------------- OS X
 
-OSX_CONFIG = {
-    'osx-10.6-carbon-i386':  '-carbon  -platform macx-g++42',
-    'osx-10.7-carbon-i386':  '-carbon  -platform unsupported/macx-clang -reduce-exports',
-    'osx-10.8-carbon-i386':  '-carbon  -platform unsupported/macx-clang -reduce-exports',
-    'osx-10.9-carbon-i386':  '-carbon  -platform unsupported/macx-clang -reduce-exports',
-    'osx-10.7-cocoa-x86-64': '-cocoa   -platform unsupported/macx-clang',
-    'osx-10.8-cocoa-x86-64': '-cocoa   -platform unsupported/macx-clang',
-    'osx-10.9-cocoa-x86-64': '-cocoa   -platform unsupported/macx-clang-libc++'
-}
-
 def check_osx(config):
     if not platform.system() == 'Darwin' or not platform.mac_ver()[0]:
         error('This can only be run on a OS X system!')
 
-    osxver = platform.mac_ver()[0][:platform.mac_ver()[0].rindex('.')]
-    osxcfg = config.replace('osx-', 'osx-%s-' % osxver)
-    if not osxcfg in OSX_CONFIG:
-        error('This target is not supported: %s' % osxcfg)
-    if 'carbon' in osxcfg and osxver != '10.6':
-        sdk_dir = get_output('xcodebuild', '-sdk', 'macosx10.6', '-version', 'Path')
-        if not sdk_dir:
-            error('Unable to find OS X 10.6 SDK for the carbon build, aborting.')
-        if not os.path.isfile('%s/usr/lib/libstdc++.dylib' % sdk_dir):
-            error('Symlink for libstdc++.dylib has not been created, aborting.')
+    if not get_output('xcode-select', '--print-path'):
+        error('Xcode is not installed, aborting.')
 
 def build_osx(config, basedir):
     version, simple_version = get_version(basedir)
 
-    osxver = platform.mac_ver()[0][:platform.mac_ver()[0].rindex('.')]
-    osxcfg = config.replace('osx-', 'osx-%s-' % osxver)
-    args   = OSX_CONFIG[osxcfg]
-    flags  = ''
+    osxver    = platform.mac_ver()[0][:platform.mac_ver()[0].rindex('.')]
+    framework = config.split('-')[1]
+    if osxver == '10.6':
+        osxcfg = '-%s -platform macx-g++42' % framework
+    else:
+        osxcfg = '-%s -platform unsupported/macx-clang' % framework
 
-    if 'carbon' in osxcfg and osxver != '10.6':
-        args += ' -sdk %s' % get_output('xcodebuild', '-sdk', 'macosx10.6', '-version', 'Path')
+    flags = ''
+    if framework == 'carbon' and osxver != '10.6':
         for item in ['CFLAGS', 'CXXFLAGS']:
             flags += '"QMAKE_%s += %s" ' % (item, '-fvisibility=hidden -fvisibility-inlines-hidden')
 
@@ -923,7 +907,7 @@ def build_osx(config, basedir):
 
     os.chdir(qt)
     if not exists('is_configured'):
-        shell('../../../qt/configure %s' % qt_config('osx', '--prefix=%s' % qt, args))
+        shell('../../../qt/configure %s' % qt_config('osx', '--prefix=%s' % qt, osxcfg))
         shell('touch is_configured')
 
     shell('make -j%d' % CPU_COUNT)
@@ -933,14 +917,23 @@ def build_osx(config, basedir):
     os.environ['WKHTMLTOX_VERSION'] = version
     shell('../qt/bin/qmake %s ../../../wkhtmltopdf.pro' % flags)
     shell('make -j%d' % CPU_COUNT)
+
+    if osxver not in ['10.6', '10.7']:
+        for item in ['wkhtmltoimage', 'wkhtmltopdf', 'libwkhtmltox.%s.dylib' % simple_version]:
+            shell(' '.join([
+                'install_name_tool', '-change',
+                '/System/Library/Frameworks/CoreText.framework/Versions/A/CoreText',
+                '/System/Library/Frameworks/ApplicationServices.framework/Versions/A/Frameworks/CoreText.framework/CoreText',
+                'bin/'+item]))
+
     shell('cp bin/wkhtmlto* ../wkhtmltox-%s/bin' % version)
     shell('cp -P bin/libwkhtmltox*.dylib* ../wkhtmltox-%s/lib' % version)
     shell('cp ../../../include/wkhtmltox/*.h ../wkhtmltox-%s/include/wkhtmltox' % version)
     shell('cp ../../../include/wkhtmltox/dll*.inc ../wkhtmltox-%s/include/wkhtmltox' % version)
 
     os.chdir(os.path.join(basedir, config))
-    shell('tar -c -v -f ../wkhtmltox-%s_%s.tar wkhtmltox-%s/' % (version, osxcfg, version))
-    shell('xz --compress --force --verbose -9 ../wkhtmltox-%s_%s.tar' % (version, osxcfg))
+    shell('tar -c -v -f ../wkhtmltox-%s_%s.tar wkhtmltox-%s/' % (version, config, version))
+    shell('xz --compress --force --verbose -9 ../wkhtmltox-%s_%s.tar' % (version, config))
 
 # --------------------------------------------------------------- command line
 
