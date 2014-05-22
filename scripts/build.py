@@ -165,7 +165,8 @@ BUILDERS = {
     'mingw-w64-cross-win64': 'mingw64_cross',
     'posix-local':           'posix_local',
     'osx-cocoa-x86-64':      'osx',
-    'osx-carbon-i386':       'osx'
+    'osx-carbon-i386':       'osx',
+    'setup-osx-10.6-sdk':    'setup_osx_106_sdk'
 }
 
 CHROOT_SETUP  = {
@@ -363,7 +364,7 @@ DEPENDENT_LIBS = {
 
 # --------------------------------------------------------------- HELPERS
 
-import os, sys, platform, subprocess, shutil, re, fnmatch, multiprocessing, urllib, hashlib, tarfile
+import os, sys, platform, subprocess, shutil, re, fnmatch, multiprocessing, urllib, hashlib, tarfile, tempfile
 
 from os.path import exists
 
@@ -881,9 +882,67 @@ OSX_CONFIG = {
     'osx-10.9-cocoa-x86-64': '-cocoa   -platform unsupported/macx-clang-libc++'
 }
 
+def check_setup_osx_106_sdk(config):
+    if os.geteuid() != 0:
+        error('This target must be run with sudo.')
+
+    if not get_output('xcode-select', '--print-path'):
+        error('Xcode is not installed, aborting.')
+
+    sdk_dir = get_output('xcodebuild', '-sdk', 'macosx10.6', '-version', 'Path')
+    if sdk_dir:
+        if os.path.isfile('%s/usr/lib/libstdc++.dylib' % sdk_dir) \
+            or os.path.isfile('/usr/local/lib/libstdc++.dylib') \
+            or os.path.isfile('/usr/lib/libstdc++.dylib'):
+                error('OSX 10.6 SDK seems to be already properly installed, aborting.')
+
+def build_setup_osx_106_sdk(config, basedir):
+    sdk_target_dir = get_output('xcode-select', '--print-path') + '/Platforms/MacOSX.platform/Developer/SDKs/'
+    sdk_dir = get_output('xcodebuild', '-sdk', 'macosx10.6', '-version', 'Path')
+    if not sdk_dir:
+        # Install SDK
+        sdk_dmg = os.path.join(os.path.abspath(os.path.join(basedir, os.pardir)), 'xcode_3.2.6_and_ios_sdk_4.3.dmg')
+        if not os.path.isfile(sdk_dmg):
+            error('%s not found, aborting.' % sdk_dmg)
+        if os.path.getsize(sdk_dmg) != 4443150993L:
+            error('File size mismatch for %s, probably invalid Xcode installation DMG, aborting.' % sdk_dmg)
+
+        message('Mounting DMG...\n')
+        shell('hdiutil attach %s' % sdk_dmg)
+
+        message('Unpacking OS X 10.6 SDK...\n')
+        unpack_tmp_dir = tempfile.gettempdir() + '/wkhtmltopdf_tmp'
+        rmdir(unpack_tmp_dir)
+        mkdir_p(unpack_tmp_dir)
+        os.chdir(unpack_tmp_dir)
+        shell('cp /Volumes/Xcode\ and\ iOS\ SDK/Packages/MacOSX10.6.pkg .')
+        shell('xar -xf MacOSX10.6.pkg')
+        shell('cat Payload | gunzip -dc | cpio -id 2>/dev/null')
+
+        message('Moving SDK to %s...\n' % sdk_target_dir)
+        shell('mv -f SDKs/MacOSX10.6.sdk/ %s' % sdk_target_dir)
+        os.chdir('%sMacOSX10.6.sdk/usr/lib/' % sdk_target_dir)
+        rmdir(unpack_tmp_dir)
+
+        message('Symlinking libstdc++.dylib...\n')
+        shell('ln -s libstdc++.6.dylib libstdc++.dylib')
+        message('OS X 10.6 SDK installed.\n')
+    else:
+        # SDK already present, check libstdc++.dylib
+        if not os.path.isfile('%s/usr/lib/libstdc++.dylib' % sdk_dir) \
+            and not os.path.isfile('/usr/local/lib/libstdc++.dylib') \
+            and not os.path.isfile('/usr/lib/libstdc++.dylib'):
+                message('Symlinking libstdc++.dylib...\n')
+                os.chdir('%sMacOSX10.6.sdk/usr/lib/' % sdk_target_dir)
+                shell('ln -s libstdc++.6.dylib libstdc++.dylib')
+                message('OS X 10.6 SDK prepared.\n')
+
 def check_osx(config):
     if not platform.system() == 'Darwin' or not platform.mac_ver()[0]:
         error('This can only be run on a OS X system!')
+
+    if not get_output('xcode-select', '--print-path'):
+        error('Xcode is not installed, aborting.')
 
     osxver = platform.mac_ver()[0][:platform.mac_ver()[0].rindex('.')]
     osxcfg = config.replace('osx-', 'osx-%s-' % osxver)
@@ -892,9 +951,11 @@ def check_osx(config):
     if 'carbon' in osxcfg and osxver != '10.6':
         sdk_dir = get_output('xcodebuild', '-sdk', 'macosx10.6', '-version', 'Path')
         if not sdk_dir:
-            error('Unable to find OS X 10.6 SDK for the carbon build, aborting.')
-        if not os.path.isfile('%s/usr/lib/libstdc++.dylib' % sdk_dir):
-            error('Symlink for libstdc++.dylib has not been created, aborting.')
+            error('OS X 10.6 SDK for carbon build not found, please run "sudo ./scripts/build.py setup-osx-106-sdk" first.')
+        if not os.path.isfile('%s/usr/lib/libstdc++.dylib' % sdk_dir) \
+            and not os.path.isfile('/usr/local/lib/libstdc++.dylib') \
+            and not os.path.isfile('/usr/lib/libstdc++.dylib'):
+                error('libstdc++.dylib not found, please run "sudo ./scripts/build.py setup-osx-106-sdk" first.')
 
 def build_osx(config, basedir):
     version, simple_version = get_version(basedir)
