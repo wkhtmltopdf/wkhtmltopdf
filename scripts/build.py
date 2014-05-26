@@ -992,6 +992,15 @@ def build_osx(config, basedir):
     os.environ['WKHTMLTOX_VERSION'] = version
     shell('../qt/bin/qmake %s ../../../wkhtmltopdf.pro' % flags)
     shell('make -j%d' % CPU_COUNT)
+
+    # Fix location of CoreText.framework for some OS X versions and build platform combinations
+    if (osxver == '10.8') or ((osxver == '10.9') and ('carbon' in osxcfg)):
+        coretext_fix = 'install_name_tool -change' + \
+            ' /System/Library/Frameworks/CoreText.framework/Versions/A/CoreText' + \
+            ' /System/Library/Frameworks/ApplicationServices.framework/Versions/A/Frameworks/CoreText.framework/CoreText '
+    for item in ['wkhtmltoimage', 'wkhtmltopdf', 'libwkhtmltox.0.12.1.dylib']:
+        shell(coretext_fix + 'bin/' + item)
+
     shell('cp bin/wkhtmlto* ../wkhtmltox-%s/bin' % version)
     shell('cp -P bin/libwkhtmltox*.dylib* ../wkhtmltox-%s/lib' % version)
     shell('cp ../../../include/wkhtmltox/*.h ../wkhtmltox-%s/include/wkhtmltox' % version)
