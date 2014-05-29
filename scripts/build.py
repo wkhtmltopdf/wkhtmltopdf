@@ -150,7 +150,6 @@ BUILDERS = {
     'setup-schroot-wheezy':  'setup_schroot',
     'setup-schroot-trusty':  'setup_schroot',
     'setup-schroot-precise': 'setup_schroot',
-    'setup-osx-10.6-sdk':    'setup_osx_106_sdk',
     'update-all-schroots':   'update_schroot',
     'centos5-i386':          'linux_schroot',
     'centos5-amd64':         'linux_schroot',
@@ -877,67 +876,11 @@ OSX_CONFIG = {
     'osx-10.7-carbon-i386':  '-carbon  -platform unsupported/macx-clang -reduce-exports',
     'osx-10.8-carbon-i386':  '-carbon  -platform unsupported/macx-clang -reduce-exports',
     'osx-10.9-carbon-i386':  '-carbon  -platform unsupported/macx-clang -reduce-exports',
+    'osx-10.6-cocoa-x86-64': '-cocoa   -platform macx-g++42',
     'osx-10.7-cocoa-x86-64': '-cocoa   -platform unsupported/macx-clang',
     'osx-10.8-cocoa-x86-64': '-cocoa   -platform unsupported/macx-clang',
-    'osx-10.9-cocoa-x86-64': '-cocoa   -platform unsupported/macx-clang-libc++'
+    'osx-10.9-cocoa-x86-64': '-cocoa   -platform unsupported/macx-clang'
 }
-
-OSX_SDK_SETUP = {
-    'sdk_10.6'    : None,
-    'libstdc++'   : False,
-    'sdk_target'  : None,
-    'sdk_dmg'     : 'xcode_3.2.6_and_ios_sdk_4.3.dmg',
-    'dmg_size'    : 4443150993L
-}
-
-def check_setup_osx_106_sdk(config):
-    if os.geteuid() != 0:
-        error('This target must be run with sudo.')
-
-    xcode_dir = get_output('xcode-select', '--print-path')
-    if not xcode_dir:
-        error('Xcode is not installed, aborting.')
-
-    OSX_SDK_SETUP['sdk_10.6'] = get_output('xcodebuild', '-sdk', 'macosx10.6', '-version', 'Path')
-    if OSX_SDK_SETUP['sdk_10.6']:
-        OSX_SDK_SETUP['libstdc++'] = os.path.isfile('%s/usr/lib/libstdc++.dylib' % OSX_SDK_SETUP['sdk_10.6'])
-        if OSX_SDK_SETUP['libstdc++']:
-            error('OS X 10.6 SDK seems to be already properly installed, aborting.')
-    if xcode_dir.startswith('/Applications'):
-        OSX_SDK_SETUP['sdk_target'] = xcode_dir + '/Platforms/MacOSX.platform/Developer/SDKs/'
-    else:
-        OSX_SDK_SETUP['sdk_target'] = xcode_dir + '/SDKs/'
-
-    OSX_SDK_SETUP['sdk_dmg'] = os.path.abspath(os.path.join(os.path.dirname(os.path.realpath(__file__)), os.pardir, OSX_SDK_SETUP['sdk_dmg']))
-    if not os.path.isfile(OSX_SDK_SETUP['sdk_dmg']):
-        error('%s not found, aborting.' % OSX_SDK_SETUP['sdk_dmg'])
-    if os.path.getsize(OSX_SDK_SETUP['sdk_dmg']) != OSX_SDK_SETUP['dmg_size']:
-        error('File size mismatch for %s, probably invalid Xcode installation DMG, aborting.' % OSX_SDK_SETUP['sdk_dmg'])
-
-def build_setup_osx_106_sdk(config, basedir):
-    if not OSX_SDK_SETUP['sdk_10.6']:
-        # Install SDK
-        message('Mounting DMG...\n')
-        shell('hdiutil attach %s' % OSX_SDK_SETUP['sdk_dmg'])
-
-        message('OS X 10.6 SDK setup...\n')
-        mkdir_p(os.path.join(basedir, config))
-        os.chdir(os.path.join(basedir, config))        
-        shell('cp /Volumes/Xcode\ and\ iOS\ SDK/Packages/MacOSX10.6.pkg .')
-        shell('xar -xf MacOSX10.6.pkg')
-        shell('cat Payload | gunzip -dc | cpio -id 2>/dev/null')
-        os.chdir(os.path.join(basedir, config, 'SDKs/MacOSX10.6.sdk/usr/lib/'))        
-        shell('ln -s libstdc++.6.dylib libstdc++.dylib')
-        os.chdir(os.path.join(basedir))
-        shell('cp -R %s/SDKs/MacOSX10.6.sdk %s' % (config, OSX_SDK_SETUP['sdk_target']))
-        message('Done.\n')
-    else:
-        # SDK already present, check libstdc++.dylib
-        if not OSX_SDK_SETUP['libstdc++']:
-            message('OS X 10.6 SDK present, symlinking libstdc++.dylib...\n')
-            os.chdir('%sMacOSX10.6.sdk/usr/lib/' % OSX_SDK_SETUP['sdk_target'])
-            shell('ln -s libstdc++.6.dylib libstdc++.dylib')
-            message('Done.\n')
 
 def check_osx(config):
     if not platform.system() == 'Darwin' or not platform.mac_ver()[0]:
@@ -950,21 +893,16 @@ def check_osx(config):
     osxcfg = config.replace('osx-', 'osx-%s-' % osxver)
     if not osxcfg in OSX_CONFIG:
         error('This target is not supported: %s' % osxcfg)
-    if 'carbon' in osxcfg and osxver != '10.6':
-        OSX_SDK_SETUP['sdk_10.6'] = get_output('xcodebuild', '-sdk', 'macosx10.6', '-version', 'Path')
-        if not OSX_SDK_SETUP['sdk_10.6'] or not os.path.isfile('%s/usr/lib/libstdc++.dylib' % OSX_SDK_SETUP['sdk_10.6']):
-            error('OS X 10.6 SDK for carbon builds not properly installed, please run "sudo ./scripts/build.py setup-osx-10.6-sdk" first.')
 
 def build_osx(config, basedir):
     version, simple_version = get_version(basedir)
 
     osxver = platform.mac_ver()[0][:platform.mac_ver()[0].rindex('.')]
     osxcfg = config.replace('osx-', 'osx-%s-' % osxver)
-    args   = OSX_CONFIG[osxcfg]
     flags  = ''
 
+    # Avoid linker errors on these build configurations
     if 'carbon' in osxcfg and osxver != '10.6':
-        args += ' -sdk %s' % OSX_SDK_SETUP['sdk_10.6']
         for item in ['CFLAGS', 'CXXFLAGS']:
             flags += '"QMAKE_%s += %s" ' % (item, '-fvisibility=hidden -fvisibility-inlines-hidden')
 
@@ -982,7 +920,7 @@ def build_osx(config, basedir):
 
     os.chdir(qt)
     if not exists('is_configured'):
-        shell('../../../qt/configure %s' % qt_config('osx', '--prefix=%s' % qt, args))
+        shell('../../../qt/configure %s' % qt_config('osx', '--prefix=%s' % qt, OSX_CONFIG[osxcfg]))
         shell('touch is_configured')
 
     shell('make -j%d' % CPU_COUNT)
@@ -993,13 +931,13 @@ def build_osx(config, basedir):
     shell('../qt/bin/qmake %s ../../../wkhtmltopdf.pro' % flags)
     shell('make -j%d' % CPU_COUNT)
 
-    # Fix location of CoreText.framework for some OS X versions and build platform combinations
-    if (osxver == '10.8') or ((osxver == '10.9') and ('carbon' in osxcfg)):
+    # Fix location of CoreText.framework for builds made on >= 10.8 to run on versions before 10.8
+    if (osxver == '10.8') or (osxver == '10.9'):
         coretext_fix = 'install_name_tool -change' + \
             ' /System/Library/Frameworks/CoreText.framework/Versions/A/CoreText' + \
             ' /System/Library/Frameworks/ApplicationServices.framework/Versions/A/Frameworks/CoreText.framework/CoreText '
-    for item in ['wkhtmltoimage', 'wkhtmltopdf', 'libwkhtmltox.0.12.1.dylib']:
-        shell(coretext_fix + 'bin/' + item)
+        for item in ['wkhtmltoimage', 'wkhtmltopdf', 'libwkhtmltox.0.12.1.dylib']:
+            shell(coretext_fix + 'bin/' + item)
 
     shell('cp bin/wkhtmlto* ../wkhtmltox-%s/bin' % version)
     shell('cp -P bin/libwkhtmltox*.dylib* ../wkhtmltox-%s/lib' % version)
