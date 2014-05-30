@@ -871,17 +871,6 @@ def build_posix_local(config, basedir):
 
 # --------------------------------------------------------------- OS X
 
-OSX_CONFIG = {
-    'osx-10.6-carbon-i386':  '-carbon  -platform macx-g++42',
-    'osx-10.7-carbon-i386':  '-carbon  -platform unsupported/macx-clang -reduce-exports',
-    'osx-10.8-carbon-i386':  '-carbon  -platform unsupported/macx-clang -reduce-exports',
-    'osx-10.9-carbon-i386':  '-carbon  -platform unsupported/macx-clang -reduce-exports',
-    'osx-10.6-cocoa-x86-64': '-cocoa   -platform macx-g++42',
-    'osx-10.7-cocoa-x86-64': '-cocoa   -platform unsupported/macx-clang',
-    'osx-10.8-cocoa-x86-64': '-cocoa   -platform unsupported/macx-clang',
-    'osx-10.9-cocoa-x86-64': '-cocoa   -platform unsupported/macx-clang'
-}
-
 def check_osx(config):
     if not platform.system() == 'Darwin' or not platform.mac_ver()[0]:
         error('This can only be run on a OS X system!')
@@ -889,19 +878,16 @@ def check_osx(config):
     if not get_output('xcode-select', '--print-path'):
         error('Xcode is not installed, aborting.')
 
-    osxver = platform.mac_ver()[0][:platform.mac_ver()[0].rindex('.')]
-    osxcfg = config.replace('osx-', 'osx-%s-' % osxver)
-    if not osxcfg in OSX_CONFIG:
-        error('This target is not supported: %s' % osxcfg)
-
 def build_osx(config, basedir):
     version, simple_version = get_version(basedir)
 
     osxver = platform.mac_ver()[0][:platform.mac_ver()[0].rindex('.')]
-    osxcfg = config.replace('osx-', 'osx-%s-' % osxver)
-    flags  = ''
+    framework = config.split('-')[1] # 'carbon' or 'cocoa'
+    compiler = 'macx-g++42' if osxver == '10.6' else 'unsupported/macx-clang'
+    osxcfg = '-%s -platform %s' % (framework, compiler)
 
-    # Avoid linker errors on these build configurations
+    # Avoid linker errors and visibility problems for Carbon above 10.6 with clang
+    flags = ''
     if 'carbon' in osxcfg and osxver != '10.6':
         for item in ['CFLAGS', 'CXXFLAGS']:
             flags += '"QMAKE_%s += %s" ' % (item, '-fvisibility=hidden -fvisibility-inlines-hidden')
@@ -920,7 +906,7 @@ def build_osx(config, basedir):
 
     os.chdir(qt)
     if not exists('is_configured'):
-        shell('../../../qt/configure %s' % qt_config('osx', '--prefix=%s' % qt, OSX_CONFIG[osxcfg]))
+        shell('../../../qt/configure %s' % qt_config('osx', '--prefix=%s' % qt, osxcfg))
         shell('touch is_configured')
 
     shell('make -j%d' % CPU_COUNT)
@@ -936,7 +922,7 @@ def build_osx(config, basedir):
         coretext_fix = 'install_name_tool -change' + \
             ' /System/Library/Frameworks/CoreText.framework/Versions/A/CoreText' + \
             ' /System/Library/Frameworks/ApplicationServices.framework/Versions/A/Frameworks/CoreText.framework/CoreText '
-        for item in ['wkhtmltoimage', 'wkhtmltopdf', 'libwkhtmltox.0.12.1.dylib']:
+        for item in ['wkhtmltoimage', 'wkhtmltopdf', 'libwkhtmltox.%s.dylib' % simple_version]:
             shell(coretext_fix + 'bin/' + item)
 
     shell('cp bin/wkhtmlto* ../wkhtmltox-%s/bin' % version)
@@ -945,8 +931,8 @@ def build_osx(config, basedir):
     shell('cp ../../../include/wkhtmltox/dll*.inc ../wkhtmltox-%s/include/wkhtmltox' % version)
 
     os.chdir(os.path.join(basedir, config))
-    shell('tar -c -v -f ../wkhtmltox-%s_%s.tar wkhtmltox-%s/' % (version, osxcfg, version))
-    shell('xz --compress --force --verbose -9 ../wkhtmltox-%s_%s.tar' % (version, osxcfg))
+    shell('tar -c -v -f ../wkhtmltox-%s_%s.tar wkhtmltox-%s/' % (version, config, version))
+    shell('xz --compress --force --verbose -9 ../wkhtmltox-%s_%s.tar' % (version, config))
 
 # --------------------------------------------------------------- command line
 
