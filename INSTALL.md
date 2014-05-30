@@ -103,9 +103,8 @@ NT 6.x) by default.
 OS X
 ----
 
-Building is supported for 32-bit Carbon on OS X 10.6 or newer, and for
-64-bit Cocoa on OS X 10.7 or newer. You will need to have the following
-installed:
+Building is supported for 32-bit Carbon and for 64-bit Cocoa on OS X 10.6 or
+newer. You will need to have the following installed:
 
 * The latest Xcode for your OS X version
 * [xz 5.0.5](http://downloads.sourceforge.net/project/macpkg/XZ/5.0.5/XZ.pkg)
@@ -117,8 +116,6 @@ installed:
 The Carbon build is recommended because it generates PDFs with smaller
 file sizes and selectable text as compared to the Cocoa version, see
 [QTBUG-10094](https://bugreports.qt-project.org/browse/QTBUG-10094).
-You will need to have the OS X 10.6 SDK installed for the Carbon build,
-which is not available in later versions of OS X.
 
 Target          | Build Command
 ------          | -------------
