@@ -402,6 +402,7 @@ def mkdir_p(path):
         os.makedirs(path)
 
 def get_version(basedir):
+    mkdir_p(basedir)
     text = open(os.path.join(basedir, '..', 'VERSION'), 'r').read()
     if '-' not in text:
         return (text, text)
@@ -947,8 +948,6 @@ def usage(exit_code=2):
 
 def main():
     basedir = os.path.join(os.path.dirname(os.path.realpath(__file__)), '..', 'static-build')
-    mkdir_p(basedir)
-
     if len(sys.argv) == 1:
         usage(0)
 
