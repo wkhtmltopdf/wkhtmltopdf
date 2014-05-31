@@ -947,8 +947,6 @@ def usage(exit_code=2):
 
 def main():
     basedir = os.path.join(os.path.dirname(os.path.realpath(__file__)), '..', 'static-build')
-    mkdir_p(basedir)
-
     if len(sys.argv) == 1:
         usage(0)
 
