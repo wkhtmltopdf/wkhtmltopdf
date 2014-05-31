@@ -130,7 +130,8 @@ Proxy::Proxy():
 	port(-1),
 	host(),
 	user(),
-	password() {}
+	password(),
+	bypassList() {}
 
 LoadGlobal::LoadGlobal():
 	cookieJar("") {}

@@ -137,6 +137,33 @@ bool MyQWebPage::shouldInterruptJavaScript() {
 	return false;
 }
 
+MyNetworkProxyFactory::MyNetworkProxyFactory(const settings::LoadPage & s): settings(s) {
+	if (!settings.proxy.host.isEmpty()) {
+		proxy.setHostName(settings.proxy.host);
+		proxy.setPort(settings.proxy.port);
+		proxy.setType(settings.proxy.type);
+		// to retrieve a web page, it's not needed to use a fully transparent
+		// http proxy. Moreover, the CONNECT() method is frequently disabled
+		// by proxies administrators.
+		if (settings.proxy.type == QNetworkProxy::HttpProxy)
+			proxy.setCapabilities(QNetworkProxy::CachingCapability | QNetworkProxy::TunnelingCapability);
+		if (!settings.proxy.user.isEmpty())
+			proxy.setUser(settings.proxy.user);
+		if (!settings.proxy.password.isEmpty())
+			proxy.setPassword(settings.proxy.password);
+	}
+}
+
+QList<QNetworkProxy> MyNetworkProxyFactory::queryProxy (const QNetworkProxyQuery & query) {
+	if (settings.proxy.bypassList.contains(query.url().host(), Qt::CaseInsensitive)) {
+		QNetworkProxy noProxy;
+		noProxy.setType(QNetworkProxy::NoProxy);
+		return QList<QNetworkProxy>() << noProxy;
+	}
+	
+	return QList<QNetworkProxy>() << proxy;
+}
+
 ResourceObject::ResourceObject(MultiPageLoaderPrivate & mpl, const QUrl & u, const settings::LoadPage & s):
 	networkAccessManager(s),
 	url(u),
@@ -176,6 +203,7 @@ ResourceObject::ResourceObject(MultiPageLoaderPrivate & mpl, const QUrl & u, con
 
 	//If we must use a proxy, create a host of objects
 	if (!settings.proxy.host.isEmpty()) {
+/*
 		QNetworkProxy proxy;
 		proxy.setHostName(settings.proxy.host);
 		proxy.setPort(settings.proxy.port);
@@ -191,6 +219,15 @@ ResourceObject::ResourceObject(MultiPageLoaderPrivate & mpl, const QUrl & u, con
 		if (!settings.proxy.password.isEmpty())
 			proxy.setPassword(settings.proxy.password);
 		networkAccessManager.setProxy(proxy);
+*/
+		//	use self implemented proxy factory
+		//	warning("bypassAddressList: " + settings.proxy.bypassAddressList);
+		MyNetworkProxyFactory*	myNPF = new MyNetworkProxyFactory(settings);
+		networkAccessManager.setProxyFactory(myNPF);
+	}
+	else {
+		//	use system proxy settings
+		QNetworkProxyFactory::setUseSystemConfiguration(true);
 	}
 
 	webPage.setNetworkAccessManager(&networkAccessManager);

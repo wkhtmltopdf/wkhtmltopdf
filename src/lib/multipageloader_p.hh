@@ -136,6 +136,18 @@ public slots:
 	void loadDone();
 };
 
+class DLL_LOCAL MyNetworkProxyFactory: public QNetworkProxyFactory {
+
+private:
+	const settings::LoadPage settings;
+	QNetworkProxy proxy;
+	
+public:
+	MyNetworkProxyFactory(const settings::LoadPage & s);
+	virtual QList<QNetworkProxy> queryProxy(const QNetworkProxyQuery & query = QNetworkProxyQuery());
+};
+
+
 }
 #include "dllend.inc"
 #endif //__MULTIPAGELOADER_P_HH__

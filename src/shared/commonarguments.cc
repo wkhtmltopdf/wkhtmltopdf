@@ -205,6 +205,9 @@ void CommandLineParserBase::addPageLoadArgs(LoadPage & s) {
 	addarg("proxy",'p',"Use a proxy", new ProxySetter(s.proxy, "proxy"));
 	addarg("username",0,"HTTP Authentication username", new QStrSetter(s.username, "username"));
 	addarg("password",0,"HTTP Authentication password", new QStrSetter(s.password, "password"));
+	
+	addarg("bypass-proxy",0,"bypass proxy for given addresses", new QStrSetter(s.proxy.bypassList, "address list"));
+	
 	addarg("load-error-handling", 0, "Specify how to handle pages that fail to load: abort, ignore or skip", new LoadErrorHandlingSetting(s.loadErrorHandling, "handler"));
 	addarg("load-media-error-handling", 0, "Specify how to handle media files that fail to load: abort, ignore or skip", new LoadErrorHandlingSetting(s.mediaLoadErrorHandling, "handler"));
 	addarg("custom-header",0,"Set an additional HTTP header (repeatable)", new MapSetter<>(s.customHeaders, "name", "value"));
