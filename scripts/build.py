@@ -256,7 +256,7 @@ DEPENDENT_LIBS = {
                 'result': ['include/openssl/ssl.h', 'lib/ssleay32.lib', 'lib/libeay32.lib'],
                 'commands': [
                     'perl Configure --openssldir=%(destdir)s VC-WIN64A',
-                    'ms\\do_ms.bat',
+                    'ms\\do_win64a.bat',
                     'nmake /f ms\\nt.mak install']
             },
             'mingw-w64-cross-win*': {
