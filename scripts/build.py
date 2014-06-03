@@ -134,6 +134,7 @@ QT_CONFIG = {
 }
 
 BUILDERS = {
+    'source-tarball':        'source_tarball',
     'msvc2008-win32':        'msvc',
     'msvc2008-win64':        'msvc',
     'msvc2010-win32':        'msvc',
@@ -360,6 +361,36 @@ DEPENDENT_LIBS = {
         }
     }
 }
+
+EXCLUDE_SRC_TARBALL = [
+    'qt/config.profiles*',
+    'qt/demos*',
+    'qt/dist*',
+    'qt/doc*',
+    'qt/examples*',
+    'qt/imports*',
+    'qt/templates*',
+    'qt/tests*',
+    'qt/translations*',
+    'qt/util*',
+    'qt/lib/fonts*',
+    'qt/src/3rdparty/*ChangeLog*',
+    'qt/src/3rdparty/ce-compat*',
+    'qt/src/3rdparty/clucene*',
+    'qt/src/3rdparty/fonts*',
+    'qt/src/3rdparty/freetype*',
+    'qt/src/3rdparty/javascriptcore*',
+    'qt/src/3rdparty/libgq*',
+    'qt/src/3rdparty/libmng*',
+    'qt/src/3rdparty/libtiff*',
+    'qt/src/3rdparty/patches*',
+    'qt/src/3rdparty/phonon*',
+    'qt/src/3rdparty/pixman*',
+    'qt/src/3rdparty/powervr*',
+    'qt/src/3rdparty/ptmalloc*',
+    'qt/src/3rdparty/s60*',
+    'qt/src/3rdparty/wayland*'
+]
 
 # --------------------------------------------------------------- HELPERS
 
@@ -594,6 +625,35 @@ def check_setup_mingw64(config):
 
 def build_setup_mingw64(config, basedir):
     install_packages('build-essential', 'mingw-w64', 'nsis')
+
+def check_source_tarball(config):
+    if not get_output('git', 'rev-parse', '--short', 'HEAD'):
+        error("This can only be run inside a git checkout.")
+
+    if not exists(os.path.join(os.getcwd(), 'qt', '.git')):
+        error("Please initialize and download the Qt submodule before running this.")
+
+def _filter_tar(info):
+    name = info.name[1+info.name.index('/'):]
+    if name.endswith('.git') or [p for p in EXCLUDE_SRC_TARBALL if fnmatch.fnmatch(name, p)]:
+        return None
+
+    info.uid   = info.gid   = 1000
+    info.uname = info.gname = 'wkhtmltopdf'
+    return info
+
+def build_source_tarball(config, basedir):
+    version, simple_version = get_version(basedir)
+    root_dir = os.path.realpath(os.path.join(basedir, '..'))
+    os.chdir(os.path.join(root_dir, 'qt'))
+    shell('git clean -fdx')
+    shell('git reset --hard HEAD')
+    os.chdir(root_dir)
+    shell('git clean -fdx')
+    shell('git reset --hard HEAD')
+    shell('git submodule update')
+    with tarfile.open('wkhtmltox-%s.tar.bz2' % version, 'w:bz2') as tar:
+        tar.add('.', 'wkhtmltox-%s/' % version, filter=_filter_tar)
 
 # --------------------------------------------------------------- MSVC (2008-2013)
 
@@ -947,7 +1007,8 @@ def usage(exit_code=2):
     sys.exit(exit_code)
 
 def main():
-    basedir = os.path.join(os.path.dirname(os.path.realpath(__file__)), '..', 'static-build')
+    rootdir = os.path.realpath(os.path.join(os.path.dirname(os.path.realpath(__file__)), '..'))
+    basedir = os.path.join(rootdir, 'static-build')
     if len(sys.argv) == 1:
         usage(0)
 
@@ -967,8 +1028,9 @@ def main():
     if '-clean' in sys.argv[2:]:
         rmdir(os.path.join(basedir, config))
 
+    os.chdir(rootdir)
     globals()['check_%s' % BUILDERS[config]](final_config)
-    globals()['build_%s' % BUILDERS[config]](final_config, os.path.realpath(basedir))
+    globals()['build_%s' % BUILDERS[config]](final_config, basedir)
 
 if __name__ == '__main__':
     main()

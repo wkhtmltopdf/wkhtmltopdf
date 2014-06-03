@@ -18,3 +18,4 @@ Makefile.*
 *_resource.rc
 gitcontrol.bat
 gitcmd.lnk
+*.tar.bz2
