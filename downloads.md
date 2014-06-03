@@ -8,14 +8,14 @@ The current stable version is [0.12.0](https://github.com/wkhtmltopdf/wkhtmltopd
 
 OS      | Downloads
 ---     | ---------
-Windows | [32-bit](http://downloads.sourceforge.net/project/wkhtmltopdf/0.12.0/wkhtmltox-win32_0.12.0-03c001d.exe)         &emsp; [64-bit](http://downloads.sourceforge.net/project/wkhtmltopdf/0.12.0/wkhtmltox-win64_0.12.0-03c001d.exe) (vulnerable to [Heartbleed](http://heartbleed.com/), use 0.12.1 instead)
+Windows | vulnerable to [Heartbleed](http://heartbleed.com/), use 0.12.1 instead
 Linux   | [32-bit](http://downloads.sourceforge.net/project/wkhtmltopdf/0.12.0/wkhtmltox-linux-i386_0.12.0-03c001d.tar.xz) &emsp; [64-bit](http://downloads.sourceforge.net/project/wkhtmltopdf/0.12.0/wkhtmltox-linux-amd64_0.12.0-03c001d.tar.xz)
 
-## Development
+## Testing
 
-A release candidate [0.12.1-rc2](https://github.com/wkhtmltopdf/wkhtmltopdf/tree/61cda93) of the master branch is available, which includes [fixes since the 0.12.0 release](https://github.com/wkhtmltopdf/wkhtmltopdf/blob/61cda93/CHANGELOG.md).
+The final release candidate [0.12.1-rc2](https://github.com/wkhtmltopdf/wkhtmltopdf/tree/61cda93) for the next release is available, which includes [fixes since the 0.12.0 release](https://github.com/wkhtmltopdf/wkhtmltopdf/blob/61cda93/CHANGELOG.md).
 
-OS/Distro             | Downloads                                                                                                                                                                                                                                                         | Comments
+Flavor                | Downloads                                                                                                                                                                                                                                                         | Comments
 ---------             | ---------                                                                                                                                                                                                                                                         | --------
 Windows (MSVC 2013)   | [32-bit](http://downloads.sourceforge.net/project/wkhtmltopdf/0.12.1-dev/wkhtmltox-0.12.1-61cda93_msvc2013-win32.exe)        &emsp; [64-bit](http://downloads.sourceforge.net/project/wkhtmltopdf/0.12.1-dev/wkhtmltox-0.12.1-61cda93_msvc2013-win64.exe)         | **recommended**; for Windows Vista or later
 Windows (MinGW-w64)   | [32-bit](http://downloads.sourceforge.net/project/wkhtmltopdf/0.12.1-dev/wkhtmltox-0.12.1-61cda93_mingw-w64-cross-win32.exe) &emsp; [64-bit](http://downloads.sourceforge.net/project/wkhtmltopdf/0.12.1-dev/wkhtmltox-0.12.1-61cda93_mingw-w64-cross-win64.exe)  | for Windows XP/2003 or later; slower
@@ -33,4 +33,4 @@ The next release will be made once the [preparations for 0.12.1](https://github.
 
 If you're looking for older versions (such as 0.9, 0.10, 0.11), you can find them on [Google Code](http://code.google.com/p/wkhtmltopdf/downloads/list?can=1).
 
-**Please note that bug reports won't be accepted for old versions.**
+**Please note that bug reports won't be accepted for versions older than 0.12**
