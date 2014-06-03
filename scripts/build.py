@@ -79,7 +79,7 @@ QT_CONFIG = {
         '-silent',                  # perform a silent build
         '-xrender',                 # xrender support is required
         '-largefile',
-        '-rpath',
+        '-no-rpath',
         '-openssl',                 # load OpenSSL binaries at runtime
         '-no-dbus',
         '-no-nis',
@@ -125,7 +125,7 @@ QT_CONFIG = {
         '-xrender',                 # xrender support is required
         '-openssl',                 # load OpenSSL binaries at runtime
         '-largefile',
-        '-rpath',
+        '-no-rpath',
         'remove:-system-libpng',
         'remove:-system-libjpeg',
         '-qt-libpng',
