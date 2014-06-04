@@ -91,10 +91,10 @@
  *      are replaced in this string, see the wkhtmltopdf manual.
  * - \b header.center The text to print in the center part of the header.
  * - \b header.right The text to print in the right part of the header.
- * - \b header.line Should a line be printed under the header? Must be either "true" or "false.
- * - \b header.space The amount of space to put between the header and the content, e.g. "1.8". Be
- *      aware that if this is to large the header will be printed outside the pdf document. This
- *      can be correct with the margin.top setting.
+ * - \b header.line Whether a line should be printed under the header (either "true" or "false").
+ * - \b header.spacing The amount of space to put between the header and the content, e.g. "1.8". Be
+ *      aware that if this is too large the header will be printed outside the pdf document. This
+ *      can be corrected with the margin.top setting.
  * - \b header.htmlUrl Url for a HTML document to use for the header.
  *
  * \section pagePdfGlobal Pdf global settings
@@ -110,6 +110,7 @@
  * - \b copies How many copies should we print?. e.g. "2".
  * - \b collate Should the copies be collated? Must be either "true" or "false".
  * - \b outline Should a outline (table of content in the sidebar) be generated and put into the PDF? Must be either "true" or false".
+
  * - \b outlineDepth The maximal depth of the outline, e.g. "4".
  * - \b dumpOutline If not set to the empty string a XML representation of the outline is dumped to this file.
  * - \b out The path of the output file, if "-" output is sent to stdout, if empty the output is stored in a buffer.
