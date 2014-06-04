@@ -133,15 +133,15 @@ Functions</h2></td></tr>
 <tr class="memitem:a5a4616a330a354c5951430057e355e7e"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="pdf_8h.html#a5a4616a330a354c5951430057e355e7e">CAPI</a> (<a class="el" href="structwkhtmltopdf__global__settings.html">wkhtmltopdf_global_settings</a> *) wkhtmltopdf_create_global_settings()</td></tr>
 <tr class="memdesc:a5a4616a330a354c5951430057e355e7e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Create a new global settings object for pdf conversion.  <a href="#a5a4616a330a354c5951430057e355e7e">More...</a><br/></td></tr>
 <tr class="separator:a5a4616a330a354c5951430057e355e7e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac05baf7b50071366b946038b4fa412a6"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="pdf_8h.html#ac05baf7b50071366b946038b4fa412a6">CAPI</a> (void) wkhtmltopdf_destroy_global_settings(<a class="el" href="structwkhtmltopdf__global__settings.html">wkhtmltopdf_global_settings</a> *)</td></tr>
+<tr class="memdesc:ac05baf7b50071366b946038b4fa412a6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Destroy a global settings object.  <a href="#ac05baf7b50071366b946038b4fa412a6">More...</a><br/></td></tr>
+<tr class="separator:ac05baf7b50071366b946038b4fa412a6"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ab0221a9deb308b653fdf114e1bdbf06f"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="pdf_8h.html#ab0221a9deb308b653fdf114e1bdbf06f">CAPI</a> (<a class="el" href="structwkhtmltopdf__object__settings.html">wkhtmltopdf_object_settings</a> *) wkhtmltopdf_create_object_settings()</td></tr>
 <tr class="memdesc:ab0221a9deb308b653fdf114e1bdbf06f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Create an object used to store object settings.  <a href="#ab0221a9deb308b653fdf114e1bdbf06f">More...</a><br/></td></tr>
 <tr class="separator:ab0221a9deb308b653fdf114e1bdbf06f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ade66be9513ad5b2390ae84a0a2e4e886"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="pdf_8h.html#ade66be9513ad5b2390ae84a0a2e4e886">CAPI</a> (<a class="el" href="structwkhtmltopdf__converter.html">wkhtmltopdf_converter</a> *) wkhtmltopdf_create_converter(<a class="el" href="structwkhtmltopdf__global__settings.html">wkhtmltopdf_global_settings</a> *settings)</td></tr>
 <tr class="memdesc:ade66be9513ad5b2390ae84a0a2e4e886"><td class="mdescLeft">&#160;</td><td class="mdescRight">Create a wkhtmltopdf converter object.  <a href="#ade66be9513ad5b2390ae84a0a2e4e886">More...</a><br/></td></tr>
 <tr class="separator:ade66be9513ad5b2390ae84a0a2e4e886"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a4efa840811fe2e75a5dc63f724393464"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="pdf_8h.html#a4efa840811fe2e75a5dc63f724393464">CAPI</a> (void) wkhtmltopdf_destroy_converter(<a class="el" href="structwkhtmltopdf__converter.html">wkhtmltopdf_converter</a> *converter)</td></tr>
-<tr class="memdesc:a4efa840811fe2e75a5dc63f724393464"><td class="mdescLeft">&#160;</td><td class="mdescRight">Destroy a global settings object.  <a href="#a4efa840811fe2e75a5dc63f724393464">More...</a><br/></td></tr>
-<tr class="separator:a4efa840811fe2e75a5dc63f724393464"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a56fa0550c4b23be801ef990d8dfaf73a"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a56fa0550c4b23be801ef990d8dfaf73a"></a>
 &#160;</td><td class="memItemRight" valign="bottom"><b>CAPI</b> (long) wkhtmltopdf_get_output(<a class="el" href="structwkhtmltopdf__converter.html">wkhtmltopdf_converter</a> *converter</td></tr>
 <tr class="separator:a56fa0550c4b23be801ef990d8dfaf73a"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -393,53 +393,7 @@ int&#160;</td><td class="memItemRight" valign="bottom"><b>phase</b></td></tr>
 
 </div>
 </div>
-<a class="anchor" id="ab0221a9deb308b653fdf114e1bdbf06f"></a>
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">CAPI </td>
-          <td>(</td>
-          <td class="paramtype"><a class="el" href="structwkhtmltopdf__object__settings.html">wkhtmltopdf_object_settings</a> *&#160;</td>
-          <td class="paramname"></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p>Create an object used to store object settings. </p>
-<p>Create a new Object settings object for pdf conversion, settings can be altered with wkhtmltopdf_set_object_setting, and inspected with wkhtmltopdf_get_object_setting. Once the desired settings have been set the object can be added to a converter by calling wkhtmltopdf_add_resource.</p>
-<dl class="section return"><dt>Returns</dt><dd>an object settings instance </dd></dl>
-
-</div>
-</div>
-<a class="anchor" id="ade66be9513ad5b2390ae84a0a2e4e886"></a>
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">CAPI </td>
-          <td>(</td>
-          <td class="paramtype"><a class="el" href="structwkhtmltopdf__converter.html">wkhtmltopdf_converter</a> *&#160;</td>
-          <td class="paramname"></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p>Create a wkhtmltopdf converter object. </p>
-<p>The converter object is used to convert one or more objects(web sides) into a single pdf. Once a settings object has been parsed, it may no longer be accessed, and will eventually be freed. The returned converter object must be freed by calling wkhtmltopdf_destroy_converter</p>
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramname">settings</td><td>The global settings to use during conversion. </td></tr>
-  </table>
-  </dd>
-</dl>
-<dl class="section return"><dt>Returns</dt><dd>A wkhtmltopdf converter object </dd></dl>
-
-</div>
-</div>
-<a class="anchor" id="a4efa840811fe2e75a5dc63f724393464"></a>
+<a class="anchor" id="ac05baf7b50071366b946038b4fa412a6"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
@@ -511,6 +465,52 @@ int&#160;</td><td class="memItemRight" valign="bottom"><b>phase</b></td></tr>
 
 </div>
 </div>
+<a class="anchor" id="ab0221a9deb308b653fdf114e1bdbf06f"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">CAPI </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="structwkhtmltopdf__object__settings.html">wkhtmltopdf_object_settings</a> *&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Create an object used to store object settings. </p>
+<p>Create a new Object settings object for pdf conversion, settings can be altered with wkhtmltopdf_set_object_setting, and inspected with wkhtmltopdf_get_object_setting. Once the desired settings have been set the object can be added to a converter by calling wkhtmltopdf_add_resource.</p>
+<dl class="section return"><dt>Returns</dt><dd>an object settings instance </dd></dl>
+
+</div>
+</div>
+<a class="anchor" id="ade66be9513ad5b2390ae84a0a2e4e886"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">CAPI </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="structwkhtmltopdf__converter.html">wkhtmltopdf_converter</a> *&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Create a wkhtmltopdf converter object. </p>
+<p>The converter object is used to convert one or more objects(web sides) into a single pdf. Once a settings object has been parsed, it may no longer be accessed, and will eventually be freed. The returned converter object must be freed by calling wkhtmltopdf_destroy_converter</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">settings</td><td>The global settings to use during conversion. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>A wkhtmltopdf converter object </dd></dl>
+
+</div>
+</div>
 <h2 class="groupheader">Variable Documentation</h2>
 <a class="anchor" id="ab6e2be62cf7773038f6b1e83de224a81"></a>
 <div class="memitem">
@@ -557,7 +557,7 @@ int&#160;</td><td class="memItemRight" valign="bottom"><b>phase</b></td></tr>
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Wed Feb 26 2014 20:02:07 for libwkhtmltox by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Wed Jun 4 2014 10:37:19 for libwkhtmltox by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address>

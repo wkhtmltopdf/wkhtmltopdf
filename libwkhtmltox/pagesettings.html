@@ -131,8 +131,8 @@ Header and footer settings</h1>
 <li><b>header.left</b> The string to print in the left part of the header, note that some sequences are replaced in this string, see the wkhtmltopdf manual.</li>
 <li><b>header.center</b> The text to print in the center part of the header.</li>
 <li><b>header.right</b> The text to print in the right part of the header.</li>
-<li><b>header.line</b> Should a line be printed under the header? Must be either "true" or "false.
-- \b header.space The amount of space to put between the header and the content, e.g. "1.8". Be aware that if this is to large the header will be printed outside the pdf document. This can be correct with the margin.top setting.</li>
+<li><b>header.line</b> Whether a line should be printed under the header (either "true" or "false").</li>
+<li><b>header.spacing</b> The amount of space to put between the header and the content, e.g. "1.8". Be aware that if this is too large the header will be printed outside the pdf document. This can be corrected with the margin.top setting.</li>
 <li><b>header.htmlUrl</b> Url for a HTML document to use for the header.</li>
 </ul>
 <h1><a class="anchor" id="pagePdfGlobal"></a>
@@ -149,8 +149,8 @@ Pdf global settings</h1>
 <li><b>pageOffset</b> A number that is added to all page numbers when printing headers, footers and table of content.</li>
 <li><b>copies</b> How many copies should we print?. e.g. "2".</li>
 <li><b>collate</b> Should the copies be collated? Must be either "true" or "false".</li>
-<li><b>outline</b> Should a outline (table of content in the sidebar) be generated and put into the PDF? Must be either "true" or false".
-- \b outlineDepth The maximal depth of the outline, e.g. "4".</li>
+<li><b>outline</b> Should a outline (table of content in the sidebar) be generated and put into the PDF? Must be either "true" or false".</li>
+<li><b>outlineDepth</b> The maximal depth of the outline, e.g. "4".</li>
 <li><b>dumpOutline</b> If not set to the empty string a XML representation of the outline is dumped to this file.</li>
 <li><b>out</b> The path of the output file, if "-" output is sent to stdout, if empty the output is stored in a buffer.</li>
 <li><b>documentTitle</b> The title of the PDF document.</li>
@@ -159,7 +159,6 @@ Pdf global settings</h1>
 <li><b>margin.bottom</b> Size of the bottom margin, e.g. "2cm"</li>
 <li><b>margin.left</b> Size of the left margin, e.g. "2cm"</li>
 <li><b>margin.right</b> Size of the right margin, e.g. "2cm"</li>
-<li><b>outputFormat</b> The format of the output document, must be ether "", "pdf" or "ps".</li>
 <li><b>imageDPI</b> The maximal DPI to use for images in the pdf document.</li>
 <li><b>imageQuality</b> The jpeg compression factor to use when producing the pdf document, e.g. "92".</li>
 <li><b>load.cookieJar</b> Path of file used to load and store cookies.</li>
@@ -209,7 +208,7 @@ Image settings</h1>
 </div></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Wed Feb 26 2014 20:02:07 for libwkhtmltox by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Wed Jun 4 2014 10:37:19 for libwkhtmltox by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address>
