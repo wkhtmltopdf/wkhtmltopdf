@@ -311,9 +311,9 @@ QString unitRealToStr(const UnitReal & ur, bool * ok) {
 
 QPrinter::PrinterMode strToPrinterMode(const char * s, bool * ok) {
 	if (ok) *ok=true;
-	if (strcmp(s,"screen"))	return QPrinter::ScreenResolution;
-	if (strcmp(s,"printer")) return QPrinter::PrinterResolution;
-	if (strcmp(s,"high")) return QPrinter::HighResolution;
+	if (!strcasecmp(s,"screen")) return QPrinter::ScreenResolution;
+	if (!strcasecmp(s,"printer")) return QPrinter::PrinterResolution;
+	if (!strcasecmp(s,"high")) return QPrinter::HighResolution;
 	*ok=false;
 	return QPrinter::HighResolution;
 }
@@ -329,8 +329,8 @@ QString printerModeToStr(QPrinter::PrinterMode o) {
 
 QPrinter::ColorMode strToColorMode(const char * s, bool * ok) {
 	if (ok) *ok=true;
-	if (strcmp(s,"color"))	return QPrinter::Color;
-	if (strcmp(s,"grayscale")) return QPrinter::GrayScale;
+	if (!strcasecmp(s,"color"))	return QPrinter::Color;
+	if (!strcasecmp(s,"grayscale")) return QPrinter::GrayScale;
 	*ok=false;
 	return QPrinter::Color;
 }
@@ -338,7 +338,7 @@ QPrinter::ColorMode strToColorMode(const char * s, bool * ok) {
 QString colorModeToStr(QPrinter::ColorMode o) {
 	switch (o) {
 	case QPrinter::Color: return "color";
-	case QPrinter::GrayScale: return "glayscale";
+	case QPrinter::GrayScale: return "grayscale";
 	}
 	return QString();
 }
