@@ -24,17 +24,11 @@ DEPENDPATH += . ../shared
 INCLUDEPATH += . ../shared
 
 unix {
-    man.target=../../wkhtmltoimage.1.gz
-    man.commands=LD_LIBRARY_PATH=../../bin/ ../../bin/wkhtmltoimage --manpage | gzip > $@
-    man.depends=../../bin/wkhtmltoimage
+    man.path=$$INSTALLBASE/share/man/man1
+    man.extra=LD_LIBRARY_PATH=../../bin/ ../../bin/wkhtmltoimage --manpage | gzip > $(INSTALL_ROOT)/share/man/man1/wkhtmltoimage.1.gz
 
-    manins.target=manins
-    manins.depends=man
-    manins.files=../../wkhtmltoimage.1.gz
-    manins.path=$$INSTALLBASE/share/man/man1
-
-    QMAKE_EXTRA_TARGETS += manins man
-    INSTALLS += manins
+    QMAKE_EXTRA_TARGETS += man
+    INSTALLS += man
 }
 
 macx {

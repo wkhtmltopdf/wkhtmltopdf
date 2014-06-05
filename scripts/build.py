@@ -844,10 +844,8 @@ def build_linux_schroot(config, basedir):
     script = os.path.join(dir, 'build.sh')
     dist   = os.path.join(dir, 'wkhtmltox-%s' % version)
 
+    mkdir_p(dir)
     rmdir(dist)
-    mkdir_p(os.path.join(dist, 'bin'))
-    mkdir_p(os.path.join(dist, 'include', 'wkhtmltox'))
-    mkdir_p(os.path.join(dist, 'lib'))
 
     configure_args = qt_config('posix', '--prefix=%s' % os.path.join(dir, 'qt'))
 
@@ -870,12 +868,7 @@ def build_linux_schroot(config, basedir):
     lines.append('rm -f bin/*')
     lines.append('export WKHTMLTOX_VERSION=%s' % version)
     lines.append('../qt/bin/qmake ../../../wkhtmltopdf.pro')
-    lines.append('make -j%d || exit 1' % CPU_COUNT)
-    lines.append('strip bin/wkhtmltopdf bin/wkhtmltoimage')
-    lines.append('cp bin/wkhtmlto* ../wkhtmltox-%s/bin' % version)
-    lines.append('cp -P bin/libwkhtmltox*.so.* ../wkhtmltox-%s/lib' % version)
-    lines.append('cp ../../../include/wkhtmltox/*.h ../wkhtmltox-%s/include/wkhtmltox' % version)
-    lines.append('cp ../../../include/wkhtmltox/dll*.inc ../wkhtmltox-%s/include/wkhtmltox' % version)
+    lines.append('make install INSTALL_ROOT=%s || exit 1' % dist)
     lines.append('cd ..')
     lines.append('tar -c -v -f ../wkhtmltox-%s_linux-%s.tar wkhtmltox-%s/' % (version, config, version))
     lines.append('xz --compress --force --verbose -9 ../wkhtmltox-%s_linux-%s.tar' % (version, config))

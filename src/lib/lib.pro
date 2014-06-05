@@ -26,7 +26,7 @@ contains(QMAKE_PRL_CONFIG, static): DEFINES += QT_NODLL
 
 unix {
    headers.target=headers
-   headers.files=../../include/wkhtmltox/*
+   headers.files=../../include/wkhtmltox/*.h ../../include/wkhtmltox/*.inc
    headers.path=$$INSTALLBASE/include/wkhtmltox
 
    QMAKE_EXTRA_TARGETS += headers
