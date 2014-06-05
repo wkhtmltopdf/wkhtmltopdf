@@ -173,16 +173,13 @@ CHROOT_SETUP  = {
     'wheezy': [
         ('debootstrap', 'wheezy', 'http://ftp.us.debian.org/debian/'),
         ('write_file', 'etc/apt/sources.list', """
-deb     http://ftp.debian.org/debian/ wheezy         main contrib non-free
-deb     http://ftp.debian.org/debian/ wheezy-updates main contrib non-free
-deb     http://security.debian.org/   wheezy/updates main contrib non-free
-deb-src http://ftp.debian.org/debian/ wheezy         main contrib non-free
-deb-src http://ftp.debian.org/debian/ wheezy-updates main contrib non-free
-deb-src http://security.debian.org/   wheezy/updates main contrib non-free"""),
+deb http://ftp.debian.org/debian/ wheezy         main contrib non-free
+deb http://ftp.debian.org/debian/ wheezy-updates main contrib non-free
+deb http://security.debian.org/   wheezy/updates main contrib non-free"""),
         ('shell', 'apt-get update'),
         ('shell', 'apt-get dist-upgrade --assume-yes'),
-        ('shell', 'apt-get install --assume-yes xz-utils'),
-        ('shell', 'apt-get build-dep --assume-yes libqt4-core'),
+        ('shell', 'apt-get install --assume-yes xz-utils libssl-dev libpng-dev libjpeg8-dev zlib1g-dev'),
+        ('shell', 'apt-get install --assume-yes libfontconfig1-dev libfreetype6-dev libx11-dev libxext-dev libxrender-dev'),
         ('write_file', 'update.sh', 'apt-get update\napt-get dist-upgrade --assume-yes\n'),
         ('schroot_conf', 'Debian Wheezy')
     ],
@@ -190,16 +187,13 @@ deb-src http://security.debian.org/   wheezy/updates main contrib non-free"""),
     'trusty': [
         ('debootstrap', 'trusty', 'http://archive.ubuntu.com/ubuntu/'),
         ('write_file', 'etc/apt/sources.list', """
-deb     http://archive.ubuntu.com/ubuntu/ trusty          main restricted universe multiverse
-deb     http://archive.ubuntu.com/ubuntu/ trusty-updates  main restricted universe multiverse
-deb     http://archive.ubuntu.com/ubuntu/ trusty-security main restricted universe multiverse
-deb-src http://archive.ubuntu.com/ubuntu/ trusty          main restricted universe multiverse
-deb-src http://archive.ubuntu.com/ubuntu/ trusty-updates  main restricted universe multiverse
-deb-src http://archive.ubuntu.com/ubuntu/ trusty-security main restricted universe multiverse"""),
+deb http://archive.ubuntu.com/ubuntu/ trusty          main restricted universe multiverse
+deb http://archive.ubuntu.com/ubuntu/ trusty-updates  main restricted universe multiverse
+deb http://archive.ubuntu.com/ubuntu/ trusty-security main restricted universe multiverse"""),
         ('shell', 'apt-get update'),
         ('shell', 'apt-get dist-upgrade --assume-yes'),
-        ('shell', 'apt-get install --assume-yes xz-utils'),
-        ('shell', 'apt-get build-dep --assume-yes libqt4-core'),
+        ('shell', 'apt-get install --assume-yes xz-utils libssl-dev libpng-dev libjpeg-turbo8-dev zlib1g-dev'),
+        ('shell', 'apt-get install --assume-yes libfontconfig1-dev libfreetype6-dev libx11-dev libxext-dev libxrender-dev'),
         ('write_file', 'update.sh', 'apt-get update\napt-get dist-upgrade --assume-yes\n'),
         ('schroot_conf', 'Ubuntu Trusty')
     ],
@@ -207,16 +201,13 @@ deb-src http://archive.ubuntu.com/ubuntu/ trusty-security main restricted univer
     'precise': [
         ('debootstrap', 'precise', 'http://archive.ubuntu.com/ubuntu/'),
         ('write_file', 'etc/apt/sources.list', """
-deb     http://archive.ubuntu.com/ubuntu/ precise          main restricted universe multiverse
-deb     http://archive.ubuntu.com/ubuntu/ precise-updates  main restricted universe multiverse
-deb     http://archive.ubuntu.com/ubuntu/ precise-security main restricted universe multiverse
-deb-src http://archive.ubuntu.com/ubuntu/ precise          main restricted universe multiverse
-deb-src http://archive.ubuntu.com/ubuntu/ precise-updates  main restricted universe multiverse
-deb-src http://archive.ubuntu.com/ubuntu/ precise-security main restricted universe multiverse"""),
+deb http://archive.ubuntu.com/ubuntu/ precise          main restricted universe multiverse
+deb http://archive.ubuntu.com/ubuntu/ precise-updates  main restricted universe multiverse
+deb http://archive.ubuntu.com/ubuntu/ precise-security main restricted universe multiverse"""),
         ('shell', 'apt-get update'),
         ('shell', 'apt-get dist-upgrade --assume-yes'),
-        ('shell', 'apt-get install --assume-yes xz-utils'),
-        ('shell', 'apt-get build-dep --assume-yes libqt4-core'),
+        ('shell', 'apt-get install --assume-yes xz-utils libssl-dev libpng-dev libjpeg8-dev zlib1g-dev'),
+        ('shell', 'apt-get install --assume-yes libfontconfig1-dev libfreetype6-dev libx11-dev libxext-dev libxrender-dev'),
         ('write_file', 'update.sh', 'apt-get update\napt-get dist-upgrade --assume-yes\n'),
         ('schroot_conf', 'Ubuntu Precise')
     ],
