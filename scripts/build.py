@@ -216,7 +216,8 @@ deb http://archive.ubuntu.com/ubuntu/ precise-security main restricted universe 
         ('rinse', 'centos-5'),
         ('shell', 'yum update -y'),
         ('append_file:amd64', 'etc/yum.conf', 'exclude = *.i?86\n'),
-        ('shell', 'yum install -y gcc gcc-c++ make qt4-devel openssl-devel diffutils perl xz'),
+        ('shell', 'yum install -y gcc gcc-c++ make diffutils perl xz'),
+        ('shell', 'yum install -y openssl-devel libX11-devel libXrender-devel libXext-devel fontconfig-devel freetype-devel libjpeg-devel libpng-devel zlib-devel'),
         ('write_file', 'update.sh', 'yum update -y\n'),
         ('schroot_conf', 'CentOS 5')
     ],
@@ -225,7 +226,8 @@ deb http://archive.ubuntu.com/ubuntu/ precise-security main restricted universe 
         ('rinse', 'centos-6'),
         ('shell', 'yum update -y'),
         ('append_file:amd64', 'etc/yum.conf', 'exclude = *.i?86\n'),
-        ('shell', 'yum install -y gcc gcc-c++ make qt4-devel openssl-devel diffutils perl tar xz'),
+        ('shell', 'yum install -y gcc gcc-c++ make diffutils perl tar xz'),
+        ('shell', 'yum install -y openssl-devel libX11-devel libXrender-devel libXext-devel fontconfig-devel freetype-devel libjpeg-devel libpng-devel zlib-devel'),
         ('write_file', 'update.sh', 'yum update -y\n'),
         ('schroot_conf', 'CentOS 6')
     ]
