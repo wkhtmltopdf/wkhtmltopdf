@@ -178,8 +178,9 @@ deb http://ftp.debian.org/debian/ wheezy-updates main contrib non-free
 deb http://security.debian.org/   wheezy/updates main contrib non-free"""),
         ('shell', 'apt-get update'),
         ('shell', 'apt-get dist-upgrade --assume-yes'),
-        ('shell', 'apt-get install --assume-yes xz-utils libssl-dev libpng-dev libjpeg8-dev zlib1g-dev'),
+        ('shell', 'apt-get install --assume-yes xz-utils libssl-dev libpng-dev libjpeg8-dev zlib1g-dev rubygems'),
         ('shell', 'apt-get install --assume-yes libfontconfig1-dev libfreetype6-dev libx11-dev libxext-dev libxrender-dev'),
+        ('shell', 'gem install fpm ronn --no-ri --no-rdoc'),
         ('write_file', 'update.sh', 'apt-get update\napt-get dist-upgrade --assume-yes\n'),
         ('schroot_conf', 'Debian Wheezy')
     ],
@@ -192,8 +193,9 @@ deb http://archive.ubuntu.com/ubuntu/ trusty-updates  main restricted universe m
 deb http://archive.ubuntu.com/ubuntu/ trusty-security main restricted universe multiverse"""),
         ('shell', 'apt-get update'),
         ('shell', 'apt-get dist-upgrade --assume-yes'),
-        ('shell', 'apt-get install --assume-yes xz-utils libssl-dev libpng-dev libjpeg-turbo8-dev zlib1g-dev'),
+        ('shell', 'apt-get install --assume-yes xz-utils libssl-dev libpng-dev libjpeg-turbo8-dev zlib1g-dev ruby-dev'),
         ('shell', 'apt-get install --assume-yes libfontconfig1-dev libfreetype6-dev libx11-dev libxext-dev libxrender-dev'),
+        ('shell', 'gem install fpm ronn --no-ri --no-rdoc'),
         ('write_file', 'update.sh', 'apt-get update\napt-get dist-upgrade --assume-yes\n'),
         ('schroot_conf', 'Ubuntu Trusty')
     ],
@@ -206,18 +208,23 @@ deb http://archive.ubuntu.com/ubuntu/ precise-updates  main restricted universe 
 deb http://archive.ubuntu.com/ubuntu/ precise-security main restricted universe multiverse"""),
         ('shell', 'apt-get update'),
         ('shell', 'apt-get dist-upgrade --assume-yes'),
-        ('shell', 'apt-get install --assume-yes xz-utils libssl-dev libpng-dev libjpeg8-dev zlib1g-dev'),
+        ('shell', 'apt-get install --assume-yes xz-utils libssl-dev libpng-dev libjpeg8-dev zlib1g-dev rubygems'),
         ('shell', 'apt-get install --assume-yes libfontconfig1-dev libfreetype6-dev libx11-dev libxext-dev libxrender-dev'),
+        ('shell', 'gem install fpm ronn --no-ri --no-rdoc'),
         ('write_file', 'update.sh', 'apt-get update\napt-get dist-upgrade --assume-yes\n'),
         ('schroot_conf', 'Ubuntu Precise')
     ],
 
     'centos5': [
         ('rinse', 'centos-5'),
+        ('download_file', 'http://centos.karan.org/el5/ruby187/kbs-el5-ruby187.repo', 'etc/yum.repos.d'),
+        ('download_file', 'http://dl.fedoraproject.org/pub/epel/5/i386/epel-release-5-4.noarch.rpm', 'tmp'),
+        ('shell', 'rpm -i /tmp/epel-release-5-4.noarch.rpm'),
         ('shell', 'yum update -y'),
         ('append_file:amd64', 'etc/yum.conf', 'exclude = *.i?86\n'),
-        ('shell', 'yum install -y gcc gcc-c++ make diffutils perl xz'),
+        ('shell', 'yum install -y gcc gcc-c++ make diffutils perl xz ruby-devel rubygems rpm-build libffi-devel'),
         ('shell', 'yum install -y openssl-devel libX11-devel libXrender-devel libXext-devel fontconfig-devel freetype-devel libjpeg-devel libpng-devel zlib-devel'),
+        ('shell', 'gem install fpm ronn --no-ri --no-rdoc'),
         ('write_file', 'update.sh', 'yum update -y\n'),
         ('schroot_conf', 'CentOS 5')
     ],
@@ -226,8 +233,9 @@ deb http://archive.ubuntu.com/ubuntu/ precise-security main restricted universe 
         ('rinse', 'centos-6'),
         ('shell', 'yum update -y'),
         ('append_file:amd64', 'etc/yum.conf', 'exclude = *.i?86\n'),
-        ('shell', 'yum install -y gcc gcc-c++ make diffutils perl tar xz'),
+        ('shell', 'yum install -y gcc gcc-c++ make diffutils perl tar xz ruby-devel rubygems rpm-build libffi-devel'),
         ('shell', 'yum install -y openssl-devel libX11-devel libXrender-devel libXext-devel fontconfig-devel freetype-devel libjpeg-devel libpng-devel zlib-devel'),
+        ('shell', 'gem install fpm ronn --no-ri --no-rdoc'),
         ('write_file', 'update.sh', 'yum update -y\n'),
         ('schroot_conf', 'CentOS 6')
     ]
@@ -563,6 +571,7 @@ def check_setup_schroot(config):
 
 def build_setup_schroot(config, basedir):
     install_packages('git', 'debootstrap', 'schroot', 'rinse', 'debian-archive-keyring')
+    os.environ['HOME'] = '/tmp' # workaround bug in gem when home directory doesn't exist
 
     login  = os.environ.get('SUDO_USER') or get_output('logname')
     chroot = config[1+config.rindex('-'):]
