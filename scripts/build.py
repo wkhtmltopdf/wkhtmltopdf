@@ -595,6 +595,15 @@ def build_setup_schroot(config, basedir):
                 open(os.path.join(root_dir, command[1]), 'w').write(command[2].strip())
             elif name == 'append_file':
                 open(os.path.join(root_dir, command[1]), 'a').write(command[2].strip())
+            elif name == 'download_file':
+                name = command[1].split('/')[-1]
+                loc  = os.path.join(root_dir, command[2], name)
+                if exists(loc): os.remove(loc)
+                def hook(cnt, bs, total):
+                    pct = int(cnt*bs*100/total)
+                    message("\rDownloading: %s [%d%%]" % (name, pct))
+                urllib.urlretrieve(command[1], loc, reporthook=hook)
+                message("\rDownloaded: %s%s\n" % (name, ' '*10))
             elif name == 'schroot_conf':
                 cfg = open('/etc/schroot/chroot.d/wkhtmltopdf-%s-%s' % (chroot, arch), 'w')
                 cfg.write('[wkhtmltopdf-%s-%s]\n' % (chroot, arch))
