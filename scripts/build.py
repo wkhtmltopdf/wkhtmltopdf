@@ -291,8 +291,8 @@ DEPENDENT_LIBS = {
 
     'libpng': {
         'order' : 3,
-        'url' : 'http://downloads.sourceforge.net/libpng/libpng-1.6.10.tar.gz',
-        'sha1': 'cf81cf7df631bbfa649600b9a45d966b6bccac25',
+        'url' : 'http://downloads.sourceforge.net/libpng/libpng-1.5.18.tar.gz',
+        'sha1': '7ddf6865aa70d2d79faf65ebc611919a0b573654',
         'build' : {
             'msvc*': {
                 'result': {
