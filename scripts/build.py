@@ -419,6 +419,8 @@ def get_output(*cmd):
 
 def rmdir(path):
     if exists(path):
+        if platform.system() == 'Windows':
+            shell('attrib -R %s\* /S' % path)
         shutil.rmtree(path)
 
 def mkdir_p(path):
