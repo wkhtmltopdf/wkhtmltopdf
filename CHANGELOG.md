@@ -15,6 +15,7 @@ v0.12.1 (unreleased)
 * **#1631**: **[qt]** crash when hiding header for a specific page
 * **#1686**: **[qt]** --user-style-sheet does not work on Windows
 * **#1757**: fix parsing of ColorMode and PrinterMode in the API
+* **#1764**: include text codecs for Chinese (Simplified/Traditional), Japanese and Korean
 * fix compilation failures when not building with patched Qt/WebKit
 * support building with non-patched Qt4/Qt5 in either shared or static mode
 * implement a --license command line option
