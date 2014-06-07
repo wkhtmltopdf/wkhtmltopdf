@@ -220,6 +220,13 @@ FPM_SETUP = {
         '--rpm-compression': 'bzip2',
         '--depends':         ['fontconfig', 'freetype', 'libpng', 'zlib', 'libjpeg', 'openssl',
                               'libX11', 'libXext', 'libXrender', 'libstdc++', 'glibc']
+    },
+    'osx': {
+        '-t':                         'osxpkg',
+        '-C':                         'pkg',
+        '--prefix':                   '/usr/local/share/installer/wkhtmltox',
+        '--osxpkg-identifier-prefix': 'org.wkhtmltopdf',
+        '--after-install':            'extract.sh'
     }
 }
 
@@ -1045,6 +1052,9 @@ def check_osx(config):
     if not get_output('xcode-select', '--print-path'):
         error('Xcode is not installed, aborting.')
 
+    if not get_output('which', 'fpm'):
+        error('Please install fpm by running "sudo gem install fpm --no-ri --no-rdoc"')
+
 def build_osx(config, basedir):
     version, simple_version = get_version(basedir)
     build_deplibs(config, basedir)
@@ -1061,28 +1071,28 @@ def build_osx(config, basedir):
         for item in ['CFLAGS', 'CXXFLAGS']:
             flags += '"QMAKE_%s += %s" ' % (item, '-fvisibility=hidden -fvisibility-inlines-hidden')
 
-    qt     = os.path.join(basedir, config, 'qt')
-    libs   = os.path.join(basedir, config, 'deplibs')
-    app    = os.path.join(basedir, config, 'app')
-    dist   = os.path.join(basedir, config, 'dist')
+    def get_dir(name):
+        return os.path.join(basedir, config, name)
 
     configure_args = qt_config('osx', osxcfg,
-        '--prefix=%s' % qt,
-        '-I %s/include' % libs,
-        '-L %s/lib' % libs)
+        '--prefix=%s'   % get_dir('qt'),
+        '-I %s/include' % get_dir('deplibs'),
+        '-L %s/lib'     % get_dir('deplibs'))
 
-    mkdir_p(qt)
-    mkdir_p(app)
-    rmdir(dist)
+    rmdir(get_dir('dist'))
+    rmdir(get_dir('pkg'))
+    mkdir_p(get_dir('qt'))
+    mkdir_p(get_dir('app'))
+    mkdir_p(get_dir('pkg'))
 
-    os.chdir(qt)
+    os.chdir(get_dir('qt'))
     if not exists('is_configured'):
         shell('../../../qt/configure %s' % configure_args)
         shell('touch is_configured')
 
     shell('make -j%d' % CPU_COUNT)
 
-    os.chdir(app)
+    os.chdir(get_dir('app'))
     shell('rm -f bin/*')
     os.environ['WKHTMLTOX_VERSION'] = version
     shell('../qt/bin/qmake %s ../../../wkhtmltopdf.pro' % flags)
@@ -1096,11 +1106,44 @@ def build_osx(config, basedir):
                 '/System/Library/Frameworks/ApplicationServices.framework/Versions/A/Frameworks/CoreText.framework/CoreText',
                 'bin/'+item]))
 
-    shell('make install INSTALL_ROOT=%s' % dist)
+    shell('make install INSTALL_ROOT=%s' % get_dir('dist'))
 
-    os.chdir(dist)
-    shell('tar -c -v -f ../../wkhtmltox-%s_%s.tar .' % (version, config))
-    shell('xz --compress --force --verbose -9 ../../wkhtmltox-%s_%s.tar' % (version, config))
+    def _osx_tar(info):
+        info.uid   = info.gid   = 0
+        info.uname = 'root'
+        info.gname = 'wheel'
+        return info
+
+    # create tarballs for application and unxz
+    os.chdir(get_dir('dist'))
+    with tarfile.open('../pkg/app.tar', 'w') as tar:
+        tar.add('.', './', filter=_osx_tar)
+    shell('xz --compress --force --verbose -9 ../pkg/app.tar')
+
+    with tarfile.open('../pkg/unxz.tar.gz', 'w:gz') as tar:
+        unxz = get_output('which', 'unxz')
+        lzma = os.path.join(os.path.dirname(unxz), '..', 'lib', 'liblzma.5.dylib')
+        tar.add(unxz, './bin/unxz', filter=_osx_tar)
+        tar.add(lzma, './lib/liblzma.5.dylib', filter=_osx_tar)
+
+    args, cfg = fpm_setup('osx')
+    open('../extract.sh', 'w').write("""#!/bin/bash
+TGTDIR=/usr/local
+BASEDIR=%s
+if [ -x $TGTDIR/bin/unxz ]
+  then
+    cd $TGTDIR;
+    tar zxf $BASEDIR/unxz.tar.gz
+fi
+cd $BASEDIR
+$TGTDIR/bin/unxz -k $BASEDIR/app.tar.xz
+cd $TGTDIR
+tar xf $BASEDIR/app.tar
+rm -f $BASEDIR/app.tar
+""" % cfg['--prefix'])
+
+    os.chdir(os.path.join(basedir, config))
+    shell('fpm --force %s --package ../%s-%s_%s.pkg .' % (args.replace('$1', version), cfg['--name'], version, config))
 
 # --------------------------------------------------------------- command line
 
