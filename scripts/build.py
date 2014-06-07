@@ -19,6 +19,42 @@
 
 # --------------------------------------------------------------- CONFIGURATION
 
+BUILDERS = {
+    'source-tarball':        'source_tarball',
+    'msvc2008-win32':        'msvc',
+    'msvc2008-win64':        'msvc',
+    'msvc2010-win32':        'msvc',
+    'msvc2010-win64':        'msvc',
+    'msvc2012-win32':        'msvc',
+    'msvc2012-win64':        'msvc',
+    'msvc2013-win32':        'msvc',
+    'msvc2013-win64':        'msvc',
+    'msvc-winsdk71-win32':   'msvc_winsdk71',
+    'msvc-winsdk71-win64':   'msvc_winsdk71',
+    'setup-mingw-w64':       'setup_mingw64',
+    'setup-schroot-centos5': 'setup_schroot',
+    'setup-schroot-centos6': 'setup_schroot',
+    'setup-schroot-wheezy':  'setup_schroot',
+    'setup-schroot-trusty':  'setup_schroot',
+    'setup-schroot-precise': 'setup_schroot',
+    'update-all-schroots':   'update_schroot',
+    'centos5-i386':          'linux_schroot',
+    'centos5-amd64':         'linux_schroot',
+    'centos6-i386':          'linux_schroot',
+    'centos6-amd64':         'linux_schroot',
+    'wheezy-i386':           'linux_schroot',
+    'wheezy-amd64':          'linux_schroot',
+    'trusty-i386':           'linux_schroot',
+    'trusty-amd64':          'linux_schroot',
+    'precise-i386':          'linux_schroot',
+    'precise-amd64':         'linux_schroot',
+    'mingw-w64-cross-win32': 'mingw64_cross',
+    'mingw-w64-cross-win64': 'mingw64_cross',
+    'posix-local':           'posix_local',
+    'osx-cocoa-x86-64':      'osx',
+    'osx-carbon-i386':       'osx'
+}
+
 QT_CONFIG = {
     'common' : [
         '-opensource',
@@ -133,40 +169,61 @@ QT_CONFIG = {
     ]
 }
 
-BUILDERS = {
-    'source-tarball':        'source_tarball',
-    'msvc2008-win32':        'msvc',
-    'msvc2008-win64':        'msvc',
-    'msvc2010-win32':        'msvc',
-    'msvc2010-win64':        'msvc',
-    'msvc2012-win32':        'msvc',
-    'msvc2012-win64':        'msvc',
-    'msvc2013-win32':        'msvc',
-    'msvc2013-win64':        'msvc',
-    'msvc-winsdk71-win32':   'msvc_winsdk71',
-    'msvc-winsdk71-win64':   'msvc_winsdk71',
-    'setup-mingw-w64':       'setup_mingw64',
-    'setup-schroot-centos5': 'setup_schroot',
-    'setup-schroot-centos6': 'setup_schroot',
-    'setup-schroot-wheezy':  'setup_schroot',
-    'setup-schroot-trusty':  'setup_schroot',
-    'setup-schroot-precise': 'setup_schroot',
-    'update-all-schroots':   'update_schroot',
-    'centos5-i386':          'linux_schroot',
-    'centos5-amd64':         'linux_schroot',
-    'centos6-i386':          'linux_schroot',
-    'centos6-amd64':         'linux_schroot',
-    'wheezy-i386':           'linux_schroot',
-    'wheezy-amd64':          'linux_schroot',
-    'trusty-i386':           'linux_schroot',
-    'trusty-amd64':          'linux_schroot',
-    'precise-i386':          'linux_schroot',
-    'precise-amd64':         'linux_schroot',
-    'mingw-w64-cross-win32': 'mingw64_cross',
-    'mingw-w64-cross-win64': 'mingw64_cross',
-    'posix-local':           'posix_local',
-    'osx-cocoa-x86-64':      'osx',
-    'osx-carbon-i386':       'osx'
+FPM_SETUP = {
+    'common': {
+        '--name':        'wkhtmltox',
+        '--description': 'convert HTML to PDF and various image formats using QtWebkit',
+        '--version':     '$1',
+        '--license':     'LGPLv3',
+        '--vendor':      'wkhtmltopdf.org',
+        '--url':         'http://wkhtmltopdf.org',
+        '--maintainer':  'Ashish Kulkarni <kulkarni.ashish@gmail.com>',
+        '-s':            'dir',
+        '-C':            'dist',
+        '--prefix':      '/usr/local',
+        '--category':    'utils'
+    },
+    'wheezy': {
+        '-t':                'deb',
+        '--deb-compression': 'xz',
+        '--provides':        'wkhtmltopdf',
+        '--conflicts':       'wkhtmltopdf',
+        '--replaces':        'wkhtmltopdf',
+        '--depends':         ['fontconfig', 'libfontconfig1', 'libfreetype6', 'libpng12-0', 'zlib1g', 'libjpeg8',
+                              'libssl1.0.0', 'libx11-6', 'libxext6', 'libxrender1', 'libstdc++6', 'libc6']
+    },
+    'trusty': {
+        '-t':                'deb',
+        '--deb-compression': 'xz',
+        '--provides':        'wkhtmltopdf',
+        '--conflicts':       'wkhtmltopdf',
+        '--replaces':        'wkhtmltopdf',
+        '--depends':         ['fontconfig', 'libfontconfig1', 'libfreetype6', 'libpng12-0', 'zlib1g', 'libjpeg-turbo8',
+                              'libssl1.0.0', 'libx11-6', 'libxext6', 'libxrender1', 'libstdc++6', 'libc6']
+    },
+    'precise': {
+        '-t':                'deb',
+        '--deb-compression': 'xz',
+        '--provides':        'wkhtmltopdf',
+        '--conflicts':       'wkhtmltopdf',
+        '--replaces':        'wkhtmltopdf',
+        '--depends':         ['fontconfig', 'libfontconfig1', 'libfreetype6', 'libpng12-0', 'zlib1g', 'libjpeg8',
+                              'libssl1.0.0', 'libx11-6', 'libxext6', 'libxrender1', 'libstdc++6', 'libc6']
+    },
+    'centos5': {
+        '-t':                'rpm',
+        '--epoch':           '1',
+        '--rpm-compression': 'bzip2',
+        '--depends':         ['fontconfig', 'freetype', 'libpng', 'zlib', 'libjpeg', 'openssl',
+                              'libX11', 'libXext', 'libXrender', 'libstdc++', 'glibc']
+    },
+    'centos6': {
+        '-t':                'rpm',
+        '--epoch':           '1',
+        '--rpm-compression': 'bzip2',
+        '--depends':         ['fontconfig', 'freetype', 'libpng', 'zlib', 'libjpeg', 'openssl',
+                              'libX11', 'libXext', 'libXrender', 'libstdc++', 'glibc']
+    }
 }
 
 CHROOT_SETUP  = {
@@ -182,6 +239,7 @@ deb http://security.debian.org/   wheezy/updates main contrib non-free"""),
         ('shell', 'apt-get install --assume-yes libfontconfig1-dev libfreetype6-dev libx11-dev libxext-dev libxrender-dev'),
         ('shell', 'gem install fpm ronn --no-ri --no-rdoc'),
         ('write_file', 'update.sh', 'apt-get update\napt-get dist-upgrade --assume-yes\n'),
+        ('fpm_setup',  'fpm_package.sh'),
         ('schroot_conf', 'Debian Wheezy')
     ],
 
@@ -197,6 +255,7 @@ deb http://archive.ubuntu.com/ubuntu/ trusty-security main restricted universe m
         ('shell', 'apt-get install --assume-yes libfontconfig1-dev libfreetype6-dev libx11-dev libxext-dev libxrender-dev'),
         ('shell', 'gem install fpm ronn --no-ri --no-rdoc'),
         ('write_file', 'update.sh', 'apt-get update\napt-get dist-upgrade --assume-yes\n'),
+        ('fpm_setup',  'fpm_package.sh'),
         ('schroot_conf', 'Ubuntu Trusty')
     ],
 
@@ -212,6 +271,7 @@ deb http://archive.ubuntu.com/ubuntu/ precise-security main restricted universe 
         ('shell', 'apt-get install --assume-yes libfontconfig1-dev libfreetype6-dev libx11-dev libxext-dev libxrender-dev'),
         ('shell', 'gem install fpm ronn --no-ri --no-rdoc'),
         ('write_file', 'update.sh', 'apt-get update\napt-get dist-upgrade --assume-yes\n'),
+        ('fpm_setup',  'fpm_package.sh'),
         ('schroot_conf', 'Ubuntu Precise')
     ],
 
@@ -222,10 +282,11 @@ deb http://archive.ubuntu.com/ubuntu/ precise-security main restricted universe 
         ('shell', 'rpm -i /tmp/epel-release-5-4.noarch.rpm'),
         ('shell', 'yum update -y'),
         ('append_file:amd64', 'etc/yum.conf', 'exclude = *.i?86\n'),
-        ('shell', 'yum install -y gcc gcc-c++ make diffutils perl xz ruby-devel rubygems rpm-build libffi-devel'),
+        ('shell', 'yum install -y gcc gcc-c++ make diffutils perl ruby-devel rubygems rpm-build libffi-devel'),
         ('shell', 'yum install -y openssl-devel libX11-devel libXrender-devel libXext-devel fontconfig-devel freetype-devel libjpeg-devel libpng-devel zlib-devel'),
         ('shell', 'gem install fpm ronn --no-ri --no-rdoc'),
         ('write_file', 'update.sh', 'yum update -y\n'),
+        ('fpm_setup',  'fpm_package.sh'),
         ('schroot_conf', 'CentOS 5')
     ],
 
@@ -233,10 +294,11 @@ deb http://archive.ubuntu.com/ubuntu/ precise-security main restricted universe 
         ('rinse', 'centos-6'),
         ('shell', 'yum update -y'),
         ('append_file:amd64', 'etc/yum.conf', 'exclude = *.i?86\n'),
-        ('shell', 'yum install -y gcc gcc-c++ make diffutils perl tar xz ruby-devel rubygems rpm-build libffi-devel'),
+        ('shell', 'yum install -y gcc gcc-c++ make diffutils perl ruby-devel rubygems rpm-build libffi-devel'),
         ('shell', 'yum install -y openssl-devel libX11-devel libXrender-devel libXext-devel fontconfig-devel freetype-devel libjpeg-devel libpng-devel zlib-devel'),
         ('shell', 'gem install fpm ronn --no-ri --no-rdoc'),
         ('write_file', 'update.sh', 'yum update -y\n'),
+        ('fpm_setup',  'fpm_package.sh'),
         ('schroot_conf', 'CentOS 6')
     ]
 }
@@ -462,6 +524,18 @@ def qt_config(key, *opts):
             output.remove(arg[1+arg.index(':'):])
     return ' '.join(output)
 
+def fpm_setup(cfg):
+    input, output = {}, ''
+    input.update(FPM_SETUP['common'])
+    input.update(FPM_SETUP[cfg])
+    for key in input:
+        if type(input[key]) is list:
+            for val in input[key]:
+                output += ' %s "%s"' % (key, val)
+        else:
+            output += ' %s "%s"' % (key, input[key])
+    return output, input
+
 def download_file(url, sha1, dir):
     name = url.split('/')[-1]
     loc  = os.path.join(dir, name)
@@ -613,6 +687,12 @@ def build_setup_schroot(config, basedir):
                     message("\rDownloading: %s [%d%%]" % (name, pct))
                 urllib.urlretrieve(command[1], loc, reporthook=hook)
                 message("\rDownloaded: %s%s\n" % (name, ' '*10))
+            elif name == 'fpm_setup':
+                args, cfg = fpm_setup(chroot)
+                cmd = '#!/bin/sh\nXZ_OPT=-9 fpm --force %s --package ../%s-$1_linux-%s-$2.%s .\n'
+                loc = os.path.join(root_dir, command[1])
+                open(loc, 'w').write(cmd % (args, cfg['--name'], chroot, cfg['-t']))
+                shell('chmod a+x %s' % loc)
             elif name == 'schroot_conf':
                 cfg = open('/etc/schroot/chroot.d/wkhtmltopdf-%s-%s' % (chroot, arch), 'w')
                 cfg.write('[wkhtmltopdf-%s-%s]\n' % (chroot, arch))
@@ -855,7 +935,7 @@ def build_linux_schroot(config, basedir):
 
     dir    = os.path.join(basedir, config)
     script = os.path.join(dir, 'build.sh')
-    dist   = os.path.join(dir, 'wkhtmltox-%s' % version)
+    dist   = os.path.join(dir, 'dist')
 
     mkdir_p(dir)
     rmdir(dist)
@@ -883,8 +963,7 @@ def build_linux_schroot(config, basedir):
     lines.append('../qt/bin/qmake ../../../wkhtmltopdf.pro')
     lines.append('make install INSTALL_ROOT=%s || exit 1' % dist)
     lines.append('cd ..')
-    lines.append('tar -c -v -f ../wkhtmltox-%s_linux-%s.tar wkhtmltox-%s/' % (version, config, version))
-    lines.append('xz --compress --force --verbose -9 ../wkhtmltox-%s_linux-%s.tar' % (version, config))
+    lines.append('/fpm_package.sh %s %s' % (version, config[1+config.index('-'):]))
     lines.append('# end of build script')
 
     open(script, 'w').write('\n'.join(lines))
