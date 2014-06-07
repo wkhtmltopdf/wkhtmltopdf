@@ -156,16 +156,13 @@ QT_CONFIG = {
     ],
 
     'osx': [
+        '-silent',                  # perform a silent build
         '-no-framework',
         '-no-dwarf2',
         '-xrender',                 # xrender support is required
         '-openssl',                 # load OpenSSL binaries at runtime
         '-largefile',
-        '-no-rpath',
-        'remove:-system-libpng',
-        'remove:-system-libjpeg',
-        '-qt-libpng',
-        '-qt-libjpeg'
+        '-no-rpath'
     ]
 }
 
@@ -391,6 +388,18 @@ DEPENDENT_LIBS = {
                     ('scripts/makefile.gcc', 'AR_RC = ar', 'AR_RC = %(mingw-w64)s-ar'),
                     ('scripts/makefile.gcc', 'RANLIB = ranlib', 'RANLIB = %(mingw-w64)s-ranlib')],
                 'commands': ['make -f scripts/makefile.gcc libpng.a']
+            },
+            'osx-carbon-i386': {
+                'result': ['include/png.h', 'include/pngconf.h', 'include/pnglibconf.h', 'lib/libpng.a'],
+                'commands': [
+                    'CFLAGS="-arch i386" ./configure --disable-shared --prefix=%(destdir)s',
+                    'make install']
+            },
+            'osx-cocoa-x86-64': {
+                'result': ['include/png.h', 'include/pngconf.h', 'include/pnglibconf.h', 'lib/libpng.a'],
+                'commands': [
+                    'CFLAGS="-arch x86_64" ./configure --disable-shared --prefix=%(destdir)s',
+                    'make install']
             }
         }
     },
@@ -419,6 +428,18 @@ DEPENDENT_LIBS = {
                 'result': ['include/jpeglib.h', 'include/jmorecfg.h', 'include/jerror.h', 'include/jconfig.h', 'lib/libjpeg.a'],
                 'commands': [
                     './configure --host=%(mingw-w64)s --disable-shared --prefix=%(destdir)s',
+                    'make install']
+            },
+            'osx-carbon-i386': {
+                'result': ['include/jpeglib.h', 'include/jmorecfg.h', 'include/jerror.h', 'include/jconfig.h', 'lib/libjpeg.a'],
+                'commands': [
+                    'CFLAGS="-arch i386" ./configure --disable-shared --prefix=%(destdir)s',
+                    'make install']
+            },
+            'osx-cocoa-x86-64': {
+                'result': ['include/jpeglib.h', 'include/jmorecfg.h', 'include/jerror.h', 'include/jconfig.h', 'lib/libjpeg.a'],
+                'commands': [
+                    'CFLAGS="-arch x86_64" ./configure --disable-shared --prefix=%(destdir)s',
                     'make install']
             }
         }
@@ -1026,6 +1047,7 @@ def check_osx(config):
 
 def build_osx(config, basedir):
     version, simple_version = get_version(basedir)
+    build_deplibs(config, basedir)
 
     osxver    = platform.mac_ver()[0][:platform.mac_ver()[0].rindex('.')]
     framework = config.split('-')[1]
@@ -1040,20 +1062,22 @@ def build_osx(config, basedir):
             flags += '"QMAKE_%s += %s" ' % (item, '-fvisibility=hidden -fvisibility-inlines-hidden')
 
     qt     = os.path.join(basedir, config, 'qt')
+    libs   = os.path.join(basedir, config, 'deplibs')
     app    = os.path.join(basedir, config, 'app')
-    dist   = os.path.join(basedir, config, 'wkhtmltox-%s' % version)
+    dist   = os.path.join(basedir, config, 'dist')
+
+    configure_args = qt_config('osx', osxcfg,
+        '--prefix=%s' % qt,
+        '-I %s/include' % libs,
+        '-L %s/lib' % libs)
 
     mkdir_p(qt)
     mkdir_p(app)
-
     rmdir(dist)
-    mkdir_p(os.path.join(dist, 'bin'))
-    mkdir_p(os.path.join(dist, 'include', 'wkhtmltox'))
-    mkdir_p(os.path.join(dist, 'lib'))
 
     os.chdir(qt)
     if not exists('is_configured'):
-        shell('../../../qt/configure %s' % qt_config('osx', '--prefix=%s' % qt, osxcfg))
+        shell('../../../qt/configure %s' % configure_args)
         shell('touch is_configured')
 
     shell('make -j%d' % CPU_COUNT)
@@ -1072,14 +1096,11 @@ def build_osx(config, basedir):
                 '/System/Library/Frameworks/ApplicationServices.framework/Versions/A/Frameworks/CoreText.framework/CoreText',
                 'bin/'+item]))
 
-    shell('cp bin/wkhtmlto* ../wkhtmltox-%s/bin' % version)
-    shell('cp -P bin/libwkhtmltox*.dylib* ../wkhtmltox-%s/lib' % version)
-    shell('cp ../../../include/wkhtmltox/*.h ../wkhtmltox-%s/include/wkhtmltox' % version)
-    shell('cp ../../../include/wkhtmltox/dll*.inc ../wkhtmltox-%s/include/wkhtmltox' % version)
+    shell('make install INSTALL_ROOT=%s' % dist)
 
-    os.chdir(os.path.join(basedir, config))
-    shell('tar -c -v -f ../wkhtmltox-%s_%s.tar wkhtmltox-%s/' % (version, config, version))
-    shell('xz --compress --force --verbose -9 ../wkhtmltox-%s_%s.tar' % (version, config))
+    os.chdir(dist)
+    shell('tar -c -v -f ../../wkhtmltox-%s_%s.tar .' % (version, config))
+    shell('xz --compress --force --verbose -9 ../../wkhtmltox-%s_%s.tar' % (version, config))
 
 # --------------------------------------------------------------- command line
 
