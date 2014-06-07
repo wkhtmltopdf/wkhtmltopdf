@@ -79,12 +79,12 @@ QT_CONFIG = {
         '-silent',                  # perform a silent build
         '-xrender',                 # xrender support is required
         '-largefile',
-        '-no-rpath',
+        '-iconv',                   # iconv support is required for text codecs
         '-openssl',                 # load OpenSSL binaries at runtime
+        '-no-rpath',
         '-no-dbus',
         '-no-nis',
         '-no-cups',
-        '-no-iconv',
         '-no-pch',
         '-no-gtkstyle',
         '-no-nas-sound',
