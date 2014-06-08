@@ -39,6 +39,8 @@ def build_target(basedir, target):
     proc.stdin.close()
     for line in iter(proc.stdout.readline, ''):
         line = line.rstrip()+'\n'
+        if '\r' in line:
+            line = line[1+line.rindex('\r'):]
         build.message(line)
         log.write(line)
         log.flush()
