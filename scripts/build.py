@@ -773,8 +773,10 @@ def build_source_tarball(config, basedir):
     shell('git clean -fdx')
     shell('git reset --hard HEAD')
     shell('git submodule update')
+    open('VERSION', 'w').write(version)
     with tarfile.open('wkhtmltox-%s.tar.bz2' % version, 'w:bz2') as tar:
         tar.add('.', 'wkhtmltox-%s/' % version, filter=_filter_tar)
+    shell('git reset --hard HEAD')
 
 # --------------------------------------------------------------- MSVC (2008-2013)
 
