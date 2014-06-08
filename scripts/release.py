@@ -23,11 +23,11 @@ def get_targets():
     if platform.system() == 'Windows':
         return ['msvc2013-win32', 'msvc2013-win64']
     elif platform.system() == 'Darwin':
-        builder = 'osx'
+        builders = ['osx']
     else:
-        builder = 'linux_schroot'
+        builders = ['source_tarball', 'linux_schroot', 'mingw64_cross']
 
-    return [name for name in build.BUILDERS if build.BUILDERS[name] == builder]
+    return [name for name in build.BUILDERS if build.BUILDERS[name] in builders]
 
 def build_target(basedir, target):
     build.message('*************** building: %s\n\n' % target)
