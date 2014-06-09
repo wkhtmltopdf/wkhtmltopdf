@@ -22,7 +22,7 @@ v0.12.1 (unreleased)
 * update URLs in the internal documentation
 * generate API documentation for libwkhtmltox (on the website)
 * display version in compiled binary properly under various scenarios
-* complete revamp of the build system
+* complete revamp of the build system, which now generates native packages on all platforms
 
 v0.12.0 (2014-02-06)
 --------------------
