@@ -49,7 +49,11 @@ using namespace wkhtmltopdf;
  * \param nargv on return will hold the arguments read and be NULL terminated
  */
 enum State {skip, tok, q1, q2, q1_esc, q2_esc, tok_esc};
-void parseString(char * buff, int &nargc, char **nargv) {
+void parseString(char * buff, int &nargc, char ***nargv) {
+	int nargv_size = 1024;
+	*nargv = (char**)malloc(sizeof(char*) * nargv_size);
+	if (!*nargv) exit(1);
+
 	State state = skip;
 	int write_start=0;
 	int write=0;
@@ -72,8 +76,13 @@ void parseString(char * buff, int &nargc, char **nargv) {
 				next_state=skip;
 				if (write_start != write) {
 					buff[write++]='\0';
-					nargv[nargc++] = buff+write_start;
-					if (nargc > 998) exit(1);
+					if (nargc+1 >= nargv_size)
+					{
+						nargv_size *= 2;
+						*nargv = (char**)realloc(*nargv, sizeof(char*) * nargv_size);
+						if (!*nargv) exit(1);
+					}
+					(*nargv)[nargc++] = buff+write_start;
 				}
 				write_start = write;
 			} else buff[write++] = buff[read];
@@ -108,12 +117,49 @@ void parseString(char * buff, int &nargc, char **nargv) {
 		}
 		state=next_state;
 	}
+	if (nargc+1 + 2 >= nargv_size)
+	{
+		nargv_size *= 2;
+		*nargv = (char**)realloc(*nargv, sizeof(char*) * nargv_size);
+		if (!*nargv) exit(1);
+	}
 	//Remember the last parameter
 	if (write_start != write) {
 		buff[write++]='\0';
-		nargv[nargc++] = buff+write_start;
+		(*nargv)[nargc++] = buff+write_start;
 	}
-	nargv[nargc]=NULL;
+	(*nargv)[nargc]=NULL;
+}
+
+/*
+ * Returns a line from a FILE stream. Caller must free buffer.
+ * Derived from getline function from DHCPD client daemon.
+ * Needed because of Windows and systems before POSIX 2008.
+ */
+char * fgets_large(FILE * fp)
+{
+	const size_t bufsize_grow = 1024;
+	size_t bytes = 0, buflen = 0;
+	char *p, *buf = NULL;
+
+	do {
+		if (feof(fp))
+			break;
+		if (buf == NULL || bytes != 0) {
+			buflen += bufsize_grow;
+			buf = (char *)realloc(buf, buflen);
+			if (buf == NULL)
+				return NULL;
+		}
+		p = buf + bytes;
+		memset(p, 0, bufsize_grow);
+		if (fgets(p, bufsize_grow, fp) == NULL)
+			break;
+		bytes += strlen(p);
+	} while (bytes == 0 || *(buf + (bytes - 1)) != '\n');
+	if (bytes == 0)
+		return NULL;
+	return buf;
 }
 
 int main(int argc, char * argv[]) {
@@ -145,13 +191,12 @@ int main(int argc, char * argv[]) {
 	a.setStyle(style);
 
 	if (parser.readArgsFromStdin) {
-		char buff[20400];
-		char *nargv[1000];
-		nargv[0] = argv[0];
-		for (int i=0; i < argc; ++i) nargv[i] = argv[i];
-		while (fgets(buff,20398,stdin)) {
+		char *buff;
+		while ((buff = fgets_large(stdin)) != NULL) {
 			int nargc=argc;
-			parseString(buff,nargc,nargv);
+			char **nargv;
+			parseString(buff,nargc,&nargv);
+			for (int i=0; i < argc; ++i) nargv[i] = argv[i];
 
 			PdfGlobal globalSettings;
 			QList<PdfObject> objectSettings;
@@ -169,6 +214,8 @@ int main(int argc, char * argv[]) {
 
 			if (!converter.convert())
 				exit(EXIT_FAILURE);
+			free(buff);
+			free(nargv);
 		}
 		exit(EXIT_SUCCESS);
 	}
