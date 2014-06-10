@@ -1122,26 +1122,51 @@ def build_osx(config, basedir):
         tar.add('.', './', filter=_osx_tar)
     shell('xz --compress --force --verbose -9 ../pkg/app.tar')
 
-    with tarfile.open('../pkg/unxz.tar.gz', 'w:gz') as tar:
-        unxz = get_output('which', 'unxz')
-        lzma = os.path.join(os.path.dirname(unxz), '..', 'lib', 'liblzma.5.dylib')
-        tar.add(unxz, './bin/unxz', filter=_osx_tar)
+    with tarfile.open('../pkg/xz.tar.gz', 'w:gz') as tar:
+        xz   = get_output('which', 'xz')
+        lzma = os.path.join(os.path.dirname(xz), '..', 'lib', 'liblzma.5.dylib')
+        tar.add(xz, './bin/xz', filter=_osx_tar)
         tar.add(lzma, './lib/liblzma.5.dylib', filter=_osx_tar)
 
     args, cfg = fpm_setup('osx')
+    with open('../pkg/uninstall-wkhtmltox', 'w') as f:
+        os.chmod('../pkg/uninstall-wkhtmltox', 0o755)
+        f.write("""#!/bin/bash
+if [ "$(id -u)" != "0" ]; then
+   echo "This script must be run as sudo uninstall-wkhtmltox" 1>&2
+   exit 1
+fi
+cd /usr/local
+if which pkgutil >/dev/null; then
+    pkgutil --forget %s.%s
+fi
+""" % (cfg['--osxpkg-identifier-prefix'], cfg['--name']))
+        for root, dirs, files in os.walk(get_dir('dist')):
+            for file in files:
+                f.write('echo REMOVE /usr/local/%(name)s && rm -f %(name)s\n' % { 'name': os.path.relpath(os.path.join(root, file)) })
+
     open('../extract.sh', 'w').write("""#!/bin/bash
 TGTDIR=/usr/local
 BASEDIR=%s
-if [ -x $TGTDIR/bin/unxz ]
+HAS_XZ=1
+if [ ! -x $TGTDIR/bin/xz ]
   then
+    HAS_XZ=0;
     cd $TGTDIR;
-    tar zxf $BASEDIR/unxz.tar.gz
+    tar zxf $BASEDIR/xz.tar.gz
 fi
 cd $BASEDIR
-$TGTDIR/bin/unxz -k $BASEDIR/app.tar.xz
+$TGTDIR/bin/xz --decompress $BASEDIR/app.tar.xz
 cd $TGTDIR
 tar xf $BASEDIR/app.tar
-rm -f $BASEDIR/app.tar
+if [ $HAS_XZ -eq 0 ]
+  then
+    cd $TGTDIR;
+    tar ztf $BASEDIR/xz.tar.gz | xargs rm -f
+fi
+rm -f $BASEDIR/app.tar $BASEDIR/xz.tar.gz
+mv $BASEDIR/uninstall-wkhtmltox $TGTDIR/bin
+rm -fr $BASEDIR
 """ % cfg['--prefix'])
 
     os.chdir(os.path.join(basedir, config))
