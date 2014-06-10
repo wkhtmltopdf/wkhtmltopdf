@@ -507,7 +507,7 @@ def error(msg):
 def shell(cmd):
     ret = os.system(cmd)
     if ret != 0:
-        error("command failed: exit code %d" % ret)
+        error("%s\ncommand failed: exit code %d" % (cmd, ret))
 
 def get_output(*cmd):
     try:
