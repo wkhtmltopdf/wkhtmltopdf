@@ -584,6 +584,7 @@ void PdfConverterPrivate::fillParms(QHash<QString, QString> & parms, int page, c
 	QDateTime t(QDateTime::currentDateTime());
 	parms["time"] = t.time().toString(Qt::SystemLocaleShortDate);
 	parms["date"] = t.date().toString(Qt::SystemLocaleShortDate);
+	parms["isodate"] = t.date().toString(Qt::ISODate);
 }
 
 

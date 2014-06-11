@@ -173,6 +173,7 @@ void PdfCommandLineParser::outputHeaderFooterDoc(Outputter * o) const {
 " * [section]    Replaced by the name of the current section\n"
 " * [subsection] Replaced by the name of the current subsection\n"
 " * [date]       Replaced by the current date in system local format\n"
+" * [isodate]    Replaced by the current date in ISO 8601 extended format\n"
 " * [time]       Replaced by the current time in system local format\n"
 " * [title]      Replaced by the title of the of the current page object\n"
 " * [doctitle]   Replaced by the title of the output document\n"
