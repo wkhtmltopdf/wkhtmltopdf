@@ -14,13 +14,15 @@ v0.12.1 (unreleased)
 * **#1586**: **[qt]** suppress blank page generated if the first cell spans multiple pages
 * **#1631**: **[qt]** crash when hiding header for a specific page
 * **#1686**: **[qt]** --user-style-sheet does not work on Windows
+* **#1757**: fix parsing of ColorMode and PrinterMode in the API
+* **#1764**: include text codecs for Chinese (Simplified/Traditional), Japanese and Korean
 * fix compilation failures when not building with patched Qt/WebKit
 * support building with non-patched Qt4/Qt5 in either shared or static mode
 * implement a --license command line option
 * update URLs in the internal documentation
 * generate API documentation for libwkhtmltox (on the website)
 * display version in compiled binary properly under various scenarios
-* complete revamp of the build system
+* complete revamp of the build system, which now generates native packages on all platforms
 
 v0.12.0 (2014-02-06)
 --------------------

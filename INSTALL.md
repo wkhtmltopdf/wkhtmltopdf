@@ -13,11 +13,11 @@ Please ensure that you have enough disk space in the location you have cloned
 the source code, as it will require approximately 1.2GiB for both the `qt` and
 `wkhtmltopdf` repositories. Each target that is built will require an
 additional 2.5GiB for compiling the source code and producing the final
-installer (for Windows) or tarballs (for other OSes), which will be generated
+installer (for Windows) or packages (for other OSes), which will be generated
 in the `static-build/` folder.
 
-You can create a debug build by passing the ` -debug` flag to the build script.
-It is recommended to always pass the ` -clean` flag, which removes the
+You can create a debug build by passing the `-debug` flag to the build script.
+It is recommended to always pass the `-clean` flag, which removes the
 existing build folder and performs a clean build. Note that passing `-debug`
 may increase the disk space required for the build and final binaries for
 storing the additional debug information.
@@ -68,8 +68,8 @@ user and running it as `root` may lead to errors or complete loss of data.
 
 After the build environment is setup, you can run the command mentioned above
 to build either the 32-bit or 64-bit binaries, which should generate a
-compressed tarball using [xz](http://tukaani.org/xz/) in the `static-build/`
-folder.
+native package (either DEB or RPM, depending on the distribution) in the
+`static-build/` folder.
 
 Windows
 -------
@@ -106,11 +106,13 @@ OS X
 Building is supported only on OS X 10.6 or newer. You will need to have the
 the latest Xcode for your OS X version and also install
 [xz 5.0.5](http://downloads.sourceforge.net/project/macpkg/XZ/5.0.5/XZ.pkg).
-
-If you are using OS X 10.6, you will need to install [git 1.8.4.2](https://git-osx-installer.googlecode.com/files/git-1.8.4.2-intel-universal-snow-leopard.dmg)
-and [Python 2.7.6](https://www.python.org/ftp/python/2.7.6/python-2.7.6-macosx10.6.dmg).
-After installing, you should run the `Update Shell Profile.command`
-in `/Applications/Python 2.7` to make it the default Python in the shell.
+Additionally, you will need the command `sudo gem install fpm --no-ri --no-rdoc`
+in the terminal to install [fpm](https://github.com/jordansissel/fpm), which is
+used for building the package. Note that if you are using OS X 10.6, you will
+additionally need to install [git 1.8.4.2](https://git-osx-installer.googlecode.com/files/git-1.8.4.2-intel-universal-snow-leopard.dmg)
+and [Python 2.7.6](https://www.python.org/ftp/python/2.7.6/python-2.7.6-macosx10.6.dmg)
+(you may need to run the `Update Shell Profile.command` in `/Applications/Python 2.7`
+to make it the default Python in the shell).
 
 The Carbon build is recommended because it generates PDFs with smaller
 file sizes and selectable text as compared to the Cocoa version, see
@@ -118,8 +120,12 @@ file sizes and selectable text as compared to the Cocoa version, see
 
 Target          | Build Command
 ------          | -------------
-32-bit Carbon   | `scripts\build.py osx-carbon-i386`
-64-bit Cocoa    | `scripts\build.py osx-cocoa-x86-64`
+32-bit Carbon   | `scripts/build.py osx-carbon-i386`
+64-bit Cocoa    | `scripts/build.py osx-cocoa-x86-64`
+
+During the build, a working internet connection is required to download and
+compile the dependent libraries (e.g. libpng and libjpeg). The output package
+should be generated in the `static-build` folder.
 
 Others
 ------

@@ -31,13 +31,11 @@ qt_gui_prl_found {
     contains(QMAKE_PRL_CONFIG, static): DEFINES += QT_STATIC
     else:                               DEFINES += QT_SHARED
 }
+contains(QMAKE_PRL_CONFIG, static): QTPLUGIN += qcncodecs qjpcodecs qkrcodecs qtwcodecs
 
 # if we can't determine, assume that it is shared
 !qt_gui_prl_found: DEFINES += QT_SHARED
 
-MOC_DIR      = ../../build
-OBJECTS_DIR  = ../../build
-UI_DIR       = ../../build
 INCLUDEPATH += ../../include
 RESOURCES    = $$PWD/wkhtmltopdf.qrc
 
