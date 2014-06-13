@@ -450,6 +450,20 @@ DEPENDENT_LIBS = {
                     'make install']
             }
         }
+    },
+
+    'xzdec': {
+        'order' : 5,
+        'url' : 'http://tukaani.org/xz/xz-5.0.5.tar.gz',
+        'sha1': '26fec2c1e409f736e77a85e4ab314dc74987def0',
+        'build' : {
+            'osx*': {
+                'result': ['bin/xzdec'],
+                'commands': [
+                    'CFLAGS="-arch x86_64" ./configure --disable-nls --disable-encoders --enable-small --disable-shared --disable-threads --prefix=%(destdir)s',
+                    'make -C src/liblzma', 'make -C src/xzdec install-strip']
+            }
+        }
     }
 }
 
@@ -1054,6 +1068,9 @@ def check_osx(config):
     if not get_output('xcode-select', '--print-path'):
         error('Xcode is not installed, aborting.')
 
+    if not get_output('which', 'xz'):
+        error('Please install xz from http://downloads.sourceforge.net/project/macpkg/XZ/5.0.5/XZ.pkg or with an OS X package manager.')
+
     if not get_output('which', 'fpm'):
         error('Please install fpm by running "sudo gem install fpm --no-ri --no-rdoc"')
 
@@ -1116,17 +1133,12 @@ def build_osx(config, basedir):
         info.gname = 'wheel'
         return info
 
-    # create tarballs for application and unxz
+    # create tarball for application and copy xzdec
     os.chdir(get_dir('dist'))
     with tarfile.open('../pkg/app.tar', 'w') as tar:
         tar.add('.', './', filter=_osx_tar)
     shell('xz --compress --force --verbose -9 ../pkg/app.tar')
-
-    with tarfile.open('../pkg/xz.tar.gz', 'w:gz') as tar:
-        xz   = get_output('which', 'xz')
-        lzma = os.path.join(os.path.dirname(xz), '..', 'lib', 'liblzma.5.dylib')
-        tar.add(xz, './bin/xz', filter=_osx_tar)
-        tar.add(lzma, './lib/liblzma.5.dylib', filter=_osx_tar)
+    shutil.copy(get_dir('deplibs') + '/bin/xzdec', '../pkg/')
 
     args, cfg = fpm_setup('osx')
     with open('../pkg/uninstall-wkhtmltox', 'w') as f:
@@ -1148,23 +1160,11 @@ fi
     open('../extract.sh', 'w').write("""#!/bin/bash
 TGTDIR=/usr/local
 BASEDIR=%s
-HAS_XZ=1
-if [ ! -x $TGTDIR/bin/xz ]
-  then
-    HAS_XZ=0;
-    cd $TGTDIR;
-    tar zxf $BASEDIR/xz.tar.gz
-fi
 cd $BASEDIR
-$TGTDIR/bin/xz --decompress $BASEDIR/app.tar.xz
+./xzdec app.tar.xz > app.tar
 cd $TGTDIR
 tar xf $BASEDIR/app.tar
-if [ $HAS_XZ -eq 0 ]
-  then
-    cd $TGTDIR;
-    tar ztf $BASEDIR/xz.tar.gz | xargs rm -f
-fi
-rm -f $BASEDIR/app.tar $BASEDIR/xz.tar.gz
+rm -f $BASEDIR/app.tar.xz $BASEDIR/app.tar $BASEDIR/xzdec
 mv $BASEDIR/uninstall-wkhtmltox $TGTDIR/bin
 rm -fr $BASEDIR
 """ % cfg['--prefix'])
