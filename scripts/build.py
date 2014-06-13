@@ -224,7 +224,7 @@ FPM_SETUP = {
     'osx': {
         '-t':                         'osxpkg',
         '-C':                         'pkg',
-        '--prefix':                   '/usr/local/share/installer/wkhtmltox',
+        '--prefix':                   '/usr/local/share/wkhtmltox-installer',
         '--osxpkg-identifier-prefix': 'org.wkhtmltopdf',
         '--after-install':            'extract.sh'
     }
@@ -452,16 +452,16 @@ DEPENDENT_LIBS = {
         }
     },
 
-    'xzdec': {
+    'xz': {
         'order' : 5,
         'url' : 'http://tukaani.org/xz/xz-5.0.5.tar.gz',
         'sha1': '26fec2c1e409f736e77a85e4ab314dc74987def0',
         'build' : {
             'osx*': {
-                'result': ['bin/xzdec'],
+                'result': ['bin/xz'],
                 'commands': [
-                    'CFLAGS="-arch x86_64" ./configure --disable-nls --disable-encoders --enable-small --disable-shared --disable-threads --prefix=%(destdir)s',
-                    'make -C src/liblzma', 'make -C src/xzdec install-strip']
+                    'CFLAGS="-arch x86_64" ./configure --disable-nls --enable-small --disable-shared --disable-threads --prefix=%(destdir)s',
+                    'make -C src/liblzma', 'make -C src/xz', 'make install-strip']
             }
         }
     }
@@ -1068,9 +1068,6 @@ def check_osx(config):
     if not get_output('xcode-select', '--print-path'):
         error('Xcode is not installed, aborting.')
 
-    if not get_output('which', 'xz'):
-        error('Please install xz from http://downloads.sourceforge.net/project/macpkg/XZ/5.0.5/XZ.pkg or with an OS X package manager.')
-
     if not get_output('which', 'fpm'):
         error('Please install fpm by running "sudo gem install fpm --no-ri --no-rdoc"')
 
@@ -1133,12 +1130,13 @@ def build_osx(config, basedir):
         info.gname = 'wheel'
         return info
 
-    # create tarball for application and copy xzdec
+    # create tarball for application and copy xz
     os.chdir(get_dir('dist'))
     with tarfile.open('../pkg/app.tar', 'w') as tar:
         tar.add('.', './', filter=_osx_tar)
-    shell('xz --compress --force --verbose -9 ../pkg/app.tar')
-    shutil.copy(get_dir('deplibs') + '/bin/xzdec', '../pkg/')
+    xz = os.path.join(get_dir('deplibs'), 'bin', 'xz')
+    shell('%s --compress --force --verbose -9 ../pkg/app.tar' % xz)
+    shutil.copy(xz, '../pkg/')
 
     args, cfg = fpm_setup('osx')
     with open('../pkg/uninstall-wkhtmltox', 'w') as f:
@@ -1156,15 +1154,16 @@ fi
         for root, dirs, files in os.walk(get_dir('dist')):
             for file in files:
                 f.write('echo REMOVE /usr/local/%(name)s && rm -f %(name)s\n' % { 'name': os.path.relpath(os.path.join(root, file)) })
+        f.write('echo REMOVE /usr/local/include/wkhtmltox && rm -df /usr/local/include/wkhtmltox\n')
+        f.write('echo REMOVE /usr/local/bin/uninstall-wkhtmltox && rm -f /usr/local/bin/uninstall-wkhtmltox')
 
     open('../extract.sh', 'w').write("""#!/bin/bash
 TGTDIR=/usr/local
 BASEDIR=%s
 cd $BASEDIR
-./xzdec app.tar.xz > app.tar
+./xz --decompress app.tar.xz
 cd $TGTDIR
 tar xf $BASEDIR/app.tar
-rm -f $BASEDIR/app.tar.xz $BASEDIR/app.tar $BASEDIR/xzdec
 mv $BASEDIR/uninstall-wkhtmltox $TGTDIR/bin
 rm -fr $BASEDIR
 """ % cfg['--prefix'])
