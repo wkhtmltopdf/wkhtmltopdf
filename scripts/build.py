@@ -224,7 +224,7 @@ FPM_SETUP = {
     'osx': {
         '-t':                         'osxpkg',
         '-C':                         'pkg',
-        '--prefix':                   '/usr/local/share/installer/wkhtmltox',
+        '--prefix':                   '/usr/local/share/wkhtmltox-installer',
         '--osxpkg-identifier-prefix': 'org.wkhtmltopdf',
         '--after-install':            'extract.sh'
     }
@@ -448,6 +448,20 @@ DEPENDENT_LIBS = {
                 'commands': [
                     'CFLAGS="-arch x86_64" ./configure --disable-shared --prefix=%(destdir)s',
                     'make install']
+            }
+        }
+    },
+
+    'xz': {
+        'order' : 5,
+        'url' : 'http://tukaani.org/xz/xz-5.0.5.tar.gz',
+        'sha1': '26fec2c1e409f736e77a85e4ab314dc74987def0',
+        'build' : {
+            'osx*': {
+                'result': ['bin/xz'],
+                'commands': [
+                    'CFLAGS="-arch x86_64" ./configure --disable-nls --enable-small --disable-shared --disable-threads --prefix=%(destdir)s',
+                    'make -C src/liblzma', 'make -C src/xz', 'make install-strip']
             }
         }
     }
@@ -1116,17 +1130,13 @@ def build_osx(config, basedir):
         info.gname = 'wheel'
         return info
 
-    # create tarballs for application and unxz
+    # create tarball for application and copy xz
     os.chdir(get_dir('dist'))
     with tarfile.open('../pkg/app.tar', 'w') as tar:
         tar.add('.', './', filter=_osx_tar)
-    shell('xz --compress --force --verbose -9 ../pkg/app.tar')
-
-    with tarfile.open('../pkg/xz.tar.gz', 'w:gz') as tar:
-        xz   = get_output('which', 'xz')
-        lzma = os.path.join(os.path.dirname(xz), '..', 'lib', 'liblzma.5.dylib')
-        tar.add(xz, './bin/xz', filter=_osx_tar)
-        tar.add(lzma, './lib/liblzma.5.dylib', filter=_osx_tar)
+    xz = os.path.join(get_dir('deplibs'), 'bin', 'xz')
+    shell('%s --compress --force --verbose -9 ../pkg/app.tar' % xz)
+    shutil.copy(xz, '../pkg/')
 
     args, cfg = fpm_setup('osx')
     with open('../pkg/uninstall-wkhtmltox', 'w') as f:
@@ -1144,27 +1154,16 @@ fi
         for root, dirs, files in os.walk(get_dir('dist')):
             for file in files:
                 f.write('echo REMOVE /usr/local/%(name)s && rm -f %(name)s\n' % { 'name': os.path.relpath(os.path.join(root, file)) })
+        f.write('echo REMOVE /usr/local/include/wkhtmltox && rm -df /usr/local/include/wkhtmltox\n')
+        f.write('echo REMOVE /usr/local/bin/uninstall-wkhtmltox && rm -f /usr/local/bin/uninstall-wkhtmltox')
 
     open('../extract.sh', 'w').write("""#!/bin/bash
 TGTDIR=/usr/local
 BASEDIR=%s
-HAS_XZ=1
-if [ ! -x $TGTDIR/bin/xz ]
-  then
-    HAS_XZ=0;
-    cd $TGTDIR;
-    tar zxf $BASEDIR/xz.tar.gz
-fi
 cd $BASEDIR
-$TGTDIR/bin/xz --decompress $BASEDIR/app.tar.xz
+./xz --decompress app.tar.xz
 cd $TGTDIR
 tar xf $BASEDIR/app.tar
-if [ $HAS_XZ -eq 0 ]
-  then
-    cd $TGTDIR;
-    tar ztf $BASEDIR/xz.tar.gz | xargs rm -f
-fi
-rm -f $BASEDIR/app.tar $BASEDIR/xz.tar.gz
 mv $BASEDIR/uninstall-wkhtmltox $TGTDIR/bin
 rm -fr $BASEDIR
 """ % cfg['--prefix'])
