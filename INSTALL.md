@@ -28,6 +28,7 @@ Linux
 Please ensure that the cloned repository is in the user's home directory
 e.g. `~/wkhtmltopdf`. If you clone it in a different directory, it may
 fail with `E: Failed to change to directory /your/dir: No such file or directory`.
+Please note that [encrypted home directories are not supported](https://bugs.launchpad.net/ubuntu/+source/schroot/+bug/791908).
 
 Building is supported only on the latest stable Debian/Ubuntu releases, and
 the binaries are produced in a self-contained chroot environment for the
