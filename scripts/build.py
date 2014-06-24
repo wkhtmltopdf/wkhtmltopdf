@@ -1025,7 +1025,7 @@ def build_posix_local(config, basedir):
     version, simple_version = get_version(basedir)
 
     app    = os.path.join(basedir, config, 'app')
-    qtdir  = os.path.join(basedir, config, 'qt')
+    qt     = os.path.join(basedir, config, 'qt')
     dist   = os.path.join(basedir, config, 'wkhtmltox-%s' % version)
     make   = get_output('which gmake') and 'gmake' or 'make'
 
@@ -1039,7 +1039,7 @@ def build_posix_local(config, basedir):
 
     os.chdir(qt)
     if not exists('is_configured'):
-        shell('../../../qt/configure %s' % qt_config('posix', '--prefix=%s' % qtdir))
+        shell('../../../qt/configure %s' % qt_config('posix', '--prefix=%s' % qt))
         shell('touch is_configured')
 
     if subprocess.call([make, '-j%d' % CPU_COUNT]):
