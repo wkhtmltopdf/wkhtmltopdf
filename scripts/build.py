@@ -1029,7 +1029,7 @@ def build_posix_local(config, basedir):
     dist   = os.path.join(basedir, config, 'wkhtmltox-%s' % version)
     make   = get_output('which gmake') and 'gmake' or 'make'
 
-    mkdir_p(qt)
+    mkdir_p(qtdir)
     mkdir_p(app)
 
     rmdir(dist)
@@ -1037,7 +1037,7 @@ def build_posix_local(config, basedir):
     mkdir_p(os.path.join(dist, 'include', 'wkhtmltox'))
     mkdir_p(os.path.join(dist, 'lib'))
 
-    os.chdir(qt)
+    os.chdir(qtdir)
     if not exists('is_configured'):
         shell('../../../qt/configure %s' % qt_config('posix', '--prefix=%s' % qtdir))
         shell('touch is_configured')
