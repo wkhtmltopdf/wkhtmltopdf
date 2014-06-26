@@ -1,4 +1,4 @@
-v0.12.1 (unreleased)
+v0.12.1 (2014-06-26)
 --------------------
 * removed support for PostScript output which is not supported in QT5
 * use OpenSSL 1.0.1g for the Windows builds
