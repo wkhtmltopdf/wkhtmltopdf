@@ -19,6 +19,15 @@
 
 import os, sys, platform, subprocess, build
 
+def get_build_targets():
+    map = {}
+    for k, v in build.BUILDERS.iteritems():
+        if not v in map:
+            map[v] = []
+        map[v].append(k)
+        map[v].sort()
+    return map
+
 def get_targets():
     if platform.system() == 'Windows':
         return ['msvc2013-win32', 'msvc2013-win64']
@@ -27,10 +36,14 @@ def get_targets():
     else:
         builders = ['source_tarball', 'linux_schroot', 'mingw64_cross']
 
-    return [name for name in build.BUILDERS if build.BUILDERS[name] in builders]
+    targets, map = [], get_build_targets()
+    for builder in builders:
+        targets.extend(map[builder])
+    return targets
 
 def build_target(basedir, target):
     build.message('*************** building: %s\n\n' % target)
+    build.mkdir_p(basedir)
     log  = open(os.path.join(basedir, '%s.log' % target), 'w')
     proc = subprocess.Popen([sys.executable, 'scripts/build.py', target],
         stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.STDOUT,
@@ -58,7 +71,6 @@ def main():
     build.shell('git clean -fdx')
     build.shell('git reset --hard HEAD')
     build.shell('git submodule update')
-    build.mkdir_p(basedir)
 
     status = {}
     for target in get_targets():
