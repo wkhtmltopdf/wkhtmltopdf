@@ -4,7 +4,7 @@ v0.12.2 (unreleased)
 v0.12.1 (2014-06-26)
 --------------------
 * removed support for PostScript output which is not supported in QT5
-* use OpenSSL 1.0.1g for the Windows builds
+* use OpenSSL 1.0.1h for the Windows builds
 * **#1502**: fix spurious "exit with code 1 due to http error: 1xxx" errors
 * **#1504**: **[qt]** fix rendering issues for JPEG with XMP metadata
 * **#1507**: **[qt]** fix crash when CSS widows are specified
