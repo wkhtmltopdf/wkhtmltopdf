@@ -1,3 +1,6 @@
+v0.12.2 (unreleased)
+--------------------
+
 v0.12.1 (2014-06-26)
 --------------------
 * removed support for PostScript output which is not supported in QT5
