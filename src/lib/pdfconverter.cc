@@ -596,6 +596,8 @@ void PdfConverterPrivate::endPage(PageObject & object, bool hasHeaderFooter, int
 	if (hasHeaderFooter) {
 		QHash<QString, QString> parms;
 		fillParms(parms, pageNumber, object);
+		parms["sitepage"]  = QString::number(objectPage+1);
+		parms["sitepages"] = QString::number(object.pageCount);
 
 		//Webkit used all kinds of crazy coordinate transformation, and font setup
 		//We save it here and restore some sane defaults

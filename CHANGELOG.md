@@ -1,6 +1,7 @@
 v0.12.2 (unreleased)
 --------------------
 * **#1758**: fix corrupt image when output is specified as "-" in wkhtmltoimage on Windows
+* **#1808**: fix [sitepage] and [sitepages] not working without HTML headers/footers
 
 v0.12.1 (2014-06-26)
 --------------------
