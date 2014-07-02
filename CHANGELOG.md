@@ -1,5 +1,6 @@
 v0.12.2 (unreleased)
 --------------------
+* **#1758**: fix corrupt image when output is specified as "-" in wkhtmltoimage on Windows
 
 v0.12.1 (2014-06-26)
 --------------------

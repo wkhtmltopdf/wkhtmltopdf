@@ -35,6 +35,12 @@
 #include <QWebFrame>
 #include <QWebPage>
 #include <qapplication.h>
+
+#ifdef Q_OS_WIN32
+#include <fcntl.h>
+#include <io.h>
+#endif
+
 namespace wkhtmltopdf {
 
 ImageConverterPrivate::ImageConverterPrivate(ImageConverter & o, wkhtmltopdf::settings::ImageGlobal & s, const QString * data):
@@ -148,8 +154,12 @@ void ImageConverterPrivate::pagesLoaded(bool ok) {
 	else if (settings.out != "-" ) {
 		file.setFileName(settings.out);
 		openOk = file.open(QIODevice::WriteOnly);
-	} else
+	} else {
+#ifdef Q_OS_WIN32
+		_setmode(_fileno(stdout), _O_BINARY);
+#endif
 		openOk = file.open(stdout, QIODevice::WriteOnly);
+    }
 
 	if (!openOk) {
 		emit out.error("Could not write to output file");
