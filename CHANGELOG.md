@@ -1,6 +1,7 @@
 v0.12.2 (unreleased)
 --------------------
 * **#1676**: do not allow overriding the header/footer settings for cover pages
+* **#1676**: set page margins correctly via computed header/footer heights for multiple URLs
 * **#1758**: fix corrupt image when output is specified as "-" in wkhtmltoimage on Windows
 * **#1772**: added variable 'isodate' for substitution in headers/footers
 * **#1808**: fix [sitepage] and [sitepages] not working without HTML headers/footers

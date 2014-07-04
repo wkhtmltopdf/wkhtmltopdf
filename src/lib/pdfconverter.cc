@@ -222,9 +222,11 @@ void PdfConverterPrivate::beginConvert() {
             settings.margin.bottom.first = 10;
         }
 
-        // set static header/footer reserve heights
-        objects[0].headerReserveHeight = settings.margin.top.first;
-        objects[0].footerReserveHeight = settings.margin.bottom.first;
+        for (QList<PageObject>::iterator i=objects.begin(); i != objects.end(); ++i) {
+            PageObject & o=*i;
+            o.headerReserveHeight = settings.margin.top.first;
+            o.footerReserveHeight = settings.margin.bottom.first;
+        }
 
         pageLoader.load();
     }
@@ -359,8 +361,15 @@ void PdfConverterPrivate::pagesLoaded(bool ok) {
 
     //Setup margins and papersize
 #ifdef __EXTENSIVE_WKHTMLTOPDF_QT_HACK__
-    printer->setPageMargins(settings.margin.left.first, objects[0].headerReserveHeight,
-                                settings.margin.right.first, objects[0].footerReserveHeight,
+    double maxHeaderHeight = objects[0].headerReserveHeight;
+    double maxFooterHeight = objects[0].footerReserveHeight;
+    for (QList<PageObject>::iterator i=objects.begin(); i != objects.end(); ++i) {
+        PageObject & o=*i;
+        maxHeaderHeight = std::max(maxHeaderHeight, o.headerReserveHeight);
+        maxFooterHeight = std::max(maxFooterHeight, o.footerReserveHeight);
+    }
+    printer->setPageMargins(settings.margin.left.first, maxHeaderHeight,
+                                settings.margin.right.first, maxFooterHeight,
                                 settings.margin.left.second);
 #else
     printer->setPageMargins(settings.margin.left.first, settings.margin.top.first,
