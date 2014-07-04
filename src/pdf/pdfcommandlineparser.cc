@@ -166,7 +166,12 @@ void PdfCommandLineParser::parseArguments(int argc, const char ** argv, bool fro
 				usage(stderr, false);
 				exit(1);
 			}
-			ps.page = QString::fromLocal8Bit(argv[arg]);
+			ps.page = QString::fromLocal8Bit(argv[arg++]);
+			// parse page options and then override the header/footer settings
+			for (;arg < argc;++arg) {
+				if (argv[arg][0] != '-' || argv[arg][1] == '\0' || defaultMode) break;
+				parseArg(sections, argc, argv, defaultMode, arg, (char*)&ps);
+			}
 
 			ps.header.left = ps.header.right = ps.header.center = "";
 			ps.footer.left = ps.footer.right = ps.footer.center = "";
@@ -174,8 +179,7 @@ void PdfCommandLineParser::parseArguments(int argc, const char ** argv, bool fro
 			ps.header.htmlUrl = ps.footer.htmlUrl = "";
 			ps.includeInOutline = false;
 
-			//Setup various cover settings here
-			++arg;
+			continue;
 		} else if (!strcmp(argv[arg],"toc")) {
 			++arg;
 			sections = page | toc;
