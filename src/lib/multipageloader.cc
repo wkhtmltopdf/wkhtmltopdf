@@ -70,7 +70,7 @@ QNetworkReply * MyNetworkAccessManager::createRequest(Operation op, const QNetwo
 	if (disposed)
 	{
 		emit warning("Received createRequest signal on a disposed ResourceObject's NetworkAccessManager. "
-			     "This migth be an indication of an iframe taking to long to load.");
+			     "This might be an indication of an iframe taking too long to load.");
 		// Needed to avoid race conditions by spurious network requests
 		// by scripts or iframes taking too long to load.
 		QNetworkRequest r2 = req;
@@ -219,7 +219,7 @@ void ResourceObject::loadProgress(int p) {
 	// If we are finished, ignore this signal.
 	if (finished || multiPageLoader.resources.size() <= 0) {
 		warning("A finished ResourceObject received a loading progress signal. "
-			"This migth be an indication of an iframe taking to long to load.");
+			"This might be an indication of an iframe taking too long to load.");
 		return;
 	}
 
@@ -232,10 +232,10 @@ void ResourceObject::loadProgress(int p) {
 
 
 void ResourceObject::loadFinished(bool ok) {
-	// If we are finished, this migth be a potential bug.
+	// If we are finished, this might be a potential bug.
 	if (finished || multiPageLoader.resources.size() <= 0) {
 		warning("A finished ResourceObject received a loading finished signal. "
-			"This migth be an indication of an iframe taking to long to load.");
+			"This might be an indication of an iframe taking too long to load.");
 		return;
 	}
 
