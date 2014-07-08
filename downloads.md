@@ -25,9 +25,9 @@ No changes since the stable release.
 
 ## Archive
 
-Date       | Release                                                             | Comments
-----       | -------                                                             | --------
-2014-02-06 | [0.12.0](http://sourceforge.net/projects/wkhtmltopdf/files/0.12.0/) | Windows version uses vulnerable version of OpenSSL (1.0.1f)
+Date       | Release                                                                     | Comments
+----       | -------                                                                     | --------
+2014-02-06 | [0.12.0](http://sourceforge.net/projects/wkhtmltopdf/files/archive/0.12.0/) | Windows version uses vulnerable version of OpenSSL (1.0.1f)
 
 If you're looking for very old versions (such as 0.9, 0.10, 0.11), you can find them on [Google Code](http://code.google.com/p/wkhtmltopdf/downloads/list?can=1).
 
