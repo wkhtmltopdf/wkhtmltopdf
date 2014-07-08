@@ -1038,6 +1038,7 @@ def build_linux_schroot(config, basedir):
     lines.append('../qt/bin/qmake ../../../wkhtmltopdf.pro')
     lines.append('make install INSTALL_ROOT=%s || exit 1' % dist)
     lines.append('cd ..')
+    lines.append('export PATH=$PATH:/var/lib/gems/1.8/bin')
     lines.append('/fpm_package.sh %s %s' % (version, config[1+config.index('-'):]))
     lines.append('# end of build script')
 
