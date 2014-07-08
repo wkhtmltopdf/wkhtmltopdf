@@ -37,6 +37,7 @@ BUILDERS = {
     'setup-schroot-wheezy':  'setup_schroot',
     'setup-schroot-trusty':  'setup_schroot',
     'setup-schroot-precise': 'setup_schroot',
+    'setup-schroot-lucid':   'setup_schroot',
     'update-all-schroots':   'update_schroot',
     'centos5-i386':          'linux_schroot',
     'centos5-amd64':         'linux_schroot',
@@ -48,6 +49,8 @@ BUILDERS = {
     'trusty-amd64':          'linux_schroot',
     'precise-i386':          'linux_schroot',
     'precise-amd64':         'linux_schroot',
+    'lucid-i386':            'linux_schroot',
+    'lucid-amd64':           'linux_schroot',
     'mingw-w64-cross-win32': 'mingw64_cross',
     'mingw-w64-cross-win64': 'mingw64_cross',
     'posix-local':           'posix_local',
@@ -207,6 +210,15 @@ FPM_SETUP = {
         '--depends':         ['fontconfig', 'libfontconfig1', 'libfreetype6', 'libpng12-0', 'zlib1g', 'libjpeg8',
                               'libssl1.0.0', 'libx11-6', 'libxext6', 'libxrender1', 'libstdc++6', 'libc6']
     },
+    'lucid': {
+        '-t':                'deb',
+        '--deb-compression': 'xz',
+        '--provides':        'wkhtmltopdf',
+        '--conflicts':       'wkhtmltopdf',
+        '--replaces':        'wkhtmltopdf',
+        '--depends':         ['fontconfig', 'libfontconfig1', 'libfreetype6', 'libpng12-0', 'zlib1g', 'libjpeg62',
+                              'libssl1.0.0', 'libx11-6', 'libxext6', 'libxrender1', 'libstdc++6', 'libc6']
+    },
     'centos5': {
         '-t':                'rpm',
         '--epoch':           '1',
@@ -277,6 +289,22 @@ deb http://archive.ubuntu.com/ubuntu/ precise-security main restricted universe 
         ('write_file', 'update.sh', 'apt-get update\napt-get dist-upgrade --assume-yes\n'),
         ('fpm_setup',  'fpm_package.sh'),
         ('schroot_conf', 'Ubuntu Precise')
+    ],
+
+    'lucid': [
+        ('debootstrap', 'lucid', 'http://archive.ubuntu.com/ubuntu/'),
+        ('write_file', 'etc/apt/sources.list', """
+deb http://archive.ubuntu.com/ubuntu/ lucid            main restricted universe multiverse
+deb http://archive.ubuntu.com/ubuntu/ lucid-updates  main restricted universe multiverse
+deb http://archive.ubuntu.com/ubuntu/ lucid-security main restricted universe multiverse"""),
+        ('shell', 'apt-get update'),
+        ('shell', 'apt-get dist-upgrade --assume-yes'),
+        ('shell', 'apt-get install --assume-yes xz-utils libssl-dev libpng-dev libjpeg62-dev zlib1g-dev rubygems libopenssl-ruby ruby-dev'),
+        ('shell', 'apt-get install --assume-yes libfontconfig1-dev libfreetype6-dev libx11-dev libxext-dev libxrender-dev'),
+        ('shell', 'gem install fpm ronn --no-ri --no-rdoc'),
+        ('write_file', 'update.sh', 'apt-get update\napt-get dist-upgrade --assume-yes\n'),
+        ('fpm_setup',  'fpm_package.sh'),
+        ('schroot_conf', 'Ubuntu Lucid')
     ],
 
     'centos5': [
@@ -686,7 +714,10 @@ def check_setup_schroot(config):
         error('Unable to determine the login for which schroot access is to be given.')
 
 def build_setup_schroot(config, basedir):
-    install_packages('git', 'debootstrap', 'schroot', 'rinse', 'debian-archive-keyring')
+    if config == 'setup-schroot-lucid':
+      install_packages('git-core', 'debootstrap', 'schroot', 'rinse', 'debian-archive-keyring')
+    else:
+      install_packages('git', 'debootstrap', 'schroot', 'rinse', 'debian-archive-keyring')
     os.environ['HOME'] = '/tmp' # workaround bug in gem when home directory doesn't exist
 
     login  = os.environ.get('SUDO_USER') or get_output('logname')
@@ -1007,6 +1038,7 @@ def build_linux_schroot(config, basedir):
     lines.append('../qt/bin/qmake ../../../wkhtmltopdf.pro')
     lines.append('make install INSTALL_ROOT=%s || exit 1' % dist)
     lines.append('cd ..')
+    lines.append('export PATH=$PATH:/var/lib/gems/1.8/bin')
     lines.append('/fpm_package.sh %s %s' % (version, config[1+config.index('-'):]))
     lines.append('# end of build script')
 
