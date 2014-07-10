@@ -856,7 +856,31 @@ void PdfConverterPrivate::spoolPage(int page) {
 				elm.evaluateJavaScript("this.checked;").toBool(),
 				name,
 				elm.evaluateJavaScript("this.readOnly;").toBool());
-		}
+		} else if (tn == "SELECT") {
+            QWebElementCollection options = elm.findAll("option");
+            QString option_list = "";
+            QString default_value = "";
+            QString style = elm.attribute("style");
+            // so that it will ignore the drawing of the actual combo box
+            elm.setAttribute("style", "color: transparent; -webkit-appearance:none; border: none;" + style);
+
+            foreach (QWebElement opt_elm, options) {
+		        QString text = opt_elm.toPlainText();
+		        QString value = opt_elm.attribute("value");
+                option_list += "[(" + value + ")(" + text + ")]";
+                if (opt_elm.evaluateJavaScript("this.selected").toBool()) {
+                    default_value = value;
+                }
+            }
+            option_list = "[" + option_list + "]";
+            painter->addComboBox(
+                webPrinter->elementLocation(elm).second,
+                name,
+                option_list,
+                default_value,
+                elm.evaluateJavaScript("this.readOnly;").toBool()
+            );
+        }
 	}
 	for (QHash<QString, QWebElement>::iterator i=pageAnchors[page+1].begin();
 		 i != pageAnchors[page+1].end(); ++i) {
@@ -942,6 +966,8 @@ void PdfConverterPrivate::beginPrintObject(PageObject & obj) {
 		foreach (const QWebElement & elm, obj.page->mainFrame()->findAllElements("input"))
 			pageFormElements[webPrinter->elementLocation(elm).first].push_back(elm);
 		foreach (const QWebElement & elm, obj.page->mainFrame()->findAllElements("textarea"))
+			pageFormElements[webPrinter->elementLocation(elm).first].push_back(elm);
+		foreach (const QWebElement & elm, obj.page->mainFrame()->findAllElements("select"))
 			pageFormElements[webPrinter->elementLocation(elm).first].push_back(elm);
 	}
 	emit out.producingForms(obj.settings.produceForms);
