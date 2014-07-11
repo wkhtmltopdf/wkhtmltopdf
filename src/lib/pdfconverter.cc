@@ -31,6 +31,7 @@
 #include <QWebPage>
 #include <QWebSettings>
 #include <QXmlQuery>
+#include <QTextCodec>
 #include <algorithm>
 #include <qapplication.h>
 #include <qfileinfo.h>
@@ -154,11 +155,24 @@ void PdfConverterPrivate::beginConvert() {
     bool headerHeightsCalcNeeded = false;
 #endif
 
+	QHash<QString, QString> parms;
 	for (QList<PageObject>::iterator i=objects.begin(); i != objects.end(); ++i) {
 		PageObject & o=*i;
 		settings::PdfObject & s = o.settings;
 
 #ifdef __EXTENSIVE_WKHTMLTOPDF_QT_HACK__
+	if (!s.header.htmlSource.isEmpty() and !s.header.htmlUrl.isEmpty()) {
+	    emit out.error("Only one of --header-html and --header-src should specified.");
+	    fail();
+	    return;
+	}
+	
+	if (!s.footer.htmlSource.isEmpty() and !s.footer.htmlUrl.isEmpty()) {
+	    emit out.error("Only one of --footer-html and --footer-src should specified.");
+	    fail();
+	    return;
+	}
+
         if (!s.header.htmlUrl.isEmpty() ) {
             if (looksLikeHtmlAndNotAUrl(s.header.htmlUrl)) {
                 emit out.error("--header-html should be a URL and not a string containing HTML code.");
@@ -169,14 +183,18 @@ void PdfConverterPrivate::beginConvert() {
             // we should auto calculate header if top margin is not specified
             if (settings.margin.top.first == -1) {
                 headerHeightsCalcNeeded = true;
-                o.measuringHeader = &measuringHFLoader.addResource(
-                    MultiPageLoader::guessUrlFromString(s.header.htmlUrl), s.load)->page;
+		    
+		o.measuringHeader = loadHeaderFooter(&measuringHFLoader, s.header.htmlUrl, parms, s);
             } else {
                 // or just set static values
                 // add spacing to prevent moving header out of page
                 o.headerReserveHeight = settings.margin.top.first + s.header.spacing;
             }
-        }
+        } else if (!s.header.htmlSource.isEmpty() ) {
+                headerHeightsCalcNeeded = true;
+		o.measuringHeader = loadHeaderFooter(&measuringHFLoader, "mem://cli/header-src", s.header.htmlSource, parms, s);
+	}
+	
 
         if (!s.footer.htmlUrl.isEmpty()) {
             if (looksLikeHtmlAndNotAUrl(s.footer.htmlUrl)) {
@@ -188,14 +206,18 @@ void PdfConverterPrivate::beginConvert() {
             if (settings.margin.bottom.first == -1) {
                 // we should auto calculate footer if top margin is not specified
                 headerHeightsCalcNeeded = true;
-                o.measuringFooter = &measuringHFLoader.addResource(
-                    MultiPageLoader::guessUrlFromString(s.footer.htmlUrl), s.load)->page;
+		    
+		o.measuringFooter = loadHeaderFooter(&measuringHFLoader, s.footer.htmlUrl, parms, s);
             } else {
                 // or just set static values
                 // add spacing to prevent moving footer out of page
                 o.footerReserveHeight = settings.margin.bottom.first + s.footer.spacing;
             }
-        }
+        } else if (!s.footer.htmlSource.isEmpty() ) {
+                headerHeightsCalcNeeded = true;
+		o.measuringFooter = loadHeaderFooter(&measuringHFLoader, "mem://cli/footer-src", s.footer.htmlSource, parms, s);
+	}
+
 #endif
 
 		if (!s.isTableOfContent) {
@@ -239,6 +261,7 @@ void PdfConverterPrivate::beginConvert() {
 // calculates header/footer height
 // returns millimeters
 qreal PdfConverterPrivate::calculateHeaderHeight(PageObject & object, QWebPage & header) {
+	Q_UNUSED(object);
     typedef QPair<QWebElement, QString> p_t;
 
     TempFile   tempObj;
@@ -450,16 +473,22 @@ void PdfConverterPrivate::loadHeaders() {
 
 		settings::PdfObject & ps = obj.settings;
 		for (int op=0; op < obj.pageCount; ++op) {
-			if (!ps.header.htmlUrl.isEmpty() || !ps.footer.htmlUrl.isEmpty()) {
+			if (!ps.header.htmlUrl.isEmpty() || !ps.footer.htmlUrl.isEmpty() || !ps.header.htmlSource.isEmpty()  || !ps.footer.htmlSource.isEmpty()) {
 				QHash<QString, QString> parms;
 				fillParms(parms, pageNumber, obj);
 				parms["sitepage"] = QString::number(op+1);
 				parms["sitepages"] = QString::number(obj.pageCount);
 				hf = true;
 				if (!ps.header.htmlUrl.isEmpty())
-					obj.headers.push_back(loadHeaderFooter(ps.header.htmlUrl, parms, ps) );
+					obj.headers.push_back(loadHeaderFooter(&hfLoader, ps.header.htmlUrl, parms, ps) );
 				if (!ps.footer.htmlUrl.isEmpty()) {
-					obj.footers.push_back(loadHeaderFooter(ps.footer.htmlUrl, parms, ps) );
+					obj.footers.push_back(loadHeaderFooter(&hfLoader, ps.footer.htmlUrl, parms, ps) );
+				}
+				if (!ps.header.htmlSource.isEmpty()) {
+					obj.headers.push_back(loadHeaderFooter(&hfLoader, "mem://cli/header-src", ps.header.htmlSource, parms, ps) );
+				}
+				if (!ps.footer.htmlSource.isEmpty()) {
+					obj.footers.push_back(loadHeaderFooter(&hfLoader, "mem://cli/footer-src", ps.footer.htmlSource, parms, ps) );
 				}
 			}
 			if (ps.pagesCount) ++pageNumber;
@@ -940,6 +969,7 @@ void PdfConverterPrivate::handleFooter(QWebPage * frame, int page) {
 }
 
 void PdfConverterPrivate::endPrintObject(PageObject & obj) {
+	Q_UNUSED(obj);
 	// If this page was skipped, we might not have
 	// anything to spool to printer..
 	if (webPrinter != 0) spoolTo(webPrinter->pageCount());
@@ -1045,13 +1075,46 @@ void PdfConverterPrivate::printDocument() {
 }
 
 #ifdef __EXTENSIVE_WKHTMLTOPDF_QT_HACK__
-QWebPage * PdfConverterPrivate::loadHeaderFooter(QString url, const QHash<QString, QString> & parms, const settings::PdfObject & ps) {
+QWebPage * PdfConverterPrivate::loadHeaderFooter(MultiPageLoader* mpl, QString url, const QHash<QString, QString> & parms, const settings::PdfObject & ps) {
 	QUrl u = MultiPageLoader::guessUrlFromString(url);
-	for (QHash<QString, QString>::const_iterator i=parms.begin(); i != parms.end(); ++i)
-		u.addQueryItem(i.key(), i.value());
-	return &hfLoader.addResource(u, ps.load)->page;
 
+	//cache file content to support pipes which can only be read once
+	QString htmlData;
+	if (u.scheme() == "file")
+	{
+	  QString fileName = u.toLocalFile();
+	  if(hfCache.find(fileName) != hfCache.end())
+	  {
+	    htmlData = hfCache[fileName];
+	  } else {
+	    QFile in(fileName);
+	    in.open(QIODevice::ReadOnly | QIODevice::Text);
+	    QByteArray data = in.readAll();
+	    htmlData = QTextCodec::codecForMib(106)->toUnicode(data); //106 is ITF-8
+	    
+	    hfCache[fileName] = htmlData;
+	  }
+	}
+
+	for (QHash<QString, QString>::const_iterator i=parms.begin(); i != parms.end(); ++i)
+	u.addQueryItem(i.key(), i.value());
+	
+ 	if(htmlData.isEmpty()) {
+	  return &mpl->addResource(u, ps.load)->page;
+ 	} else {
+ 	  return &mpl->addResource(u, ps.load, htmlData)->page;
+ 	}
 }
+
+QWebPage * PdfConverterPrivate::loadHeaderFooter(MultiPageLoader* mpl, QString url, QString& htmlData, const QHash<QString, QString> & parms, const settings::PdfObject & ps) {
+	QUrl u = MultiPageLoader::guessUrlFromString(url);
+
+	for (QHash<QString, QString>::const_iterator i=parms.begin(); i != parms.end(); ++i)
+	u.addQueryItem(i.key(), i.value());
+	
+	return &mpl->addResource(u, ps.load, htmlData)->page;
+}
+
 
 /*!
  * Replace some variables in a string used in a header or footer

@@ -79,10 +79,12 @@ private:
 	MultiPageLoaderPrivate & multiPageLoader;
 public:
 	ResourceObject(MultiPageLoaderPrivate & mpl, const QUrl & u, const settings::LoadPage & s);
+	ResourceObject(MultiPageLoaderPrivate & mpl, const QUrl & u, const QString & htmlData, const settings::LoadPage & s);
 	MyQWebPage webPage;
 	LoaderObject lo;
 	int httpErrorCode;
 	const settings::LoadPage settings;
+	QString htmlData;
 public slots:
 	void load();
 	void loadStarted();
@@ -117,6 +119,7 @@ public:
 	const settings::LoadGlobal settings;
 
 	QList<ResourceObject *> resources;
+	QMap<QUrl, QString> hfCache;
 
 	int loading;
 	int progressSum;

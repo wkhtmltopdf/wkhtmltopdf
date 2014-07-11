@@ -156,6 +156,8 @@ struct DLL_PUBLIC HeaderFooter {
 	bool line;
 	//! Url of the document the html document that should be used as a header/footer
 	QString htmlUrl;
+	//! Source of the document the html document that should be used as a header/footer
+	QString htmlSource;
 	//! Spacing
 	float spacing;
 };

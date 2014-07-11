@@ -51,8 +51,9 @@ public:
 	MultiPageLoader(settings::LoadGlobal & s);
 	~MultiPageLoader();
 	LoaderObject * addResource(const QString & url, const settings::LoadPage & settings, const QString * data=NULL);
+	LoaderObject * addResource(const QUrl & url, const settings::LoadPage & settings, const QString & data);
 	LoaderObject * addResource(const QUrl & url, const settings::LoadPage & settings);
-	static QUrl guessUrlFromString(const QString &string);
+	static QUrl guessUrlFromString(const QString & string);
 	int httpErrorCode();
 	static bool copyFile(QFile & src, QFile & dst);
 public slots:

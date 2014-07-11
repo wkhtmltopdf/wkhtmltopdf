@@ -177,6 +177,7 @@ void PdfCommandLineParser::parseArguments(int argc, const char ** argv, bool fro
 			ps.footer.left = ps.footer.right = ps.footer.center = "";
 			ps.header.line = ps.footer.line = false;
 			ps.header.htmlUrl = ps.footer.htmlUrl = "";
+			ps.header.htmlSource = ps.footer.htmlSource = "";
 			ps.includeInOutline = false;
 
 			continue;

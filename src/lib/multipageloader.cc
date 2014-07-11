@@ -121,6 +121,7 @@ bool MyQWebPage::javaScriptConfirm(QWebFrame *, const QString & msg) {
 bool MyQWebPage::javaScriptPrompt(QWebFrame *, const QString & msg, const QString & defaultValue, QString * result) {
 	resource.warning(QString("Javascript prompt: %1 (answered %2)").arg(msg,defaultValue));
 	result = (QString*)&defaultValue;
+	Q_UNUSED(result);
 	return true;
 }
 
@@ -137,6 +138,28 @@ bool MyQWebPage::shouldInterruptJavaScript() {
 	return false;
 }
 
+ResourceObject::ResourceObject(MultiPageLoaderPrivate & mpl, const QUrl & u, const QString & htmlData, const settings::LoadPage & s):
+	networkAccessManager(s),
+	url(u),
+	loginTry(0),
+	progress(0),
+	finished(false),
+	signalPrint(false),
+	multiPageLoader(mpl),
+	webPage(*this),
+	lo(webPage),
+	httpErrorCode(0),
+	settings(s),
+	htmlData(htmlData) {
+	  
+	connect(&webPage, SIGNAL(loadStarted()), this, SLOT(loadStarted()));
+	connect(&webPage, SIGNAL(loadProgress(int)), this, SLOT(loadProgress(int)));
+	connect(&webPage, SIGNAL(loadFinished(bool)), this, SLOT(loadFinished(bool)));
+	connect(&webPage, SIGNAL(printRequested(QWebFrame*)), this, SLOT(printRequested(QWebFrame*)));
+	
+	webPage.mainFrame()->setZoomFactor(settings.zoomFactor);
+}
+	  
 ResourceObject::ResourceObject(MultiPageLoaderPrivate & mpl, const QUrl & u, const settings::LoadPage & s):
 	networkAccessManager(s),
 	url(u),
@@ -297,6 +320,7 @@ void ResourceObject::loadDone() {
  */
 void ResourceObject::handleAuthenticationRequired(QNetworkReply *reply, QAuthenticator *authenticator) {
 
+	Q_UNUSED(reply);
 	// XXX: Avoid calling 'reply->abort()' from within this signal.
 	//      As stated by doc, request would be finished when no
 	//      user/pass properties are assigned to authenticator object.
@@ -434,9 +458,16 @@ void ResourceObject::load() {
 	foreach (const HT & j, settings.customHeaders)
 		r.setRawHeader(j.first.toLatin1(), j.second.toLatin1());
 
-	if (postData.isEmpty())
+	if(!htmlData.isEmpty())
+	{
+	  webPage.mainFrame()->setHtml(htmlData, url);
+	}
+	else if (postData.isEmpty())
+	{
 		webPage.mainFrame()->load(r);
-	else {
+	}
+	else
+	{
 		if (hasFiles)
 			r.setHeader(QNetworkRequest::ContentTypeHeader, QString("multipart/form-data, boundary=")+boundary);
 		webPage.mainFrame()->load(r, QNetworkAccessManager::PostOperation, postData);
@@ -516,7 +547,8 @@ MultiPageLoaderPrivate::~MultiPageLoaderPrivate() {
 }
 
 LoaderObject * MultiPageLoaderPrivate::addResource(const QUrl & url, const settings::LoadPage & page) {
-	ResourceObject * ro = new ResourceObject(*this, url, page);
+	ResourceObject * ro = NULL;
+	ro = new ResourceObject(*this, url, page);
 	resources.push_back(ro);
 
 	return &ro->lo;
@@ -582,12 +614,10 @@ MultiPageLoader::~MultiPageLoader() {
 LoaderObject * MultiPageLoader::addResource(const QString & string, const settings::LoadPage & s, const QString * data) {
 	QString url=string;
 	if (data && !data->isEmpty()) {
-		url = d->tempIn.create(".html");
-		QFile tmp(url);
-		if (!tmp.open(QIODevice::WriteOnly) || tmp.write(data->toUtf8())==0) {
-			emit error("Unable to create temporary file");
-			return NULL;
-		}
+	  QString id = QUuid::createUuid().toString().mid(1,36);
+	  QUrl url("mem://"+id+".html");
+	  return addResource(url, s, *data);
+	  
 	} else if (url == "-") {
 		QFile in;
 		in.open(stdin,QIODevice::ReadOnly);
@@ -600,6 +630,19 @@ LoaderObject * MultiPageLoader::addResource(const QString & string, const settin
 	}
 	return addResource(guessUrlFromString(url), s);
 }
+
+LoaderObject * MultiPageLoader::addResource(const QUrl & url, const settings::LoadPage & s, const QString& htmlData) {
+	if (!htmlData.isEmpty()) {
+	  ResourceObject * ro = new ResourceObject(*d, url, htmlData, s);
+	  d->resources.push_back(ro);
+	  return &ro->lo;
+	  
+	} else {
+	  emit error("Empty html data?!");
+	  return NULL;
+	}
+}
+
 
 /*!
   \brief Add a page to be loaded
@@ -615,7 +658,7 @@ LoaderObject * MultiPageLoader::addResource(const QUrl & url, const settings::Lo
   (shamelessly copied from Arora Project)
   \param string The string the is suppose to be some kind of url
 */
-QUrl MultiPageLoader::guessUrlFromString(const QString &string) {
+QUrl MultiPageLoader::guessUrlFromString(const QString & string) {
 	QString urlStr = string.trimmed();
 
 	// check if the string is just a host with a port
