@@ -993,9 +993,17 @@ def build_mingw64_cross(config, basedir):
     shell('%s/bin/qmake -spec win32-g++-4.6 %s/../wkhtmltopdf.pro' % (qtdir, basedir))
     shell('make')
     shutil.copy('bin/libwkhtmltox0.a', 'bin/wkhtmltox.lib')
+    shell('rm -f bin/lib*.dll')
+    for dll in ['libgcc_s_sjlj-1.dll', 'libgcc_s_seh-1.dll', 'libstdc++-6.dll']:
+        dll_path = get_output('dpkg', '-S', dll)
+        if dll_path:
+            for line in dll_path.split('\n'):
+                loc = line[1+line.index(':'):].strip()
+                if exists(loc) and MINGW_W64_PREFIX[rchop(config, '-dbg')] in loc and '-posix' not in loc:
+                    shell('cp %s bin/' % loc)
 
     os.chdir(os.path.join(basedir, '..'))
-    shell('makensis -DVERSION=%s -DSIMPLE_VERSION=%s -DTARGET=%s wkhtmltox.nsi' % \
+    shell('makensis -DVERSION=%s -DSIMPLE_VERSION=%s -DTARGET=%s -DMINGW wkhtmltox.nsi' % \
             (version, simple_version, config))
 
 # -------------------------------------------------- Linux schroot environment
