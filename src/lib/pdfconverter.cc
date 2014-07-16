@@ -839,6 +839,10 @@ void PdfConverterPrivate::spoolPage(int page) {
 				elm.evaluateJavaScript("this.checked;").toBool(),
 				name,
 				elm.evaluateJavaScript("this.readonly;").toBool());
+		} else if (type == "hidden") {
+            painter->addHiddenField(
+                webPrinter->elementLocation(elm).second, elm.attribute("value"), name
+            );
 		} else if (tn == "SELECT") {
             QWebElementCollection options = elm.findAll("option");
             QString option_list = "";
@@ -941,8 +945,10 @@ void PdfConverterPrivate::beginPrintObject(PageObject & obj) {
 		pageExternalLinks[webPrinter->elementLocation(i->first).first].push_back(*i);
 
 	if (ps.produceForms) {
-		foreach (const QWebElement & elm, obj.page->mainFrame()->findAllElements("input"))
-			pageFormElements[webPrinter->elementLocation(elm).first].push_back(elm);
+		foreach (const QWebElement & elm, obj.page->mainFrame()->findAllElements("input")) {
+		    int pageNo = webPrinter->elementLocation(elm).first;
+			pageFormElements[pageNo > 0 ? pageNo : 1].push_back(elm);
+        }
 		foreach (const QWebElement & elm, obj.page->mainFrame()->findAllElements("textarea"))
 			pageFormElements[webPrinter->elementLocation(elm).first].push_back(elm);
 		foreach (const QWebElement & elm, obj.page->mainFrame()->findAllElements("select"))
