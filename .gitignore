@@ -1,5 +1,3 @@
-# ignore Jetbrain's IDEs
-.idea/
 # ignore mac build files
 build/
 *.plist
