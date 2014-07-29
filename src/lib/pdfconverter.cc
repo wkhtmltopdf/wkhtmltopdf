@@ -866,7 +866,7 @@ void PdfConverterPrivate::spoolPage(int page) {
             QString default_value = "";
             QString style = elm.attribute("style");
             // so that it will ignore the drawing of the actual combo box
-            elm.setAttribute("style", "color: transparent; -webkit-appearance:none; border: none;" + style);
+            elm.setAttribute("style", "color: transparent; " + style);
 
             foreach (QWebElement opt_elm, options) {
 		        QString text = opt_elm.toPlainText();
