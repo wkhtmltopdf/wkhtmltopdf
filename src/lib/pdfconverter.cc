@@ -823,9 +823,18 @@ void PdfConverterPrivate::spoolPage(int page) {
 		QString type = elm.attribute("type");
 		QString tn = elm.tagName();
 		QString name = elm.attribute("name");
+		QStringList attributes = elm.attributeNames();
+		QMap<QString, QString> data;
+		foreach (const QString &attributeName, attributes) {
+           if (attributeName.startsWith("data-", Qt::CaseInsensitive)) {
+               QString name(attributeName);
+               data.insert(name.replace("data-","", Qt::CaseInsensitive), elm.attribute(attributeName));
+           }
+        }
 		if (tn == "TEXTAREA" || type == "text" || type == "password") {
 			painter->addTextField(
 				webPrinter->elementLocation(elm).second,
+				data,
 				tn == "TEXTAREA"?elm.toPlainText():elm.attribute("value"),
 				name,
 				tn == "TEXTAREA",
@@ -836,12 +845,15 @@ void PdfConverterPrivate::spoolPage(int page) {
 		} else if (type == "checkbox") {
 			painter->addCheckBox(
 				webPrinter->elementLocation(elm).second,
+				data,
 				elm.evaluateJavaScript("this.checked;").toBool(),
 				name,
 				elm.evaluateJavaScript("this.readonly;").toBool());
 		} else if (type == "hidden") {
             painter->addHiddenField(
-                webPrinter->elementLocation(elm).second, elm.attribute("value"), name
+                webPrinter->elementLocation(elm).second,
+                data,
+                elm.attribute("value"), name
             );
 		} else if (tn == "SELECT") {
             QWebElementCollection options = elm.findAll("option");
@@ -862,6 +874,7 @@ void PdfConverterPrivate::spoolPage(int page) {
             option_list = "[" + option_list + "]";
             painter->addComboBox(
                 webPrinter->elementLocation(elm).second,
+				data,
                 name,
                 option_list,
                 default_value,
