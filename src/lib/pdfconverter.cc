@@ -1,4 +1,4 @@
-// -*- mode: c++; tab-width: 4; indent-tabs-mode: t; eval: (progn (c-set-style "stroustrup") (c-set-offset 'innamespace 0)); -*-
+// -*- mode: c++; tab-width: 4; indent-tabs-mode: t; eval: (progn (c-set-style "stroustrup") (c-set-offset "innamespace 0)); -*-
 // vi:set ts=4 sts=4 sw=4 noet :
 //
 // Copyright 2010-2020 wkhtmltopdf authors
@@ -897,6 +897,14 @@ void PdfConverterPrivate::spoolPage(int page) {
                 default_value,
                 elm.evaluateJavaScript("this.readOnly;").toBool()
             );
+        } else if (tn == "SCRIPT") {
+            //add page javascript ONLY if data-acroform-include=true
+            if (elm.hasAttribute("data-acroform-include") && elm.attribute("data-acroform-include").compare("true", Qt::CaseInsensitive) == 0) {
+                painter->addPageJavaScript(
+                    data,
+                    elm.toPlainText()
+                );
+            }
         }
 	}
 	for (QHash<QString, QWebElement>::iterator i=pageAnchors[page+1].begin();
@@ -988,6 +996,9 @@ void PdfConverterPrivate::beginPrintObject(PageObject & obj) {
 			pageFormElements[webPrinter->elementLocation(elm).first].push_back(elm);
 		foreach (const QWebElement & elm, obj.page->mainFrame()->findAllElements("select"))
 			pageFormElements[webPrinter->elementLocation(elm).first].push_back(elm);
+        foreach (const QWebElement & elm, obj.page->mainFrame()->findAllElements("script")) {
+            pageFormElements[1].push_back(elm);
+        }
 	}
 	emit out.producingForms(obj.settings.produceForms);
 	out.emitCheckboxSvgs(obj.settings.load);
