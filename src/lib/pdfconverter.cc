@@ -849,6 +849,9 @@ void PdfConverterPrivate::spoolPage(int page) {
            }
         }
 		if (tn == "TEXTAREA" || type == "text" || type == "password") {
+		    if (elm.hasAttribute("placeholder")) {
+		        data["placeholder"] = elm.attribute("placeholder");
+		    }
 			painter->addTextField(
 				webPrinter->elementLocation(elm).second,
 				data,
