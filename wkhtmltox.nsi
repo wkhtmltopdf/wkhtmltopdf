@@ -4,7 +4,7 @@
 Name             "wkhtmltox ${VERSION}"
 OutFile          "static-build\wkhtmltox-${VERSION}_${TARGET}.exe"
 InstallDir       "$PROGRAMFILES64\wkhtmltopdf"
-VIProductVersion "${SIMPLE_VERSION}.0"
+VIProductVersion "${SIMPLE_VERSION}"
 VIAddVersionKey  "ProductName"     "wkhtmltox"
 VIAddVersionKey  "FileDescription" "wkhtmltox ${VERSION}"
 VIAddVersionKey  "LegalCopyright"  "wkhtmltopdf authors"
