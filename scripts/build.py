@@ -460,7 +460,7 @@ DEPENDENT_LIBS = {
             'osx*': {
                 'result': ['bin/xz'],
                 'commands': [
-                    'CFLAGS="-arch x86_64" ./configure --disable-nls --enable-small --disable-shared --disable-threads --prefix=%(destdir)s',
+                    'CFLAGS="-arch i386 -mmacosx-version-min=10.6" ./configure --disable-nls --enable-small --disable-shared --disable-threads --prefix=%(destdir)s',
                     'make -C src/liblzma', 'make -C src/xz', 'make install-strip']
             }
         }
