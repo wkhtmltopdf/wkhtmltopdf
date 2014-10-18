@@ -310,8 +310,8 @@ deb http://archive.ubuntu.com/ubuntu/ precise-security main restricted universe 
 DEPENDENT_LIBS = {
     'openssl': {
         'order' : 1,
-        'url'   : 'http://www.openssl.org/source/openssl-1.0.1i.tar.gz',
-        'sha1'  : '74eed314fa2c93006df8d26cd9fc630a101abd76',
+        'url'   : 'https://www.openssl.org/source/openssl-1.0.1j.tar.gz',
+        'sha1'  : 'cff86857507624f0ad42d922bb6f77c4f1c2b819',
         'build' : {
             'msvc*-win32*': {
                 'result': ['include/openssl/ssl.h', 'lib/ssleay32.lib', 'lib/libeay32.lib'],
