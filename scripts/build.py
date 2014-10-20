@@ -549,7 +549,7 @@ def get_version(basedir):
     hash = get_output('git', 'rev-parse', '--short', 'HEAD')
     if not hash:
         return (text, version)
-    return ('%s-%s' % (version, hash), version)
+    return ('%s-%s' % (text, hash), version)
 
 def qt_config(key, *opts):
     input, output = [], []
