@@ -1,10 +1,16 @@
 v0.12.2 (unreleased)
 --------------------
+* use OpenSSL 1.0.1j for the Windows builds
+* fix build failure with unpatched Qt >= 5.3
+* **#1539**: using OpenType fonts now results in selectable text on Windows
+* **#1638**: fix incorrect rendering of JPEG images on Windows Server 2008 x64
 * **#1676**: do not allow overriding the header/footer settings for cover pages
 * **#1676**: set page margins correctly via computed header/footer heights for multiple URLs
 * **#1758**: fix corrupt image when output is specified as "-" in wkhtmltoimage on Windows
+* **#1722**: fix broken hyphenation with soft-hyphens (&shy;)
 * **#1772**: added variable 'isodate' for substitution in headers/footers
 * **#1808**: fix [sitepage] and [sitepages] not working without HTML headers/footers
+* **#1955**: installer does not work on 32-bit OS X (10.6.x or 10.7.x)
 
 v0.12.1 (2014-06-26)
 --------------------
