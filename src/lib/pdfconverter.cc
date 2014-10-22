@@ -792,7 +792,7 @@ void PdfConverterPrivate::measuringHeadersLoaded(bool ok) {
 
         if (obj.measuringFooter) {
             // add spacing to prevent moving footer out of page
-            obj.footerReserveHeight = calculateHeaderHeight(obj, *obj.measuringFooter) + obj.settings.header.spacing;
+            obj.footerReserveHeight = calculateHeaderHeight(obj, *obj.measuringFooter) + obj.settings.footer.spacing;
         }
     }
 #endif
