@@ -22,7 +22,7 @@ Others                | [source code](http://downloads.sourceforge.net/project/w
 
 ## Testing
 
-A development snapshot [0.12.2-dev-200b9a6](https://github.com/wkhtmltopdf/wkhtmltopdf/tree/200b9a6) for the next release is available, which includes [fixes since the 0.12.1 release](https://github.com/wkhtmltopdf/wkhtmltopdf/blob/200b9a6/CHANGELOG.md).
+A preview [0.12.2-dev-200b9a6](https://github.com/wkhtmltopdf/wkhtmltopdf/tree/200b9a6) for the next release was released on October 22, 2014. It includes the following [changes since the 0.12.1 release](https://github.com/wkhtmltopdf/wkhtmltopdf/blob/200b9a6/CHANGELOG.md).
 
 Flavor                | Downloads                                                                                                                                                                                                                                                                 | Comments
 ---------             | ---------                                                                                                                                                                                                                                                                 | --------
@@ -39,10 +39,28 @@ Others                | [source code](http://downloads.sourceforge.net/project/w
 
 ## Archive
 
-Date       | Release                                                                     | Comments
-----       | -------                                                                     | --------
-2014-02-06 | [0.12.0](http://sourceforge.net/projects/wkhtmltopdf/files/archive/0.12.0/) | Windows version uses vulnerable version of OpenSSL (1.0.1f)
+Date       | Release
+----       | -------
+2014-02-06 | [0.12.0](http://sourceforge.net/projects/wkhtmltopdf/files/archive/0.12.0/)
 
-If you're looking for very old versions (such as 0.9, 0.10, 0.11), you can find them on [Google Code](http://code.google.com/p/wkhtmltopdf/downloads/list?can=1).
+If you're looking for very old versions (such as 0.9, 0.10, 0.11), you can find them on [Google Code](http://code.google.com/p/wkhtmltopdf/downloads/list?can=1) -- **but note that bug reports will not be accepted against them**.
 
-**Please note that bug reports won't be accepted for versions older than 0.12**
+## FAQ
+
+#### Where are the "static linux" binaries?
+
+The above binaries are static (i.e. do not depend on Qt) but still depend on packages provided by your distribution. As each distribution has a different version for each required package (along with their dependencies, compilation flags, security hardening options such as ASLR), it is not possible to build a single binary which will work consistently across all distributions. Hence, distro-specific packages have been provided as they explicitly declare the required packages and are easy to install.
+
+#### Can I get the binaries directly without the package/installer?
+
+You can't, but you can extract it from the packages -- see [this post](https://groups.google.com/d/msg/wkhtmltopdf-general/5gPvvd9bgRo/wI4RmGA0dIsJ) on the mailing list.
+
+#### My distribution is not supported! What should I do?
+
+Compile the source code with the instructions given above. It is not possible to compile for all distributions, and each new release requires at least 2 days to build all the above combinations (which are >= 400+ MiB of **compressed** packages/installers).
+
+There are unoffical build instructions for [SmartOS](https://github.com/wkhtmltopdf/wkhtmltopdf/issues/1794) and [OpenBSD](https://github.com/wkhtmltopdf/wkhtmltopdf/issues/1991), but they are still a work in progress.
+
+#### Symantec reports a virus `WS.Reputation.1` for the Windows builds
+
+This is a false positive reported because Symantec has not seen this file before -- see [this clarification](http://community.norton.com/forums/clarification-wsreputation1-detection) for details.
