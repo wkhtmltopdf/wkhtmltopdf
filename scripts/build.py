@@ -34,6 +34,7 @@ BUILDERS = {
     'setup-mingw-w64':       'setup_mingw64',
     'setup-schroot-centos5': 'setup_schroot',
     'setup-schroot-centos6': 'setup_schroot',
+    'setup-schroot-centos7': 'setup_schroot',
     'setup-schroot-wheezy':  'setup_schroot',
     'setup-schroot-trusty':  'setup_schroot',
     'setup-schroot-precise': 'setup_schroot',
@@ -42,6 +43,7 @@ BUILDERS = {
     'centos5-amd64':         'linux_schroot',
     'centos6-i386':          'linux_schroot',
     'centos6-amd64':         'linux_schroot',
+    'centos7-amd64':         'linux_schroot',
     'wheezy-i386':           'linux_schroot',
     'wheezy-amd64':          'linux_schroot',
     'trusty-i386':           'linux_schroot',
@@ -221,6 +223,13 @@ FPM_SETUP = {
         '--depends':         ['fontconfig', 'freetype', 'libpng', 'zlib', 'libjpeg', 'openssl',
                               'libX11', 'libXext', 'libXrender', 'libstdc++', 'glibc']
     },
+    'centos7': {
+        '-t':                'rpm',
+        '--epoch':           '1',
+        '--rpm-compression': 'xz',
+        '--depends':         ['fontconfig', 'freetype', 'libpng', 'zlib', 'libjpeg-turbo', 'openssl',
+                              'libX11', 'libXext', 'libXrender', 'libstdc++', 'glibc']
+    },
     'osx': {
         '-t':                         'osxpkg',
         '-C':                         'pkg',
@@ -304,6 +313,19 @@ deb http://archive.ubuntu.com/ubuntu/ precise-security main restricted universe 
         ('write_file', 'update.sh', 'yum update -y\n'),
         ('fpm_setup',  'fpm_package.sh'),
         ('schroot_conf', 'CentOS 6')
+    ],
+
+    'centos7:amd64': [
+        ('rinse', 'centos-7'),
+        ('shell', 'yum update -y'),
+        ('append_file', 'etc/yum.conf', 'exclude = *.i?86\n'),
+        ('shell', 'yum install -y gcc gcc-c++ make diffutils perl ruby-devel rubygems rpm-build libffi-devel'),
+        ('shell', 'yum install -y openssl-devel libX11-devel libXrender-devel libXext-devel fontconfig-devel freetype-devel libjpeg-turbo-devel libpng-devel zlib-devel'),
+        ('shell', 'yum reinstall -y binutils'), # binutils isn't properly installed (no /usr/bin/ld) hence reinstall it
+        ('shell', 'gem install fpm --no-ri --no-rdoc'),
+        ('write_file', 'update.sh', 'yum update -y\n'),
+        ('fpm_setup',  'fpm_package.sh'),
+        ('schroot_conf', 'CentOS 7')
     ]
 }
 
@@ -691,13 +713,20 @@ def build_setup_schroot(config, basedir):
 
     login  = os.environ.get('SUDO_USER') or get_output('logname')
     chroot = config[1+config.rindex('-'):]
+
+    command_list = CHROOT_SETUP.get(chroot)
+    if not command_list and ('%s:amd64' % chroot) in CHROOT_SETUP:
+        command_list = CHROOT_SETUP['%s:amd64' % chroot]
+        if 'i386' in ARCH:
+            del ARCH[ARCH.index('i386')]
+
     for arch in ARCH:
         message('******************* %s-%s\n' % (chroot, arch))
         base_dir = os.environ.get('WKHTMLTOX_CHROOT') or '/var/chroot'
         root_dir = os.path.join(base_dir, 'wkhtmltopdf-%s-%s' % (chroot, arch))
         rmdir(root_dir)
         mkdir_p(root_dir)
-        for command in CHROOT_SETUP[chroot]:
+        for command in command_list:
             # handle architecture-specific commands
             name = command[0]
             if ':' in name:
