@@ -26,7 +26,14 @@
 #include <wkhtmltox/imagesettings.hh>
 #include <wkhtmltox/utilities.hh>
 
+#if defined(Q_OS_UNIX)
+#include <locale.h>
+#endif
+
 int main(int argc, char** argv) {
+#if defined(Q_OS_UNIX)
+	setlocale(LC_ALL, "");
+#endif
 	//This will store all our settings
 	wkhtmltopdf::settings::ImageGlobal settings;
 	//Create a command line parser to parse commandline arguments

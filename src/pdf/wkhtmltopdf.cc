@@ -34,6 +34,10 @@
 #include <wkhtmltox/pdfsettings.hh>
 #include <wkhtmltox/utilities.hh>
 
+#if defined(Q_OS_UNIX)
+#include <locale.h>
+#endif
+
 using namespace wkhtmltopdf::settings;
 using namespace wkhtmltopdf;
 
@@ -113,6 +117,9 @@ void parseString(char * buff, int &nargc, char **nargv) {
 }
 
 int main(int argc, char * argv[]) {
+#if defined(Q_OS_UNIX)
+	setlocale(LC_ALL, "");
+#endif
 	//This will store all our settings
 	PdfGlobal globalSettings;
 	QList<PdfObject> objectSettings;
