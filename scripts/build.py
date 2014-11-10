@@ -251,7 +251,7 @@ deb http://security.debian.org/   wheezy/updates main contrib non-free"""),
         ('shell', 'apt-get install --assume-yes xz-utils libssl-dev libpng-dev libjpeg8-dev zlib1g-dev rubygems'),
         ('shell', 'apt-get install --assume-yes libfontconfig1-dev libfreetype6-dev libx11-dev libxext-dev libxrender-dev'),
         ('shell', 'gem install fpm --no-ri --no-rdoc'),
-        ('write_file', 'update.sh', 'apt-get update\napt-get dist-upgrade --assume-yes\n'),
+        ('write_file', 'update.sh', 'apt-get update\napt-get dist-upgrade --assume-yes\ngem update fpm\n'),
         ('fpm_setup',  'fpm_package.sh'),
         ('schroot_conf', 'Debian Wheezy')
     ],
@@ -267,7 +267,7 @@ deb http://archive.ubuntu.com/ubuntu/ trusty-security main restricted universe m
         ('shell', 'apt-get install --assume-yes xz-utils libssl-dev libpng-dev libjpeg-turbo8-dev zlib1g-dev ruby-dev'),
         ('shell', 'apt-get install --assume-yes libfontconfig1-dev libfreetype6-dev libx11-dev libxext-dev libxrender-dev'),
         ('shell', 'gem install fpm --no-ri --no-rdoc'),
-        ('write_file', 'update.sh', 'apt-get update\napt-get dist-upgrade --assume-yes\n'),
+        ('write_file', 'update.sh', 'apt-get update\napt-get dist-upgrade --assume-yes\ngem update fpm\n'),
         ('fpm_setup',  'fpm_package.sh'),
         ('schroot_conf', 'Ubuntu Trusty')
     ],
@@ -283,7 +283,7 @@ deb http://archive.ubuntu.com/ubuntu/ precise-security main restricted universe 
         ('shell', 'apt-get install --assume-yes xz-utils libssl-dev libpng-dev libjpeg8-dev zlib1g-dev rubygems'),
         ('shell', 'apt-get install --assume-yes libfontconfig1-dev libfreetype6-dev libx11-dev libxext-dev libxrender-dev'),
         ('shell', 'gem install fpm --no-ri --no-rdoc'),
-        ('write_file', 'update.sh', 'apt-get update\napt-get dist-upgrade --assume-yes\n'),
+        ('write_file', 'update.sh', 'apt-get update\napt-get dist-upgrade --assume-yes\ngem update fpm\n'),
         ('fpm_setup',  'fpm_package.sh'),
         ('schroot_conf', 'Ubuntu Precise')
     ],
@@ -298,7 +298,7 @@ deb http://archive.ubuntu.com/ubuntu/ precise-security main restricted universe 
         ('shell', 'yum install -y gcc gcc-c++ make diffutils perl ruby-devel rubygems rpm-build libffi-devel'),
         ('shell', 'yum install -y openssl-devel libX11-devel libXrender-devel libXext-devel fontconfig-devel freetype-devel libjpeg-devel libpng-devel zlib-devel'),
         ('shell', 'gem install fpm --no-ri --no-rdoc'),
-        ('write_file', 'update.sh', 'yum update -y\n'),
+        ('write_file', 'update.sh', 'yum update -y\ngem update fpm\n'),
         ('fpm_setup',  'fpm_package.sh'),
         ('schroot_conf', 'CentOS 5')
     ],
@@ -310,7 +310,7 @@ deb http://archive.ubuntu.com/ubuntu/ precise-security main restricted universe 
         ('shell', 'yum install -y gcc gcc-c++ make diffutils perl ruby-devel rubygems rpm-build libffi-devel'),
         ('shell', 'yum install -y openssl-devel libX11-devel libXrender-devel libXext-devel fontconfig-devel freetype-devel libjpeg-devel libpng-devel zlib-devel'),
         ('shell', 'gem install fpm --no-ri --no-rdoc'),
-        ('write_file', 'update.sh', 'yum update -y\n'),
+        ('write_file', 'update.sh', 'yum update -y\ngem update fpm\n'),
         ('fpm_setup',  'fpm_package.sh'),
         ('schroot_conf', 'CentOS 6')
     ],
@@ -323,7 +323,7 @@ deb http://archive.ubuntu.com/ubuntu/ precise-security main restricted universe 
         ('shell', 'yum install -y openssl-devel libX11-devel libXrender-devel libXext-devel fontconfig-devel freetype-devel libjpeg-turbo-devel libpng-devel zlib-devel'),
         ('shell', 'yum reinstall -y binutils'), # binutils isn't properly installed (no /usr/bin/ld) hence reinstall it
         ('shell', 'gem install fpm --no-ri --no-rdoc'),
-        ('write_file', 'update.sh', 'yum update -y\n'),
+        ('write_file', 'update.sh', 'yum update -y\ngem update fpm\n'),
         ('fpm_setup',  'fpm_package.sh'),
         ('schroot_conf', 'CentOS 7')
     ]
