@@ -125,6 +125,8 @@ struct DLL_PUBLIC PdfGlobal {
 
 	bool useCompression;
 
+  bool forceJPEG;
+
 	//! Margin related settings
 	Margin margin;
 

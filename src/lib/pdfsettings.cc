@@ -121,6 +121,7 @@ struct DLL_LOCAL ReflectImpl<PdfGlobal>: public ReflectClass {
 		WKHTMLTOPDF_REFLECT(out);
 		WKHTMLTOPDF_REFLECT(documentTitle);
 		WKHTMLTOPDF_REFLECT(useCompression);
+		WKHTMLTOPDF_REFLECT(forceJPEG);
 		WKHTMLTOPDF_REFLECT(margin);
 		WKHTMLTOPDF_REFLECT(imageDPI);
 		WKHTMLTOPDF_REFLECT(imageQuality);
@@ -380,6 +381,7 @@ PdfGlobal::PdfGlobal():
 	out(""),
 	documentTitle(""),
 	useCompression(true),
+	forceJPEG(false),
 	imageDPI(600),
 	imageQuality(94),
 	viewportSize(""){};
