@@ -403,6 +403,7 @@ void PdfConverterPrivate::pagesLoaded(bool ok) {
 	printer->printEngine()->setProperty(QPrintEngine::PPK_UseCompression, settings.useCompression);
 	printer->printEngine()->setProperty(QPrintEngine::PPK_ImageQuality, settings.imageQuality);
 	printer->printEngine()->setProperty(QPrintEngine::PPK_ImageDPI, settings.imageDPI);
+	printer->printEngine()->setProperty(QPrintEngine::PPK_ForceJPEG, settings.forceJPEG);
 
 	painter = new QPainter();
 
