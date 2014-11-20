@@ -188,8 +188,8 @@ FPM_SETUP = {
         '--provides':        'wkhtmltopdf',
         '--conflicts':       'wkhtmltopdf',
         '--replaces':        'wkhtmltopdf',
-        '--depends':         ['fontconfig', 'libfontconfig1', 'libfreetype6', 'libpng12-0', 'zlib1g', 'libjpeg8',
-                              'libssl1.0.0', 'libx11-6', 'libxext6', 'libxrender1', 'libstdc++6', 'libc6']
+        '--depends':         ['fontconfig', 'libfontconfig1', 'libfreetype6', 'libpng12-0', 'zlib1g', 'libjpeg8', 'libssl1.0.0',
+                              'libx11-6', 'libxext6', 'libxrender1', 'xfonts-base', 'xfonts-75dpi', 'libstdc++6', 'libc6']
     },
     'trusty': {
         '-t':                'deb',
@@ -197,8 +197,8 @@ FPM_SETUP = {
         '--provides':        'wkhtmltopdf',
         '--conflicts':       'wkhtmltopdf',
         '--replaces':        'wkhtmltopdf',
-        '--depends':         ['fontconfig', 'libfontconfig1', 'libfreetype6', 'libpng12-0', 'zlib1g', 'libjpeg-turbo8',
-                              'libssl1.0.0', 'libx11-6', 'libxext6', 'libxrender1', 'libstdc++6', 'libc6']
+        '--depends':         ['fontconfig', 'libfontconfig1', 'libfreetype6', 'libpng12-0', 'zlib1g', 'libjpeg-turbo8', 'libssl1.0.0',
+                              'libx11-6', 'libxext6', 'libxrender1', 'xfonts-base', 'xfonts-75dpi', 'libstdc++6', 'libc6']
     },
     'precise': {
         '-t':                'deb',
@@ -206,29 +206,29 @@ FPM_SETUP = {
         '--provides':        'wkhtmltopdf',
         '--conflicts':       'wkhtmltopdf',
         '--replaces':        'wkhtmltopdf',
-        '--depends':         ['fontconfig', 'libfontconfig1', 'libfreetype6', 'libpng12-0', 'zlib1g', 'libjpeg8',
-                              'libssl1.0.0', 'libx11-6', 'libxext6', 'libxrender1', 'libstdc++6', 'libc6']
+        '--depends':         ['fontconfig', 'libfontconfig1', 'libfreetype6', 'libpng12-0', 'zlib1g', 'libjpeg8', 'libssl1.0.0',
+                              'libx11-6', 'libxext6', 'libxrender1', 'xfonts-base', 'xfonts-75dpi', 'libstdc++6', 'libc6']
     },
     'centos5': {
         '-t':                'rpm',
         '--epoch':           '1',
         '--rpm-compression': 'bzip2',
-        '--depends':         ['fontconfig', 'freetype', 'libpng', 'zlib', 'libjpeg', 'openssl',
-                              'libX11', 'libXext', 'libXrender', 'libstdc++', 'glibc']
+        '--depends':         ['fontconfig', 'freetype', 'libpng', 'zlib', 'libjpeg', 'openssl', 'libstdc++', 'glibc',
+                              'libX11', 'libXext', 'libXrender', 'xorg-x11-fonts-Type1', 'xorg-x11-fonts-75dpi']
     },
     'centos6': {
         '-t':                'rpm',
         '--epoch':           '1',
         '--rpm-compression': 'bzip2',
-        '--depends':         ['fontconfig', 'freetype', 'libpng', 'zlib', 'libjpeg', 'openssl',
-                              'libX11', 'libXext', 'libXrender', 'libstdc++', 'glibc']
+        '--depends':         ['fontconfig', 'freetype', 'libpng', 'zlib', 'libjpeg', 'openssl', 'libstdc++', 'glibc',
+                              'libX11', 'libXext', 'libXrender', 'xorg-x11-fonts-Type1', 'xorg-x11-fonts-75dpi']
     },
     'centos7': {
         '-t':                'rpm',
         '--epoch':           '1',
         '--rpm-compression': 'xz',
-        '--depends':         ['fontconfig', 'freetype', 'libpng', 'zlib', 'libjpeg-turbo', 'openssl',
-                              'libX11', 'libXext', 'libXrender', 'libstdc++', 'glibc']
+        '--depends':         ['fontconfig', 'freetype', 'libpng', 'zlib', 'libjpeg-turbo', 'openssl', 'libstdc++', 'glibc',
+                              'libX11', 'libXext', 'libXrender', 'xorg-x11-fonts-Type1', 'xorg-x11-fonts-75dpi']
     },
     'osx': {
         '-t':                         'osxpkg',

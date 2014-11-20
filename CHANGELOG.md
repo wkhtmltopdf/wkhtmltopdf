@@ -13,6 +13,7 @@ v0.12.2 (unreleased)
 * **#1825**: fix handling of non-ASCII characters in command-line arguments
 * **#1949**: fix generation of tarball in the posix-local build
 * **#1955**: installer does not work on 32-bit OS X (10.6.x or 10.7.x)
+* **#1961**: add explicit dependency on minimal font packages for all linux targets
 * **#1988**: fix footer spacing being ignored (and header spacing being used instead)
 * **#1992**: add support for CentOS 7 target
 
