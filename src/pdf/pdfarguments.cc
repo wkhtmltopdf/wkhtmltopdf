@@ -278,6 +278,7 @@ PdfCommandLineParser::PdfCommandLineParser(PdfGlobal & s, QList<PdfObject> & ps)
  	addarg("footer-right",0,"Right aligned footer text", new QStrSetter(od.footer.right,"text"));
  	addarg("footer-spacing",0,"Spacing between footer and content in mm", new FloatSetter(od.footer.spacing,"real"));
  	addarg("footer-html",0,"Adds a html footer", new QStrSetter(od.footer.htmlUrl,"url"));
+	addarg("footer-src",0,"Adds a html footer from source", new QStrSetter(od.footer.htmlSource,"source"));
  	addarg("header-center",0,"Centered header text", new QStrSetter(od.header.center,"text"));
  	addarg("header-font-name",0,"Set header font name", new QStrSetter(od.header.fontName,"name"));
  	addarg("header-font-size",0,"Set header font size", new IntSetter(od.header.fontSize,"size"));
@@ -286,7 +287,8 @@ PdfCommandLineParser::PdfCommandLineParser(PdfGlobal & s, QList<PdfObject> & ps)
  	addarg("no-header-line",0,"Do not display line below the header", new ConstSetter<bool>(od.header.line,false));
  	addarg("header-right",0,"Right aligned header text", new QStrSetter(od.header.right,"text"));
  	addarg("header-spacing",0,"Spacing between header and content in mm", new FloatSetter(od.header.spacing,"real"));
- 	addarg("header-html",0,"Adds a html header", new QStrSetter(od.header.htmlUrl,"url"));
+	addarg("header-html",0,"Adds a html header", new QStrSetter(od.header.htmlUrl,"url"));
+	addarg("header-src",0,"Adds a html header from source", new QStrSetter(od.header.htmlSource,"source"));
 
 	addarg("replace",0, "Replace [name] with value in header and footer (repeatable)", new MapSetter<>(od.replacements, "name", "value"));
 

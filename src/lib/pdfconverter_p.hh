@@ -154,13 +154,15 @@ private:
 	MultiPageLoader * tocLoaderOld;
 
 	QHash<QString, PageObject *> urlToPageObj;
+	QMap<QUrl, QString> hfCache;
 
 	Outline * outline;
 	void findLinks(QWebFrame * frame, QVector<QPair<QWebElement, QString> > & local, QVector<QPair<QWebElement, QString> > & external, QHash<QString, QWebElement> & anchors);
 	void endPage(PageObject & object, bool hasHeaderFooter, int objectPage,  int pageNumber);
 	void fillParms(QHash<QString, QString> & parms, int page, const PageObject & object);
 	QString hfreplace(const QString & q, const QHash<QString, QString> & parms);
-	QWebPage * loadHeaderFooter(QString url, const QHash<QString, QString> & parms, const settings::PdfObject & ps);
+	QWebPage * loadHeaderFooter(MultiPageLoader* mpl, QString url, const QHash<QString, QString> & parms, const settings::PdfObject & ps);
+	QWebPage * loadHeaderFooter(MultiPageLoader* mpl, QString url, QString& htmlData, const QHash<QString, QString> & parms, const settings::PdfObject & ps);
     qreal calculateHeaderHeight(PageObject & object, QWebPage & header);
 
 #endif

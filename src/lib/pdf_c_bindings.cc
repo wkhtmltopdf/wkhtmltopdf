@@ -96,6 +96,7 @@
  *      aware that if this is too large the header will be printed outside the pdf document. This
  *      can be corrected with the margin.top setting.
  * - \b header.htmlUrl Url for a HTML document to use for the header.
+ * - \b header.htmlSource Source for a HTML document to use for the header.
  *
  * \section pagePdfGlobal Pdf global settings
  * The \ref wkhtmltopdf_global_settings structure contains the following settings:

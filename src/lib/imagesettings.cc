@@ -39,10 +39,10 @@ struct DLL_LOCAL ReflectImpl<CropSettings>: public ReflectClass {
 template<>
 struct DLL_LOCAL ReflectImpl<ImageGlobal>: public ReflectClass {
 	ReflectImpl(ImageGlobal & c) {
-		WKHTMLTOPDF_REFLECT(screenWidth);
-		WKHTMLTOPDF_REFLECT(screenHeight);
 		WKHTMLTOPDF_REFLECT(quiet);
 		WKHTMLTOPDF_REFLECT(transparent);
+		WKHTMLTOPDF_REFLECT(screenWidth);
+		WKHTMLTOPDF_REFLECT(screenHeight);
 		WKHTMLTOPDF_REFLECT(useGraphics);
 		WKHTMLTOPDF_REFLECT(in);
 		WKHTMLTOPDF_REFLECT(out);
@@ -60,14 +60,14 @@ CropSettings::CropSettings():
 	height(-1) {}
 
 ImageGlobal::ImageGlobal():
-	screenWidth(1024),
-	screenHeight(0),
 	quiet(false),
 	transparent(false),
 	useGraphics(false),
 	in(""),
 	out(""),
 	fmt(""),
+	screenWidth(1024),
+	screenHeight(0),
 	quality(94),
 	smartWidth(true) {}
 
