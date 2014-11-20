@@ -45,8 +45,6 @@ Date       | Release
 ----       | -------
 2014-02-06 | [0.12.0](http://sourceforge.net/projects/wkhtmltopdf/files/archive/0.12.0/)
 
-If you're looking for very old versions (such as 0.9, 0.10, 0.11), you can find them on [Google Code](http://code.google.com/p/wkhtmltopdf/downloads/list?can=1) -- **but note that bug reports will not be accepted against them**.
-
 ## FAQ
 
 #### Where are the "static linux" binaries?
