@@ -229,7 +229,7 @@ struct DLL_LOCAL ReflectImpl< QList< X> >: public Reflect {
 			return ok;
 		}
 		parmsize = 0;
-		while (name[parmsize] != '\0' || name[parmsize] != '.' || name[parmsize] != '[') ++parmsize;
+		while (name[parmsize] != '\0' && name[parmsize] != '.' && name[parmsize] != '[') ++parmsize;
 		next = parmsize;
 		if (name[next] == '.') ++next;
 		return true;
