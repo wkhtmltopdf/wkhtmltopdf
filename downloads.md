@@ -41,9 +41,12 @@ Others                | [source code](http://downloads.sourceforge.net/project/w
 
 ## Archive
 
+Please note that bug reports **will not be accepted** against the following, which are considered obsolete. It is recommended to use the latest stable or testing release instead, and report an issue if there is a regression from a previous release.
+
 Date       | Release
 ----       | -------
 2014-02-06 | [0.12.0](http://sourceforge.net/projects/wkhtmltopdf/files/archive/0.12.0/)
+2010-05-24 | [0.9.9](http://sourceforge.net/projects/wkhtmltopdf/files/archive/0.9.9/)
 
 ## FAQ
 
