@@ -121,6 +121,7 @@ bool MyQWebPage::javaScriptConfirm(QWebFrame *, const QString & msg) {
 bool MyQWebPage::javaScriptPrompt(QWebFrame *, const QString & msg, const QString & defaultValue, QString * result) {
 	resource.warning(QString("Javascript prompt: %1 (answered %2)").arg(msg,defaultValue));
 	result = (QString*)&defaultValue;
+	Q_UNUSED(result);
 	return true;
 }
 
@@ -296,6 +297,7 @@ void ResourceObject::loadDone() {
  * and password supplied on the command line
  */
 void ResourceObject::handleAuthenticationRequired(QNetworkReply *reply, QAuthenticator *authenticator) {
+	Q_UNUSED(reply);
 
 	// XXX: Avoid calling 'reply->abort()' from within this signal.
 	//      As stated by doc, request would be finished when no

@@ -60,14 +60,14 @@ CropSettings::CropSettings():
 	height(-1) {}
 
 ImageGlobal::ImageGlobal():
-	screenWidth(1024),
-	screenHeight(0),
 	quiet(false),
 	transparent(false),
 	useGraphics(false),
 	in(""),
 	out(""),
 	fmt(""),
+	screenWidth(1024),
+	screenHeight(0),
 	quality(94),
 	smartWidth(true) {}
 

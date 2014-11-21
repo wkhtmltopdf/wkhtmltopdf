@@ -237,7 +237,7 @@ void PdfConverterPrivate::beginConvert() {
 // calculates header/footer height
 // returns millimeters
 qreal PdfConverterPrivate::calculateHeaderHeight(PageObject & object, QWebPage & header) {
-    typedef QPair<QWebElement, QString> p_t;
+    Q_UNUSED(object);
 
     TempFile   tempObj;
     QString    tempFile = tempObj.create(".pdf");
@@ -928,6 +928,7 @@ void PdfConverterPrivate::handleFooter(QWebPage * frame, int page) {
 }
 
 void PdfConverterPrivate::endPrintObject(PageObject & obj) {
+	Q_UNUSED(obj);
 	// If this page was skipped, we might not have
 	// anything to spool to printer..
 	if (webPrinter != 0) spoolTo(webPrinter->pageCount());
