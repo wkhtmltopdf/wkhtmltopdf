@@ -297,7 +297,11 @@ CAPI(int) wkhtmltopdf_init(int use_graphics) {
 #ifdef __EXTENSIVE_WKHTMLTOPDF_QT_HACK__
 		ug = use_graphics;
 		if (!ug) QApplication::setGraphicsSystem("raster");
+#else
+		Q_UNUSED(use_graphics);
 #endif
+#else
+		Q_UNUSED(use_graphics);
 #endif
 		a = new QApplication(aa, arg, ug);
 		MyLooksStyle * style = new MyLooksStyle();
