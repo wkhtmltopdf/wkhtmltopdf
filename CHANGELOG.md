@@ -4,6 +4,7 @@ v0.12.2 (unreleased)
 * fix build failure with unpatched Qt >= 5.3
 * **#1539**: **[qt]** using OpenType fonts now results in selectable text on Windows
 * **#1638**: **[qt]** fix incorrect rendering of JPEG images on Windows Server 2008 x64
+* **#1640**: **[qt]** make table page-break logic opt-in via CSS at the row level
 * **#1676**: do not allow overriding the header/footer settings for cover pages
 * **#1676**: set page margins correctly via computed header/footer heights for multiple URLs
 * **#1758**: fix corrupt image when output is specified as "-" in wkhtmltoimage on Windows
@@ -17,6 +18,7 @@ v0.12.2 (unreleased)
 * **#1961**: add explicit dependency on minimal font packages for all linux targets
 * **#1988**: fix footer spacing being ignored (and header spacing being used instead)
 * **#1992**: add support for CentOS 7 target
+* **#2055**: **[qt]** rendering of Thai symbols is very slow
 
 v0.12.1 (2014-06-26)
 --------------------
