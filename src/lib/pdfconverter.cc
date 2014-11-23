@@ -559,9 +559,10 @@ void PdfConverterPrivate::findLinks(QWebFrame * frame, QVector<QPair<QWebElement
 			QUrl href(h);
 			if (href.isEmpty()) continue;
 			href=frame->baseUrl().resolved(href);
-			if (urlToPageObj.contains(href.toString(QUrl::RemoveFragment))) {
+			QString key = QUrl::fromPercentEncoding(href.toString(QUrl::RemoveFragment).toLocal8Bit());
+			if (urlToPageObj.contains(key)) {
 				if (ulocal) {
-					PageObject * p = urlToPageObj[href.toString(QUrl::RemoveFragment)];
+					PageObject * p = urlToPageObj[key];
 					QWebElement e;
 					if (!href.hasFragment())
 						e = p->page->mainFrame()->findFirstElement("body");
@@ -757,7 +758,7 @@ void PdfConverterPrivate::tocLoaded(bool ok) {
 		for (int d=0; d < objects.size(); ++d) {
 			if (!objects[d].loaderObject || objects[d].loaderObject->skip) continue;
 			if (objects[d].settings.isTableOfContent) continue;
-			urlToPageObj[ objects[d].page->mainFrame()->url().toString(QUrl::RemoveFragment) ] = &objects[d];
+			urlToPageObj[ QUrl::fromPercentEncoding(objects[d].page->mainFrame()->url().toString(QUrl::RemoveFragment).toLocal8Bit()) ] = &objects[d];
 		}
 
 		for (int d=0; d < objects.size(); ++d) {
