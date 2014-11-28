@@ -18,4 +18,4 @@
 TEMPLATE = subdirs
 
 CONFIG += ordered
-SUBDIRS = src/lib src/pdf src/image
+SUBDIRS = src/lib src/pdf src/image src/example
