@@ -23,8 +23,8 @@
 #define strcasecmp _stricmp
 #endif
 
-#include "pdfsettings.hh"
-#include "reflect.hh"
+#include "pdfsettings.h"
+#include "reflect.h"
 #include <QMap>
 #include <stdexcept>
 

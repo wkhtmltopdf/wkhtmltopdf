@@ -18,28 +18,28 @@
 DEFINES += BUILDING_DLL
 
 #Shared
-PUBLIC_HEADERS += ../lib/converter.hh ../lib/multipageloader.hh ../lib/dllbegin.inc
-PUBLIC_HEADERS += ../lib/dllend.inc ../lib/loadsettings.hh ../lib/websettings.hh
-PUBLIC_HEADERS += ../lib/utilities.hh
-HEADERS += ../lib/multipageloader_p.hh  ../lib/converter_p.hh
-SOURCES += ../lib/loadsettings.cc ../lib/multipageloader.cc ../lib/tempfile.cc \
-	   ../lib/converter.cc ../lib/websettings.cc  \
-  	   ../lib/reflect.cc ../lib/utilities.cc
+PUBLIC_HEADERS += ../lib/converter.h ../lib/multipageloader.h ../lib/dllbegin.inc
+PUBLIC_HEADERS += ../lib/dllend.inc ../lib/loadsettings.h ../lib/websettings.h
+PUBLIC_HEADERS += ../lib/utilities.h
+HEADERS += ../lib/multipageloader_p.h  ../lib/converter_p.h
+SOURCES += ../lib/loadsettings.cpp ../lib/multipageloader.cpp ../lib/tempfile.cpp \
+           ../lib/converter.cpp ../lib/websettings.cpp  \
+           ../lib/reflect.cpp ../lib/utilities.cpp
 
 #Pdf
-PUBLIC_HEADERS += ../lib/pdfconverter.hh ../lib/pdfsettings.hh
-HEADERS += ../lib/pdfconverter_p.hh
-SOURCES += ../lib/pdfsettings.cc ../lib/pdfconverter.cc \
-           ../lib/outline.cc ../lib/tocstylesheet.cc
+PUBLIC_HEADERS += ../lib/pdfconverter.h ../lib/pdfsettings.h
+HEADERS += ../lib/pdfconverter_p.h
+SOURCES += ../lib/pdfsettings.cpp ../lib/pdfconverter.cpp \
+           ../lib/outline.cpp ../lib/tocstylesheet.cpp
 
-PUBLIC_HEADERS += ../lib/imageconverter.hh ../lib/imagesettings.hh
-HEADERS += ../lib/imageconverter_p.hh
-SOURCES += ../lib/imagesettings.cc ../lib/imageconverter.cc
+PUBLIC_HEADERS += ../lib/imageconverter.h ../lib/imagesettings.h
+HEADERS += ../lib/imageconverter_p.h
+SOURCES += ../lib/imagesettings.cpp ../lib/imageconverter.cpp
 
 #C-Bindings
 PUBLIC_HEADERS += ../lib/pdf.h ../lib/image.h
-HEADERS += ../lib/pdf_c_bindings_p.hh ../lib/image_c_bindings_p.hh
-SOURCES += ../lib/pdf_c_bindings.cc ../lib/image_c_bindings.cc
+HEADERS += ../lib/pdf_c_bindings_p.h ../lib/image_c_bindings_p.h
+SOURCES += ../lib/pdf_c_bindings.cpp ../lib/image_c_bindings.cpp
 
 
 HEADERS += $$PUBLIC_HEADERS

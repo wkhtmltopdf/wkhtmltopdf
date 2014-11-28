@@ -19,8 +19,8 @@
 // along with wkhtmltopdf.  If not, see <http://www.gnu.org/licenses/>.
 
 
-#include "outline_p.hh"
-#include "pdfsettings.hh"
+#include "outline_p.h"
+#include "pdfsettings.h"
 #include <QTextStream>
 
 namespace wkhtmltopdf {

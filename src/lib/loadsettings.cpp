@@ -23,7 +23,7 @@
 #define strcasecmp _stricmp
 #endif
 
-#include "loadsettings.hh"
+#include "loadsettings.h"
 #include <QMap>
 #include <stdexcept>
 namespace wkhtmltopdf {

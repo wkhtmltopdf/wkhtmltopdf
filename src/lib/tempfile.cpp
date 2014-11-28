@@ -19,7 +19,7 @@
 // along with wkhtmltopdf.  If not, see <http://www.gnu.org/licenses/>.
 
 
-#include "tempfile.hh"
+#include "tempfile.h"
 #include <QDir>
 #include <QFile>
 #include <QUuid>

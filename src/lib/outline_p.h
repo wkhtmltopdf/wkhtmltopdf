@@ -21,7 +21,7 @@
 #ifndef __OUTLINE_P_HH__
 #define __OUTLINE_P_HH__
 
-#include "outline.hh"
+#include "outline.h"
 #ifdef __EXTENSIVE_WKHTMLTOPDF_QT_HACK__
 #include "dllbegin.inc"
 namespace wkhtmltopdf {

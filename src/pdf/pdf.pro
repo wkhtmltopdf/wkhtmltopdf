@@ -20,8 +20,8 @@ include(../../common.pri)
 TEMPLATE = app
 TARGET = wkhtmltopdf
 DESTDIR = ../../bin
-DEPENDPATH += . ../shared
-INCLUDEPATH += . ../shared
+DEPENDPATH += ../lib ../shared
+INCLUDEPATH += ../lib ../shared
 
 unix {
     man.path=$$INSTALLBASE/share/man/man1
@@ -47,5 +47,5 @@ CONFIG(shared, shared|static) {
 }
 
 #Application part
-SOURCES += wkhtmltopdf.cc pdfarguments.cc pdfcommandlineparser.cc \
-           pdfdocparts.cc
+SOURCES += wkhtmltopdf.cpp pdfarguments.cpp pdfcommandlineparser.cpp \
+           pdfdocparts.cpp

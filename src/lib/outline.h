@@ -21,7 +21,7 @@
 #ifndef __OUTLINE_HH__
 #define __OUTLINE_HH__
 
-#include "pdfsettings.hh"
+#include "pdfsettings.h"
 #include <QWebElement>
 #include <QWebFrame>
 

@@ -19,8 +19,8 @@
 // along with wkhtmltopdf.  If not, see <http://www.gnu.org/licenses/>.
 
 
-#include "converter_p.hh"
-#include "multipageloader.hh"
+#include "converter_p.h"
+#include "multipageloader.h"
 #include <QWebFrame>
 #include <qapplication.h>
 

@@ -19,7 +19,7 @@
 // along with wkhtmltopdf.  If not, see <http://www.gnu.org/licenses/>.
 
 
-#include "reflect.hh"
+#include "reflect.h"
 
 namespace wkhtmltopdf {
 namespace settings {

@@ -22,7 +22,7 @@
 #define __PDF_C_BINDINGS_P_HH__
 
 #include "pdf.h"
-#include "pdfconverter.hh"
+#include "pdfconverter.h"
 #include <QObject>
 #include <QHash>
 #include <vector>

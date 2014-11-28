@@ -19,8 +19,8 @@
 // along with wkhtmltopdf.  If not, see <http://www.gnu.org/licenses/>.
 
 
-#include "imageconverter_p.hh"
-#include "imagesettings.hh"
+#include "imageconverter_p.h"
+#include "imagesettings.h"
 #include <QBuffer>
 #include <QDebug>
 #include <QEventLoop>

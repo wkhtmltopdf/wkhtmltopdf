@@ -20,7 +20,7 @@
 
 #ifndef __IMAGECOMMANDLINEPARSER_HH__
 #define __IMAGECOMMANDLINEPARSER_HH__
-#include "commandlineparserbase.hh"
+#include "commandlineparserbase.h"
 #include <cstdio>
 #include <wkhtmltox/imagesettings.hh>
 

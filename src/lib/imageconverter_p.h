@@ -21,9 +21,9 @@
 #ifndef __IMAGECONVERTER_P_HH__
 #define __IMAGECONVERTER_P_HH__
 
-#include "converter_p.hh"
-#include "imageconverter.hh"
-#include "multipageloader.hh"
+#include "converter_p.h"
+#include "imageconverter.h"
+#include "multipageloader.h"
 
 #include "dllbegin.inc"
 namespace wkhtmltopdf {

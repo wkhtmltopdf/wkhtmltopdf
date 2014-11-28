@@ -19,7 +19,7 @@
 // along with wkhtmltopdf.  If not, see <http://www.gnu.org/licenses/>.
 
 
-#include "websettings.hh"
+#include "websettings.h"
 namespace wkhtmltopdf {
 namespace settings {
 

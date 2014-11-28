@@ -21,8 +21,8 @@
 #ifndef __MULTIPAGELOADER_P_HH__
 #define __MULTIPAGELOADER_P_HH__
 
-#include "multipageloader.hh"
-#include "tempfile.hh"
+#include "multipageloader.h"
+#include "tempfile.h"
 #include <QAtomicInt>
 #include <QAuthenticator>
 #include <QFile>

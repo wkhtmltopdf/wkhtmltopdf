@@ -19,7 +19,7 @@
 // along with wkhtmltopdf.  If not, see <http://www.gnu.org/licenses/>.
 
 
-#include "utilities.hh"
+#include "utilities.h"
 #include <QDebug>
 #include <QTextStream>
 #include <QMetaEnum>

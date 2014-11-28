@@ -19,8 +19,8 @@
 // along with wkhtmltopdf.  If not, see <http://www.gnu.org/licenses/>.
 
 
-#include "imagesettings.hh"
-#include "reflect.hh"
+#include "imagesettings.h"
+#include "reflect.h"
 
 #include "dllbegin.inc"
 namespace wkhtmltopdf {

@@ -19,7 +19,7 @@
 // along with wkhtmltopdf.  If not, see <http://www.gnu.org/licenses/>.
 
 
-#include "pdfconverter_p.hh"
+#include "pdfconverter_p.h"
 #include <QAuthenticator>
 #include <QDateTime>
 #include <QDir>

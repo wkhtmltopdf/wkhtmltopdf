@@ -20,8 +20,8 @@ include(../../common.pri)
 TEMPLATE = app
 TARGET = wkhtmltoimage
 DESTDIR = ../../bin
-DEPENDPATH += . ../shared
-INCLUDEPATH += . ../shared
+DEPENDPATH += ../lib ../shared
+INCLUDEPATH += ../lib ../shared
 
 unix {
     man.path=$$INSTALLBASE/share/man/man1
@@ -47,4 +47,4 @@ CONFIG(shared, shared|static) {
 }
 
 # Input
-SOURCES += wkhtmltoimage.cc imagearguments.cc imagecommandlineparser.cc imagedocparts.cc
+SOURCES += wkhtmltoimage.cpp imagearguments.cpp imagecommandlineparser.cpp imagedocparts.cpp

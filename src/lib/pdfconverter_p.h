@@ -21,12 +21,12 @@
 #ifndef __PDFCONVERTER_P_HH__
 #define __PDFCONVERTER_P_HH__
 
-#include "converter_p.hh"
-#include "multipageloader.hh"
-#include "outline.hh"
-#include "pdfconverter.hh"
-#include "pdfsettings.hh"
-#include "tempfile.hh"
+#include "converter_p.h"
+#include "multipageloader.h"
+#include "outline.h"
+#include "pdfconverter.h"
+#include "pdfsettings.h"
+#include "tempfile.h"
 #include <QAtomicInt>
 #include <QFile>
 #include <QMutex>

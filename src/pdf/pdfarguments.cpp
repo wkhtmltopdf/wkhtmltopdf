@@ -19,7 +19,7 @@
 // along with wkhtmltopdf.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "arghandler.inl"
-#include "pdfcommandlineparser.hh"
+#include "pdfcommandlineparser.h"
 #include <QFile>
 #include <qglobal.h>
 #include <wkhtmltox/pdfconverter.hh>

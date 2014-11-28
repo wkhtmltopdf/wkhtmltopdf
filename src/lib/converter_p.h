@@ -21,8 +21,8 @@
 #ifndef __CONVERTER_P_HH__
 #define __CONVERTER_P_HH__
 
-#include "converter.hh"
-#include "websettings.hh"
+#include "converter.h"
+#include "websettings.h"
 #include <QFile>
 #include <QWebSettings>
 

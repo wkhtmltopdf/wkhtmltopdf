@@ -19,7 +19,7 @@
 // along with wkhtmltopdf.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "arghandler.inl"
-#include "commandlineparserbase.hh"
+#include "commandlineparserbase.h"
 #include <wkhtmltox/loadsettings.hh>
 using namespace wkhtmltopdf::settings;
 

@@ -42,7 +42,7 @@
  */
 
 
-#include "image_c_bindings_p.hh"
+#include "image_c_bindings_p.h"
 #include "pdf.h"
 
 #include "dllbegin.inc"

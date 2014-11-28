@@ -18,7 +18,7 @@
 // You should have received a copy of the GNU Lesser General Public License
 // along with wkhtmltopdf.  If not, see <http://www.gnu.org/licenses/>.
 
-#include "progressfeedback.hh"
+#include "progressfeedback.h"
 #include <cstdio>
 namespace wkhtmltopdf {
 /*!

@@ -19,7 +19,7 @@
 // along with wkhtmltopdf.  If not, see <http://www.gnu.org/licenses/>.
 
 
-#include "outline_p.hh"
+#include "outline_p.h"
 #include <fstream>
 #include <iostream>
 using namespace std;

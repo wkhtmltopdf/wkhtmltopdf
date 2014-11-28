@@ -20,7 +20,7 @@
 
 #ifndef __OUTPUTTER_HH__
 #define __OUTPUTTER_HH__
-#include "commandlineparserbase.hh"
+#include "commandlineparserbase.h"
 #include <QString>
 #include <QVector>
 #include <stdio.h>

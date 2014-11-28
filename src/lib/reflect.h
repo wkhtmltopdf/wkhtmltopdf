@@ -25,8 +25,8 @@
 #define typeof decltype
 #endif
 
-#include "loadsettings.hh"
-#include "websettings.hh"
+#include "loadsettings.h"
+#include "websettings.h"
 #include <QStringList>
 #include <cstring>
 

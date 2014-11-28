@@ -18,8 +18,8 @@
 // You should have received a copy of the GNU Lesser General Public License
 // along with wkhtmltopdf.  If not, see <http://www.gnu.org/licenses/>.
 
-#include "commandlineparserbase.hh"
-#include "outputter.hh"
+#include "commandlineparserbase.h"
+#include "outputter.h"
 #include <QFile>
 
 /*!

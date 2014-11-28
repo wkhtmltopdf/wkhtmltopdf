@@ -18,8 +18,8 @@
 // You should have received a copy of the GNU Lesser General Public License
 // along with wkhtmltopdf.  If not, see <http://www.gnu.org/licenses/>.
 
-#include "imagecommandlineparser.hh"
-#include "progressfeedback.hh"
+#include "imagecommandlineparser.h"
+#include "progressfeedback.h"
 #include <QApplication>
 #include <QWebFrame>
 #include <wkhtmltox/imageconverter.hh>

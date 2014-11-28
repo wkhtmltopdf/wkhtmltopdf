@@ -19,7 +19,7 @@
 // along with wkhtmltopdf.  If not, see <http://www.gnu.org/licenses/>.
 
 
-#include "multipageloader_p.hh"
+#include "multipageloader_p.h"
 #include <QFile>
 #include <QFileInfo>
 #include <QNetworkCookie>

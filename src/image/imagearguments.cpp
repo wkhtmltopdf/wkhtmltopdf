@@ -19,7 +19,7 @@
 // along with wkhtmltopdf.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "arghandler.inl"
-#include "imagecommandlineparser.hh"
+#include "imagecommandlineparser.h"
 #include <qglobal.h>
 
 ImageCommandLineParser::ImageCommandLineParser(wkhtmltopdf::settings::ImageGlobal & s):

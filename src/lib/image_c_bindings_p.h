@@ -22,7 +22,7 @@
 #define __IMAGE_C_BINDINGS_P_HH__
 
 #include "image.h"
-#include "imageconverter.hh"
+#include "imageconverter.h"
 #include <QObject>
 
 #include "dllbegin.inc"

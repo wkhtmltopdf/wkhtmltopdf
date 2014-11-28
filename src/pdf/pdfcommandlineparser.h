@@ -20,7 +20,7 @@
 
 #ifndef __PDFCOMMANDLINEPARSER_HH__
 #define __PDFCOMMANDLINEPARSER_HH__
-#include "commandlineparserbase.hh"
+#include "commandlineparserbase.h"
 #include <cstdio>
 #include <wkhtmltox/pdfsettings.hh>
 
