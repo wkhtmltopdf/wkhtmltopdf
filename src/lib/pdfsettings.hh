@@ -124,6 +124,9 @@ struct DLL_PUBLIC PdfGlobal {
 	//! The file where in to store the output
 	QString out;
 
+	//! dump render tree information to this file
+	QString dumpRenderTree;
+
 	QString documentTitle;
 
 	bool useCompression;

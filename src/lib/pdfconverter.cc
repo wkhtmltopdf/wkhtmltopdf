@@ -1008,6 +1008,23 @@ void PdfConverterPrivate::printDocument() {
 		outline->dump(sd.stream);
 	}
 
+	if (!settings.dumpRenderTree.isEmpty()) {
+#if QT_VERSION < 0x050000
+		StreamDumper sd(settings.dumpRenderTree);
+		for (int d=0; d < objects.size(); ++d) {
+			if (!objects[d].loaderObject || objects[d].loaderObject->skip || objects[d].settings.isTableOfContent)
+				continue;
+
+			sd.stream << "===========================================================" << endl
+				<< objects[d].settings.page.toUtf8().constData() << endl
+				<< "===========================================================" << endl
+				<< objects[d].page->mainFrame()->renderTreeDump().toUtf8().constData() << endl << endl;
+		}
+#else
+		emit out.warning("dumpRenderTree is not supported on Qt5.");
+#endif
+	}
+
  	painter->end();
 #endif
 	if (settings.out == "-" && lout != "/dev/stdout") {

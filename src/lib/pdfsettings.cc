@@ -119,6 +119,7 @@ struct DLL_LOCAL ReflectImpl<PdfGlobal>: public ReflectClass {
 		WKHTMLTOPDF_REFLECT(outline);
 		WKHTMLTOPDF_REFLECT(dumpOutline);
 		WKHTMLTOPDF_REFLECT(out);
+		WKHTMLTOPDF_REFLECT(dumpRenderTree);
 		WKHTMLTOPDF_REFLECT(documentTitle);
 		WKHTMLTOPDF_REFLECT(useCompression);
 		WKHTMLTOPDF_REFLECT(margin);
@@ -378,6 +379,7 @@ PdfGlobal::PdfGlobal():
 	outlineDepth(4),
 	dumpOutline(""),
 	out(""),
+	dumpRenderTree(""),
 	documentTitle(""),
 	useCompression(true),
 	viewportSize(""),

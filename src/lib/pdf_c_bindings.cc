@@ -114,6 +114,7 @@
  * - \b outlineDepth The maximal depth of the outline, e.g. "4".
  * - \b dumpOutline If not set to the empty string a XML representation of the outline is dumped to this file.
  * - \b out The path of the output file, if "-" output is sent to stdout, if empty the output is stored in a buffer.
+ * - \b dumpRenderTree If not set to the empty string the WebKit render tree is dumped to this file.
  * - \b documentTitle The title of the PDF document.
  * - \b useCompression Should we use loss less compression when creating the pdf file? Must be either "true" or "false".
  * - \b margin.top Size of the top margin, e.g. "2cm"
