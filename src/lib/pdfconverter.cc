@@ -883,6 +883,11 @@ void PdfConverterPrivate::beginPrintObject(PageObject & obj) {
 	currentObject = obj.number;
 
 	if (!obj.loaderObject || obj.loaderObject->skip) return;
+
+	QPalette pal = obj.loaderObject->page.palette();
+	pal.setBrush(QPalette::Base, Qt::transparent);
+	obj.loaderObject->page.setPalette(pal);
+
 	const settings::PdfObject & ps = obj.settings;
 	pageHasHeaderFooter = ps.header.line || ps.footer.line ||
 		!ps.header.left.isEmpty() || !ps.footer.left.isEmpty() ||
