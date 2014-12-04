@@ -79,8 +79,8 @@ native package (either DEB or RPM, depending on the distribution) in the
 Windows
 -------
 
-* Install Visual Studio 2008 or later ([2013 Express](http://www.microsoft.com/en-US/download/details.aspx?id=40787)
-  is recommended) or follow instructions for [Windows SDK 7.1](http://qt-project.org/wiki/Category:Tools::msvc)
+* Install Visual Studio 2013 Update 4 -- [Community Edition](http://go.microsoft.com/?linkid=9863609)
+  should also work.
 * Do "Windows Update" to ensure that VC/SDK security patches are up-to-date
 * Install the latest [ActivePerl](http://www.activestate.com/activeperl/downloads) release
 * Install the latest [Python 2.7](http://www.python.org/downloads/windows/) release
@@ -90,20 +90,15 @@ Windows
 
 Target          | Building 32-bit binaries               |  Building 64-bit binaries
 ------          | ------------------------               |  ------------------------
-MSVC 2008       | `scripts\build.py msvc2008-win32`      | `scripts/build.py msvc2008-win64`
-MSVC 2010       | `scripts\build.py msvc2010-win32`      | `scripts/build.py msvc2010-win64`
-MSVC 2012       | `scripts\build.py msvc2012-win32`      | `scripts/build.py msvc2012-win64`
 MSVC 2013       | `scripts\build.py msvc2013-win32`      | `scripts/build.py msvc2013-win64`
-Windows SDK 7.1 | `scripts\build.py msvc-winsdk71-win32` | `scripts\build.py msvc-winsdk71-win64`
 
 During the build, a working internet connection is required to download and
 compile the dependent libraries (e.g. OpenSSL). The output installers should
 be generated in the `static-build` folder.
 
 Please note that if you want to target Windows XP/Windows 2003 (i.e. NT 5.x)
-you should use the MinGW-w64 builds cross-compiled from Linux or use MSVC 2008,
-MSVC 2010 or Windows SDK 7.1 -- MSVC 2012 or later target Windows Vista (i.e.
-NT 6.x) by default.
+you should use the MinGW-w64 builds cross-compiled from Linux as the MSVC builds
+target Windows Vista or later (i.e. NT 6.x) by default.
 
 OS X
 ----

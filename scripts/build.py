@@ -21,16 +21,8 @@
 
 BUILDERS = {
     'source-tarball':        'source_tarball',
-    'msvc2008-win32':        'msvc',
-    'msvc2008-win64':        'msvc',
-    'msvc2010-win32':        'msvc',
-    'msvc2010-win64':        'msvc',
-    'msvc2012-win32':        'msvc',
-    'msvc2012-win64':        'msvc',
     'msvc2013-win32':        'msvc',
     'msvc2013-win64':        'msvc',
-    'msvc-winsdk71-win32':   'msvc_winsdk71',
-    'msvc-winsdk71-win64':   'msvc_winsdk71',
     'setup-mingw-w64':       'setup_mingw64',
     'setup-schroot-centos5': 'setup_schroot',
     'setup-schroot-centos6': 'setup_schroot',
@@ -821,12 +813,9 @@ def build_source_tarball(config, basedir):
         tar.add('.', 'wkhtmltox-%s/' % version, filter=_filter_tar)
     shell('git reset --hard HEAD')
 
-# --------------------------------------------------------------- MSVC (2008-2013)
+# --------------------------------------------------------------- MSVC (2013 only)
 
 MSVC_LOCATION = {
-    'msvc2008': 'VS90COMNTOOLS',
-    'msvc2010': 'VS100COMNTOOLS',
-    'msvc2012': 'VS110COMNTOOLS',
     'msvc2013': 'VS120COMNTOOLS'
 }
 
@@ -867,43 +856,6 @@ def build_msvc(config, basedir):
 
     os.environ.update(eval(stdout.strip()))
 
-    build_msvc_common(config, basedir)
-
-# --------------------------------------------------------------- MSVC via Windows SDK 7.1
-
-def check_msvc_winsdk71(config):
-    for pfile in ['ProgramFiles(x86)', 'ProgramFiles']:
-        if pfile in os.environ and exists(os.path.join(os.environ[pfile], 'Microsoft SDKs', 'Windows', 'v7.1', 'Bin', 'SetEnv.cmd')):
-            return
-    error("Unable to detect the location of Windows SDK 7.1")
-
-def build_msvc_winsdk71(config, basedir):
-    arch = config[config.rindex('-'):]
-    setenv = None
-    for pfile in ['ProgramFiles(x86)', 'ProgramFiles']:
-        if not pfile in os.environ:
-            continue
-        setenv = os.path.join(os.environ[pfile], 'Microsoft SDKs', 'Windows', 'v7.1', 'Bin', 'SetEnv.cmd')
-
-    mode = debug and '/Debug' or '/Release'
-    if arch == 'win64':
-        args = '/2008 /x64 %s' % mode
-    else:
-        args = '/2008 /x86 %s' % mode
-
-    python = sys.executable
-    process = subprocess.Popen('("%s" %s>nul)&&"%s" -c "import os, sys; sys.stdout.write(repr(dict(os.environ)))"' % (
-        setenv, args, python), stdout=subprocess.PIPE, shell=True)
-    stdout, _ = process.communicate()
-    exitcode = process.wait()
-    if exitcode != 0:
-        error("unable to initialize the environment for Windows SDK 7.1")
-
-    os.environ.update(eval(stdout.strip()))
-
-    build_msvc_common(config, basedir)
-
-def build_msvc_common(config, basedir):
     version, simple_version = get_version(basedir)
     build_deplibs(config, basedir)
 
