@@ -329,6 +329,7 @@ DEPENDENT_LIBS = {
         'build' : {
             'msvc*-win32*': {
                 'result': ['include/openssl/ssl.h', 'lib/ssleay32.lib', 'lib/libeay32.lib'],
+                'replace': [('util/pl/VC-32.pl', ' /MT', ' /MD')],
                 'commands': [
                     'perl Configure --openssldir=%(destdir)s VC-WIN32 no-asm',
                     'ms\\do_ms.bat',
@@ -336,6 +337,7 @@ DEPENDENT_LIBS = {
             },
             'msvc*-win64*': {
                 'result': ['include/openssl/ssl.h', 'lib/ssleay32.lib', 'lib/libeay32.lib'],
+                'replace': [('util/pl/VC-32.pl', ' /MT', ' /MD')],
                 'commands': [
                     'perl Configure --openssldir=%(destdir)s VC-WIN64A',
                     'ms\\do_win64a.bat',
@@ -362,7 +364,6 @@ DEPENDENT_LIBS = {
                     'include/zconf.h': 'zconf.h',
                     'lib/zdll.lib'   : 'zlib.lib'
                 },
-                'replace':  [('win32/Makefile.msc', '-MD', '-MT')],
                 'commands': ['nmake /f win32/Makefile.msc zlib.lib']
             },
             'mingw-w64-cross-win*': {
@@ -390,7 +391,6 @@ DEPENDENT_LIBS = {
                     'lib/libpng.lib'      : 'libpng.lib'
                 },
                 'replace': [
-                    ('scripts/makefile.vcwin32', '-MD', '-MT'),
                     ('scripts/makefile.vcwin32', '-I..\\zlib', '-I..\\deplibs\\include'),
                     ('scripts/makefile.vcwin32', '..\\zlib\\zlib.lib', '..\\deplibs\\lib\\zdll.lib')],
                 'commands': ['nmake /f scripts/makefile.vcwin32 libpng.lib']
@@ -440,7 +440,7 @@ DEPENDENT_LIBS = {
                 },
                 'replace':  [('makefile.vc', '!include <win32.mak>', ''),
                              ('makefile.vc', '$(cc)', 'cl'),
-                             ('makefile.vc', '$(cflags) $(cdebug) $(cvars)', '-c -nologo -D_CRT_SECURE_NO_DEPRECATE -MT -O2 -W3')],
+                             ('makefile.vc', '$(cflags) $(cdebug) $(cvars)', '-c -nologo -D_CRT_SECURE_NO_DEPRECATE -MD -O2 -W3')],
                 'commands': [
                     'copy /y jconfig.vc jconfig.h',
                     'nmake /f makefile.vc libjpeg.lib']
