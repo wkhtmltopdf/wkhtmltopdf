@@ -57,10 +57,28 @@ Function ${un}DeleteFiles
 FunctionEnd
 !macroend
 
+!macro CheckVCRedist
+!ifdef MSVC
+  InitPluginsDir
+  ClearErrors
+  ReadRegDWORD $R0 HKLM "SOFTWARE\Microsoft\DevDiv\vc\Servicing\12.0\RuntimeMinimum" "Install"
+  IfErrors need_vcruntime
+  IntCmp $R0 1 skip_vcruntime need_vcruntime need_vcruntime
+need_vcruntime:
+    File /oname=$PLUGINSDIR\vcredist.exe static-build\${TARGET}\vcredist.exe
+skip_vcruntime:
+!endif
+!macroend
+
 !insertmacro DeleteFiles ""
 !insertmacro DeleteFiles "un."
 
 Section "Install"
+!ifdef MSVC
+  IfFileExists "$PLUGINSDIR\vcredist.exe" 0 skip_vcruntime
+  ExecWait '"$PLUGINSDIR\vcredist.exe" /install /quiet /norestart' $R9
+skip_vcruntime:
+!endif
   Call DeleteFiles
 
   SetOutPath "$INSTDIR"
@@ -101,11 +119,18 @@ Section "Uninstall"
 SectionEnd
 
 Function .onInit
+!if "${ARCH}" == "win32"
+    !insertmacro CheckVCRedist
   ${If} ${RunningX64}
     SetRegView 64
+  ${EndIf}
+!endif
 !if "${ARCH}" == "win64"
+  ${If} ${RunningX64}
+    SetRegView 64
+    !insertmacro CheckVCRedist
   ${Else}
     Abort "Cannot install 64-bit binaries on a 32-bit OS"
-!endif
   ${EndIf}
+!endif
 FunctionEnd

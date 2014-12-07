@@ -833,6 +833,10 @@ def build_source_tarball(config, basedir):
 MSVC_LOCATION = {
     'msvc2013': 'VS120COMNTOOLS'
 }
+MSVC_RUNTIME = {
+    'msvc2013-win32': ('18f81495bc5e6b293c69c28b0ac088a96debbab2', 'http://download.microsoft.com/download/2/E/6/2E61CFA4-993B-4DD4-91DA-3737CD5CD6E3/vcredist_x86.exe'),
+    'msvc2013-win64': ('bef7e7cc1dcc45c0c11682d59c64843727557179', 'http://download.microsoft.com/download/2/E/6/2E61CFA4-993B-4DD4-91DA-3737CD5CD6E3/vcredist_x64.exe')
+}
 
 def check_msvc(config):
     version, arch = rchop(config, '-dbg').split('-')
@@ -881,6 +885,9 @@ def build_msvc(config, basedir):
 
     version, simple_version = get_version(basedir)
     build_deplibs(config, basedir)
+
+    sha1, url = MSVC_RUNTIME[rchop(config, '-dbg')]
+    shutil.copy(download_file(url, sha1, basedir), os.path.join(basedir, config, 'vcredist.exe'))
 
     libdir = os.path.join(basedir, config, 'deplibs')
     qtdir  = os.path.join(basedir, config, 'qt')
