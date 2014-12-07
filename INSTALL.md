@@ -84,6 +84,7 @@ Windows
 * Do "Windows Update" to ensure that VC/SDK security patches are up-to-date
 * Install the latest [ActivePerl](http://www.activestate.com/activeperl/downloads) release
 * Install the latest [Python 2.7](http://www.python.org/downloads/windows/) release
+* Install [Cygwin](https://cygwin.com/install.html) (ensure that you install the `make` package).
 * Install [NSIS 2.46](http://nsis.sourceforge.net/Download)
 * Make sure that you can run "git". If not, add it to the PATH or reinstall
   with option "Run Git from the Windows Command Prompt".

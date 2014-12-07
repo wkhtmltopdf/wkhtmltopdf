@@ -499,6 +499,29 @@ DEPENDENT_LIBS = {
                     'make -C src/liblzma', 'make -C src/xz', 'make install-strip']
             }
         }
+    },
+
+    'icu4c': {
+        'order' : 6,
+        'url' : 'http://downloads.sourceforge.net/icu/icu4c-54_1-src.tgz',
+        'sha1': '8c752490bbf31cea26e20246430cee67d48abe34',
+        'build' : {
+            'msvc*': {
+                'result': ['include/unicode/ucnv.h', 'include/unicode/ustring.h', 'lib/sicuin.lib', 'lib/sicuuc.lib', 'lib/sicudt.lib'],
+                'commands': [
+                    'bash source/runConfigureICU Cygwin/MSVC --enable-release --disable-debug --enable-static --disable-shared --disable-tests --disable-samples --prefix=%(cygdest)s',
+                    'make', 'make install'
+                ]
+            },
+            'mingw-w64-cross-win*': {
+                'result': ['include/unicode/ucnv.h', 'include/unicode/ustring.h', 'lib/libsicuin.a', 'lib/libsicuuc.a', 'lib/libsicudt.a'],
+                'commands': [
+                    'cp -R source source.host',
+                    'cd source.host; ./configure; make',
+                    'source/configure --host=%(mingw_w64)s --enable-release --disable-debug --enable-static --disable-shared --disable-tests --disable-samples --prefix=%(destdir)s --with-cross-build=`pwd`/source.host',
+                    'make install']
+            }
+        }
     }
 }
 
@@ -915,6 +938,10 @@ def check_msvc(config):
     if not nsis or not exists(os.path.join(nsis, 'makensis.exe')):
         error("NSIS does not seem to be installed.")
 
+    cygwin = get_registry_value(r'SOFTWARE\Cygwin\setup', 'rootdir')
+    if not cygwin or not exists(os.path.join(cygwin, 'bin', 'bash.exe')):
+        error("Cygwin does not seem to be installed.")
+
 def build_msvc(config, basedir):
     msvc, arch = rchop(config, '-dbg').split('-')
     vcdir = os.path.join(os.environ[MSVC_LOCATION[msvc]], '..', '..', 'VC')
@@ -936,12 +963,18 @@ def build_msvc(config, basedir):
     os.environ.update(eval(stdout.strip()))
 
     version, simple_version = get_version(basedir)
-    build_deplibs(config, basedir)
+    libdir = os.path.join(basedir, config, 'deplibs')
+    path   = rchop(os.environ['PATH'], ';')
 
+    cygwin  = get_registry_value(r'SOFTWARE\Cygwin\setup', 'rootdir')
+    cygdest = get_output(os.path.join(cygwin, 'bin', 'cygpath.exe'), '-ua', libdir)
+    os.environ['PATH'] = r'%s;%s\bin' % (path, cygwin)
+    build_deplibs(config, basedir, cygwin=cygwin, cygdest=cygdest)
+
+    os.environ['PATH'] = r'%s;%s\..\qt\gnuwin32\bin' % (path, basedir)
     sha1, url = MSVC_RUNTIME[rchop(config, '-dbg')]
     shutil.copy(download_file(url, sha1, basedir), os.path.join(basedir, config, 'vcredist.exe'))
 
-    libdir = os.path.join(basedir, config, 'deplibs')
     qtdir  = os.path.join(basedir, config, 'qt')
     mkdir_p(qtdir)
 
