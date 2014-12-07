@@ -53,55 +53,41 @@ QT_CONFIG = {
     'common' : [
         '-opensource',
         '-confirm-license',
-        '-fast',
         '-release',
         '-static',
-        '-graphicssystem raster',
-        '-webkit',
-        '-exceptions',              # required by XmlPatterns
-        '-xmlpatterns',             # required for TOC support
         '-system-zlib',
         '-system-libpng',
         '-system-libjpeg',
-        '-no-libmng',
-        '-no-libtiff',
         '-no-accessibility',
-        '-no-stl',
-        '-no-qt3support',
-        '-no-phonon',
-        '-no-phonon-backend',
         '-no-opengl',
-        '-no-declarative',
-        '-no-script',
-        '-no-scripttools',
         '-no-sql-ibase',
         '-no-sql-mysql',
+        '-no-sql-oci',
+        '-no-sql-tds',
+        '-no-sql-db2',
         '-no-sql-odbc',
         '-no-sql-psql',
         '-no-sql-sqlite',
         '-no-sql-sqlite2',
-        '-no-mmx',
-        '-no-3dnow',
-        '-no-sse',
-        '-no-sse2',
-        '-no-multimedia',
-        '-nomake demos',
-        '-nomake docs',
+        '-no-qml-debug',
+        '-no-dbus',
         '-nomake examples',
         '-nomake tools',
         '-nomake tests',
-        '-nomake translations'
+        '-D QT_NO_GRAPHICSVIEW',
+        '-D QT_NO_GRAPHICSEFFECT',
+        '-D QT_NO_STYLESHEET',
+        '-D QT_NO_STYLE_CDE',
+        '-D QT_NO_STYLE_CLEANLOOKS',
+        '-D QT_NO_STYLE_MOTIF',
+        '-D QT_NO_STYLE_PLASTIQUE',
+        '-D QT_NO_PRINTPREVIEWDIALOG'
     ],
 
     'msvc': [
         '-mp',
-        '-qt-style-windows',
-        '-qt-style-cleanlooks',
-        '-no-style-windowsxp',
-        '-no-style-windowsvista',
-        '-no-style-plastique',
-        '-no-style-motif',
-        '-no-style-cde',
+        '-icu',
+        '-no-angle',
         '-openssl-linked'           # static linkage for OpenSSL
     ],
 
@@ -934,6 +920,10 @@ def check_msvc(config):
     if not perl or 'perl5' not in perl:
         error("perl does not seem to be installed.")
 
+    ruby = get_output('ruby', '--version')
+    if not ruby or 'ruby' not in ruby:
+        error("ruby does not seem to be installed.")
+
     nsis = get_registry_value(r'SOFTWARE\NSIS')
     if not nsis or not exists(os.path.join(nsis, 'makensis.exe')):
         error("NSIS does not seem to be installed.")
@@ -972,6 +962,7 @@ def build_msvc(config, basedir):
     build_deplibs(config, basedir, cygwin=cygwin, cygdest=cygdest)
 
     os.environ['PATH'] = r'%s;%s\..\qt\gnuwin32\bin' % (path, basedir)
+    os.environ['SQLITE3SRCDIR'] = r'%s\..\qt\qtbase\src\3rdparty\sqlite' % basedir
     sha1, url = MSVC_RUNTIME[rchop(config, '-dbg')]
     shutil.copy(download_file(url, sha1, basedir), os.path.join(basedir, config, 'vcredist.exe'))
 
@@ -983,11 +974,14 @@ def build_msvc(config, basedir):
         '-L %s\\lib' % libdir,
         'OPENSSL_LIBS="-L%s\\\\lib -lssleay32 -llibeay32 -lUser32 -lAdvapi32 -lGdi32 -lCrypt32"' % libdir.replace('\\', '\\\\'))
 
-    os.chdir(qtdir)
-    if not exists('is_configured'):
-        shell('%s\\..\\qt\\configure.exe %s' % (basedir, configure_args))
-        open('is_configured', 'w').write('')
-    shell('nmake')
+    build_qtmodule(qtdir, 'qtbase', 'nmake',
+        r'%s\..\qt\qtbase\configure.bat %s' % (basedir, configure_args))
+    build_qtmodule(qtdir, 'qtsvg',  'nmake',
+        r'%s\qtbase\bin\qmake.exe %s\..\qt\qtsvg\qtsvg.pro' % (qtdir, basedir))
+    build_qtmodule(qtdir, 'qtxmlpatterns', 'nmake',
+        r'%s\qtbase\bin\qmake.exe %s\..\qt\qtxmlpatterns\qtxmlpatterns.pro' % (qtdir, basedir))
+    build_qtmodule(qtdir, 'qtwebkit', 'nmake',
+        r'%s\qtbase\bin\qmake.exe %s\..\qt\qtwebkit\WebKit.pro WEBKIT_CONFIG-=build_webkit2' % (qtdir, basedir))
 
     appdir = os.path.join(basedir, config, 'app')
     mkdir_p(appdir)
@@ -997,7 +991,7 @@ def build_msvc(config, basedir):
 
     os.environ['WKHTMLTOX_VERSION'] = version
 
-    shell('%s\\bin\\qmake %s\\..\\wkhtmltopdf.pro' % (qtdir, basedir))
+    shell('%s\\qtbase\\bin\\qmake %s\\..\\wkhtmltopdf.pro' % (qtdir, basedir))
     shell('nmake')
 
     makensis = os.path.join(get_registry_value(r'SOFTWARE\NSIS'), 'makensis.exe')
@@ -1293,7 +1287,7 @@ def main():
     final_config = config
     if '-debug' in sys.argv[2:]:
         final_config += '-dbg'
-        QT_CONFIG['common'].extend(['remove:-release', 'remove:-webkit', '-debug', '-webkit-debug'])
+        QT_CONFIG['common'].extend(['remove:-release', '-debug'])
 
     if '-clean' in sys.argv[2:]:
         rmdir(os.path.join(basedir, config))
