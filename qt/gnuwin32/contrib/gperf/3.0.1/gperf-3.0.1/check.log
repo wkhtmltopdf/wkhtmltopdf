@@ -1,0 +1,156 @@
+cd lib; make check
+make[1]: Entering directory `/cygdrive/k/Devel/gperf/3.0.1/gperf-3.0.1/lib'
+make[1]: Niets te doen voor `check'.
+make[1]: Leaving directory `/cygdrive/k/Devel/gperf/3.0.1/gperf-3.0.1/lib'
+cd src; make check
+make[1]: Entering directory `/cygdrive/k/Devel/gperf/3.0.1/gperf-3.0.1/src'
+make[1]: Niets te doen voor `check'.
+make[1]: Leaving directory `/cygdrive/k/Devel/gperf/3.0.1/gperf-3.0.1/src'
+cd tests; make check
+make[1]: Entering directory `/cygdrive/k/Devel/gperf/3.0.1/gperf-3.0.1/tests'
+performing some tests of the perfect hash generator
+gcc -c -Wall -O3 -fms-extensions -mms-bitfields  -fno-exceptions -fomit-frame-pointer -march=i386 -mcpu=i686   ../../gperf-3.0.1-src/tests/test.c
+../src/gperf -c -l -S1 -I -o ../../gperf-3.0.1-src/tests/c.gperf > cinset.c
+gcc -Wall -O3 -fms-extensions -mms-bitfields  -fno-exceptions -fomit-frame-pointer -march=i386 -mcpu=i686   -o cout cinset.c test.o
+testing ANSI C reserved words, all items should be found in the set
+./cout -v < ../../gperf-3.0.1-src/tests/c.gperf > c.out
+diff ../../gperf-3.0.1-src/tests/c.exp c.out
+../src/gperf -k1,4,'$' -I ../../gperf-3.0.1-src/tests/ada.gperf > adainset.c
+gcc -Wall -O3 -fms-extensions -mms-bitfields  -fno-exceptions -fomit-frame-pointer -march=i386 -mcpu=i686   -o aout adainset.c test.o
+testing Ada reserved words, all items should be found in the set
+./aout -v < ../../gperf-3.0.1-src/tests/ada.gperf > ada-res.out
+diff ../../gperf-3.0.1-src/tests/ada-res.exp ada-res.out
+../src/gperf -D -k1,'$' -s 2 -I -o ../../gperf-3.0.1-src/tests/adadefs.gperf > preinset.c
+gcc -Wall -O3 -fms-extensions -mms-bitfields  -fno-exceptions -fomit-frame-pointer -march=i386 -mcpu=i686   -o preout preinset.c test.o
+testing Ada predefined words, all items should be found in the set
+./preout -v < ../../gperf-3.0.1-src/tests/adadefs.gperf > ada-pred.out
+diff ../../gperf-3.0.1-src/tests/ada-pred.exp ada-pred.out
+../src/gperf -k1,2,'$' -I -o ../../gperf-3.0.1-src/tests/modula3.gperf > m3inset.c
+gcc -Wall -O3 -fms-extensions -mms-bitfields  -fno-exceptions -fomit-frame-pointer -march=i386 -mcpu=i686   -o m3out m3inset.c test.o
+testing Modula3 reserved words, all items should be found in the set
+./m3out -v < ../../gperf-3.0.1-src/tests/modula3.gperf > modula.out
+diff ../../gperf-3.0.1-src/tests/modula.exp modula.out
+../src/gperf -o -S2 -I < ../../gperf-3.0.1-src/tests/pascal.gperf > pinset.c
+gcc -Wall -O3 -fms-extensions -mms-bitfields  -fno-exceptions -fomit-frame-pointer -march=i386 -mcpu=i686   -o pout pinset.c test.o
+testing Pascal reserved words, all items should be found in the set
+./pout -v < ../../gperf-3.0.1-src/tests/pascal.gperf > pascal.out
+diff ../../gperf-3.0.1-src/tests/pascal.exp pascal.out
+../src/gperf -k1 -t -I -K foreign_name < ../../gperf-3.0.1-src/tests/lang-utf8.gperf > lu8inset.c
+gcc -Wall -O3 -fms-extensions -mms-bitfields  -fno-exceptions -fomit-frame-pointer -march=i386 -mcpu=i686   -o lu8out lu8inset.c test.o
+testing UTF-8 encoded languages, all items should be found in the set
+sed -e '1,6d' -e 's/,.*//' < ../../gperf-3.0.1-src/tests/lang-utf8.gperf | ./lu8out -v > lang-utf8.out
+diff ../../gperf-3.0.1-src/tests/lang-utf8.exp lang-utf8.out
+gcc -c -Wall -O3 -fms-extensions -mms-bitfields  -fno-exceptions -fomit-frame-pointer -march=i386 -mcpu=i686   ../../gperf-3.0.1-src/tests/test2.c
+../src/gperf -k4 -t -l -I -K foreign_name < ../../gperf-3.0.1-src/tests/lang-ucs2.gperf > lu2inset.c
+gcc -Wall -O3 -fms-extensions -mms-bitfields  -fno-exceptions -fomit-frame-pointer -march=i386 -mcpu=i686   -o lu2out lu2inset.c test2.o
+testing UCS-2 encoded languages, all items should be found in the set
+./lu2out -v < ../../gperf-3.0.1-src/tests/lang-ucs2.in > lang-ucs2.out
+diff ../../gperf-3.0.1-src/tests/lang-ucs2.exp lang-ucs2.out
+testing SMTP keywords, case-insensitive
+../src/gperf --struct-type --readonly-table --enum --global -K field_name -N header_entry --ignore-case ../../gperf-3.0.1-src/tests/smtp.gperf > smtp.c
+gcc -Wall -O3 -fms-extensions -mms-bitfields  -fno-exceptions -fomit-frame-pointer -march=i386 -mcpu=i686   -o smtp smtp.c
+./smtp
+../src/gperf --struct-type --readonly-table --enum --global -K field_name -N header_entry --ignore-case --compare-strncmp ../../gperf-3.0.1-src/tests/smtp.gperf > smtp.c
+gcc -Wall -O3 -fms-extensions -mms-bitfields  -fno-exceptions -fomit-frame-pointer -march=i386 -mcpu=i686   -o smtp smtp.c
+./smtp
+../src/gperf --struct-type --readonly-table --enum --global -K field_name -N header_entry --ignore-case --compare-lengths ../../gperf-3.0.1-src/tests/smtp.gperf > smtp.c
+gcc -Wall -O3 -fms-extensions -mms-bitfields  -fno-exceptions -fomit-frame-pointer -march=i386 -mcpu=i686   -o smtp smtp.c
+./smtp
+../src/gperf -L C -F ', 0, 0' -j1 -i 1 -g -o -t -G -N is_reserved_word -k1,3,'$' < ../../gperf-3.0.1-src/tests/c-parse.gperf > c-parse.out
+diff ../../gperf-3.0.1-src/tests/c-parse.exp c-parse.out
+2c2
+< /* Command-line: ../src/gperf -L C -F ', 0, 0' -j1 -i 1 -g -o -t -G -N is_reserved_word -k'1,3,$'  */
+---
+> /* Command-line: 'k:\\Devel\\gperf\\3.0.1\\gperf-3.0.1\\src\\gperf.exe' -L C -F ', 0, 0' -j1 -i 1 -g -o -t -G -N is_reserved_word -k'1,3,$'  */
+../src/gperf -j1 -i 1 -g -o -t -N is_reserved_word -k1,3,'$' < ../../gperf-3.0.1-src/tests/objc.gperf > objc.out
+diff ../../gperf-3.0.1-src/tests/objc.exp objc.out
+2c2
+< /* Command-line: ../src/gperf -j1 -i 1 -g -o -t -N is_reserved_word -k'1,3,$'  */
+---
+> /* Command-line: 'k:\\Devel\\gperf\\3.0.1\\gperf-3.0.1\\src\\gperf.exe' -j1 -i 1 -g -o -t -N is_reserved_word -k'1,3,$'  */
+../src/gperf -L C -F ', 0, 0, 0' -D -E -S1 -j1 -i 1 -g -o -t -k'*' < ../../gperf-3.0.1-src/tests/chill.gperf > chill.out
+diff ../../gperf-3.0.1-src/tests/chill.exp chill.out
+2c2
+< /* Command-line: ../src/gperf -L C -F ', 0, 0, 0' -D -E -S1 -j1 -i 1 -g -o -t -k'*'  */
+---
+> /* Command-line: 'k:\\Devel\\gperf\\3.0.1\\gperf-3.0.1\\src\\gperf.exe' -L C -F ', 0, 0, 0' -D -E -S1 -j1 -i 1 -g -o -t -k'*'  */
+../src/gperf -L C -F ', 0, 0' -j1 -g -o -t -N is_reserved_word -k1,4,7,'$' < ../../gperf-3.0.1-src/tests/cplusplus.gperf > cplusplus.out
+diff ../../gperf-3.0.1-src/tests/cplusplus.exp cplusplus.out
+2c2
+< /* Command-line: ../src/gperf -L C -F ', 0, 0' -j1 -g -o -t -N is_reserved_word -k'1,4,7,$'  */
+---
+> /* Command-line: 'k:\\Devel\\gperf\\3.0.1\\gperf-3.0.1\\src\\gperf.exe' -L C -F ', 0, 0' -j1 -g -o -t -N is_reserved_word -k'1,4,7,$'  */
+../src/gperf -L C -F ', 0' -t -j1 -i 1 -g -o -N java_keyword -k1,3,'$' < ../../gperf-3.0.1-src/tests/java.gperf > java.out
+diff ../../gperf-3.0.1-src/tests/java.exp java.out
+2c2
+< /* Command-line: ../src/gperf -L C -F ', 0' -t -j1 -i 1 -g -o -N java_keyword -k'1,3,$'  */
+---
+> /* Command-line: 'k:\\Devel\\gperf\\3.0.1\\gperf-3.0.1\\src\\gperf.exe' -L C -F ', 0' -t -j1 -i 1 -g -o -N java_keyword -k'1,3,$'  */
+../src/gperf -n -k1-8 -l < ../../gperf-3.0.1-src/tests/modula2.gperf > modula2.out
+diff ../../gperf-3.0.1-src/tests/modula2.exp modula2.out
+2c2
+< /* Command-line: ../src/gperf -n -k1-8 -l  */
+---
+> /* Command-line: 'k:\\Devel\\gperf\\3.0.1\\gperf-3.0.1\\src\\gperf.exe' -n -k1-8 -l  */
+../src/gperf -D -t -k1,'$' < ../../gperf-3.0.1-src/tests/c-parse.gperf > test-4.out
+diff ../../gperf-3.0.1-src/tests/test-4.exp test-4.out
+2c2
+< /* Command-line: ../src/gperf -D -t -k'1,$'  */
+---
+> /* Command-line: 'k:\\Devel\\gperf\\3.0.1\\gperf-3.0.1\\src\\gperf.exe' -D -t -k'1,$'  */
+../src/gperf -g -o -j1 -t -N is_reserved_word < ../../gperf-3.0.1-src/tests/gpc.gperf > gpc.out
+diff ../../gperf-3.0.1-src/tests/gpc.exp gpc.out
+2c2
+< /* Command-line: ../src/gperf -g -o -j1 -t -N is_reserved_word  */
+---
+> /* Command-line: 'k:\\Devel\\gperf\\3.0.1\\gperf-3.0.1\\src\\gperf.exe' -g -o -j1 -t -N is_reserved_word  */
+../src/gperf -m5 < ../../gperf-3.0.1-src/tests/permut2.gperf > permut2.out
+diff ../../gperf-3.0.1-src/tests/permut2.exp permut2.out
+2c2
+< /* Command-line: ../src/gperf -m5  */
+---
+> /* Command-line: 'k:\\Devel\\gperf\\3.0.1\\gperf-3.0.1\\src\\gperf.exe' -m5  */
+../src/gperf -m5 < ../../gperf-3.0.1-src/tests/permut3.gperf > permut3.out
+diff ../../gperf-3.0.1-src/tests/permut3.exp permut3.out
+2c2
+< /* Command-line: ../src/gperf -m5  */
+---
+> /* Command-line: 'k:\\Devel\\gperf\\3.0.1\\gperf-3.0.1\\src\\gperf.exe' -m5  */
+../src/gperf -m5 --ignore-case < ../../gperf-3.0.1-src/tests/permutc2.gperf > permutc2.out
+diff ../../gperf-3.0.1-src/tests/permutc2.exp permutc2.out
+2c2
+< /* Command-line: ../src/gperf -m5 --ignore-case  */
+---
+> /* Command-line: 'k:\\Devel\\gperf\\3.0.1\\gperf-3.0.1\\src\\gperf.exe' -m5 --ignore-case  */
+../src/gperf -C -E -G -I -t < ../../gperf-3.0.1-src/tests/charsets.gperf > charsets.out
+diff ../../gperf-3.0.1-src/tests/charsets.exp charsets.out
+2c2
+< /* Command-line: ../src/gperf -C -E -G -I -t  */
+---
+> /* Command-line: 'k:\\Devel\\gperf\\3.0.1\\gperf-3.0.1\\src\\gperf.exe' -C -E -G -I -t  */
+../src/gperf -C -E -G -I -t < ../../gperf-3.0.1-src/tests/languages.gperf > languages.out
+diff ../../gperf-3.0.1-src/tests/languages.exp languages.out
+2c2
+< /* Command-line: ../src/gperf -C -E -G -I -t  */
+---
+> /* Command-line: 'k:\\Devel\\gperf\\3.0.1\\gperf-3.0.1\\src\\gperf.exe' -C -E -G -I -t  */
+../src/gperf -t < ../../gperf-3.0.1-src/tests/incomplete.gperf > incomplete.out
+diff ../../gperf-3.0.1-src/tests/incomplete.exp incomplete.out
+2c2
+< /* Command-line: ../src/gperf -t  */
+---
+> /* Command-line: 'k:\\Devel\\gperf\\3.0.1\\gperf-3.0.1\\src\\gperf.exe' -t  */
+../src/gperf -h > test-6.out
+diff ../../gperf-3.0.1-src/tests/test-6.exp test-6.out
+3c3
+< Usage: ../src/gperf [OPTION]... [INPUT-FILE]
+---
+> Usage: k:\Devel\gperf\3.0.1\gperf-3.0.1\src\gperf.exe [OPTION]... [INPUT-FILE]
+only if, do, for, case, goto, else, while, and return should be found 
+./aout -v < ../../gperf-3.0.1-src/tests/c.gperf > test-7.out
+diff ../../gperf-3.0.1-src/tests/test-7.exp test-7.out
+make[1]: Leaving directory `/cygdrive/k/Devel/gperf/3.0.1/gperf-3.0.1/tests'
+cd doc; make check
+make[1]: Entering directory `/cygdrive/k/Devel/gperf/3.0.1/gperf-3.0.1/doc'
+make[1]: Niets te doen voor `check'.
+make[1]: Leaving directory `/cygdrive/k/Devel/gperf/3.0.1/gperf-3.0.1/doc'

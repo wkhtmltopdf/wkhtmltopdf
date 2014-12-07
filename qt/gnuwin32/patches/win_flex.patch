@@ -1,0 +1,47 @@
+Index: flex/src/main.c
+===================================================================
+--- flex/src/main.c	(revision 24)
++++ flex/src/main.c	(working copy)
+@@ -112,7 +112,7 @@
+ struct yytbl_writer tableswr;
+ 
+ int     prev_stdout = 0;
+-char   *flex_temp_out_main="~flex_temp_out_main";
++char   *flex_temp_out_main = 0;
+ 
+ /* Make sure program_name is initialized so we don't crash if writing
+  * out an error message before getting the program name from argv[0].
+@@ -767,6 +767,8 @@
+ 			 tblsiz);
+ 	}
+ 
++	free (flex_temp_out_main);
++	flex_temp_out_main = 0;
+ 	exit (exit_status);
+ }
+ 
+@@ -779,8 +781,10 @@
+ {
+ 	int     i, sawcmpflag, rv, optind;
+ 	char   *arg;
++	char    flex_temp_out_main_template[] = "~flex_temp_out_main_XXXXXX";
+ 	scanopt_t sopt;
+ 
++	flex_temp_out_main = _strdup(_mktemp(flex_temp_out_main_template));
+ 	printstats = syntaxerror = trace = spprdflt = false;
+ 	lex_compat = posix_compat = C_plus_plus = backing_up_report =
+ 		ddebug = fulltbl = false;
+Index: flex/src/filter.c
+===================================================================
+--- flex/src/filter.c	(revision 24)
++++ flex/src/filter.c	(working copy)
+@@ -86,7 +86,8 @@
+ 
+ 	/* Get some more or less random data.  */
+ 	{
+-		static unsigned long long g_value = 827363;
++		static unsigned long long g_value;
++		g_value = _getpid();
+ 		g_value += 100;
+ 		random_time_bits = (((unsigned long long)234546 << 32)
+ 			| (unsigned long long)g_value);

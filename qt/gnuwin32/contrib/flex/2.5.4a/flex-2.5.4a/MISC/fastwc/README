@@ -1,0 +1,56 @@
+This directory contains some examples illustrating techniques for extracting
+high-performance from flex scanners.  Each program implements a simplified
+version of the Unix "wc" tool: read text from stdin and print the number of
+characters, words, and lines present in the text.  All programs were compiled
+using gcc (version unavailable, sorry) with the -O flag, and run on a
+SPARCstation 1+.  The input used was a PostScript file, mainly containing
+figures, with the following "wc" counts:
+
+	lines  words  characters
+	214217 635954 2592172
+
+
+The basic principles illustrated by these programs are:
+
+	- match as much text with each rule as possible
+	- adding rules does not slow you down!
+	- avoid backing up
+
+and the big caveat that comes with them is:
+
+	- you buy performance with decreased maintainability; make
+	  sure you really need it before applying the above techniques.
+
+See the "Performance Considerations" section of flexdoc for more
+details regarding these principles.
+
+
+The different versions of "wc":
+
+	mywc.c
+		a simple but fairly efficient C version
+
+	wc1.l	a naive flex "wc" implementation
+
+	wc2.l	somewhat faster; adds rules to match multiple tokens at once
+
+	wc3.l	faster still; adds more rules to match longer runs of tokens
+
+	wc4.l	fastest; still more rules added; hard to do much better
+		using flex (or, I suspect, hand-coding)
+
+	wc5.l	identical to wc3.l except one rule has been slightly
+		shortened, introducing backing-up
+
+Timing results (all times in user CPU seconds):
+
+	program	  time 	 notes
+	-------   ----   -----
+	wc1       16.4   default flex table compression (= -Cem)
+	wc1        6.7   -Cf compression option
+	/bin/wc	   5.8	 Sun's standard "wc" tool
+	mywc	   4.6   simple but better C implementation!
+	wc2	   4.6   as good as C implementation; built using -Cf
+	wc3	   3.8   -Cf
+	wc4	   3.3   -Cf
+	wc5	   5.7   -Cf; ouch, backing up is expensive

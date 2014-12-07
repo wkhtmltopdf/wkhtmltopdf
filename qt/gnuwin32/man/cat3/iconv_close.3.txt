@@ -1,0 +1,32 @@
+ICONV_CLOSE(3)     Linux Programmer's Manual     ICONV_CLOSE(3)
+
+
+
+
+
+NAME
+       iconv_close  -  deallocate  descriptor for character set
+       conversion
+
+SYNOPSIS
+       #include <iconv.h>
+
+       int iconv_close (iconv_t cd);
+
+DESCRIPTION
+       The  iconv_close  function  deallocates   a   conversion
+       descriptor cd previously allocated using iconv_open.
+
+RETURN VALUE
+       When  successful, the iconv_close function returns 0. In
+       case of error, it sets errno and returns -1.
+
+CONFORMING TO
+       UNIX98
+
+SEE ALSO
+       iconv_open(3), iconv(3)
+
+
+
+GNU                    November 27, 1999         ICONV_CLOSE(3)

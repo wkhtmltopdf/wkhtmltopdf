@@ -1,0 +1,148 @@
+2003-11-13 Bruno Haible  <bruno@clisp.org>
+
+	* sr.po: New file, from Aleksandar Jelenak <jelenak@netlinkplus.net>.
+	* LINGUAS: Add sr.
+
+2003-10-14 Bruno Haible  <bruno@clisp.org>
+
+	* pl.po: New file, from Arkadiusz Lipiec <A.Lipiec@elka.pw.edu.pl>.
+	* LINGUAS: Add pl.
+
+2003-08-22  Bruno Haible  <bruno@clisp.org>
+
+	* wa.po: New file, from Pablo Saratxaga <pablo@walon.org>.
+	* LINGUAS: Add wa.
+
+2003-08-05  Bruno Haible  <bruno@clisp.org>
+
+	* nl.po: Update from Elros Cyriatan <cyriatan@fastmail.fm>.
+
+2003-07-31  Bruno Haible  <bruno@clisp.org>
+
+	* nl.po: New file, from Taco Witte <T.C.Witte@phys.uu.nl>.
+	* LINGUAS: Add nl.
+
+2003-06-11  Bruno Haible  <bruno@clisp.org>
+
+	* et.po: New file, from Toomas Soome <Toomas.Soome@microlink.ee>.
+	* ro.po: Update from Eugen Hoanca <eugenh@urban-grafx.ro>.
+	* ru.po: Update from Dmitry S. Sivachenko <mitya@cavia.pp.ru>.
+	* zh_CN.po: New file, from Wang Jian <lark@linux.net.cn>.
+	* LINGUAS: Add et and zh_CN.
+
+2003-05-07  Bruno Haible  <bruno@clisp.org>
+
+	* ga.po: Update from Kevin Patrick Scannell <scannell@slu.edu>.
+
+2003-05-06  Bruno Haible  <bruno@clisp.org>
+
+	* ga.po: New file, from Kevin Patrick Scannell <scannell@slu.edu>.
+	* LINGUAS: Add it.
+
+2003-04-22  Bruno Haible  <bruno@clisp.org>
+
+	* ro.po: New file, from Eugen Hoanca <eugenh@urban-grafx.ro>.
+	* LINGUAS: Add it.
+
+2003-04-05  Bruno Haible  <bruno@clisp.org>
+
+	* Makefile.msvc.sh (PREFIX): New variable.
+	(prefix): Use it.
+	(clean): Drop Unix specific removal.
+
+2003-04-09  Bruno Haible  <bruno@clisp.org>
+
+	* Makevars (MSGID_BUGS_ADDRESS): New variable.
+
+2003-04-09  gettextize  <bug-gnu-gettext@gnu.org>
+
+	* Makefile.in.in: Upgrade to gettext-0.12-pre3.
+
+2003-03-17  Bruno Haible  <bruno@clisp.org>
+
+	Improved MSVC support.
+	* Makefile.msvc.sh: New file.
+	* Rules-msvc: New file.
+
+2003-02-10  Bruno Haible  <bruno@clisp.org>
+
+	* uk.po: New file, from Volodymyr M. Lisivka <lvm@mystery.lviv.net>.
+	* LINGUAS: Add it.
+
+2002-12-05  Bruno Haible  <bruno@clisp.org>
+
+	* it.po: New file, from Marco Parrone <marc0@autistici.org>.
+	* LINGUAS: Add it.
+
+2002-11-12  Bruno Haible  <bruno@clisp.org>
+
+	* da.po: New file, from Keld Simonsen <keld@dkuug.dk>.
+	* LINGUAS: Add da.
+
+2002-10-29  Bruno Haible  <bruno@clisp.org>
+
+	* id.po: New file, from Tedi Heriyanto <tedi_h@gmx.net>.
+	* LINGUAS: Add id.
+
+2002-08-23  Bruno Haible  <bruno@clisp.org>
+
+	* fi.po: New file, from Matti Koskimies <matti@apulanta.fi>.
+	* fr.po: New file, from Michel Robitaille <robitail@iro.umontreal.ca>.
+	* pt_BR.po: Update from
+	Alexandre Folle de Menezes <afmenez@terra.com.br>.
+	* ru.po: New file, from Dmitry S. Sivachenko <mitya@cavia.pp.ru>.
+	* sl.po: New file, from
+	Primož Peterlin <primoz.peterlin@biofiz.mf.uni-lj.si>.
+	* tr.po: New file, from Deniz Akkus Kanca <deniz@arayan.com>.
+	* LINGUAS: Add fi, fr, ru, sl, tr.
+
+2002-06-20  Bruno Haible  <bruno@clisp.org>
+
+	* es.po: New file, from Santiago Vila Doncel <sanvila@unex.es>.
+	* LINGUAS: Add es.
+
+2002-06-14  Bruno Haible  <bruno@clisp.org>
+
+	* hr.po: New file, from Denis Lackovic <delacko@fly.srk.fer.hr>.
+	* LINGUAS: Add hr.
+
+2002-06-14  Bruno Haible  <bruno@clisp.org>
+
+	* pt_BR.po: Update from
+	Alexandre Folle de Menezes <afmenez@terra.com.br>.
+
+2002-06-11  Bruno Haible  <bruno@clisp.org>
+
+	* sv.po: New file, from Christian Rose <menthos@menthos.com>.
+	* LINGUAS: Add sv.
+
+2002-06-05  Bruno Haible  <bruno@clisp.org>
+
+	* pt_BR.po: New file, from
+	Alexandre Folle de Menezes <afmenez@terra.com.br>.
+	* LINGUAS: Add pt_BR.
+
+2002-06-03  Bruno Haible  <bruno@clisp.org>
+
+	* gl.po: New file, from Jacobo Tarrio <jtarrio@trasno.net>.
+	* LINGUAS: Add gl.
+
+2002-05-31  Bruno Haible  <bruno@clisp.org>
+
+	* ca.po: New file, from Ivan Vilata i Balaguer <ivan@selidor.net>.
+	* eo.po: New file, from Edmund Grimley Evans <edmundo@rano.org>.
+	* hu.po: New file, from Emese Kovacs <emese@gnome.hu>.
+	* sk.po: New file, from Marcel Telka <marcel@telka.sk>.
+	* LINGUAS: Add ca, eo, hu, sk.
+
+2002-04-27  gettextize  <bug-gnu-gettext@gnu.org>
+
+	* Makefile.in.in: New file, from gettext-0.11.1.
+	* Rules-quot: New file, from gettext-0.11.1.
+	* boldquot.sed: New file, from gettext-0.11.1.
+	* en@boldquot.header: New file, from gettext-0.11.1.
+	* en@quot.header: New file, from gettext-0.11.1.
+	* insert-header.sin: New file, from gettext-0.11.1.
+	* quot.sed: New file, from gettext-0.11.1.
+	* remove-potcdate.sin: New file, from gettext-0.11.1.
+

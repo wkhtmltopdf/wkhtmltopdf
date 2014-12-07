@@ -1,0 +1,18 @@
+2003-04-05  Bruno Haible  <bruno@clisp.org>
+
+	Support for relocatable installation.
+	* relocatable.m4: New file, from GNU gettext.
+
+2003-04-05  Bruno Haible  <bruno@clisp.org>
+
+	* codeset.m4: Update from GNU gettext-0.10.40.
+	* glibc21.m4: Update from GNU gettext-0.10.40.
+
+2002-11-07  Bruno Haible  <bruno@clisp.org>
+
+	* libtool.m4: Upgrade to libtool-1.4.3.
+
+2002-07-14  Bruno Haible  <bruno@clisp.org>
+
+	* libtool.m4 (_LT_AC_LTCONFIG_HACK): Add support for GNU/FreeBSD.
+

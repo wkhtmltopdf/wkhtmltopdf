@@ -1,0 +1,8 @@
+Authors of GNU Bison.
+
+Bison was written primarily by Robert Corbett.
+
+Richard Stallman made it Yacc-compatible.
+
+Wilfred Hansen of Carnegie Mellon University added multicharacter
+string literals and other features.

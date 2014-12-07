@@ -1,0 +1,21 @@
+../../gperf-3.0.1-src/tests/test.c: In function `main':
+../../gperf-3.0.1-src/tests/test.c:25: warning: implicit declaration of function `in_word_set'
+1 input keys have identical hash values, examine output carefully...
+../../gperf-3.0.1-src/tests/test2.c: In function `main':
+../../gperf-3.0.1-src/tests/test2.c:52: warning: implicit declaration of function `in_word_set'
+make[1]: [check-test] Fout 1 (genegeerd)
+make[1]: [check-test] Fout 1 (genegeerd)
+make[1]: [check-test] Fout 1 (genegeerd)
+make[1]: [check-test] Fout 1 (genegeerd)
+make[1]: [check-test] Fout 1 (genegeerd)
+make[1]: [check-test] Fout 1 (genegeerd)
+8 input keys have identical hash values, examine output carefully...
+make[1]: [check-test] Fout 1 (genegeerd)
+make[1]: [check-test] Fout 1 (genegeerd)
+make[1]: [check-test] Fout 1 (genegeerd)
+make[1]: [check-test] Fout 1 (genegeerd)
+make[1]: [check-test] Fout 1 (genegeerd)
+make[1]: [check-test] Fout 1 (genegeerd)
+make[1]: [check-test] Fout 1 (genegeerd)
+make[1]: [check-test] Fout 1 (genegeerd)
+make[1]: [check-test] Fout 1 (genegeerd)

@@ -1,0 +1,44 @@
+These patches and supplemental programs should allow porting to MVS or MVS/XA
+in an EBCDIC envrionment, using SAS C V4.00C.
+
+Included are:
+        -rw-r--r--   1 swl26    1573 Jul 17 14:32 README
+	-rw-rw-r--   1 swl26   20861 Jul 17 13:41 diffs
+	-rw-rw-r--   1 swl26    5022 Jul 17 14:00 fixit.l
+	-rw-rw-r--   1 swl26   97644 Jul 17 13:42 initscan.mvs.c
+	-rw-rw-r--   1 swl26    4898 Jul 17 14:08 unfixit.l
+
+The file "diffs" contains context diffs for changes to flex 2.3.
+
+The file "fixit.l" contains flex sources for a program to shorten external
+variable and function names to 8 characters or less.  This is required for the
+"dumb" compiler linker used.
+
+The file "unfixit.l" reverses the changes in "fixit.l", to restore long names.
+This is useful when trying to build diff files as created here.
+
+The file "initscan.mvs.c" is an already "flexed" version of scan.l, in an
+EBCDIC environment.
+
+To install in an MVS environment, use patch to apply the diffs to flex 2.3,
+then run "fixit" on all .c, .h, .l, .y, and .skel files.  Move the files
+to the MVS machine, and compile each of the .c files. (You will need a
+"yacc" functional equivalent under MVS to expand parse.y in that
+environment.)  Link together, and the resulting flex should be ready to
+go.  To test, run the MVSflex -is8 -Ce on the scan.l, and you should get
+back a file which is identical to initscan.mvs.c.
+
+Enjoy.
+
+Steven W. Layten
+Senior Engineer
+Chemical Abstracts Service
+PO Box 3012
+2540 Olentangy River Road
+Columbus, Ohio 43210
+
++1 614 421 3600 extension 3451
+
+INET: swl26%cas.BITNET@CUNYVM.CUNY.Edu
+UUCP: osu-cis!chemabs!swl26
+BITNET: swl26@cas.bitnet

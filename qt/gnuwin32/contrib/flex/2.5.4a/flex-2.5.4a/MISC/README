@@ -1,0 +1,76 @@
+Miscellaneous flex stuff.  The items which have been tested with flex 2.5 are:
+
+	- texinfo/, a subdirectory containing a "texinfo" version of flex(1)
+	  and the corresponding "info" files (contributed by Francois Pinard).
+
+	- VMS/, a subdirectory containing makefiles, configuration files,
+	  run-time support, and installation notes for building flex 2.5
+	  on VMS (contributed by Pat Rankin).
+
+	- Borland/ - makefile and config.h for Borland 4.02 compiler
+	  (contributed by Terrence O Kane, who notes that no source
+	  code changes were necessary).
+
+	- NT/ - Makefile and config.h for NT, contributed by Stan Adermann.
+
+	- OS2/ - Makefile and config.h for building flex under OS/2,
+	  contributed by Kai Uwe Rommel.
+
+	- Amiga/: notes on building flex for the Amiga, contributed
+	  by Andreas Scherer.
+
+	- parse.c, parse.h - output of running yacc (byacc, actually)
+	  on parse.y.  If your system doesn't have a flavor of yacc available,
+	  copy these into the main flex source directory instead.
+
+	- flex.man - preformatted version of flex man page
+
+
+The following have been tested using flex 2.4:
+
+	- debflex.awk, an awk script for anotating flex debug output.
+	  It presently only works with gawk and mawk, not with "old"
+	  or "new" awk.
+
+	- NeXT: ProjectBuilder.app support for use in the NeXT world.
+
+	- Notes on building flex for the Macintosh using Think-C,
+	  in the Macintosh/ subdirectory.
+
+	- testxxLexer.l, a sample C++ program that uses flex's scanner
+	  class option ("-+").
+
+	- fastwc/, a subdirectory containing examples of how to use flex
+	  to write progressively higher-performance versions of the Unix
+	  "wc" utility.  This certainly should work with 2.5, but hasn't
+	  been tested.
+
+	- Borland.old/: notes on building flex 2.4 for Borland C++ 3.1
+	  on MS-DOS.  These shouldn't be needed for flex 2.5.  Included
+	  only in case you encounter unanticipated difficulties.
+
+	- EBCDIC: contact information for building flex for EBCDIC.
+
+
+The following are all out-of-date with respect to flex release 2.4 (and
+in general up-to-date for flex 2.3):
+
+	- Atari/Atari.patches, patches for porting flex to the Atari and
+	  to Minix.
+
+	- A number of notes and Makefiles for compiling flex under MS-DOS,
+	  in the MSDOS/ subdirectory.
+
+	- Notes on building flex for MVS, in the MVS/ subdirectory.
+
+If any of this is out-of-date and can be deleted, please let me know.
+
+And the following is included for compatibility with some broken versions
+of bison:
+
+	- alloca.c, a public-domain, mostly-portable version of the
+	  alloca() routine (used by bison's parsers) written by D. A. Gwyn.
+
+
+Many thanks to those who contributed these files.  Updated versions will
+be appreciated!
