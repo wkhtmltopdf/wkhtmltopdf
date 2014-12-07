@@ -517,6 +517,12 @@ import os, sys, platform, subprocess, shutil, re, fnmatch, multiprocessing, urll
 
 from os.path import exists
 
+if platform.system() == 'Windows':
+    try:
+        import winreg
+    except ImportError:
+        import _winreg as winreg
+
 CPU_COUNT = max(2, multiprocessing.cpu_count()-1)   # leave one CPU free
 
 def rchop(s, e):
@@ -552,6 +558,15 @@ def rmdir(path):
 def mkdir_p(path):
     if not exists(path):
         os.makedirs(path)
+
+def get_registry_value(key, value=None):
+    for mask in [0, winreg.KEY_WOW64_64KEY, winreg.KEY_WOW64_32KEY]:
+        try:
+            reg_key = winreg.OpenKey(winreg.HKEY_LOCAL_MACHINE, key, 0, winreg.KEY_READ | mask)
+            return winreg.QueryValueEx(reg_key, value)[0]
+        except WindowsError:
+            pass
+    return None
 
 def get_version(basedir):
     mkdir_p(basedir)
@@ -836,6 +851,14 @@ def check_msvc(config):
                        and not exists(os.path.join(vcdir, 'bin', 'x86_amd64', 'cl.exe')):
         error("%s: unable to find the amd64 compiler" % version)
 
+    perl = get_output('perl', '-V')
+    if not perl or 'perl5' not in perl:
+        error("perl does not seem to be installed.")
+
+    nsis = get_registry_value(r'SOFTWARE\NSIS')
+    if not nsis or not exists(os.path.join(nsis, 'makensis.exe')):
+        error("NSIS does not seem to be installed.")
+
 def build_msvc(config, basedir):
     msvc, arch = rchop(config, '-dbg').split('-')
     vcdir = os.path.join(os.environ[MSVC_LOCATION[msvc]], '..', '..', 'VC')
@@ -885,19 +908,10 @@ def build_msvc(config, basedir):
     shell('%s\\bin\\qmake %s\\..\\wkhtmltopdf.pro' % (qtdir, basedir))
     shell('nmake')
 
-    found = False
-    for pfile in ['ProgramFiles(x86)', 'ProgramFiles']:
-        if not pfile in os.environ or not exists(os.path.join(os.environ[pfile], 'NSIS', 'makensis.exe')):
-            continue
-        found = True
-
-        makensis = os.path.join(os.environ[pfile], 'NSIS', 'makensis.exe')
-        os.chdir(os.path.join(basedir, '..'))
-        shell('"%s" /DVERSION=%s /DSIMPLE_VERSION=%s /DTARGET=%s wkhtmltox.nsi' % \
-                (makensis, version, simple_version, config))
-
-    if not found:
-        message("\n\nCould not build installer as NSIS was not found.\n")
+    makensis = os.path.join(get_registry_value(r'SOFTWARE\NSIS'), 'makensis.exe')
+    os.chdir(os.path.join(basedir, '..'))
+    shell('"%s" /DVERSION=%s /DSIMPLE_VERSION=%s /DTARGET=%s /DMSVC /DARCH=%s wkhtmltox.nsi' % \
+            (makensis, version, simple_version, config, arch))
 
 # ------------------------------------------------ MinGW-W64 Cross Environment
 
@@ -955,8 +969,8 @@ def build_mingw64_cross(config, basedir):
                     shell('cp %s bin/' % loc)
 
     os.chdir(os.path.join(basedir, '..'))
-    shell('makensis -DVERSION=%s -DSIMPLE_VERSION=%s -DTARGET=%s -DMINGW wkhtmltox.nsi' % \
-            (version, simple_version, config))
+    shell('makensis -DVERSION=%s -DSIMPLE_VERSION=%s -DTARGET=%s -DMINGW -DARCH=%s wkhtmltox.nsi' % \
+            (version, simple_version, config, rchop(config, '-dbg').split('-')[-1]))
 
 # -------------------------------------------------- Linux schroot environment
 

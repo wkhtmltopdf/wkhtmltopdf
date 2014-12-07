@@ -3,7 +3,11 @@
 
 Name             "wkhtmltox ${VERSION}"
 OutFile          "static-build\wkhtmltox-${VERSION}_${TARGET}.exe"
+!if "${ARCH}" == "win64"
 InstallDir       "$PROGRAMFILES64\wkhtmltopdf"
+!else
+InstallDir       "$PROGRAMFILES\wkhtmltopdf"
+!endif
 VIProductVersion "${SIMPLE_VERSION}.0"
 VIAddVersionKey  "ProductName"     "wkhtmltox"
 VIAddVersionKey  "FileDescription" "wkhtmltox ${VERSION}"
@@ -99,5 +103,9 @@ SectionEnd
 Function .onInit
   ${If} ${RunningX64}
     SetRegView 64
+!if "${ARCH}" == "win64"
+  ${Else}
+    Abort "Cannot install 64-bit binaries on a 32-bit OS"
+!endif
   ${EndIf}
 FunctionEnd
