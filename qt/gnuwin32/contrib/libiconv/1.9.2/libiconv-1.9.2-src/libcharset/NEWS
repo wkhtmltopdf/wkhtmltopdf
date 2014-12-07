@@ -1,0 +1,2 @@
+New in 1.2:
+* The include file is renamed from "libcharset.h" to "localcharset.h".

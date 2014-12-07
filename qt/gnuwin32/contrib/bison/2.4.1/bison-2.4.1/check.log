@@ -1,0 +1,422 @@
+make.exe  check-recursive
+make[1]: Entering directory `/cygdrive/j/Devel/bison/2.4.1/bison-2.4.1'
+Making check in build-aux
+make[2]: Entering directory `/cygdrive/j/Devel/bison/2.4.1/bison-2.4.1/build-aux'
+make[2]: Nothing to be done for `check'.
+make[2]: Leaving directory `/cygdrive/j/Devel/bison/2.4.1/bison-2.4.1/build-aux'
+Making check in po
+make[2]: Entering directory `/cygdrive/j/Devel/bison/2.4.1/bison-2.4.1/po'
+make[2]: Nothing to be done for `check'.
+make[2]: Leaving directory `/cygdrive/j/Devel/bison/2.4.1/bison-2.4.1/po'
+Making check in runtime-po
+make[2]: Entering directory `/cygdrive/j/Devel/bison/2.4.1/bison-2.4.1/runtime-po'
+make[2]: Nothing to be done for `check'.
+make[2]: Leaving directory `/cygdrive/j/Devel/bison/2.4.1/bison-2.4.1/runtime-po'
+Making check in lib
+make[2]: Entering directory `/cygdrive/j/Devel/bison/2.4.1/bison-2.4.1/lib'
+make.exe  check-recursive
+make[3]: Entering directory `/cygdrive/j/Devel/bison/2.4.1/bison-2.4.1/lib'
+make[4]: Entering directory `/cygdrive/j/Devel/bison/2.4.1/bison-2.4.1/lib'
+make[4]: Nothing to be done for `check-am'.
+make[4]: Leaving directory `/cygdrive/j/Devel/bison/2.4.1/bison-2.4.1/lib'
+make[3]: Leaving directory `/cygdrive/j/Devel/bison/2.4.1/bison-2.4.1/lib'
+make[2]: Leaving directory `/cygdrive/j/Devel/bison/2.4.1/bison-2.4.1/lib'
+Making check in data
+make[2]: Entering directory `/cygdrive/j/Devel/bison/2.4.1/bison-2.4.1/data'
+make[2]: Nothing to be done for `check'.
+make[2]: Leaving directory `/cygdrive/j/Devel/bison/2.4.1/bison-2.4.1/data'
+Making check in src
+make[2]: Entering directory `/cygdrive/j/Devel/bison/2.4.1/bison-2.4.1/src'
+make.exe  check-am
+make[3]: Entering directory `/cygdrive/j/Devel/bison/2.4.1/bison-2.4.1/src'
+make[3]: Nothing to be done for `check-am'.
+make[3]: Leaving directory `/cygdrive/j/Devel/bison/2.4.1/bison-2.4.1/src'
+make[2]: Leaving directory `/cygdrive/j/Devel/bison/2.4.1/bison-2.4.1/src'
+Making check in doc
+make[2]: Entering directory `/cygdrive/j/Devel/bison/2.4.1/bison-2.4.1/doc'
+make[2]: Nothing to be done for `check'.
+make[2]: Leaving directory `/cygdrive/j/Devel/bison/2.4.1/bison-2.4.1/doc'
+Making check in examples
+make[2]: Entering directory `/cygdrive/j/Devel/bison/2.4.1/bison-2.4.1/examples'
+Making check in calc++
+make[3]: Entering directory `/cygdrive/j/Devel/bison/2.4.1/bison-2.4.1/examples/calc++'
+make.exe  check-am
+make[4]: Entering directory `/cygdrive/j/Devel/bison/2.4.1/bison-2.4.1/examples/calc++'
+make.exe  calc++.exe
+make[5]: Entering directory `/cygdrive/j/Devel/bison/2.4.1/bison-2.4.1/examples/calc++'
+g++  -I. -I../../../bison-2.4.1-src/examples/calc++   -D__USE_MINGW_ACCESS -D_LARGEFILE_SOURCE=1 -D_LARGEFILE64_SOURCE=1 -D_FILE_OFFSET_BITS=64 -DENABLE_RELOCATABLE -DINSTALLPREFIX=\"c:/progra~1/bison\" -DINSTALLDIR=\"c:/progra~1/bison/bin\" -DEXEEXT=\".exe\" -DNO_XMALLOC       -ID:/Progra~1/GnuWin32/include       -Wall -Wpointer-arith -O3 -fms-extensions -mms-bitfields -fno-exceptions -fomit-frame-pointer -march=i386 -ffast-math  -fconserve-space -fno-rtti -D__STDC_LIMIT_MACROS   -MT calc++-scanner.o -MD -MP -MF .deps/calc++-scanner.Tpo -c -o calc++-scanner.o ../../../bison-2.4.1-src/examples/calc++/calc++-scanner.cc
+calc++-scanner.cc: In function `int yy_get_next_buffer()':
+calc++-scanner.cc:1218: warning: comparison between signed and unsigned integer expressions
+mv -f .deps/calc++-scanner.Tpo .deps/calc++-scanner.Po
+g++  -I. -I../../../bison-2.4.1-src/examples/calc++   -D__USE_MINGW_ACCESS -D_LARGEFILE_SOURCE=1 -D_LARGEFILE64_SOURCE=1 -D_FILE_OFFSET_BITS=64 -DENABLE_RELOCATABLE -DINSTALLPREFIX=\"c:/progra~1/bison\" -DINSTALLDIR=\"c:/progra~1/bison/bin\" -DEXEEXT=\".exe\" -DNO_XMALLOC       -ID:/Progra~1/GnuWin32/include       -Wall -Wpointer-arith -O3 -fms-extensions -mms-bitfields -fno-exceptions -fomit-frame-pointer -march=i386 -ffast-math  -fconserve-space -fno-rtti -D__STDC_LIMIT_MACROS   -MT calc++.o -MD -MP -MF .deps/calc++.Tpo -c -o calc++.o `test -f '../../../bison-2.4.1-src/examples/calc++/calc++.cc' || echo '../../../bison-2.4.1-src/examples/calc++/'`../../../bison-2.4.1-src/examples/calc++/calc++.cc
+mv -f .deps/calc++.Tpo .deps/calc++.Po
+g++  -I. -I../../../bison-2.4.1-src/examples/calc++   -D__USE_MINGW_ACCESS -D_LARGEFILE_SOURCE=1 -D_LARGEFILE64_SOURCE=1 -D_FILE_OFFSET_BITS=64 -DENABLE_RELOCATABLE -DINSTALLPREFIX=\"c:/progra~1/bison\" -DINSTALLDIR=\"c:/progra~1/bison/bin\" -DEXEEXT=\".exe\" -DNO_XMALLOC       -ID:/Progra~1/GnuWin32/include       -Wall -Wpointer-arith -O3 -fms-extensions -mms-bitfields -fno-exceptions -fomit-frame-pointer -march=i386 -ffast-math  -fconserve-space -fno-rtti -D__STDC_LIMIT_MACROS   -MT calc++-driver.o -MD -MP -MF .deps/calc++-driver.Tpo -c -o calc++-driver.o `test -f '../../../bison-2.4.1-src/examples/calc++/calc++-driver.cc' || echo '../../../bison-2.4.1-src/examples/calc++/'`../../../bison-2.4.1-src/examples/calc++/calc++-driver.cc
+mv -f .deps/calc++-driver.Tpo .deps/calc++-driver.Po
+g++  -I. -I../../../bison-2.4.1-src/examples/calc++   -D__USE_MINGW_ACCESS -D_LARGEFILE_SOURCE=1 -D_LARGEFILE64_SOURCE=1 -D_FILE_OFFSET_BITS=64 -DENABLE_RELOCATABLE -DINSTALLPREFIX=\"c:/progra~1/bison\" -DINSTALLDIR=\"c:/progra~1/bison/bin\" -DEXEEXT=\".exe\" -DNO_XMALLOC       -ID:/Progra~1/GnuWin32/include       -Wall -Wpointer-arith -O3 -fms-extensions -mms-bitfields -fno-exceptions -fomit-frame-pointer -march=i386 -ffast-math  -fconserve-space -fno-rtti -D__STDC_LIMIT_MACROS   -MT calc++-parser.o -MD -MP -MF .deps/calc++-parser.Tpo -c -o calc++-parser.o `test -f '../../../bison-2.4.1-src/examples/calc++/calc++-parser.cc' || echo '../../../bison-2.4.1-src/examples/calc++/'`../../../bison-2.4.1-src/examples/calc++/calc++-parser.cc
+mv -f .deps/calc++-parser.Tpo .deps/calc++-parser.Po
+g++  -Wall -Wpointer-arith -O3 -fms-extensions -mms-bitfields -fno-exceptions -fomit-frame-pointer -march=i386 -ffast-math  -fconserve-space -fno-rtti -D__STDC_LIMIT_MACROS    -Wl,-s -Wl,--force-exe-suffix -Wl,--enable-auto-import -Wl,--enable-runtime-pseudo-reloc -Wl,--allow-multiple-definition -Wl,--enable-stdcall-fixup -LD:/Progra~1/GnuWin32/lib    -o calc++.exe calc++-scanner.o calc++.o calc++-driver.o calc++-parser.o  -Wl,-s  -LD:/Progra~1/GnuWin32/lib  -lintl -lwsock32 -lole32 -luuid -lmsvcp60  
+make[5]: Leaving directory `/cygdrive/j/Devel/bison/2.4.1/bison-2.4.1/examples/calc++'
+make.exe  check-TESTS
+make[5]: Entering directory `/cygdrive/j/Devel/bison/2.4.1/bison-2.4.1/examples/calc++'
+PASS: test
+==================
+All 1 tests passed
+==================
+make[5]: Leaving directory `/cygdrive/j/Devel/bison/2.4.1/bison-2.4.1/examples/calc++'
+make[4]: Leaving directory `/cygdrive/j/Devel/bison/2.4.1/bison-2.4.1/examples/calc++'
+make[3]: Leaving directory `/cygdrive/j/Devel/bison/2.4.1/bison-2.4.1/examples/calc++'
+make[3]: Entering directory `/cygdrive/j/Devel/bison/2.4.1/bison-2.4.1/examples'
+make[3]: Nothing to be done for `check-am'.
+make[3]: Leaving directory `/cygdrive/j/Devel/bison/2.4.1/bison-2.4.1/examples'
+make[2]: Leaving directory `/cygdrive/j/Devel/bison/2.4.1/bison-2.4.1/examples'
+Making check in tests
+make[2]: Entering directory `/cygdrive/j/Devel/bison/2.4.1/bison-2.4.1/tests'
+make.exe  bison
+make[3]: Entering directory `/cygdrive/j/Devel/bison/2.4.1/bison-2.4.1/tests'
+make[3]: `bison' is up to date.
+make[3]: Leaving directory `/cygdrive/j/Devel/bison/2.4.1/bison-2.4.1/tests'
+make.exe  check-local
+make[3]: Entering directory `/cygdrive/j/Devel/bison/2.4.1/bison-2.4.1/tests'
+/bin/sh ../../bison-2.4.1-src/tests/testsuite 
+## --------------------------- ##
+## GNU Bison 2.4.1 test suite. ##
+## --------------------------- ##
+
+Input Processing.
+
+  1: Invalid $n and @n                               ok
+  2: Type Clashes                                    ok
+  3: Unused values                                   ok
+  4: Unused values before symbol declarations        ok
+  5: Default %printer and %destructor redeclared     ok
+  6: Per-type %printer and %destructor redeclared    ok
+  7: Unused values with default %destructor          ok
+  8: Unused values with per-type %destructor         ok
+  9: Incompatible Aliases                            ok
+ 10: Torturing the Scanner                           ok
+ 11: Typed symbol aliases                            ok
+ 12: Require 1.0                                     ok
+ 13: Require 2.4.1                                   ok
+ 14: Require 100.0                                   ok
+ 15: String aliases for character tokens             ok
+ 16: Unclosed constructs                             ok
+ 17: %start after first rule                         ok
+ 18: %prec takes a token                             ok
+ 19: Reject unused %code qualifiers                  ok
+ 20: %define errors                                  ok
+ 21: %define Boolean variables                       ok
+ 22: %define enum variables                          ok
+ 23: Unused %define api.pure                         ok
+ 24: C++ namespace reference errors                  ok
+
+Output file names.
+
+ 25: Output files:  -dv                              ok
+ 26: Output files:  -dv >&-                          ok
+ 27: Output files:  -dv -o foo.c                     ok
+ 28: Output files:  -dv -o foo.tab.c                 ok
+ 29: Output files:  -dv -y                           ok
+ 30: Output files:  -dv -b bar                       ok
+ 31: Output files:  -dv -g -o foo.c                  ok
+ 32: Output files: %defines %verbose                 ok
+ 33: Output files: %defines %verbose %yacc           ok
+ 34: Output files: %defines %verbose %yacc           ok
+ 35: Output files: %file-prefix "bar" %defines %verbose   ok
+ 36: Output files: %output="bar.c" %defines %verbose %yacc   ok
+ 37: Output files: %file-prefix="baz" %output "bar.c" %defines %verbose %yacc   ok
+ 38: Output files: %defines %verbose                 ok
+ 39: Output files: %defines %verbose  -o foo.c       ok
+ 40: Output files:  --defines=foo.hpp -o foo.c++     ok
+ 41: Output files: %defines "foo.hpp" -o foo.c++     ok
+ 42: Output files:  -o foo.c++ --graph=foo.gph       ok
+ 43: Output files: %skeleton "lalr1.cc" %defines %verbose   ok
+ 44: Output files: %skeleton "lalr1.cc" %defines %verbose   ok
+ 45: Output files: %skeleton "lalr1.cc" %defines %verbose -o subdir/foo.cc  ok
+ 46: Output files: %skeleton "lalr1.cc" %defines %verbose %file-prefix "output_dir/foo"   ok
+ 47: Conflicting output files:  --graph="foo.tab.c"  ok
+ 48: Conflicting output files: %defines "foo.output" -v ok
+ 49: Conflicting output files: %skeleton "lalr1.cc" %defines --graph="location.hh" ok
+ 50: Conflicting output files:  -o foo.y             ok
+ 51: Output file name: `~!@#$%^&*()-=_+{}[]|\:;<>, .' FAILED (output.at:200)
+ 52: Output file name: (                             ok
+ 53: Output file name: )                             ok
+ 54: Output file name: #                             ok
+ 55: Output file name: @@                            ok
+ 56: Output file name: @{                            ok
+ 57: Output file name: @}                            ok
+ 58: Output file name: [                             ok
+ 59: Output file name: ]                             ok
+
+Skeleton Support.
+
+ 60: Relative skeleton file names                    ok
+ 61: Installed skeleton file names                   ok
+ 62: %define Boolean variables: invalid skeleton defaults ok
+ 63: Complaining during macro argument expansion     ok
+ 64: Fatal errors make M4 exit immediately           ok
+
+Grammar Sets (Firsts etc.).
+
+ 65: Nullable                                        ok
+ 66: Broken Closure                                  ok
+ 67: Firsts                                          ok
+ 68: Accept                                          ok
+
+Grammar Reduction.
+
+ 69: Useless Terminals                               ok
+ 70: Useless Nonterminals                            ok
+ 71: Useless Rules                                   ok
+ 72: Reduced Automaton                               ok
+ 73: Underivable Rules                               ok
+ 74: Empty Language                                  ok
+
+User Actions.
+
+ 75: Prologue synch line                             ok
+ 76: %union synch line                               ok
+ 77: Postprologue synch line                         ok
+ 78: Action synch line                               ok
+ 79: Epilogue synch line                             ok
+
+Parser Headers.
+
+ 80: %union and --defines                            ok
+ 81: Invalid CPP guards: input/input                 ok
+ 82: Invalid CPP guards: 9foo                        ok
+ 83: export YYLTYPE                                  ok
+
+User Actions.
+
+ 84: Mid-rule actions                                ok
+ 85: Exotic Dollars                                  ok
+ 86: Printers and Destructors :                      ok
+ 87: Printers and Destructors with union:            ok
+ 88: Printers and Destructors : %defines %skeleton "lalr1.cc" ok
+ 89: Printers and Destructors with union: %defines %skeleton "lalr1.cc" ok
+ 90: Printers and Destructors : %glr-parser          ok
+ 91: Printers and Destructors with union: %glr-parser ok
+ 92: Default tagless %printer and %destructor        ok
+ 93: Default tagged and per-type %printer and %destructor ok
+ 94: Default %printer and %destructor for user-defined end token ok
+ 95: Default %printer and %destructor are not for error or $undefined ok
+ 96: Default %printer and %destructor are not for $accept ok
+ 97: Default %printer and %destructor for mid-rule values ok
+ 98: @$ in %initial-action implies %locations        ok
+ 99: @$ in %destructor implies %locations            ok
+100: @$ in %printer implies %locations               ok
+
+Conflicts.
+
+101: S/R in initial                                  ok
+102: %nonassoc and eof                               ok
+103: Unresolved SR Conflicts                         ok
+104: Resolved SR Conflicts                           ok
+105: Defaulted Conflicted Reduction                  ok
+106: %expect not enough                              ok
+107: %expect right                                   ok
+108: %expect too much                                ok
+109: %expect with reduce conflicts                   ok
+110: %no-default-prec without %prec                  ok
+111: %no-default-prec with %prec                     ok
+112: %default-prec                                   ok
+113: Unreachable States After Conflict Resolution    ok
+114: Solved conflicts report for multiple reductions in a state ok
+115: %nonassoc error actions for multiple reductions in a state ok
+
+Simple LALR(1) Calculator.
+
+116: Calculator                                      ok
+117: Calculator %defines                             ok
+118: Calculator %locations                           ok
+119: Calculator %name-prefix="calc"                  ok
+120: Calculator %verbose                             ok
+121: Calculator %yacc                                ok
+122: Calculator %error-verbose                       FAILED (calc.at:576)
+123: Calculator %define api.pure %locations          ok
+124: Calculator %define api.push_pull "both" %define api.pure %locations ok
+125: Calculator %error-verbose %locations            FAILED (calc.at:580)
+126: Calculator %error-verbose %locations %defines %name-prefix "calc" %verbose %yacc FAILED (calc.at:582)
+127: Calculator %debug                               ok
+128: Calculator %error-verbose %debug %locations %defines %name-prefix "calc" %verbose %yacc FAILED (calc.at:585)
+129: Calculator %define api.pure %error-verbose %debug %locations %defines %name-prefix "calc" %verbose %yacc FAILED (calc.at:587)
+130: Calculator %define api.push_pull "both" %define api.pure %error-verbose %debug %locations %defines %name-prefix "calc" %verbose %yacc FAILED (calc.at:588)
+131: Calculator %define api.pure %error-verbose %debug %locations %defines %name-prefix "calc" %verbose %yacc %parse-param {semantic_value *result} %parse-param {int *count} FAILED (calc.at:590)
+
+Simple GLR Calculator.
+
+132: Calculator %glr-parser                          ok
+133: Calculator %glr-parser %defines                 ok
+134: Calculator %glr-parser %locations               ok
+135: Calculator %glr-parser %name-prefix "calc"      ok
+136: Calculator %glr-parser %verbose                 ok
+137: Calculator %glr-parser %yacc                    ok
+138: Calculator %glr-parser %error-verbose           FAILED (calc.at:614)
+139: Calculator %glr-parser %define api.pure %locations ok
+140: Calculator %glr-parser %error-verbose %locations FAILED (calc.at:617)
+141: Calculator %glr-parser %error-verbose %locations %defines %name-prefix "calc" %verbose %yacc FAILED (calc.at:619)
+142: Calculator %glr-parser %debug                   ok
+143: Calculator %glr-parser %error-verbose %debug %locations %defines %name-prefix "calc" %verbose %yacc FAILED (calc.at:622)
+144: Calculator %glr-parser %define api.pure %error-verbose %debug %locations %defines %name-prefix "calc" %verbose %yacc FAILED (calc.at:624)
+145: Calculator %glr-parser %define api.pure %error-verbose %debug %locations %defines %name-prefix "calc" %verbose %yacc %parse-param {semantic_value *result} %parse-param {int *count} FAILED (calc.at:626)
+
+Simple LALR(1) C++ Calculator.
+
+146: Calculator %skeleton "lalr1.cc" %defines %locations ok
+147: Calculator %language "C++" %defines %locations  ok
+148: Calculator %language "C++" %defines %locations %error-verbose %name-prefix "calc" %verbose %yacc FAILED (calc.at:646)
+149: Calculator %language "C++" %defines %locations %error-verbose %debug %name-prefix "calc" %verbose %yacc FAILED (calc.at:648)
+150: Calculator %language "C++" %defines %locations %pure-parser %error-verbose %debug %name-prefix "calc" %verbose %yacc FAILED (calc.at:650)
+151: Calculator %language "C++" %defines %locations %pure-parser %error-verbose %debug %name-prefix "calc" %verbose %yacc %parse-param {semantic_value *result} %parse-param {int *count} FAILED (calc.at:652)
+
+Simple GLR C++ Calculator.
+
+152: Calculator %skeleton "glr.cc" %defines %locations ok
+153: Calculator %language "C++" %glr-parser %defines %locations  ok
+154: Calculator %language "C++" %glr-parser %defines %locations %error-verbose %name-prefix "calc" %verbose %yacc FAILED (calc.at:673)
+155: Calculator %language "C++" %glr-parser %defines %locations %debug ok
+156: Calculator %language "C++" %glr-parser %defines %locations %error-verbose %debug %name-prefix "calc" %verbose %yacc FAILED (calc.at:676)
+157: Calculator %language "C++" %glr-parser %defines %locations %pure-parser %error-verbose %debug %name-prefix "calc" %verbose %yacc FAILED (calc.at:678)
+158: Calculator %language "C++" %glr-parser %defines %locations %pure-parser %error-verbose %debug %name-prefix "calc" %verbose %yacc %parse-param {semantic_value *result} %parse-param {int *count} FAILED (calc.at:680)
+
+Torture Tests.
+
+159: Big triangle                                    ok
+160: Big horizontal                                  ok
+161: Many lookahead tokens                           ok
+162: Exploding the Stack Size with Alloca            ok
+163: Exploding the Stack Size with Malloc            ok
+
+Existing Grammars.
+
+164: GNU AWK Grammar                                 ok
+165: GNU Cim Grammar                                 ok
+166: GNU pic Grammar                                 ok
+
+Regression tests.
+
+167: Trivial grammars                                ok
+168: YYSTYPE typedef                                 ok
+169: Early token definitions with --yacc             ok
+170: Early token definitions without --yacc          ok
+171: Braces parsing                                  ok
+172: Duplicate string                                ok
+173: Rule Line Numbers                               ok
+174: Mixing %token styles                            ok
+175: Invalid inputs                                  ok
+176: Invalid inputs with {}                          ok
+177: Token definitions                               ok
+178: Characters Escapes                              ok
+179: Web2c Report                                    ok
+180: Web2c Actions                                   ok
+181: Dancer                                          ok
+182: Dancer %glr-parser                              ok
+183: Dancer %skeleton "lalr1.cc"                     ok
+184: Expecting two tokens                            ok
+185: Expecting two tokens %glr-parser                ok
+186: Expecting two tokens %skeleton "lalr1.cc"       ok
+187: Braced code in declaration in rules section     ok
+188: String alias declared after use                 ok
+189: Extra lookahead sets in report                  ok
+190: Token number in precedence declaration          ok
+191: Fix user actions without a trailing semicolon   ok
+
+C++ Features.
+
+192: Doxygen Public Documentation                    skipped (c++.at:100)
+193: Doxygen Private Documentation                   skipped (c++.at:101)
+194: Relative namespace references                   ok
+195: Absolute namespace references                   ok
+196: Syntactically invalid namespace references      ok
+
+Java Calculator.
+
+197: Calculator                                      skipped (java.at:385)
+198: Calculator %error-verbose                       skipped (java.at:385)
+199: Calculator %locations                           skipped (java.at:385)
+200: Calculator %error-verbose %locations            skipped (java.at:385)
+201: Calculator %lex-param { InputStream is }        skipped (java.at:394)
+202: Calculator %error-verbose %lex-param { InputStream is }  skipped (java.at:394)
+203: Calculator %locations %lex-param { InputStream is }  skipped (java.at:394)
+204: Calculator %error-verbose %locations %lex-param { InputStream is }  skipped (java.at:394)
+
+Java Parameters.
+
+205: Java parser class and package names             skipped (java.at:482)
+206: Java parser class modifiers                     skipped (java.at:503)
+207: Java parser class extends and implements        skipped (java.at:561)
+208: Java %parse-param and %lex-param                skipped (java.at:581)
+209: Java throws specifications                      skipped (java.at:713)
+210: Java stype, position_class and location_class   skipped (java.at:744)
+
+C++ Type Syntax (GLR).
+
+211: GLR: Resolve ambiguity, impure, no locations    ok
+212: GLR: Resolve ambiguity, impure, locations       ok
+213: GLR: Resolve ambiguity, pure, no locations      ok
+214: GLR: Resolve ambiguity, pure, locations         ok
+215: GLR: Merge conflicting parses, impure, no locations ok
+216: GLR: Merge conflicting parses, impure, locations ok
+217: GLR: Merge conflicting parses, pure, no locations ok
+218: GLR: Merge conflicting parses, pure, locations  ok
+219: GLR: Verbose messages, resolve ambiguity, impure, no locations ok
+
+GLR Regression Tests
+
+220: Badly Collapsed GLR States                      ok
+221: Improper handling of embedded actions and dollar(-N) in GLR parsers ok
+222: Improper merging of GLR delayed action sets     ok
+223: Duplicate representation of merged trees        ok
+224: User destructor for unresolved GLR semantic value ok
+225: User destructor after an error during a split parse ok
+226: Duplicated user destructor for lookahead        ok
+227: Incorrectly initialized location for empty right-hand side in GLR ok
+228: No users destructors if stack 0 deleted         ok
+229: Corrupted semantic options if user action cuts parse ok
+230: Undesirable destructors if user action cuts parse ok
+231: Leaked semantic values if user action cuts parse ok
+232: Incorrect lookahead during deterministic GLR    ok
+233: Incorrect lookahead during nondeterministic GLR ok
+234: Leaked semantic values when reporting ambiguity ok
+235: Leaked lookahead after nondeterministic parse syntax error ok
+236: Uninitialized location when reporting ambiguity ok
+237: Missed %merge type warnings when LHS type is declared later ok
+
+Push Parsing Tests
+
+238: Push Parsing: Memory Leak for Early Deletion    ok
+239: Push Parsing: Multiple impure instances         ok
+240: Push Parsing: Unsupported Skeletons             ok
+
+## ------------- ##
+## Test results. ##
+## ------------- ##
+
+ERROR: 224 tests were run,
+22 failed unexpectedly.
+16 tests were skipped.
+## -------------------------- ##
+## testsuite.log was created. ##
+## -------------------------- ##
+
+Please send `tests/testsuite.log' and all information you think might help:
+
+   To: <bug-bison@gnu.org>
+   Subject: [GNU Bison 2.4.1] testsuite: 51 122 125 126 128 129 130 131 138 140 141 143 144 145 148 149 150 151 154 156 157 158 failed
+
+
+You may investigate any problem if you feel able to do so, in which
+case the test suite provides a good starting point.  Its output may
+be found below `tests/testsuite.dir'.
+
+make[3]: [check-local] Error 1 (ignored)
+make[3]: Leaving directory `/cygdrive/j/Devel/bison/2.4.1/bison-2.4.1/tests'
+make[2]: Leaving directory `/cygdrive/j/Devel/bison/2.4.1/bison-2.4.1/tests'
+Making check in etc
+make[2]: Entering directory `/cygdrive/j/Devel/bison/2.4.1/bison-2.4.1/etc'
+make[2]: Nothing to be done for `check'.
+make[2]: Leaving directory `/cygdrive/j/Devel/bison/2.4.1/bison-2.4.1/etc'
+make[2]: Entering directory `/cygdrive/j/Devel/bison/2.4.1/bison-2.4.1'
+make[2]: Nothing to be done for `check-am'.
+make[2]: Leaving directory `/cygdrive/j/Devel/bison/2.4.1/bison-2.4.1'
+make[1]: Leaving directory `/cygdrive/j/Devel/bison/2.4.1/bison-2.4.1'

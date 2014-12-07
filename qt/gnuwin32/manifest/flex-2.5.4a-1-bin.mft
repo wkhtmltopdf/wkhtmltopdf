@@ -1,0 +1,15 @@
+bin/flex.exe
+bin/flex++.exe
+contrib/flex/2.5.4a/flex-2.5.4a/COPYING
+contrib/flex/2.5.4a/flex-2.5.4a/depends-GnuWin32.lst
+contrib/flex/2.5.4a/flex-2.5.4a/flex-2.5.4a-1-GnuWin32.README
+contrib/flex/2.5.4a/flex-2.5.4a/INSTALL
+contrib/flex/2.5.4a/flex-2.5.4a/MISC/Borland/NOTES
+contrib/flex/2.5.4a/flex-2.5.4a/MISC/fastwc/README
+contrib/flex/2.5.4a/flex-2.5.4a/MISC/MVS/README
+contrib/flex/2.5.4a/flex-2.5.4a/MISC/README
+contrib/flex/2.5.4a/flex-2.5.4a/NEWS
+contrib/flex/2.5.4a/flex-2.5.4a/README
+man/cat1/flex.1.txt
+manifest/flex-2.5.4a-1-bin.mft
+manifest/flex-2.5.4a-1-bin.ver

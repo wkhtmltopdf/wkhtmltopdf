@@ -1,0 +1,66 @@
+Received: from 128.140.1.1 by ee.lbl.gov for <vern@ee.lbl.gov> (8.6.9/1.43r)
+	id PAA03966; Tue, 24 Jan 1995 15:03:57 -0800
+Received: from larry-le0.cc.emory.edu by
+	emoryu1.cc.emory.edu (5.65/Emory_cc.4.0.1) via SMTP
+	id AA24158 ; Tue, 24 Jan 95 17:18:18 -0500
+From: tkane01@unix.cc.emory.edu (Terrence O Kane)
+Received: by larry.cc.emory.edu (5.0) id AA21979; Tue, 24 Jan 1995 17:17:40 -0500
+Message-Id: <9501242217.AA21979@larry.cc.emory.edu>
+Subject: Re: Beta test for DOS
+To: vern@ee.lbl.gov (Vern Paxson)
+Date: Tue, 24 Jan 1995 17:17:38 -0500 (EST)
+In-Reply-To: <199501232138.NAA11430@daffy.ee.lbl.gov> from "Vern Paxson" at Jan 23, 95 01:38:02 pm
+X-Mailer: ELM [version 2.4 PL23]
+Mime-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+Content-Length: 5792      
+
+Vern,
+
+I've made flex 2.5.0.6 successfully with no changes to the source
+code at all.  I'm including the Borland 4.02 makefile and config.h
+at the end of this message.
+
+When you're ready for release, I'll be happy to take care of getting
+the appropriate archive files up to Simtel if you wish.
+
+I have not used this version for any of my "work-related" scanners
+yet, but have run the fastwc benchmark.  The compiles were for large
+memory model and optimization for fastest possible code.  The test
+machine was a Pentium-90 (hey! timing output was integer!) with
+enhanced IDE on a PCI bus and no file system caching.  I ran the
+test on two different input files.
+
+(Times are in seconds.)
+
+The first input was a typical postscript file concatenated 10 times;
+by typical, I mean that there were relatively few spaces, lots of lines
+with no space, using lots of parentheses.
+
+	lines  words  characters
+	91200  356260 5889240
+
+	mywc 	 8.89
+	wc1s 	15.22		default
+	wc1 	10.82		-Cf
+	wc2 	10.16		-Cf
+	wc3 	 9.17		-Cf
+	wc4 	 9.22		-Cf
+	wc5 	10.98		-Cf
+
+The second test run was on a file that consisted of 20 concatenations
+of 'misc/flex.man'.
+
+	lines  words  characters
+	69960   305140  2399960
+
+	mywc 	4.01
+	wc1s 	6.87
+	wc1 	5.32
+	wc2 	4.95
+	wc3 	4.12
+	wc4 	4.12
+	wc5 	5.05
+
+[[Makefile and config.h moved to separate files -VP]]

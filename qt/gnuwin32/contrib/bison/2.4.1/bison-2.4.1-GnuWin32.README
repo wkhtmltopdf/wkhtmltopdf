@@ -1,0 +1,54 @@
+* Bison-2.4.1 for Windows *
+===========================
+
+What is it?
+-----------
+Bison: Yacc-compatible parser generator
+
+Description
+-----------
+Bison is a general purpose parser generator that converts a grammar description for an LALR(1) context-free grammar into a C program to parse that grammar. Bison can be used to develop a wide range of language parsers, from ones used in simple desk calculators to complex programming languages. Bison is upwardly compatible with Yacc, so any correctly written Yacc grammar should work with Bison without any changes. If you know Yacc, you shouldn't have any trouble using Bison. You do need to be very proficient in C programming to be able to use Bison. Bison is only needed on systems that are used for development. If your system will be used for C development, you should install Bison. The package contains also the -ly library sometimes used by programs using Bison-generated parsers. If you are developing programs using Bison, you might want to link with this library. This library is not required by all Bison-generated parsers, but may be employed by simple programs to supply minimal support for the generated parsers.
+	 
+Homepage
+--------
+http://www.gnu.org/software/bison/bison.html
+Sources: http://ftp.gnu.org/gnu/bison/bison-2.4.1.tar.gz
+	 
+System
+------
+- Win32, i.e. MS-Windows 95 / 98 / ME / NT / 2000 / XP / 2003 / Vista / 2008 with msvcrt.dll
+- if msvcrt.dll is not in your Windows/System folder, get it from
+  Microsoft <http://support.microsoft.com/kb/259403>
+  or by installing Internet Explorer 4.0 or higher
+  <http://www.microsoft.com/windows/ie> 
+- libintl-3 <http://gnuwin32.sourceforge.net/packages/libintl.htm> 
+- libiconv-2 <http://gnuwin32.sourceforge.net/packages/libiconv.htm> 
+- regex <http://gnuwin32.sourceforge.net/packages/regex.htm> 
+- m4 <http://gnuwin32.sourceforge.net/packages/m4.htm> 
+
+Notes
+-----
+- Bugs and questions on this MS-Windows port: gnuwin32@users.sourceforge.net
+
+Package Availability
+--------------------
+- in: http://gnuwin32.sourceforge.net
+Installation
+------------
+Bison may be installed in any directory, provided the subdirectory structure is maintained. Native language support is also active.
+
+Sources
+-------
+- bison-2.4.1-src.zip
+
+Compilation
+-----------
+The package has been compiled with GNU auto-tools, GNU make, and Mingw
+(GCC for MS-Windows). Any differences from the original sources are given
+in bison-2.4.1-GnuWin32.diffs in bison-2.4.1-src.zip. Libraries needed
+for compilation can be found at the lines starting with 'LIBS = ' in the
+Makefiles. Usually, these are standard libraries provided with Mingw, or
+libraries from the package itself; 'gw32c' refers to the libgw32c package,
+which provides MS-Windows substitutes or stubs for functions normally found in
+Unix. For more information, see: http://gnuwin32.sourceforge.net/compile.html
+and http://gnuwin32.sourceforge.net/packages/libgw32c.htm.

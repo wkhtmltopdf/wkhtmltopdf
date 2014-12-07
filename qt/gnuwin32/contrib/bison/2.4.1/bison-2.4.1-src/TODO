@@ -1,0 +1,309 @@
+-*- outline -*-
+
+* Header guards
+
+From Franc,ois: should we keep the directory part in the CPP guard?
+
+
+* Yacc.c: CPP Macros
+
+Do some people use YYPURE, YYLSP_NEEDED like we do in the test suite?
+They should not: it is not documented.  But if they need to, let's
+find something clean (not like YYLSP_NEEDED...).
+
+
+* Installation
+
+* Documentation
+Before releasing, make sure the documentation ("Understanding your
+parser") refers to the current `output' format.
+
+* lalr1.cc
+** vector
+Move to using vector, drop stack.hh.
+
+** I18n
+Catch up with yacc.c.
+
+* Report
+
+**  GLR
+How would Paul like to display the conflicted actions?  In particular,
+what when two reductions are possible on a given lookahead token, but one is
+part of $default.  Should we make the two reductions explicit, or just
+keep $default?  See the following point.
+
+** Disabled Reductions
+See `tests/conflicts.at (Defaulted Conflicted Reduction)', and decide
+what we want to do.
+
+** Documentation
+Extend with error productions.  The hard part will probably be finding
+the right rule so that a single state does not exhibit too many yet
+undocumented ``features''.  Maybe an empty action ought to be
+presented too.  Shall we try to make a single grammar with all these
+features, or should we have several very small grammars?
+
+** --report=conflict-path
+Provide better assistance for understanding the conflicts by providing
+a sample text exhibiting the (LALR) ambiguity.  See the paper from
+DeRemer and Penello: they already provide the algorithm.
+
+** Statically check for potential ambiguities in GLR grammars.  See
+<http://www.i3s.unice.fr/~schmitz/papers.html#expamb> for an approach.
+
+
+* Extensions
+
+** Labeling the symbols
+Have a look at the Lemon parser generator: instead of $1, $2 etc. they
+can name the values.  This is much more pleasant.  For instance:
+
+       exp (res): exp (a) '+' exp (b) { $res = $a + $b; };
+
+I love this.  I have been bitten too often by the removal of the
+symbol, and forgetting to shift all the $n to $n-1.  If you are
+unlucky, it compiles...
+
+But instead of using $a etc., we can use regular variables.  And
+instead of using (), I propose to use `:' (again).  Paul suggests
+supporting `->' in addition to `:' to separate LHS and RHS. In other
+words:
+
+       r:exp -> a:exp '+' b:exp { r = a + b; };
+
+That requires an significant improvement of the grammar parser.  Using
+GLR would be nice.  It also requires that Bison know the type of the
+symbols (which will be useful for %include anyway).  So we have some
+time before...
+
+Note that there remains the problem of locations: `@r'?
+
+
+** $-1
+We should find a means to provide an access to values deep in the
+stack.  For instance, instead of
+
+	baz: qux { $$ = $<foo>-1 + $<bar>0 + $1; }
+
+we should be able to have:
+
+  foo($foo) bar($bar) baz($bar): qux($qux) { $baz = $foo + $bar + $qux; }
+
+Or something like this.
+
+** %if and the like
+It should be possible to have %if/%else/%endif.  The implementation is
+not clear: should it be lexical or syntactic.  Vadim Maslow thinks it
+must be in the scanner: we must not parse what is in a switched off
+part of %if.  Akim Demaille thinks it should be in the parser, so as
+to avoid falling into another CPP mistake.
+
+** -D, --define-muscle NAME=VALUE
+To define muscles via cli.  Or maybe support directly NAME=VALUE?
+
+** XML Output
+There are couple of available extensions of Bison targeting some XML
+output.  Some day we should consider including them.  One issue is
+that they seem to be quite orthogonal to the parsing technique, and
+seem to depend mostly on the possibility to have some code triggered
+for each reduction.  As a matter of fact, such hooks could also be
+used to generate the yydebug traces.  Some generic scheme probably
+exists in there.
+
+XML output for GNU Bison and gcc
+   http://www.cs.may.ie/~jpower/Research/bisonXML/
+
+XML output for GNU Bison
+   http://yaxx.sourceforge.net/
+
+* Unit rules
+Maybe we could expand unit rules, i.e., transform
+
+	exp: arith | bool;
+	arith: exp '+' exp;
+	bool: exp '&' exp;
+
+into
+
+	exp: exp '+' exp | exp '&' exp;
+
+when there are no actions.  This can significantly speed up some
+grammars.  I can't find the papers.  In particular the book `LR
+parsing: Theory and Practice' is impossible to find, but according to
+`Parsing Techniques: a Practical Guide', it includes information about
+this issue.  Does anybody have it?
+
+
+
+* Documentation
+
+** History/Bibliography
+Some history of Bison and some bibliography would be most welcome.
+Are there any Texinfo standards for bibliography?
+
+
+
+* Java, Fortran, etc.
+
+
+* Coding system independence
+Paul notes:
+
+	Currently Bison assumes 8-bit bytes (i.e. that UCHAR_MAX is
+	255).  It also assumes that the 8-bit character encoding is
+	the same for the invocation of 'bison' as it is for the
+	invocation of 'cc', but this is not necessarily true when
+	people run bison on an ASCII host and then use cc on an EBCDIC
+	host.  I don't think these topics are worth our time
+	addressing (unless we find a gung-ho volunteer for EBCDIC or
+	PDP-10 ports :-) but they should probably be documented
+	somewhere.
+
+	More importantly, Bison does not currently allow NUL bytes in
+	tokens, either via escapes (e.g., "x\0y") or via a NUL byte in
+	the source code.  This should get fixed.
+
+* --graph
+Show reductions.
+
+* Broken options ?
+** %token-table
+** Skeleton strategy
+Must we keep %token-table?
+
+* src/print_graph.c
+Find the best graph parameters.
+
+* BTYacc
+See if we can integrate backtracking in Bison.  Charles-Henri de
+Boysson <de-boy_c@epita.fr> is working on this, and already has some
+results.  Vadim Maslow, the maintainer of BTYacc was contacted, and we
+stay in touch with him.  Adjusting the Bison grammar parser will be
+needed to support some extra BTYacc features.  This is less urgent.
+
+** Keeping the conflicted actions
+First, analyze the differences between byacc and btyacc (I'm referring
+to the executables).  Find where the conflicts are preserved.
+
+** Compare with the GLR tables
+See how isomorphic the way BTYacc and the way the GLR adjustments in
+Bison are compatible.  *As much as possible* one should try to use the
+same implementation in the Bison executables.  I insist: it should be
+very feasible to use the very same conflict tables.
+
+** Adjust the skeletons
+Import the skeletons for C and C++.
+
+** Improve the skeletons
+Have them support yysymprint, yydestruct and so forth.
+
+
+* Precedence
+
+** Partial order
+It is unfortunate that there is a total order for precedence.  It
+makes it impossible to have modular precedence information.  We should
+move to partial orders (sounds like series/parallel orders to me).
+
+** Correlation b/w precedence and associativity
+Also, I fail to understand why we have to assign the same
+associativity to operators with the same precedence.  For instance,
+why can't I decide that the precedence of * and / is the same, but the
+latter is nonassoc?
+
+If there is really no profound motivation, we should find a new syntax
+to allow specifying this.
+
+** RR conflicts
+See if we can use precedence between rules to solve RR conflicts.  See
+what POSIX says.
+
+
+* $undefined
+From Hans:
+- If the Bison generated parser experiences an undefined number in the
+character range, that character is written out in diagnostic messages, an
+addition to the $undefined value.
+
+Suggest: Change the name $undefined to undefined; looks better in outputs.
+
+
+* Default Action
+From Hans:
+- For use with my C++ parser, I transported the "switch (yyn)" statement
+that Bison writes to the bison.simple skeleton file. This way, I can remove
+the current default rule $$ = $1 implementation, which causes a double
+assignment to $$ which may not be OK under C++, replacing it with a
+"default:" part within the switch statement.
+
+Note that the default rule $$ = $1, when typed, is perfectly OK under C,
+but in the C++ implementation I made, this rule is different from
+$<type_name>$ = $<type_name>1. I therefore think that one should implement
+a Bison option where every typed default rule is explicitly written out
+(same typed ruled can of course be grouped together).
+
+Note: Robert Anisko handles this.  He knows how to do it.
+
+
+* Warnings
+It would be nice to have warning support.  See how Autoconf handles
+them, it is fairly well described there.  It would be very nice to
+implement this in such a way that other programs could use
+lib/warnings.[ch].
+
+Don't work on this without first announcing you do, as I already have
+thought about it, and know many of the components that can be used to
+implement it.
+
+
+* Pre and post actions.
+From: Florian Krohm <florian@edamail.fishkill.ibm.com>
+Subject: YYACT_EPILOGUE
+To: bug-bison@gnu.org
+X-Sent: 1 week, 4 days, 14 hours, 38 minutes, 11 seconds ago
+
+The other day I had the need for explicitly building the parse tree. I
+used %locations for that and defined YYLLOC_DEFAULT to call a function
+that returns the tree node for the production. Easy. But I also needed
+to assign the S-attribute to the tree node. That cannot be done in
+YYLLOC_DEFAULT, because it is invoked before the action is executed.
+The way I solved this was to define a macro YYACT_EPILOGUE that would
+be invoked after the action. For reasons of symmetry I also added
+YYACT_PROLOGUE. Although I had no use for that I can envision how it
+might come in handy for debugging purposes.
+All is needed is to add
+
+#if YYLSP_NEEDED
+    YYACT_EPILOGUE (yyval, (yyvsp - yylen), yylen, yyloc, (yylsp - yylen));
+#else
+    YYACT_EPILOGUE (yyval, (yyvsp - yylen), yylen);
+#endif
+
+at the proper place to bison.simple. Ditto for YYACT_PROLOGUE.
+
+I was wondering what you think about adding YYACT_PROLOGUE/EPILOGUE
+to bison. If you're interested, I'll work on a patch.
+
+* Better graphics
+Equip the parser with a means to create the (visual) parse tree.
+
+-----
+
+Copyright (C) 2001, 2002, 2003, 2004, 2006 Free Software Foundation,
+Inc.
+
+This file is part of Bison, the GNU Compiler Compiler.
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program.  If not, see <http://www.gnu.org/licenses/>.

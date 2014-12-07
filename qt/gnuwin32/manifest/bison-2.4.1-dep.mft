@@ -1,0 +1,5 @@
+bin/libiconv2.dll 
+bin/libintl3.dll 
+bin/regex2.dll 
+manifest/bison-2.4.1-dep.mft
+manifest/bison-2.4.1-dep.ver bb151d843339f90abdc34f5eb49bff0e

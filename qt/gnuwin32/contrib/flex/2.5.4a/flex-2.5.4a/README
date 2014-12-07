@@ -1,0 +1,60 @@
+This is release 2.5 of flex.  See "version.h" for the exact patch-level.
+
+See the file "NEWS" to find out what is new in this Flex release.
+
+Read the file "INSTALL" for general installation directives.  Peek near
+the beginning of the file "Makefile.in" for special DEFS values.  On most
+systems, you can just run the "configure" script and type "make" to build
+flex; then "make check" to test whether it built correctly; and if it did,
+then "make install" to install it.
+
+If you're feeling adventurous, you can also issue "make bigcheck" (be
+prepared to wait a while).
+
+Note that flex is distributed under a copyright very similar to that of
+BSD Unix, and not under the GNU General Public License (GPL), except for
+the "configure" script, which is covered by the GPL.
+
+Many thanks to the 2.5 beta-testers for finding bugs and helping test and
+increase portability: Stan Adermann, Scott David Daniels, Charles Elliott,
+Joe Gayda, Chris Meier, James Nordby, Terrence O'Kane, Karsten Pahnke,
+Francois Pinard, Pat Rankin, Andreas Scherer, Marc Wiese, Nathan Zelle.
+
+Please send bug reports and feedback to: Vern Paxson (vern@ee.lbl.gov).
+
+
+The flex distribution consists of the following files:
+
+	README		This message
+
+	NEWS		Differences between the various releases
+
+	INSTALL		General installation information
+
+	COPYING		flex's copyright
+
+	conf.in, configure.in, configure, Makefile.in, install.sh,
+		mkinstalldirs
+			elements of the "autoconf" auto-configuration process
+
+	flexdef.h, parse.y, scan.l, ccl.c, dfa.c, ecs.c, gen.c, main.c,
+	misc.c, nfa.c, sym.c, tblcmp.c, yylex.c	 
+			source files
+
+	version.h	version of this flex release
+
+	flex.skl	flex scanner skeleton
+	mkskel.sh	script for converting flex.skl to C source file skel.c
+	skel.c		pre-converted C version of flex.skl
+
+	libmain.c	flex library (-lfl) sources
+	libyywrap.c
+
+	initscan.c	pre-flex'd version of scan.l
+
+	FlexLexer.h	header file for C++ lexer class
+
+	flex.1		user documentation
+
+	MISC/		a directory containing miscellaneous contributions.
+			See MISC/README for details.

@@ -1,0 +1,51 @@
+* Flex-2.5.4a for Windows *
+===========================
+
+What is it?
+-----------
+Flex: fast lexical analyzer generator
+
+Description
+-----------
+Flex is a fast lexical analyser generator. It is a tool for generating
+programs that perform pattern-matching on text. There are many applications
+for Flex, including writing compilers in conjunction with GNU Bison. Flex
+is a free implementation of the well known Lex program. It features a Lex
+compatibility mode, and also provides several new features such as exclusive
+start conditions.
+	 
+Homepage
+--------
+http://www.gnu.org/software/flex/flex.html
+	 
+System
+------
+- MS-Windows 95 / 98 / ME / NT / 2000 / XP with msvcrt.dll
+- if msvcrt.dll is not in your Windows/System folder, get it from
+  Microsoft <http://support.microsoft.com/default.aspx?scid=kb;en-us;259403">
+  or by installing Internet Explorer 4.0 or higher
+  <http://www.microsoft.com/windows/ie>
+
+Notes
+-----
+- Bugs and questions on this MS-Windows port: gnuwin32@users.sourceforge.net
+
+Package Availability
+--------------------
+- in: http://gnuwin32.sourceforge.net
+
+Sources
+-------
+- flex-2.5.4a-1-src.zip
+
+Compilation
+-----------
+The package has been compiled with GNU auto-tools, GNU make, and Mingw
+(GCC for MS-Windows). Any differences from the original sources are given
+in flex-2.5.4a-1-GnuWin32.diffs in flex-2.5.4a-1-src.zip. Libraries needed
+for compilation can be found at the lines starting with 'LIBS = ' in the
+Makefiles. Usually, these are standard libraries provided with Mingw, or
+libraries from the package itself; 'gw32c' refers to the libgw32c package,
+which provides MS-Windows substitutes or stubs for functions normally found in
+Unix. For more information, see: http://gnuwin32.sourceforge.net/compile.html
+and http://gnuwin32.sourceforge.net/packages/libgw32c.htm.

@@ -1,18 +1,18 @@
 # ignore mac build files
-build/
+/build/
 *.plist
 *~
 \#*\#
-bin
+/bin/
 wkhtmltopdf.app/
 wkhtmltopdf.xcodeproj/
-release*/
-test/
-static-build/
+/release*/
+/test/
+/static-build/
 .obj/
-doc/
-libdoc/
-man1/
+/doc/
+/libdoc/
+/man1/
 Makefile
 qrc_wkhtmltopdf.cpp
 Makefile.*

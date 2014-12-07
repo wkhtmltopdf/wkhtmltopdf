@@ -1,0 +1,41 @@
+A directory of tools provided to people using CVS Bison.  None of
+these is distributed.
+
+* bench.pl
+A primitive Perl script to run benches.  Currently its only bench is
+the usual calculator: it has a lightweight processing part (but not
+null), so it is really emphasizing the cost of the whole parsing
+(including scanning and I/O).
+
+Set the envvars BISON and CC to the programs and flags you want to
+use.  They default to bison and gcc.  To run a non-installed bison
+from a tarball built in _build, I suggest the following.
+
+     BISON=_build/tests/bison CC='gcc -O2' ./bench.pl
+
+(The _build/tests/bison wrapper makes sure that _build/src/bison will
+use the tarballs' skeletons, not those already installed as a
+straightforward use of _build/src/bison would.)
+
+--
+
+Copyright (C) 2006 Free Software Foundation, Inc.
+
+This file is part of Bison, the GNU Compiler Compiler.
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+Local Variables:
+mode: outline
+End:
