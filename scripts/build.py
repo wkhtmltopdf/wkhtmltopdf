@@ -61,55 +61,41 @@ QT_CONFIG = {
     'common' : [
         '-opensource',
         '-confirm-license',
-        '-fast',
         '-release',
         '-static',
-        '-graphicssystem raster',
-        '-webkit',
-        '-exceptions',              # required by XmlPatterns
-        '-xmlpatterns',             # required for TOC support
         '-system-zlib',
         '-system-libpng',
         '-system-libjpeg',
-        '-no-libmng',
-        '-no-libtiff',
+        '-icu',
         '-no-accessibility',
-        '-no-stl',
-        '-no-qt3support',
-        '-no-phonon',
-        '-no-phonon-backend',
         '-no-opengl',
-        '-no-declarative',
-        '-no-script',
-        '-no-scripttools',
         '-no-sql-ibase',
         '-no-sql-mysql',
+        '-no-sql-oci',
+        '-no-sql-tds',
+        '-no-sql-db2',
         '-no-sql-odbc',
         '-no-sql-psql',
         '-no-sql-sqlite',
         '-no-sql-sqlite2',
-        '-no-mmx',
-        '-no-3dnow',
-        '-no-sse',
-        '-no-sse2',
-        '-no-multimedia',
-        '-nomake demos',
-        '-nomake docs',
+        '-no-qml-debug',
+        '-no-dbus',
         '-nomake examples',
         '-nomake tools',
         '-nomake tests',
-        '-nomake translations'
+        '-D QT_NO_GRAPHICSVIEW',
+        '-D QT_NO_GRAPHICSEFFECT',
+        '-D QT_NO_STYLESHEET',
+        '-D QT_NO_STYLE_CDE',
+        '-D QT_NO_STYLE_CLEANLOOKS',
+        '-D QT_NO_STYLE_MOTIF',
+        '-D QT_NO_STYLE_PLASTIQUE',
+        '-D QT_NO_PRINTPREVIEWDIALOG'
     ],
 
     'msvc': [
         '-mp',
-        '-qt-style-windows',
-        '-qt-style-cleanlooks',
-        '-no-style-windowsxp',
-        '-no-style-windowsvista',
-        '-no-style-plastique',
-        '-no-style-motif',
-        '-no-style-cde',
+        '-no-angle',
         '-openssl-linked'           # static linkage for OpenSSL
     ],
 
@@ -433,6 +419,29 @@ DEPENDENT_LIBS = {
                 'commands': [
                     'CFLAGS="-arch i386 -mmacosx-version-min=10.6" ./configure --disable-nls --enable-small --disable-shared --disable-threads --prefix=%(destdir)s',
                     'make -C src/liblzma', 'make -C src/xz', 'make install-strip']
+            }
+        }
+    },
+
+    'icu4c': {
+        'order' : 6,
+        'url' : 'http://download.icu-project.org/files/icu4c/55.1/icu4c-55_1-src.tgz',
+        'sha1': '3bb301c11be0e239c653e8aa2925c53f6f4dc88d',
+        'build' : {
+            'msvc*': {
+                'result': ['include/unicode/ucnv.h', 'include/unicode/ustring.h', ('lib/sicuin.lib', 'lib/sicuind.lib'), ('lib/sicudt.lib', 'lib/sicudtd.lib')],
+                'commands': [
+                    'bash source/runConfigureICU %(icu_dbg)s Cygwin/MSVC --enable-static --disable-shared --disable-tests --disable-samples --prefix=%(cygdest)s',
+                    'make', 'make install'
+                ]
+            },
+            'mingw-w64-cross-win*': {
+                'result': ['include/unicode/ucnv.h', 'include/unicode/ustring.h', 'lib/libsicuin.a', 'lib/libsicuuc.a', 'lib/libsicudt.a'],
+                'commands': [
+                    'cp -R source source.host',
+                    'cd source.host; ./configure; make',
+                    'source/configure --host=%(mingw_w64)s --enable-release --disable-debug --enable-static --disable-shared --disable-tests --disable-samples --prefix=%(destdir)s --with-cross-build=`pwd`/source.host',
+                    'make install']
             }
         }
     }
@@ -880,9 +889,17 @@ def check_msvc(config):
     if not perl or 'perl5' not in perl:
         error("perl does not seem to be installed.")
 
+    ruby = get_output('ruby', '--version')
+    if not ruby or 'ruby' not in ruby:
+        error("ruby does not seem to be installed.")
+
     nsis = get_registry_value(r'SOFTWARE\NSIS')
     if not nsis or not exists(os.path.join(nsis, 'makensis.exe')):
         error("NSIS does not seem to be installed.")
+
+    cygwin = get_registry_value(r'SOFTWARE\Cygwin\setup', 'rootdir')
+    if not cygwin or not exists(os.path.join(cygwin, 'bin', 'bash.exe')):
+        error("Cygwin does not seem to be installed.")
 
 def build_msvc(config, basedir):
     msvc, arch = rchop(config, '-dbg').split('-')
@@ -905,13 +922,21 @@ def build_msvc(config, basedir):
     os.environ.update(eval(stdout.strip()))
 
     version, simple_version = get_version(basedir)
-    cflags  = config.endswith('-dbg') and '/MDd /Zi' or '/MD'
-    build_deplibs(config, basedir, cflags=cflags)
+    libdir = os.path.join(basedir, config, 'deplibs')
+    path   = rchop(os.environ['PATH'], ';')
 
+    cygwin  = get_registry_value(r'SOFTWARE\Cygwin\setup', 'rootdir')
+    cygdest = get_output(os.path.join(cygwin, 'bin', 'cygpath.exe'), '-ua', libdir)
+    cflags  = config.endswith('-dbg') and '/MDd /Zi' or '/MD'
+    icu_dbg = config.endswith('-dbg') and '--enable-debug --disable-release' or ''
+    os.environ['PATH'] = r'%s;%s\bin' % (path, cygwin)
+    build_deplibs(config, basedir, cygwin=cygwin, cygdest=cygdest, cflags=cflags, icu_dbg=icu_dbg)
+
+    os.environ['PATH'] = r'%s;%s\..\qt\gnuwin32\bin' % (path, basedir)
+    os.environ['SQLITE3SRCDIR'] = r'%s\..\qt\qtbase\src\3rdparty\sqlite' % basedir
     sha1, url = MSVC_RUNTIME[rchop(config, '-dbg')]
     shutil.copy(download_file(url, sha1, basedir), os.path.join(basedir, config, 'vcredist.exe'))
 
-    libdir = os.path.join(basedir, config, 'deplibs')
     qtdir  = os.path.join(basedir, config, 'qt')
     mkdir_p(qtdir)
 
@@ -920,7 +945,14 @@ def build_msvc(config, basedir):
         '-L %s\\lib' % libdir,
         'OPENSSL_LIBS="-L%s\\\\lib -lssleay32 -llibeay32 -lUser32 -lAdvapi32 -lGdi32 -lCrypt32"' % libdir.replace('\\', '\\\\'))
 
-    build_qt(qtdir, 'nmake', '%s\\..\\qt\\configure.exe %s' % (basedir, configure_args))
+    build_qtmodule(qtdir, 'qtbase', 'nmake',
+        r'%s\..\qt\qtbase\configure.bat %s' % (basedir, configure_args))
+    build_qtmodule(qtdir, 'qtsvg',  'nmake',
+        r'%s\qtbase\bin\qmake.exe %s\..\qt\qtsvg\qtsvg.pro' % (qtdir, basedir))
+    build_qtmodule(qtdir, 'qtxmlpatterns', 'nmake',
+        r'%s\qtbase\bin\qmake.exe %s\..\qt\qtxmlpatterns\qtxmlpatterns.pro' % (qtdir, basedir))
+    build_qtmodule(qtdir, 'qtwebkit', 'nmake',
+        r'%s\qtbase\bin\qmake.exe %s\..\qt\qtwebkit\WebKit.pro WEBKIT_CONFIG-=build_webkit2' % (qtdir, basedir))
 
     appdir = os.path.join(basedir, config, 'app')
     mkdir_p(appdir)
@@ -930,7 +962,7 @@ def build_msvc(config, basedir):
 
     os.environ['WKHTMLTOX_VERSION'] = version
 
-    shell('%s\\bin\\qmake %s\\..\\wkhtmltopdf.pro' % (qtdir, basedir))
+    shell('%s\\qtbase\\bin\\qmake %s\\..\\wkhtmltopdf.pro' % (qtdir, basedir))
     shell('nmake')
 
     makensis = os.path.join(get_registry_value(r'SOFTWARE\NSIS'), 'makensis.exe')
@@ -1249,7 +1281,7 @@ def main():
     final_config = config
     if '-debug' in sys.argv[2:]:
         final_config += '-dbg'
-        QT_CONFIG['common'].extend(['remove:-release', 'remove:-webkit', '-debug', '-webkit-debug'])
+        QT_CONFIG['common'].extend(['remove:-release', '-debug'])
 
     if '-clean' in sys.argv[2:]:
         rmdir(os.path.join(basedir, final_config))
