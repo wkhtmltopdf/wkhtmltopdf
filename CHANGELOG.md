@@ -14,6 +14,7 @@ v0.12.2 (unreleased)
 * **#1772**: added variable 'isodate' for substitution in headers/footers
 * **#1808**: fix [sitepage] and [sitepages] not working without HTML headers/footers
 * **#1825**: fix handling of non-ASCII characters in command-line arguments
+* **#1863**: **[qt]** blank page or crash with low DPI on Windows
 * **#1906**: fix wrong comparison when parsing list parameters
 * **#1949**: fix generation of tarball in the posix-local build
 * **#1955**: installer does not work on 32-bit OS X (10.6.x or 10.7.x)
