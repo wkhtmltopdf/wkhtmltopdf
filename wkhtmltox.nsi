@@ -113,6 +113,9 @@ skip_vcruntime:
 SectionEnd
 
 Section "Uninstall"
+  ${If} ${RunningX64}
+    SetRegView 64
+  ${EndIf}
   Call un.DeleteFiles
   DeleteRegKey HKLM "Software\wkhtmltopdf"
   DeleteRegKey HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\wkhtmltopdf"
