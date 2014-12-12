@@ -27,6 +27,7 @@ BUILDERS = {
     'setup-schroot-centos5': 'setup_schroot',
     'setup-schroot-centos6': 'setup_schroot',
     'setup-schroot-centos7': 'setup_schroot',
+    'setup-schroot-squeeze': 'setup_schroot',
     'setup-schroot-wheezy':  'setup_schroot',
     'setup-schroot-trusty':  'setup_schroot',
     'setup-schroot-precise': 'setup_schroot',
@@ -36,6 +37,8 @@ BUILDERS = {
     'centos6-i386':          'linux_schroot',
     'centos6-amd64':         'linux_schroot',
     'centos7-amd64':         'linux_schroot',
+    'squeeze-i386':          'linux_schroot',
+    'squeeze-amd64':         'linux_schroot',
     'wheezy-i386':           'linux_schroot',
     'wheezy-amd64':          'linux_schroot',
     'trusty-i386':           'linux_schroot',
@@ -174,6 +177,15 @@ FPM_SETUP = {
         '--prefix':      '/usr/local',
         '--category':    'utils'
     },
+    'squeeze': {
+        '-t':                'deb',
+        '--deb-compression': 'xz',
+        '--provides':        'wkhtmltopdf',
+        '--conflicts':       'wkhtmltopdf',
+        '--replaces':        'wkhtmltopdf',
+        '--depends':         ['fontconfig', 'libfontconfig1', 'libfreetype6', 'libpng12-0', 'zlib1g', 'libjpeg8', 'libssl0.9.8',
+                              'libx11-6', 'libxext6', 'libxrender1', 'xfonts-base', 'xfonts-75dpi', 'libstdc++6', 'libc6']
+    },
     'wheezy': {
         '-t':                'deb',
         '--deb-compression': 'xz',
@@ -232,6 +244,23 @@ FPM_SETUP = {
 }
 
 CHROOT_SETUP  = {
+    'squeeze': [
+        ('debootstrap', 'squeeze', 'http://ftp.us.debian.org/debian/'),
+        ('write_file', 'etc/apt/sources.list', """
+deb http://ftp.debian.org/debian/ squeeze         main contrib non-free
+deb http://ftp.debian.org/debian/ squeeze-updates main contrib non-free
+deb http://security.debian.org/   squeeze/updates main contrib non-free
+deb http://backports.debian.org/debian-backports squeeze-backports main contrib non-free"""),
+        ('shell', 'apt-get update'),
+        ('shell', 'apt-get dist-upgrade --assume-yes'),
+        ('shell', 'apt-get install --assume-yes xz-utils libssl-dev libpng-dev libjpeg8-dev zlib1g-dev rubygems'),
+        ('shell', 'apt-get install --assume-yes libfontconfig1-dev libfreetype6-dev libx11-dev libxext-dev libxrender-dev'),
+        ('shell', 'gem install fpm --no-ri --no-rdoc'),
+        ('write_file', 'update.sh', 'apt-get update\napt-get dist-upgrade --assume-yes\ngem update fpm\n'),
+        ('fpm_setup',  'fpm_package.sh'),
+        ('schroot_conf', 'Debian Squeeze')
+    ],
+
     'wheezy': [
         ('debootstrap', 'wheezy', 'http://ftp.us.debian.org/debian/'),
         ('write_file', 'etc/apt/sources.list', """
@@ -545,7 +574,11 @@ def shell(cmd):
 
 def get_output(*cmd):
     try:
-        return subprocess.check_output(cmd, stderr=subprocess.STDOUT).strip()
+        process = subprocess.Popen(cmd, stderr=subprocess.PIPE, stdout=subprocess.PIPE)
+        out, err = process.communicate()
+        if process.poll() != 0:
+            return None
+        return out.strip()
     except:
         return None
 
