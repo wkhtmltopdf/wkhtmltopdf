@@ -5,6 +5,7 @@ v0.12.2 (unreleased)
 * add option --dump-render-tree for viewing the WebKit render tree
 * **#1539**: **[qt]** using OpenType fonts now results in selectable text on Windows
 * **#1638**: **[qt]** fix incorrect rendering of JPEG images on Windows Server 2008 x64
+* **#1639**: block access to local files on Windows when an invalid URL is used
 * **#1640**: **[qt]** make table page-break logic opt-in via CSS at the row level
 * **#1676**: do not allow overriding the header/footer settings for cover pages
 * **#1676**: set page margins correctly via computed header/footer heights for multiple URLs

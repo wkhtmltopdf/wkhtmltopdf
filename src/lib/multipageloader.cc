@@ -78,7 +78,8 @@ QNetworkReply * MyNetworkAccessManager::createRequest(Operation op, const QNetwo
 		return QNetworkAccessManager::createRequest(op, r2, outgoingData);
 	}
 
-	if (req.url().scheme() == "file" && settings.blockLocalFileAccess) {
+	bool isLocalFileAccess = req.url().scheme().length() <= 1 || req.url().scheme() == "file";
+	if (isLocalFileAccess && settings.blockLocalFileAccess) {
 		bool ok=false;
 		QString path = QFileInfo(req.url().toLocalFile()).canonicalFilePath();
 		QString old = "";
