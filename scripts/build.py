@@ -23,7 +23,7 @@ BUILDERS = {
     'source-tarball':        'source_tarball',
     'msvc2013-win32':        'msvc',
     'msvc2013-win64':        'msvc',
-    'setup-mingw-w64':       'setup_mingw64',
+    'setup-mingw_w64':       'setup_schroot',
     'setup-schroot-centos5': 'setup_schroot',
     'setup-schroot-centos6': 'setup_schroot',
     'setup-schroot-centos7': 'setup_schroot',
@@ -350,6 +350,20 @@ deb http://archive.ubuntu.com/ubuntu/ precise-security main restricted universe 
         ('write_file', 'update.sh', 'yum update -y\ngem update fpm\n'),
         ('fpm_setup',  'fpm_package.sh'),
         ('schroot_conf', 'CentOS 7')
+    ],
+
+    'mingw_w64:amd64': [
+        ('set_alias', 'mingw-w64'),
+        ('debootstrap', 'trusty', 'http://archive.ubuntu.com/ubuntu/'),
+        ('write_file', 'etc/apt/sources.list', """
+deb http://archive.ubuntu.com/ubuntu/ trusty          main restricted universe multiverse
+deb http://archive.ubuntu.com/ubuntu/ trusty-updates  main restricted universe multiverse
+deb http://archive.ubuntu.com/ubuntu/ trusty-security main restricted universe multiverse"""),
+        ('shell', 'apt-get update'),
+        ('shell', 'apt-get dist-upgrade --assume-yes'),
+        ('shell', 'apt-get install --assume-yes build-essential mingw-w64 nsis python ruby perl gperf bison flex git'),
+        ('write_file', 'update.sh', 'apt-get update\napt-get dist-upgrade --assume-yes\n'),
+        ('schroot_conf', 'MinGW-w64 on Ubuntu Trusty')
     ]
 }
 
@@ -841,12 +855,6 @@ def build_update_schroot(config, basedir):
     for name in get_output('schroot', '--list').split('\n'):
         message('******************* %s\n' % name[name.index('wkhtmltopdf-'):])
         shell('schroot -c %s -- /bin/bash /update.sh' % name[name.index('wkhtmltopdf-'):])
-
-def check_setup_mingw64(config):
-    check_running_on_debian()
-
-def build_setup_mingw64(config, basedir):
-    install_packages('build-essential', 'mingw-w64', 'nsis')
 
 def check_source_tarball(config):
     if not get_output('git', 'rev-parse', '--short', 'HEAD'):
