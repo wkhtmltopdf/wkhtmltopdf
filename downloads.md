@@ -39,6 +39,15 @@ OS X 10.6+ (Carbon)   | [32-bit](http://downloads.sourceforge.net/project/wkhtml
 OS X 10.6+ (Cocoa)    | [64-bit](http://downloads.sourceforge.net/project/wkhtmltopdf/0.12.2-dev/wkhtmltox-0.12.2-dev-5dea253_osx-cocoa-x86-64.pkg)                                                                                                                                               | text not selectable and larger file sizes, see [QTBUG-10094](https://bugreports.qt-project.org/browse/QTBUG-10094)
 Others                | [source code](http://downloads.sourceforge.net/project/wkhtmltopdf/0.12.2-dev/wkhtmltox-0.12.2-dev-5dea253.tar.bz2)                                                                                                                                                       | read [INSTALL.md](https://github.com/wkhtmltopdf/wkhtmltopdf/blob/master/INSTALL.md#others) for compilation instructions
 
+## Bleeding edge
+
+An [alpha release](https://github.com/wkhtmltopdf/wkhtmltopdf/blob/0.13/README.md#013-alpha) for the `0.13` series is available. Please note that this is a work-in-progress and not all the features have been ported to it yet, so do not expect any support for any bugs you may encounter.
+
+Flavor              | Downloads                                                                                                                                                                                                                                                                        | Comments
+---------           | ---------                                                                                                                                                                                                                                                                        | --------
+Windows (MSVC 2013) | [32-bit](http://downloads.sourceforge.net/project/wkhtmltopdf/0.13.0-alpha/wkhtmltox-0.13.0-alpha-391fd34_msvc2013-win32.exe)        &emsp; [64-bit](http://downloads.sourceforge.net/project/wkhtmltopdf/0.13.0-alpha/wkhtmltox-0.13.0-alpha-391fd34_msvc2013-win64.exe)        | built with VS2013 Update 4 (CE)
+Windows (MinGW-w64) | [32-bit](http://downloads.sourceforge.net/project/wkhtmltopdf/0.13.0-alpha/wkhtmltox-0.13.0-alpha-391fd34_mingw-w64-cross-win32.exe) &emsp; [64-bit](http://downloads.sourceforge.net/project/wkhtmltopdf/0.13.0-alpha/wkhtmltox-0.13.0-alpha-391fd34_mingw-w64-cross-win64.exe) | built with MinGW-w64 3.1.0 on Ubuntu 14.04.1
+
 ## Archive
 
 Please note that bug reports **will not be accepted** against the following, which are considered obsolete. It is recommended to use the latest stable or testing release instead, and report an issue if there is a regression from a previous release.
