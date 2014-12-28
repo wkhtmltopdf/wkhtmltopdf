@@ -46,7 +46,8 @@ Please note that bug reports **will not be accepted** against the following, whi
 Date       | Release
 ----       | -------
 2014-02-06 | [0.12.0](http://sourceforge.net/projects/wkhtmltopdf/files/archive/0.12.0/)
-2010-05-24 | [0.9.9](http://sourceforge.net/projects/wkhtmltopdf/files/archive/0.9.9/)
+
+If you need versions older than `0.12.0`, you can look at the [old downloads](old-downloads.html).
 
 ## FAQ
 
