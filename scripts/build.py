@@ -28,6 +28,7 @@ BUILDERS = {
     'setup-schroot-centos6': 'setup_schroot',
     'setup-schroot-centos7': 'setup_schroot',
     'setup-schroot-wheezy':  'setup_schroot',
+    'setup-schroot-jessie':  'setup_schroot',
     'setup-schroot-trusty':  'setup_schroot',
     'setup-schroot-precise': 'setup_schroot',
     'update-all-schroots':   'update_schroot',
@@ -38,6 +39,8 @@ BUILDERS = {
     'centos7-amd64':         'linux_schroot',
     'wheezy-i386':           'linux_schroot',
     'wheezy-amd64':          'linux_schroot',
+    'jessie-i386':           'linux_schroot',
+    'jessie-amd64':          'linux_schroot',
     'trusty-i386':           'linux_schroot',
     'trusty-amd64':          'linux_schroot',
     'precise-i386':          'linux_schroot',
@@ -183,6 +186,15 @@ FPM_SETUP = {
         '--depends':         ['fontconfig', 'libfontconfig1', 'libfreetype6', 'libpng12-0', 'zlib1g', 'libjpeg8', 'libssl1.0.0',
                               'libx11-6', 'libxext6', 'libxrender1', 'xfonts-base', 'xfonts-75dpi', 'libstdc++6', 'libc6']
     },
+    'jessie': {
+        '-t':                'deb',
+        '--deb-compression': 'xz',
+        '--provides':        'wkhtmltopdf',
+        '--conflicts':       'wkhtmltopdf',
+        '--replaces':        'wkhtmltopdf',
+        '--depends':         ['fontconfig', 'libfontconfig1', 'libfreetype6', 'libpng12-0', 'zlib1g', 'libjpeg62-turbo', 'libssl1.0.0',
+                              'libx11-6', 'libxext6', 'libxrender1', 'xfonts-base', 'xfonts-75dpi', 'libstdc++6', 'libc6']
+    },
     'trusty': {
         '-t':                'deb',
         '--deb-compression': 'xz',
@@ -246,6 +258,22 @@ deb http://security.debian.org/   wheezy/updates main contrib non-free"""),
         ('write_file', 'update.sh', 'apt-get update\napt-get dist-upgrade --assume-yes\ngem update fpm\n'),
         ('fpm_setup',  'fpm_package.sh'),
         ('schroot_conf', 'Debian Wheezy')
+    ],
+
+    'jessie': [
+        ('debootstrap', 'jessie', 'http://ftp.us.debian.org/debian/'),
+        ('write_file', 'etc/apt/sources.list', """
+deb http://ftp.debian.org/debian/ jessie         main contrib non-free
+deb http://ftp.debian.org/debian/ jessie-updates main contrib non-free
+deb http://security.debian.org/   jessie/updates main contrib non-free"""),
+        ('shell', 'apt-get update'),
+        ('shell', 'apt-get dist-upgrade --assume-yes'),
+        ('shell', 'apt-get install --assume-yes xz-utils libssl-dev libpng-dev libjpeg62-turbo-dev zlib1g-dev rubygems ruby-dev'),
+        ('shell', 'apt-get install --assume-yes libfontconfig1-dev libfreetype6-dev libx11-dev libxext-dev libxrender-dev'),
+        ('shell', 'gem install fpm --no-ri --no-rdoc'),
+        ('write_file', 'update.sh', 'apt-get update\napt-get dist-upgrade --assume-yes\ngem update fpm\n'),
+        ('fpm_setup',  'fpm_package.sh'),
+        ('schroot_conf', 'Debian Jessie')
     ],
 
     'trusty': [
