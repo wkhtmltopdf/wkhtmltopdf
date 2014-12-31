@@ -33,7 +33,7 @@ and [non standard home directories](https://github.com/wkhtmltopdf/wkhtmltopdf/i
 (i.e. not located in `/home`) are not supported -- you are advised to
 use a VM instead to build wkhtmltopdf.
 
-Building is supported only on the current Ubuntu release (14.10), and
+Building is supported only on Debian Jessie (i.e. testing release), and
 the binaries are produced in a self-contained chroot environment for the
 target distribution -- you will need to first setup the build environment
 and then only you can perform the build for a 32-bit or 64-bit binary.
