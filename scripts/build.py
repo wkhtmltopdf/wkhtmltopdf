@@ -294,6 +294,8 @@ deb http://archive.ubuntu.com/ubuntu/ trusty-security main restricted universe m
 
     'precise': [
         ('debootstrap', 'precise', 'http://archive.ubuntu.com/ubuntu/'),
+        ('write_file', 'usr/sbin/policy-rc.d', "#!/bin/bash\nexit 101\n"),
+        ('shell', 'chmod a+x /usr/sbin/policy-rc.d'),
         ('write_file', 'etc/apt/sources.list', """
 deb http://archive.ubuntu.com/ubuntu/ precise          main restricted universe multiverse
 deb http://archive.ubuntu.com/ubuntu/ precise-updates  main restricted universe multiverse
@@ -337,6 +339,9 @@ deb http://archive.ubuntu.com/ubuntu/ precise-security main restricted universe 
 
     'centos7:amd64': [
         ('rinse', 'centos-7'),
+        ('shell', 'yum install -y deltarpm'),
+        ('shell', "sed -i 's/mirrorlist/#mirrorlist/g' /etc/yum.repos.d/CentOS-Base.repo"),
+        ('shell', "sed -i 's/#baseurl/baseurl/g' /etc/yum.repos.d/CentOS-Base.repo"),
         ('shell', 'yum update -y'),
         ('append_file', 'etc/yum.conf', 'exclude = *.i?86\n'),
         ('shell', 'yum install -y gcc gcc-c++ make diffutils perl ruby-devel rubygems rpm-build libffi-devel'),
@@ -756,9 +761,10 @@ def build_setup_schroot(config, basedir):
 
     for arch in ARCH:
         message('******************* %s-%s\n' % (chroot, arch))
-        unmount  = False
         base_dir = os.environ.get('WKHTMLTOX_CHROOT') or '/var/chroot'
         root_dir = os.path.join(base_dir, 'wkhtmltopdf-%s-%s' % (chroot, arch))
+        os.system('umount %s/proc' % root_dir)
+        os.system('umount %s/sys'  % root_dir)
         rmdir(root_dir)
         mkdir_p(root_dir)
         for command in command_list:
@@ -777,10 +783,11 @@ def build_setup_schroot(config, basedir):
                 cmd = (arch == 'i386' and 'linux32 chroot' or 'chroot')
                 shell('%s %s mount -t proc  proc  /proc' % (cmd, root_dir))
                 shell('%s %s mount -t sysfs sysfs /sys'  % (cmd, root_dir))
-                unmount = True
             elif name == 'rinse':
                 cmd = (arch == 'i386' and 'linux32 rinse' or 'rinse')
                 shell('%s --arch %s --distribution %s --directory %s' % (cmd, arch, command[1], root_dir))
+                shell('%s %s mount -t proc  proc  /proc' % (cmd, root_dir))
+                shell('%s %s mount -t sysfs sysfs /sys'  % (cmd, root_dir))
             elif name == 'shell':
                 cmd = (arch == 'i386' and 'linux32 chroot' or 'chroot')
                 shell('%s %s %s' % (cmd, root_dir, command[1]))
@@ -812,9 +819,8 @@ def build_setup_schroot(config, basedir):
                 if arch == 'i386' and 'amd64' in ARCH:
                     cfg.write('personality=linux32\n')
                 cfg.close()
-        if unmount:
-            shell('umount %s/proc' % root_dir)
-            shell('umount %s/sys'  % root_dir)
+        os.system('umount %s/proc' % root_dir)
+        os.system('umount %s/sys'  % root_dir)
 
 def check_update_schroot(config):
     check_running_on_debian()
