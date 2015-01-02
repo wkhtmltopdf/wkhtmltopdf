@@ -40,7 +40,7 @@ target.path=$$INSTALLBASE/bin
 
 include(../shared/shared.pri)
 
-contains(DEFINES, QT_SHARED) {
+CONFIG(shared, shared|static) {
   LIBS += -L../../bin -lwkhtmltox
 } else {
   include(../lib/lib.pri)

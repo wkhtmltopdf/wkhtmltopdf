@@ -15,26 +15,10 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with wkhtmltopdf.  If not, see <http:#www.gnu.org/licenses/>.
 
-QT4_PRL = libQtGui.prl  QtGui.prl  QtGui.framework/QtGui.prl
-QT5_PRL = libQt5Gui.prl Qt5Gui.prl
-
-for(prl, QT4_PRL):exists($$[QT_INSTALL_LIBS]/$${prl}) {
-    include($$[QT_INSTALL_LIBS]/$${prl})
-    CONFIG += qt_gui_prl_found
+CONFIG(static, shared|static):lessThan(QT_MAJOR_VERSION, 5) {
+    DEFINES  += QT4_STATICPLUGIN_TEXTCODECS
+    QTPLUGIN += qcncodecs qjpcodecs qkrcodecs qtwcodecs
 }
-for(prl, QT5_PRL):exists($$[QT_INSTALL_LIBS]/$${prl}) {
-    include($$[QT_INSTALL_LIBS]/$${prl})
-    CONFIG += qt_gui_prl_found
-}
-
-qt_gui_prl_found {
-    contains(QMAKE_PRL_CONFIG, static): DEFINES += QT_STATIC
-    else:                               DEFINES += QT_SHARED
-}
-contains(QMAKE_PRL_CONFIG, static): QTPLUGIN += qcncodecs qjpcodecs qkrcodecs qtwcodecs
-
-# if we can't determine, assume that it is shared
-!qt_gui_prl_found: DEFINES += QT_SHARED
 
 INCLUDEPATH += ../../include
 RESOURCES    = $$PWD/wkhtmltopdf.qrc

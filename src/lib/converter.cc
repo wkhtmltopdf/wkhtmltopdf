@@ -24,7 +24,7 @@
 #include <QWebFrame>
 #include <qapplication.h>
 
-#ifdef QT_STATIC
+#ifdef QT4_STATICPLUGIN_TEXTCODECS
 #include <QtPlugin>
 Q_IMPORT_PLUGIN(qcncodecs)
 Q_IMPORT_PLUGIN(qjpcodecs)

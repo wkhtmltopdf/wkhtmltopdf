@@ -22,7 +22,7 @@ include(../../common.pri)
 include(lib.pri)
 
 DEF_FILE = lib.def
-contains(QMAKE_PRL_CONFIG, static): DEFINES += QT_NODLL
+CONFIG(static, shared|static): DEFINES += QT_NODLL
 
 unix {
    headers.target=headers
