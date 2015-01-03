@@ -110,16 +110,15 @@ struct DLL_LOCAL ReflectImpl< QPair<QString, QString> >: public ReflectSimple {
 	ReflectImpl(QPair<QString, QString> & _): p(_) {};
 
 	QString get() {
-		return p.first.replace("\\", "\\\\").replace(",", "\\,") + "," +
-			p.second.replace("\\", "\\\\").replace(",", "\\,");
+		return p.first + "\n" + p.second;
 	}
 
 	void set(const QString & value, bool * ok) {
-		QStringList l = value.split(",");
-		if (l.size() != 0) {*ok=false; return;}
-		*ok=true;
-		p.first = l[0].replace("\\,",",").replace("\\\\","\\");
-		p.second = l[1].replace("\\,",",").replace("\\\\","\\");
+		QStringList l = value.split("\n");
+		if (l.size() != 2) {*ok=false; return;}
+		*ok      = true;
+		p.first  = l[0];
+		p.second = l[1];
 	}
 };
 
