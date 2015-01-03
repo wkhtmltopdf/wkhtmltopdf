@@ -40,6 +40,7 @@ Function ${un}DeleteFiles
   Delete "$INSTDIR\bin\libgcc_s_sjlj-1.dll"
   Delete "$INSTDIR\bin\libgcc_s_seh-1.dll"
   Delete "$INSTDIR\bin\libstdc++-6.dll"
+  Delete "$INSTDIR\bin\libwinpthread-1.dll"
   Delete "$INSTDIR\bin\wkhtmltoimage.exe"
   Delete "$INSTDIR\bin\wkhtmltopdf.exe"
   Delete "$INSTDIR\bin\wkhtmltox.dll"

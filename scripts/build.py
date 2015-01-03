@@ -987,9 +987,13 @@ MINGW_W64_PREFIX = {
 }
 
 def check_mingw64_cross(config):
-    shell('%s-gcc --version' % MINGW_W64_PREFIX[rchop(config, '-dbg')])
+    chroot_shell('mingw-w64', '%s-gcc --version' % MINGW_W64_PREFIX[rchop(config, '-dbg')])
 
 def build_mingw64_cross(config, basedir):
+    os.chdir(os.path.realpath(os.path.join(basedir, '..')))
+    chroot_shell('mingw-w64', 'python scripts/build.py %s -chroot-build' % ' '.join(sys.argv[1:]))
+
+def chroot_build_mingw64_cross(config, basedir):
     version, simple_version = get_version(basedir)
     build_deplibs(config, basedir, mingw_w64=MINGW_W64_PREFIX.get(rchop(config, '-dbg')))
 
@@ -998,11 +1002,11 @@ def build_mingw64_cross(config, basedir):
 
     configure_args = qt_config('mingw-w64-cross',
         '--prefix=%s'   % qtdir,
-        '-I %s/include' % libdir,
-        '-L %s/lib'     % libdir,
+        '-I%s/include'  % libdir,
+        '-L%s/lib'      % libdir,
         '-device-option CROSS_COMPILE=%s-' % MINGW_W64_PREFIX[rchop(config, '-dbg')])
 
-    os.environ['OPENSSL_LIBS'] = '-lssl -lcrypto -L %s/lib -lws2_32 -lgdi32 -lcrypt32' % libdir
+    os.environ['OPENSSL_LIBS'] = '-lssl -lcrypto -L%s/lib -lws2_32 -lgdi32 -lcrypt32' % libdir
 
     mkdir_p(qtdir)
     os.chdir(qtdir)
@@ -1026,12 +1030,12 @@ def build_mingw64_cross(config, basedir):
     shell('make')
     shutil.copy('bin/libwkhtmltox0.a', 'bin/wkhtmltox.lib')
     shell('rm -f bin/lib*.dll')
-    for dll in ['libgcc_s_sjlj-1.dll', 'libgcc_s_seh-1.dll', 'libstdc++-6.dll']:
+    for dll in ['libgcc_s_sjlj-1.dll', 'libstdc++-6.dll', 'libwinpthread-1.dll']:
         dll_path = get_output('dpkg', '-S', dll)
         if dll_path:
             for line in dll_path.split('\n'):
                 loc = line[1+line.index(':'):].strip()
-                if exists(loc) and MINGW_W64_PREFIX[rchop(config, '-dbg')] in loc and '-posix' not in loc:
+                if exists(loc) and MINGW_W64_PREFIX[rchop(config, '-dbg')] in loc:
                     shell('cp %s bin/' % loc)
 
     os.chdir(os.path.join(basedir, '..'))
