@@ -203,9 +203,6 @@ PdfCommandLineParser::PdfCommandLineParser(PdfGlobal & s, QList<PdfObject> & ps)
  	addarg("page-height", 0, "Page height", new UnitRealSetter(s.size.height,"unitreal"));
  	addarg("page-width", 0, "Page width", new UnitRealSetter(s.size.width,"unitreal"));
 
-#if QT_VERSION < 0x050000
-	addarg("dump-render-tree",0,"Dump the WebKit render tree to a file (for debugging)",new QStrSetter(s.dumpRenderTree,"file"));
-#endif
 	addGlobalLoadArgs(s.load);
 
 	extended(true);

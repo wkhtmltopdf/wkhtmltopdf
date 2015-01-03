@@ -2,7 +2,6 @@ v0.12.2 (unreleased)
 --------------------
 * use OpenSSL 1.0.1j for the Windows builds
 * fix build failure with unpatched Qt >= 5.3
-* add option --dump-render-tree for viewing the WebKit render tree
 * **#1539**: **[qt]** using OpenType fonts now results in selectable text on Windows
 * **#1638**: **[qt]** fix incorrect rendering of JPEG images on Windows Server 2008 x64
 * **#1639**: block access to local files on Windows when an invalid URL is used
