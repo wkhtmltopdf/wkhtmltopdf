@@ -550,7 +550,7 @@ void MultiPageLoaderPrivate::clearResources() {
 		ResourceObject *tmp = resources.takeFirst();
 		tmp->deleteLater();
 	}
-	tempIn.remove();
+	tempIn.removeAll();
 }
 
 void MultiPageLoaderPrivate::cancel() {

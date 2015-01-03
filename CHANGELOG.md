@@ -13,6 +13,7 @@ v0.12.2 (unreleased)
 * **#1722**: **[qt]** fix broken hyphenation with soft-hyphens
 * **#1769**: fixed unicode URLs in links
 * **#1772**: added variable 'isodate' for substitution in headers/footers
+* **#1790**: fix handling of temporary files during PDF conversion via API
 * **#1808**: fix [sitepage] and [sitepages] not working without HTML headers/footers
 * **#1825**: fix handling of non-ASCII characters in command-line arguments
 * **#1863**: **[qt]** blank page or crash with low DPI on Windows

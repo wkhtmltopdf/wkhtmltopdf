@@ -39,25 +39,25 @@ TempFile::TempFile() {
 }
 
 TempFile::~TempFile() {
-	remove();
+	removeAll();
 }
 
 /*!
-  \brief Create a new temporary file, deleting the old if one exists
+  \brief Create a new temporary file
   \param ext The extention of the temporary file
   \returns Path of the new temporary file
 */
 QString TempFile::create(const QString & ext) {
-	remove();
-	path = QDir::tempPath()+"/wktemp-"+QUuid::createUuid().toString().mid(1,36)+ext;
+	QString path = QDir::tempPath()+"/wktemp-"+QUuid::createUuid().toString().mid(1,36)+ext;
+	paths.append(path);
 	return path;
 }
 
 /*!
-  \brief Remove the temporary file hold by this object it it exists
+  \brief Remove all the temporary files held by this object
 */
-void TempFile::remove() {
-	if (!path.isEmpty())
+void TempFile::removeAll() {
+	foreach (const QString &path, paths)
 		QFile::remove(path);
-	path="";
+	paths.clear();
 }

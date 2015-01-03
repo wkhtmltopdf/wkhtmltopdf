@@ -71,7 +71,6 @@ public:
 	QList<QWebPage *> headers;
 	QList<QWebPage *> footers;
 	int pageCount;
-	TempFile tocStyleFile;
 	TempFile tocFile;
 
 	void clear() {
@@ -84,8 +83,7 @@ public:
 		footers.clear();
 		webPageToObject.remove(page);
  		page=0;
-		tocStyleFile.remove();
-		tocFile.remove();
+		tocFile.removeAll();
 	}
 
 	PageObject(const settings::PdfObject & set, const QString * d=NULL):

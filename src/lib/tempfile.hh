@@ -21,18 +21,18 @@
 #ifndef __TEMPFILE_HH__
 #define __TEMPFILE_HH__
 
-#include <QString>
+#include <QStringList>
 
 #include "dllbegin.inc"
 
 class DLL_LOCAL TempFile {
 private:
-	QString path;
+	QStringList paths;
 public:
 	TempFile();
 	~TempFile();
 	QString create(const QString & ext);
-	void remove();
+	void removeAll();
 };
 
 #include "dllend.inc"

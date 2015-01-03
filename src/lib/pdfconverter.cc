@@ -487,7 +487,7 @@ void PdfConverterPrivate::loadTocs() {
 
 		QString style = ps.tocXsl;
 		if (style.isEmpty()) {
-			style = obj.tocStyleFile.create(".xsl");
+			style = obj.tocFile.create(".xsl");
 			StreamDumper styleDump(style);
 			dumpDefaultTOCStyleSheet(styleDump.stream, ps.toc);
 		}
