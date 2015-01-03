@@ -875,8 +875,8 @@ MSVC_LOCATION = {
     'msvc2013': 'VS120COMNTOOLS'
 }
 MSVC_RUNTIME = {
-    'msvc2013-win32': ('18f81495bc5e6b293c69c28b0ac088a96debbab2', 'http://download.microsoft.com/download/2/E/6/2E61CFA4-993B-4DD4-91DA-3737CD5CD6E3/vcredist_x86.exe'),
-    'msvc2013-win64': ('bef7e7cc1dcc45c0c11682d59c64843727557179', 'http://download.microsoft.com/download/2/E/6/2E61CFA4-993B-4DD4-91DA-3737CD5CD6E3/vcredist_x64.exe')
+    'msvc2013-win32': ('df7f0a73bfa077e483e51bfb97f5e2eceedfb6a3', 'http://download.microsoft.com/download/2/E/6/2E61CFA4-993B-4DD4-91DA-3737CD5CD6E3/vcredist_x86.exe'),
+    'msvc2013-win64': ('8bf41ba9eef02d30635a10433817dbb6886da5a2', 'http://download.microsoft.com/download/2/E/6/2E61CFA4-993B-4DD4-91DA-3737CD5CD6E3/vcredist_x64.exe')
 }
 
 def check_msvc(config):
