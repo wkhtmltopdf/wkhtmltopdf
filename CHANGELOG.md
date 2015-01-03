@@ -17,6 +17,7 @@ v0.12.2 (unreleased)
 * **#1825**: fix handling of non-ASCII characters in command-line arguments
 * **#1863**: **[qt]** blank page or crash with low DPI on Windows
 * **#1906**: fix wrong comparison when parsing list parameters
+* **#1944**: **[breaking change]** fix the reflection subsystem to fix the non-functional API
 * **#1949**: fix generation of tarball in the posix-local build
 * **#1955**: installer does not work on 32-bit OS X (10.6.x or 10.7.x)
 * **#1961**: add explicit dependency on minimal font packages for all linux targets

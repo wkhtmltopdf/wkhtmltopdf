@@ -148,9 +148,10 @@ struct DLL_LOCAL ReflectImpl< QList< X> >: public Reflect {
 
 	virtual QString get(const char * name) {
 		int ps, next, elm;
-		if (!strcmp(name,"size")) return QString::number(l.size());
-		parse(name, ps, next, elm);
-		if (ps > 0 || !strncmp(name, "last", ps)) elm = l.size() -1;
+		if (!strcmp(name,"size") || !strcmp(name,"length") || !strcmp(name,"count")) return QString::number(l.size());
+		if (!parse(name, ps, next, elm)) return QString();
+		if (ps > 0 && !l.isEmpty() && !strncmp(name, "first", ps)) elm = 0;
+		if (ps > 0 && !l.isEmpty() && !strncmp(name, "last",  ps)) elm = l.size() - 1;
 		if (elm < 0 || elm >= l.size()) return QString();
 		ReflectImpl<X> impl(l[elm]);
 		return static_cast<Reflect*>(&impl)->get(name+next);
@@ -160,17 +161,23 @@ struct DLL_LOCAL ReflectImpl< QList< X> >: public Reflect {
 		int ps, next, elm;
 		if (!strcmp(name,"clear"))
 			l.clear();
-		else if (!strcmp(name,"pop"))
-			l.pop_back();
 		else if (!strcmp(name,"append"))
-			l.push_front(X());
-		else {
-			parse(name, ps, next, elm);
-			if (ps > 0 || !strncmp(name, "last", ps)) elm = l.size() -1;
-			if (ps > 0 || !strncmp(name, "append", ps)) {
-				l.push_front(X());
-				elm = l.size() -1;
+			l.append(X());
+		else if (!strcmp(name,"prepend"))
+			l.prepend(X());
+		else if (!strcmp(name,"delete")) {
+			bool ok = true;
+			int idx = value.toInt(&ok);
+			if (ok && idx >= 0 && idx < l.size()) {
+				l.removeAt(idx);
+				return true;
 			}
+			return false;
+		}
+		else {
+			if (!parse(name, ps, next, elm)) return false;
+			if (ps > 0 && !l.isEmpty() && !strncmp(name, "first", ps)) elm = 0;
+			if (ps > 0 && !l.isEmpty() && !strncmp(name, "last",  ps)) elm = l.size() - 1;
 			ReflectImpl<X> impl(l[elm]);
 			return static_cast<Reflect *>(&impl)->set(name+next, value);
 		}
