@@ -392,7 +392,7 @@ TableOfContent::TableOfContent():
 	forwardLinks(true),
 	backLinks(false),
 	indentation("1em"),
-	fontScale(0.8) {}
+	fontScale(0.8f) {}
 
 PdfObject::PdfObject():
 	useExternalLinks(true),
