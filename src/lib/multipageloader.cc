@@ -252,6 +252,11 @@ void ResourceObject::loadFinished(bool ok) {
 			warning(QString("Failed loading page ") + url.toString() + " (ignored)");
 	}
 
+	if (!multiPageLoader.isMainLoader) {
+		loadDone();
+		return;
+	}
+
 	// Evaluate extra user supplied javascript
 	foreach (const QString & str, settings.runScript)
 		webPage.mainFrame()->evaluateJavaScript(str);
@@ -568,8 +573,9 @@ void MultiPageLoaderPrivate::fail() {
   \brief Construct a multipage loader object, load settings read from the supplied settings
   \param s The settings to be used while loading pages
 */
-MultiPageLoader::MultiPageLoader(settings::LoadGlobal & s):
+MultiPageLoader::MultiPageLoader(settings::LoadGlobal & s, bool mainLoader):
 	d(new MultiPageLoaderPrivate(s, *this)) {
+	d->isMainLoader = mainLoader;
 }
 
 MultiPageLoader::~MultiPageLoader() {

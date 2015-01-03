@@ -76,7 +76,7 @@ bool DLL_LOCAL looksLikeHtmlAndNotAUrl(QString str) {
 }
 
 PdfConverterPrivate::PdfConverterPrivate(PdfGlobal & s, PdfConverter & o) :
-	settings(s), pageLoader(s.load),
+	settings(s), pageLoader(s.load, true),
 	out(o), printer(0), painter(0)
 #ifdef __EXTENSIVE_WKHTMLTOPDF_QT_HACK__
     , webPrinter(0), measuringHFLoader(s.load), hfLoader(s.load), tocLoader1(s.load), tocLoader2(s.load)

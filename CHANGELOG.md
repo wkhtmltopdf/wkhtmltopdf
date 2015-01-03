@@ -16,6 +16,7 @@ v0.12.2 (unreleased)
 * **#1808**: fix [sitepage] and [sitepages] not working without HTML headers/footers
 * **#1825**: fix handling of non-ASCII characters in command-line arguments
 * **#1863**: **[qt]** blank page or crash with low DPI on Windows
+* **#1892**: --window-status causes endless loop with --header-html
 * **#1906**: fix wrong comparison when parsing list parameters
 * **#1944**: **[breaking change]** fix the reflection subsystem to fix the non-functional API
 * **#1949**: fix generation of tarball in the posix-local build

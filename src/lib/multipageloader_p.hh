@@ -120,6 +120,7 @@ public:
 
 	int loading;
 	int progressSum;
+	bool isMainLoader;
 	bool loadStartedEmitted;
 	bool hasError;
 	bool finishedEmitted;
