@@ -426,8 +426,8 @@ DEPENDENT_LIBS = {
 
     'libpng': {
         'order' : 3,
-        'url' : 'http://downloads.sourceforge.net/libpng/libpng-1.5.19.tar.gz',
-        'sha1': 'c4cacb5512fab1f0b6e5673766b0d89669205756',
+        'url' : 'http://downloads.sourceforge.net/libpng/libpng-1.5.21.tar.gz',
+        'sha1': '0ce1aa25abd55ad153516a29735b8ad432b4b771',
         'build' : {
             'msvc*': {
                 'result': {
@@ -514,8 +514,8 @@ DEPENDENT_LIBS = {
 
     'xz': {
         'order' : 5,
-        'url' : 'http://tukaani.org/xz/xz-5.0.5.tar.gz',
-        'sha1': '26fec2c1e409f736e77a85e4ab314dc74987def0',
+        'url' : 'http://tukaani.org/xz/xz-5.2.0.tar.gz',
+        'sha1': 'ef6b8e0b6fd85eb1b844e555ae3ecbb3a4aa8e81',
         'build' : {
             'osx*': {
                 'result': ['bin/xz'],

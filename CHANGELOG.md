@@ -1,6 +1,6 @@
 v0.12.2 (unreleased)
 --------------------
-* use OpenSSL 1.0.1j for the Windows builds
+* external libraries updated: OpenSSL to 1.0.1j, libpng to 1.5.21 and xz to 5.2.0
 * fix build failure with unpatched Qt >= 5.3
 * **#1539**: **[qt]** using OpenType fonts now results in selectable text on Windows
 * **#1638**: **[qt]** fix incorrect rendering of JPEG images on Windows Server 2008 x64
