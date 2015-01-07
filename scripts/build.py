@@ -568,8 +568,9 @@ if platform.system() == 'Windows':
         import winreg
     except ImportError:
         import _winreg as winreg
-
-CPU_COUNT = max(2, multiprocessing.cpu_count()-1)   # leave one CPU free
+    CPU_COUNT = max(2, multiprocessing.cpu_count()-1)   # leave one CPU free
+else:
+    CPU_COUNT = max(2, multiprocessing.cpu_count())
 
 def rchop(s, e):
     if s.endswith(e):
