@@ -136,7 +136,7 @@ struct DLL_LOCAL ReflectImpl< QList< X> >: public Reflect {
 			while (name[next] != '\0' && name[next] != ']') ++next;
 			bool ok=true;
 			elm = QString::fromLocal8Bit(name+1,next-1).toInt(&ok);
-			if (name[next] == ']') ++next;
+			while (name[next] == ']' || name[next] == '.') ++next;
 			return ok;
 		}
 		parmsize = 0;
