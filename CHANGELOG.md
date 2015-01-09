@@ -1,4 +1,4 @@
-v0.12.2 (unreleased)
+v0.12.2 (2015-01-09)
 --------------------
 * external libraries updated: OpenSSL to 1.0.1k, libpng to 1.5.21 and xz to 5.2.0
 * fix build failure with unpatched Qt >= 5.3
