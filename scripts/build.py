@@ -370,12 +370,14 @@ deb http://archive.ubuntu.com/ubuntu/ trusty-security main restricted universe m
 DEPENDENT_LIBS = {
     'openssl': {
         'order' : 1,
-        'url'   : 'https://www.openssl.org/source/openssl-1.0.1j.tar.gz',
-        'sha1'  : 'cff86857507624f0ad42d922bb6f77c4f1c2b819',
+        'url'   : 'https://www.openssl.org/source/openssl-1.0.1k.tar.gz',
+        'sha1'  : '19d818e202558c212a9583fcdaf876995a633ddf',
         'build' : {
             'msvc*-win32*': {
                 'result': ['include/openssl/ssl.h', 'lib/ssleay32.lib', 'lib/libeay32.lib'],
-                'replace': [('util/pl/VC-32.pl', ' /MT', ' /MD')],
+                'replace': [('util/pl/VC-32.pl', ' /MT', ' /MD'),
+                            ('crypto/cversion.c', 'return(cflags);', 'return(CFLAGS);'),
+                            ('util/mkbuildinf.pl', '#define CFLAGS', '#define CFLAGS cflags')],
                 'commands': [
                     'perl Configure --openssldir=%(destdir)s VC-WIN32 no-asm',
                     'ms\\do_ms.bat',
@@ -383,7 +385,9 @@ DEPENDENT_LIBS = {
             },
             'msvc*-win64*': {
                 'result': ['include/openssl/ssl.h', 'lib/ssleay32.lib', 'lib/libeay32.lib'],
-                'replace': [('util/pl/VC-32.pl', ' /MT', ' /MD')],
+                'replace': [('util/pl/VC-32.pl', ' /MT', ' /MD'),
+                            ('crypto/cversion.c', 'return(cflags);', 'return(CFLAGS);'),
+                            ('util/mkbuildinf.pl', '#define CFLAGS', '#define CFLAGS cflags')],
                 'commands': [
                     'perl Configure --openssldir=%(destdir)s VC-WIN64A',
                     'ms\\do_win64a.bat',
@@ -391,6 +395,8 @@ DEPENDENT_LIBS = {
             },
             'mingw-w64-cross-win*': {
                 'result': ['include/openssl/ssl.h', 'lib/libssl.a', 'lib/libcrypto.a'],
+                'replace': [('crypto/cversion.c', 'return(cflags);', 'return(CFLAGS);'),
+                            ('util/mkbuildinf.pl', '#define CFLAGS', '#define CFLAGS cflags')],
                 'commands': [
                     'perl Configure --openssldir=%(destdir)s --cross-compile-prefix=%(mingw_w64)s- no-shared no-asm mingw64',
                     'make',
