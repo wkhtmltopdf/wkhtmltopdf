@@ -1,6 +1,6 @@
 v0.12.2.1 (unreleased)
 ----------------------
-
+* **#2142**: fix wkhtmltoimage ignoring --javascript-delay and --window-status
 
 v0.12.2 (2015-01-09)
 --------------------
