@@ -109,10 +109,6 @@ latest Xcode for your OS X version. Additionally, you will need to run the comma
 `sudo gem install fpm --no-ri --no-rdoc` in the terminal to install
 [fpm](https://github.com/jordansissel/fpm), which is used for building the package.
 
-The Carbon build is recommended because it generates PDFs with smaller
-file sizes and selectable text as compared to the Cocoa version, see
-[QTBUG-10094](https://bugreports.qt-project.org/browse/QTBUG-10094).
-
 Target          | Build Command
 ------          | -------------
 32-bit Carbon   | `scripts/build.py osx-carbon-i386`
