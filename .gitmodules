@@ -1,3 +1,0 @@
-[submodule "qt"]
-	path = qt
-	url = https://github.com/wkhtmltopdf/qt.git
