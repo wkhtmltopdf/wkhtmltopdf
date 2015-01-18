@@ -1,4 +1,4 @@
-v0.12.2.1 (unreleased)
+v0.12.2.1 (2015-01-19)
 ----------------------
 * update OpenSSL to 1.0.1l
 * **#2084**: **[qt]** make background transparent by default when rendering to PDF
