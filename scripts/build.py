@@ -716,6 +716,19 @@ def build_deplibs(config, basedir, **kwargs):
 
         rmdir(srcdir)
 
+def build_qtmodule(qtdir, name, make_cmd, configure_cmd):
+    module_dir = os.path.join(qtdir, name)
+    configured = ''
+    if exists(os.path.join(qtdir, 'configured')):
+        configured = open(os.path.join(qtdir, 'configured'), 'r').read()
+    if not name in configured or not exists(module_dir):
+        mkdir_p(module_dir)
+        os.chdir(module_dir)
+        shell(configure_cmd)
+        open(os.path.join(qtdir, 'configured'), 'a').write(name+'\n')
+    os.chdir(module_dir)
+    shell(make_cmd)
+
 def check_running_on_debian():
     if not sys.platform.startswith('linux') or not exists('/etc/apt/sources.list'):
         error('This can only be run on a Debian/Ubuntu distribution, aborting.')

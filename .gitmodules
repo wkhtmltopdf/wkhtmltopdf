@@ -1,0 +1,14 @@
+[submodule "qt/qtbase"]
+	path = qt/qtbase
+	url = https://github.com/wkhtmltopdf/qtbase.git
+	branch = wk_master
+[submodule "qt/qtwebkit"]
+	path = qt/qtwebkit
+	url = https://github.com/wkhtmltopdf/qtwebkit.git
+	branch = wk_master
+[submodule "qt/qtsvg"]
+	path = qt/qtsvg
+	url = https://github.com/qtproject/qtsvg.git
+[submodule "qt/qtxmlpatterns"]
+	path = qt/qtxmlpatterns
+	url = https://github.com/qtproject/qtxmlpatterns.git

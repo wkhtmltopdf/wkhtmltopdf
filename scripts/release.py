@@ -17,7 +17,7 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with wkhtmltopdf.  If not, see <http:#www.gnu.org/licenses/>.
 
-import os, sys, platform, subprocess, build
+import os, sys, platform, subprocess, build, glob
 
 def get_build_targets():
     map = {}
@@ -64,9 +64,10 @@ def main():
     rootdir = os.path.realpath(os.path.join(os.path.dirname(os.path.realpath(__file__)), '..'))
     basedir = os.path.join(rootdir, 'static-build')
 
-    os.chdir(os.path.join(rootdir, 'qt'))
-    build.shell('git clean -fdx')
-    build.shell('git reset --hard HEAD')
+    for submodule in glob.glob(os.path.join(rootdir, 'qt', 'qt*')):
+        os.chdir(submodule)
+        build.shell('git clean -fdx')
+        build.shell('git reset --hard HEAD')
     os.chdir(rootdir)
     build.shell('git clean -fdx')
     build.shell('git reset --hard HEAD')
