@@ -100,19 +100,18 @@ QT_CONFIG = {
     ],
 
     'posix': [
+        '-qt-xcb',
         '-silent',                  # perform a silent build
         '-xrender',                 # xrender support is required
         '-largefile',
         '-iconv',                   # iconv support is required for text codecs
         '-openssl',                 # load OpenSSL binaries at runtime
-        '-no-javascript-jit',       # can cause crashes/excess memory usage
         '-no-rpath',
         '-no-dbus',
         '-no-nis',
         '-no-cups',
         '-no-pch',
         '-no-gtkstyle',
-        '-no-nas-sound',
         '-no-sm',
         '-no-xshape',
         '-no-xinerama',
@@ -123,8 +122,6 @@ QT_CONFIG = {
         '-no-xinput',
         '-no-xkb',
         '-no-glib',
-        '-no-gstreamer',
-        '-no-icu',
         '-no-openvg',
         '-no-xsync',
         '-no-audio-backend',
@@ -132,8 +129,7 @@ QT_CONFIG = {
         '-no-ssse3',
         '-no-sse4.1',
         '-no-sse4.2',
-        '-no-avx',
-        '-no-neon'
+        '-no-avx'
     ],
 
     'mingw-w64-cross' : [
@@ -440,6 +436,12 @@ DEPENDENT_LIBS = {
                     'cp -R source source.host',
                     'cd source.host; ./configure; make',
                     'source/configure --host=%(mingw_w64)s --enable-release --disable-debug --enable-static --disable-shared --disable-tests --disable-samples --prefix=%(destdir)s --with-cross-build=`pwd`/source.host',
+                    'make install']
+            },
+            'linux-generic-*': {
+                'result': ['include/unicode/ucnv.h', 'include/unicode/ustring.h', 'lib/libicui18n.a', 'lib/libicuuc.a', 'lib/libicudata.a'],
+                'commands': [
+                    'CFLAGS="-fPIC" CXXFLAGS="-fPIC" source/configure --enable-release --disable-debug --enable-static --disable-shared --disable-tests --disable-samples --disable-dyload --prefix=%(destdir)s',
                     'make install']
             }
         }
@@ -1048,19 +1050,26 @@ def chroot_build_linux_schroot(config, basedir):
     qtdir  = os.path.join(basedir, config, 'qt')
     mkdir_p(qtdir)
 
-    build_qt(qtdir, 'make -j%d' % CPU_COUNT,
-        '%s/../qt/configure %s' % (basedir, qt_config('posix', '--prefix=%s' % qtdir)))
+    os.environ['SQLITE3SRCDIR'] = '%s/../qt/qtbase/src/3rdparty/sqlite' % basedir
+    build_qtmodule(qtdir, 'qtbase', 'make -j%d' % CPU_COUNT,
+        '%s/../qt/qtbase/configure %s' % (basedir, qt_config('posix', '--prefix=%s/qtbase' % qtdir)))
+    build_qtmodule(qtdir, 'qtsvg',  'make -j%d' % CPU_COUNT,
+        '%s/qtbase/bin/qmake %s/../qt/qtsvg/qtsvg.pro' % (qtdir, basedir))
+    build_qtmodule(qtdir, 'qtxmlpatterns', 'make -j%d' % CPU_COUNT,
+        '%s/qtbase/bin/qmake %s/../qt/qtxmlpatterns/qtxmlpatterns.pro' % (qtdir, basedir))
+    build_qtmodule(qtdir, 'qtwebkit', 'make -j%d' % CPU_COUNT,
+        '%s/qtbase/bin/qmake %s/../qt/qtwebkit/WebKit.pro WEBKIT_CONFIG-=build_webkit2' % (qtdir, basedir))
 
     app    = os.path.join(basedir, config, 'app')
     dist   = os.path.join(basedir, config, 'dist')
     mkdir_p(app)
     mkdir_p(dist)
+
     os.chdir(app)
     shell('rm -f bin/*')
 
     os.environ['WKHTMLTOX_VERSION'] = version
-    os.environ['XZ_OPT']            = '-9'
-    shell('%s/bin/qmake %s/../wkhtmltopdf.pro' % (qtdir, basedir))
+    shell('%s/qtbase/bin/qmake %s/../wkhtmltopdf.pro' % (qtdir, basedir))
     shell('make install INSTALL_ROOT=%s' % dist)
 
 def check_linux_generic(config):
@@ -1074,7 +1083,7 @@ def build_linux_generic(config, basedir):
 
     version, simple_version = get_version(basedir)
     os.chdir(os.path.join(basedir, config))
-    shell('XZ_OPT=-9 tar Jcf ../%s-%s_%s.tar.xz wkhtmltox/' % (PROJECT_SETUP['name'], version, config))
+    shell('XZ_OPT=--lzma2=preset=9e,dict=128M tar Jcf ../%s-%s_%s.tar.xz wkhtmltox/' % (PROJECT_SETUP['name'], version, config))
 
 def chroot_build_linux_generic(config, basedir):
     version, simple_version = get_version(basedir)
@@ -1085,11 +1094,20 @@ def chroot_build_linux_generic(config, basedir):
     mkdir_p(qtdir)
 
     configure_args = qt_config('posix',
-        '--prefix=%s'   % qtdir,
-        '-I%s/include'  % libdir,
-        '-L%s/lib'      % libdir,
+        '--prefix=%s/qtbase'   % qtdir,
+        '-I%s/include'         % libdir,
+        '-L%s/lib'             % libdir,
         '-DOPENSSL_NO_SSL2')
-    build_qt(qtdir, 'make -j%d' % CPU_COUNT, '%s/../qt/configure %s' % (basedir, configure_args))
+
+    os.environ['SQLITE3SRCDIR'] = '%s/../qt/qtbase/src/3rdparty/sqlite' % basedir
+    build_qtmodule(qtdir, 'qtbase', 'make -j%d' % CPU_COUNT,
+        '%s/../qt/qtbase/configure %s' % (basedir, configure_args))
+    build_qtmodule(qtdir, 'qtsvg',  'make -j%d' % CPU_COUNT,
+        '%s/qtbase/bin/qmake %s/../qt/qtsvg/qtsvg.pro' % (qtdir, basedir))
+    build_qtmodule(qtdir, 'qtxmlpatterns', 'make -j%d' % CPU_COUNT,
+        '%s/qtbase/bin/qmake %s/../qt/qtxmlpatterns/qtxmlpatterns.pro' % (qtdir, basedir))
+    build_qtmodule(qtdir, 'qtwebkit', 'make -j%d' % CPU_COUNT,
+        '%s/qtbase/bin/qmake %s/../qt/qtwebkit/WebKit.pro WEBKIT_CONFIG-=build_webkit2' % (qtdir, basedir))
 
     app    = os.path.join(basedir, config, 'app')
     dist   = os.path.join(basedir, config, 'wkhtmltox')
@@ -1102,7 +1120,7 @@ def chroot_build_linux_generic(config, basedir):
     shell('rm -f bin/*')
 
     os.environ['WKHTMLTOX_VERSION'] = version
-    shell('%s/bin/qmake %s/../wkhtmltopdf.pro' % (qtdir, basedir))
+    shell('%s/qtbase/bin/qmake %s/../wkhtmltopdf.pro' % (qtdir, basedir))
     shell('make install INSTALL_ROOT=%s' % dist)
 
 # -------------------------------------------------- POSIX local environment
