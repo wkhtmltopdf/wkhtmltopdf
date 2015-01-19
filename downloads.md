@@ -4,23 +4,22 @@ layout: default
 
 ## Stable
 
-The current stable version is **0.12.2**, which was released on January 9, 2015 (see changes [since 0.12.1](https://github.com/wkhtmltopdf/wkhtmltopdf/releases/tag/0.12.2)).
+The current stable version is **0.12.2.1**, which was released on January 19, 2015 (see changes [since 0.12.1](https://github.com/wkhtmltopdf/wkhtmltopdf/releases/tag/0.12.2.1)).
 
-Flavor                | Downloads                                                                                                                                                                                                                                 | Comments
----------             | ---------                                                                                                                                                                                                                                 | --------
-Windows (MSVC 2013)   | [32-bit](http://downloads.sourceforge.net/project/wkhtmltopdf/0.12.2/wkhtmltox-0.12.2_msvc2013-win32.exe)        &emsp; [64-bit](http://downloads.sourceforge.net/project/wkhtmltopdf/0.12.2/wkhtmltox-0.12.2_msvc2013-win64.exe)         | for Windows Vista or later; bundles VC++ Runtime 2013
-Windows (MinGW-w64)   | [32-bit](http://downloads.sourceforge.net/project/wkhtmltopdf/0.12.2/wkhtmltox-0.12.2_mingw-w64-cross-win32.exe) &emsp; [64-bit](http://downloads.sourceforge.net/project/wkhtmltopdf/0.12.2/wkhtmltox-0.12.2_mingw-w64-cross-win64.exe)  | for Windows XP/2003 or later; bundles gcc DLLs
-Linux (Debian Wheezy) | [32-bit](http://downloads.sourceforge.net/project/wkhtmltopdf/0.12.2/wkhtmltox-0.12.2_linux-wheezy-i386.deb)     &emsp; [64-bit](http://downloads.sourceforge.net/project/wkhtmltopdf/0.12.2/wkhtmltox-0.12.2_linux-wheezy-amd64.deb)     | built on Debian 7.7
-Linux (Debian Jessie) | [32-bit](http://downloads.sourceforge.net/project/wkhtmltopdf/0.12.2/wkhtmltox-0.12.2_linux-jessie-i386.deb)     &emsp; [64-bit](http://downloads.sourceforge.net/project/wkhtmltopdf/0.12.2/wkhtmltox-0.12.2_linux-jessie-amd64.deb)     | built on Debian 8 (prerelease)
-Linux (Ubuntu Trusty) | [32-bit](http://downloads.sourceforge.net/project/wkhtmltopdf/0.12.2/wkhtmltox-0.12.2_linux-trusty-i386.deb)     &emsp; [64-bit](http://downloads.sourceforge.net/project/wkhtmltopdf/0.12.2/wkhtmltox-0.12.2_linux-trusty-amd64.deb)     | built on Ubuntu 14.04.1
-Linux (Ubuntu Precise)| [32-bit](http://downloads.sourceforge.net/project/wkhtmltopdf/0.12.2/wkhtmltox-0.12.2_linux-precise-i386.deb)    &emsp; [64-bit](http://downloads.sourceforge.net/project/wkhtmltopdf/0.12.2/wkhtmltox-0.12.2_linux-precise-amd64.deb)    | built on Ubuntu 12.04.5
-Linux (CentOS 7)      | [64-bit](http://downloads.sourceforge.net/project/wkhtmltopdf/0.12.2/wkhtmltox-0.12.2_linux-centos7-amd64.rpm)                                                                                                                            | built on CentOS 7.0.1406
-Linux (CentOS 6)      | [32-bit](http://downloads.sourceforge.net/project/wkhtmltopdf/0.12.2/wkhtmltox-0.12.2_linux-centos6-i386.rpm)    &emsp; [64-bit](http://downloads.sourceforge.net/project/wkhtmltopdf/0.12.2/wkhtmltox-0.12.2_linux-centos6-amd64.rpm)    | built on CentOS 6.6
-Linux (CentOS 5)      | [32-bit](http://downloads.sourceforge.net/project/wkhtmltopdf/0.12.2/wkhtmltox-0.12.2_linux-centos5-i386.rpm)    &emsp; [64-bit](http://downloads.sourceforge.net/project/wkhtmltopdf/0.12.2/wkhtmltox-0.12.2_linux-centos5-amd64.rpm)    | built on CentOS 5.11
-OS X 10.6+ (Carbon)   | [32-bit](http://downloads.sourceforge.net/project/wkhtmltopdf/0.12.2/wkhtmltox-0.12.2_osx-carbon-i386.pkg)                                                                                                                                | **recommended**; produces selectable text and smaller file sizes
-OS X 10.6+ (Cocoa)    | [64-bit](http://downloads.sourceforge.net/project/wkhtmltopdf/0.12.2/wkhtmltox-0.12.2_osx-cocoa-x86-64.pkg)                                                                                                                               | text not selectable and larger file sizes, see [QTBUG-10094](https://bugreports.qt-project.org/browse/QTBUG-10094)
-FreeBSD               | [converters/wkhtmltopdf](http://www.freshports.org/converters/wkhtmltopdf)                                                                                                                                                                | available as an official port and package
-Others                | [source code](http://downloads.sourceforge.net/project/wkhtmltopdf/0.12.2/wkhtmltox-0.12.2.tar.bz2)                                                                                                                                       | read [INSTALL.md](https://github.com/wkhtmltopdf/wkhtmltopdf/blob/0.12.2/INSTALL.md#others) for compilation instructions
+Flavor                | Downloads                                                                                                                                                                                                                                          | Comments
+---------             | ---------                                                                                                                                                                                                                                          | --------
+Windows (MSVC 2013)   | [32-bit](http://downloads.sourceforge.net/project/wkhtmltopdf/0.12.2.1/wkhtmltox-0.12.2.1_msvc2013-win32.exe)         &emsp; [64-bit](http://downloads.sourceforge.net/project/wkhtmltopdf/0.12.2.1/wkhtmltox-0.12.2.1_msvc2013-win64.exe)         | for Windows Vista or later; bundles VC++ Runtime 2013
+Windows (MinGW-w64)   | [32-bit](http://downloads.sourceforge.net/project/wkhtmltopdf/0.12.2.1/wkhtmltox-0.12.2.1_mingw-w64-cross-win32.exe)  &emsp; [64-bit](http://downloads.sourceforge.net/project/wkhtmltopdf/0.12.2.1/wkhtmltox-0.12.2.1_mingw-w64-cross-win64.exe)  | for Windows XP/2003 or later; bundles gcc DLLs
+Linux (Debian Wheezy) | [32-bit](http://downloads.sourceforge.net/project/wkhtmltopdf/0.12.2.1/wkhtmltox-0.12.2.1_linux-wheezy-i386.deb)      &emsp; [64-bit](http://downloads.sourceforge.net/project/wkhtmltopdf/0.12.2.1/wkhtmltox-0.12.2.1_linux-wheezy-amd64.deb)     | built on Debian 7.8
+Linux (Debian Jessie) | [32-bit](http://downloads.sourceforge.net/project/wkhtmltopdf/0.12.2.1/wkhtmltox-0.12.2.1_linux-jessie-i386.deb)      &emsp; [64-bit](http://downloads.sourceforge.net/project/wkhtmltopdf/0.12.2.1/wkhtmltox-0.12.2.1_linux-jessie-amd64.deb)     | built on Debian 8 (prerelease)
+Linux (Ubuntu Trusty) | [32-bit](http://downloads.sourceforge.net/project/wkhtmltopdf/0.12.2.1/wkhtmltox-0.12.2.1_linux-trusty-i386.deb)      &emsp; [64-bit](http://downloads.sourceforge.net/project/wkhtmltopdf/0.12.2.1/wkhtmltox-0.12.2.1_linux-trusty-amd64.deb)     | built on Ubuntu 14.04.1
+Linux (Ubuntu Precise)| [32-bit](http://downloads.sourceforge.net/project/wkhtmltopdf/0.12.2.1/wkhtmltox-0.12.2.1_linux-precise-i386.deb)     &emsp; [64-bit](http://downloads.sourceforge.net/project/wkhtmltopdf/0.12.2.1/wkhtmltox-0.12.2.1_linux-precise-amd64.deb)    | built on Ubuntu 12.04.5
+Linux (CentOS 7)      | [64-bit](http://downloads.sourceforge.net/project/wkhtmltopdf/0.12.2.1/wkhtmltox-0.12.2.1_linux-centos7-amd64.rpm)                                                                                                                                 | built on CentOS 7.0.1406
+Linux (CentOS 6)      | [32-bit](http://downloads.sourceforge.net/project/wkhtmltopdf/0.12.2.1/wkhtmltox-0.12.2.1_linux-centos6-i386.rpm)     &emsp; [64-bit](http://downloads.sourceforge.net/project/wkhtmltopdf/0.12.2.1/wkhtmltox-0.12.2.1_linux-centos6-amd64.rpm)    | built on CentOS 6.6
+Linux (CentOS 5)      | [32-bit](http://downloads.sourceforge.net/project/wkhtmltopdf/0.12.2.1/wkhtmltox-0.12.2.1_linux-centos5-i386.rpm)     &emsp; [64-bit](http://downloads.sourceforge.net/project/wkhtmltopdf/0.12.2.1/wkhtmltox-0.12.2.1_linux-centos5-amd64.rpm)    | built on CentOS 5.11
+OS X                  | [32-bit](http://downloads.sourceforge.net/project/wkhtmltopdf/0.12.2.1/wkhtmltox-0.12.2.1_osx-carbon-i386.pkg)        &emsp; [64-bit](http://downloads.sourceforge.net/project/wkhtmltopdf/0.12.2.1/wkhtmltox-0.12.2.1_osx-cocoa-x86-64.pkg)       | for OS X 10.6 or later
+FreeBSD               | [converters/wkhtmltopdf](http://www.freshports.org/converters/wkhtmltopdf)                                                                                                                                                                         | available as an official port and package
+Others                | [source code](http://downloads.sourceforge.net/project/wkhtmltopdf/0.12.2.1/wkhtmltox-0.12.2.1.tar.bz2)                                                                                                                                            | read [INSTALL.md](https://github.com/wkhtmltopdf/wkhtmltopdf/blob/0.12.2.1/INSTALL.md#others) for compilation instructions
 
 ## Testing
 
@@ -31,7 +30,7 @@ Flavor              | Downloads                                                 
 Windows (MSVC 2013) | [32-bit](http://downloads.sourceforge.net/project/wkhtmltopdf/0.13.0-alpha/wkhtmltox-0.13.0-alpha-391fd34_msvc2013-win32.exe)        &emsp; [64-bit](http://downloads.sourceforge.net/project/wkhtmltopdf/0.13.0-alpha/wkhtmltox-0.13.0-alpha-391fd34_msvc2013-win64.exe)        | built with VS2013 Update 4 (CE)
 Windows (MinGW-w64) | [32-bit](http://downloads.sourceforge.net/project/wkhtmltopdf/0.13.0-alpha/wkhtmltox-0.13.0-alpha-391fd34_mingw-w64-cross-win32.exe) &emsp; [64-bit](http://downloads.sourceforge.net/project/wkhtmltopdf/0.13.0-alpha/wkhtmltox-0.13.0-alpha-391fd34_mingw-w64-cross-win64.exe) | built with MinGW-w64 3.1.0 on Ubuntu 14.04.1
 
-Builds for other targets will be made available as soon as support for them is added in the build script, which is an ongoing process. 
+Builds for other targets will be made available as soon as support for them is added in the build script, which is an ongoing process.
 
 ## Archive
 
@@ -39,6 +38,7 @@ Please note that bug reports **will not be accepted** against the following, whi
 
 Date       | Release
 ----       | -------
+2015-01-09 | [0.12.2](http://sourceforge.net/projects/wkhtmltopdf/files/archive/0.12.2/)
 2014-06-26 | [0.12.1](http://sourceforge.net/projects/wkhtmltopdf/files/archive/0.12.1/)
 2014-02-06 | [0.12.0](http://sourceforge.net/projects/wkhtmltopdf/files/archive/0.12.0/)
 
