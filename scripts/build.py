@@ -621,11 +621,15 @@ def get_registry_value(key, value=None):
     return None
 
 def get_version(basedir):
+    def make4digit(ver):
+        while ver.count('.') < 3:
+            ver += '.0'
+        return ver
     mkdir_p(basedir)
     text = open(os.path.join(basedir, '..', 'VERSION'), 'r').read()
     if '-' not in text:
-        return (text, text)
-    version = text[:text.index('-')]
+        return (text, make4digit(text))
+    version = make4digit(text[:text.index('-')])
     os.chdir(os.path.join(basedir, '..'))
     hash = get_output('git', 'rev-parse', '--short', 'HEAD')
     if not hash:
