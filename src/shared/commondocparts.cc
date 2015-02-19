@@ -39,7 +39,7 @@ void CommandLineParserBase::outputName(Outputter * o) const {
 void CommandLineParserBase::outputLicense(Outputter * o) const {
 	o->beginSection("License");
 	o->paragraph("Copyright (c) 2010-2014 wkhtmltopdf authors");
-	QFile file(":/COPYING");
+	QFile file(":/LICENSE");
 	file.open(QIODevice::ReadOnly | QIODevice::Text);
 	QTextStream stream(&file);
 	o->verbatim(stream.readAll());
