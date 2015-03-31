@@ -59,6 +59,7 @@ ReflectImpl<LoadPage>::ReflectImpl(LoadPage & c) {
 	WKHTMLTOPDF_REFLECT(password);
 	WKHTMLTOPDF_REFLECT(jsdelay);
 	WKHTMLTOPDF_REFLECT(windowStatus);
+	WKHTMLTOPDF_REFLECT(dumpHtml);
 	WKHTMLTOPDF_REFLECT(zoomFactor);
 	WKHTMLTOPDF_REFLECT(customHeaders);
 	WKHTMLTOPDF_REFLECT(repeatCustomHeaders);
