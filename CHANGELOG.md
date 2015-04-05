@@ -1,3 +1,7 @@
+v0.12.3 (unreleased)
+----------------------
+* **#2104**: renamed COPYING to LICENSE
+
 v0.12.2.1 (2015-01-19)
 ----------------------
 * update OpenSSL to 1.0.1l
