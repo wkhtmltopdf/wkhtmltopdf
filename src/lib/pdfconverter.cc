@@ -72,7 +72,7 @@ struct DLL_LOCAL StreamDumper {
 
 bool DLL_LOCAL looksLikeHtmlAndNotAUrl(QString str) {
 	QString s = str.split("?")[0];
-	return s.count('<') > 0 || s.count('<') > 0;
+	return s.count('<') > 0 || str.startsWith("data:", Qt::CaseInsensitive);
 }
 
 PdfConverterPrivate::PdfConverterPrivate(PdfGlobal & s, PdfConverter & o) :

@@ -3,6 +3,7 @@ v0.12.3 (unreleased)
 * removed support for CentOS 5 builds
 * update OpenSSL to 1.0.1m
 * **#2104**: renamed COPYING to LICENSE
+* **#2280**: do not allow data URIs for --header-html or --footer-html
 
 v0.12.2.1 (2015-01-19)
 ----------------------
