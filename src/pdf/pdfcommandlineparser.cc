@@ -88,7 +88,7 @@ void PdfCommandLineParser::usage(FILE * fd, bool extended) const {
 /*!
   Output the readme/manual
   \param fd The file to output to
-  \param html Do we want the html manaul, or the README
+  \param html Do we want the html manual, or the README
 */
 void PdfCommandLineParser::readme(FILE * fd, bool html) const {
 	Outputter * o = html?Outputter::html(fd):Outputter::text(fd, true);
@@ -204,7 +204,7 @@ void PdfCommandLineParser::parseArguments(int argc, const char ** argv, bool fro
 	}
 
 	if (pageSettings.size() == 0 || argc < 2) {
-		fprintf(stderr, "You need to specify atleast one input file, and exactly one output file\nUse - for stdin or stdout\n\n");
+		fprintf(stderr, "You need to specify at least one input file, and exactly one output file\nUse - for stdin or stdout\n\n");
 		usage(stderr, false);
 		exit(1);
 	}
