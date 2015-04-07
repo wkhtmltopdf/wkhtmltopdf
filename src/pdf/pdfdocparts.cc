@@ -124,7 +124,7 @@ void PdfCommandLineParser::outputNotPatched(Outputter * o, bool sure) const {
 
 	o->paragraph("Currently the list of features only supported with patch QT includes:");
 	o->beginList();
-	o->listItem("Printing more then one HTML document into a PDF file.");
+	o->listItem("Printing more than one HTML document into a PDF file.");
 	o->listItem("Running without an X11 server.");
 	o->listItem("Adding a document outline to the PDF file.");
 	o->listItem("Adding headers and footers to the PDF file.");
@@ -144,9 +144,9 @@ void PdfCommandLineParser::outputPageBreakDoc(Outputter * o) const {
 	o->beginSection("Page Breaking");
 	o->paragraph(
 		"The current page breaking algorithm of WebKit leaves much to be desired. "
-		"Basically webkit will render everything into one long page, and then cut it up "
+		"Basically Webkit will render everything into one long page, and then cut it up "
 		"into pages. This means that if you have two columns of text where one is "
-		"vertically shifted by half a line. Then webkit will cut a line into to pieces "
+		"vertically shifted by half a line. Then Webkit will cut a line into to pieces "
 		"display the top half on one page. And the bottom half on another page. "
 		"It will also break image in two and so on.  If you are using the patched version of "
 		"QT you can use the CSS page-break-inside property to remedy this somewhat. "
@@ -325,7 +325,7 @@ void PdfCommandLineParser::outputInstallation(Outputter * o) const {
 		"There are several ways to install wkhtmltopdf.  You can download a "
 		"already compiled binary, or you can compile wkhtmltopdf yourself. "
 		"On windows the easiest way to install wkhtmltopdf is to download "
-		"the latest installer. On linux you can download the latest static "
+		"the latest installer. On Linux you can download the latest static "
 		"binary, however you still need to install some other pieces of "
 		"software, to learn more about this read the static version section "
 		"of the manual.");
