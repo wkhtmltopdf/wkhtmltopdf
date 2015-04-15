@@ -442,33 +442,32 @@ DEPENDENT_LIBS = {
 }
 
 EXCLUDE_SRC_TARBALL = [
-    'qt/config.profiles*',
-    'qt/demos*',
-    'qt/dist*',
-    'qt/doc*',
-    'qt/examples*',
-    'qt/imports*',
-    'qt/templates*',
-    'qt/tests*',
-    'qt/translations*',
-    'qt/util*',
-    'qt/lib/fonts*',
-    'qt/src/3rdparty/*ChangeLog*',
-    'qt/src/3rdparty/ce-compat*',
-    'qt/src/3rdparty/clucene*',
-    'qt/src/3rdparty/fonts*',
-    'qt/src/3rdparty/freetype*',
-    'qt/src/3rdparty/javascriptcore*',
-    'qt/src/3rdparty/libgq*',
-    'qt/src/3rdparty/libmng*',
-    'qt/src/3rdparty/libtiff*',
-    'qt/src/3rdparty/patches*',
-    'qt/src/3rdparty/phonon*',
-    'qt/src/3rdparty/pixman*',
-    'qt/src/3rdparty/powervr*',
-    'qt/src/3rdparty/ptmalloc*',
-    'qt/src/3rdparty/s60*',
-    'qt/src/3rdparty/wayland*'
+    'qt/qtbase/dist*',
+    'qt/qtbase/doc*',
+    'qt/qtbase/examples*',
+    'qt/qtbase/tests*',
+    'qt/qtbase/util*',
+    'qt/qtbase/lib/fonts*',
+    'qt/qtsvg/dist*',
+    'qt/qtsvg/doc*',
+    'qt/qtsvg/examples*',
+    'qt/qtsvg/tests*',
+    'qt/qtxmlpatterns/dist*',
+    'qt/qtxmlpatterns/examples*',
+    'qt/qtxmlpatterns/tests*',
+    'qt/qtwebkit/*ChangeLog*',
+    'qt/qtwebkit/Source/*.vcxproj',
+    'qt/qtwebkit/Source/*.xcodeproj'
+    'qt/qtwebkit/Source/JavaScriptCore/icu*',
+    'qt/qtwebkit/Source/JavaScriptCore/tests*',
+    'qt/qtwebkit/Source/WebCore/icu*',
+    'qt/qtwebkit/Source/WTF/icu*',
+    'qt/qtwebkit/Tools/CygwinDownloader*',
+    'qt/qtwebkit/Tools/DumpRenderTree*',
+    'qt/qtwebkit/Tools/iExploder*',
+    'qt/qtwebkit/Tools/Scripts*',
+    'qt/qtwebkit/Tools/TestWebKitAPI*',
+    'qt/qtwebkit/Tools/WebKitTestRunner*'
 ]
 
 # --------------------------------------------------------------- HELPERS
@@ -815,12 +814,14 @@ def build_update_schroot(config, basedir):
             chroot_shell(name, 'yum update -y')
         chroot_shell(name, 'gem update fpm')
 
+QT_SUBMODULES = ['qtbase', 'qtsvg', 'qtxmlpatterns', 'qtwebkit']
 def check_source_tarball(config):
     if not get_output('git', 'rev-parse', '--short', 'HEAD'):
         error("This can only be run inside a git checkout.")
 
-    if not exists(os.path.join(os.getcwd(), 'qt', '.git')):
-        error("Please initialize and download the Qt submodule before running this.")
+    for module in QT_SUBMODULES:
+        if not exists(os.path.join(os.getcwd(), 'qt', module, '.git')):
+            error("Please initialize and download the '%s' submodule." % module)
 
 def _filter_tar(info):
     name = info.name[1+info.name.index('/'):]
@@ -834,9 +835,10 @@ def _filter_tar(info):
 def build_source_tarball(config, basedir):
     version, simple_version = get_version(basedir)
     root_dir = os.path.realpath(os.path.join(basedir, '..'))
-    os.chdir(os.path.join(root_dir, 'qt'))
-    shell('git clean -fdx')
-    shell('git reset --hard HEAD')
+    for module in QT_SUBMODULES:
+        os.chdir(os.path.join(root_dir, 'qt', module))
+        shell('git clean -fdx')
+        shell('git reset --hard HEAD')
     os.chdir(root_dir)
     shell('git clean -fdx')
     shell('git reset --hard HEAD')

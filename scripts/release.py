@@ -64,8 +64,8 @@ def main():
     rootdir = os.path.realpath(os.path.join(os.path.dirname(os.path.realpath(__file__)), '..'))
     basedir = os.path.join(rootdir, 'static-build')
 
-    for submodule in glob.glob(os.path.join(rootdir, 'qt', 'qt*')):
-        os.chdir(submodule)
+    for submodule in build.QT_SUBMODULES:
+        os.chdir(os.path.join(rootdir, 'qt', submodule))
         build.shell('git clean -fdx')
         build.shell('git reset --hard HEAD')
     os.chdir(rootdir)
