@@ -261,8 +261,8 @@ LINUX_SCHROOT_SETUP = {
 DEPENDENT_LIBS = {
     'openssl': {
         'order' : 1,
-        'url'   : 'https://www.openssl.org/source/openssl-1.0.1m.tar.gz',
-        'sha1'  : '4ccaf6e505529652f9fdafa01d1d8300bd9f3179',
+        'url'   : 'https://openssl.org/source/openssl-1.0.2a.tar.gz',
+        'sha1'  : '46ecd325b8e587fa491f6bb02ad4a9fb9f382f5f',
         'build' : {
             'msvc*-win32*': {
                 'result': ['include/openssl/ssl.h', 'lib/ssleay32.lib', 'lib/libeay32.lib'],
@@ -317,14 +317,13 @@ DEPENDENT_LIBS = {
 
     'libpng': {
         'order' : 3,
-        'url' : 'http://downloads.sourceforge.net/libpng/libpng-1.5.21.tar.gz',
-        'sha1': '0ce1aa25abd55ad153516a29735b8ad432b4b771',
+        'url' : 'http://downloads.sourceforge.net/libpng/libpng-1.2.53.tar.gz',
+        'sha1': '22f3cc22d26727af05d7c9a970a7d050b6761bd7',
         'build' : {
             'msvc*': {
                 'result': {
                     'include/png.h'       : 'png.h',
                     'include/pngconf.h'   : 'pngconf.h',
-                    'include/pnglibconf.h': 'pnglibconf.h',
                     'lib/libpng.lib'      : 'libpng.lib'
                 },
                 'replace': [
@@ -336,7 +335,6 @@ DEPENDENT_LIBS = {
                 'result': {
                     'include/png.h'       : 'png.h',
                     'include/pngconf.h'   : 'pngconf.h',
-                    'include/pnglibconf.h': 'pnglibconf.h',
                     'lib/libpng.a'        : 'libpng.a'
                 },
                 'replace': [
@@ -348,13 +346,13 @@ DEPENDENT_LIBS = {
                 'commands': ['make -f scripts/makefile.gcc libpng.a']
             },
             'osx-carbon-i386': {
-                'result': ['include/png.h', 'include/pngconf.h', 'include/pnglibconf.h', 'lib/libpng.a'],
+                'result': ['include/png.h', 'include/pngconf.h', 'lib/libpng.a'],
                 'commands': [
                     'CFLAGS="-arch i386" ./configure --disable-shared --prefix=%(destdir)s',
                     'make install']
             },
             'osx-cocoa-x86-64': {
-                'result': ['include/png.h', 'include/pngconf.h', 'include/pnglibconf.h', 'lib/libpng.a'],
+                'result': ['include/png.h', 'include/pngconf.h', 'lib/libpng.a'],
                 'commands': [
                     'CFLAGS="-arch x86_64" ./configure --disable-shared --prefix=%(destdir)s',
                     'make install']
@@ -405,8 +403,8 @@ DEPENDENT_LIBS = {
 
     'xz': {
         'order' : 5,
-        'url' : 'http://tukaani.org/xz/xz-5.2.0.tar.gz',
-        'sha1': 'ef6b8e0b6fd85eb1b844e555ae3ecbb3a4aa8e81',
+        'url' : 'http://tukaani.org/xz/xz-5.2.1.tar.gz',
+        'sha1': '6022493efb777ff4e872b63a60be1f1e146f3c0b',
         'build' : {
             'osx*': {
                 'result': ['bin/xz'],
@@ -419,8 +417,8 @@ DEPENDENT_LIBS = {
 
     'icu4c': {
         'order' : 6,
-        'url' : 'http://downloads.sourceforge.net/icu/icu4c-54_1-src.tgz',
-        'sha1': '8c752490bbf31cea26e20246430cee67d48abe34',
+        'url' : 'http://download.icu-project.org/files/icu4c/55.1/icu4c-55_1-src.tgz',
+        'sha1': '3bb301c11be0e239c653e8aa2925c53f6f4dc88d',
         'build' : {
             'msvc*': {
                 'result': ['include/unicode/ucnv.h', 'include/unicode/ustring.h', 'lib/sicuin.lib', 'lib/sicuuc.lib', 'lib/sicudt.lib'],
