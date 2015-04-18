@@ -47,7 +47,7 @@ Ubuntu Trusty  | `sudo scripts/build.py setup-schroot-trusty`  | `scripts/build.
 Ubuntu Precise | `sudo scripts/build.py setup-schroot-precise` | `scripts/build.py precise-i386`          | `scripts/build.py precise-amd64`
 CentOS 7       | `sudo scripts/build.py setup-schroot-centos7` | not available                            | `scripts/build.py centos7-amd64`
 CentOS 6       | `sudo scripts/build.py setup-schroot-centos6` | `scripts/build.py centos6-i386`          | `scripts/build.py centos6-amd64`
-MinGW-w64      | `sudo scripts/build.py setup-mingw_w64`       | `scripts/build.py mingw-w64-cross-win32` | `scripts/build.py mingw-w64-cross-win64`
+MinGW-w64      | `sudo scripts/build.py setup-mingw-w64`       | `scripts/build.py mingw-w64-cross-win32` | `scripts/build.py mingw-w64-cross-win64`
 
 The MinGW-w64 toolchain can cross-compile 32/64-bit Windows binaries from
 Linux -- it is useful for targetting Windows XP/Windows 2003, which are not

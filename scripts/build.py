@@ -28,32 +28,32 @@ PROJECT_SETUP = {
 }
 
 BUILDERS = {
-    'source-tarball':           'source_tarball',
-    'msvc2013-win32':           'msvc',
-    'msvc2013-win64':           'msvc',
-    'setup-schroot-mingw-w64':  'setup_schroot',
-    'setup-schroot-centos6':    'setup_schroot',
-    'setup-schroot-centos7':    'setup_schroot',
-    'setup-schroot-wheezy':     'setup_schroot',
-    'setup-schroot-jessie':     'setup_schroot',
-    'setup-schroot-trusty':     'setup_schroot',
-    'setup-schroot-precise':    'setup_schroot',
-    'update-all-schroots':      'update_schroot',
-    'centos6-amd64':            'linux_schroot',
-    'centos7-amd64':            'linux_schroot',
-    'wheezy-i386':              'linux_schroot',
-    'wheezy-amd64':             'linux_schroot',
-    'jessie-i386':              'linux_schroot',
-    'jessie-amd64':             'linux_schroot',
-    'trusty-i386':              'linux_schroot',
-    'trusty-amd64':             'linux_schroot',
-    'precise-i386':             'linux_schroot',
-    'precise-amd64':            'linux_schroot',
-    'mingw-w64-cross-win32':    'mingw64_cross',
-    'mingw-w64-cross-win64':    'mingw64_cross',
-    'posix-local':              'posix_local',
-    'osx-cocoa-x86-64':         'osx',
-    'osx-carbon-i386':          'osx'
+    'source-tarball':        'source_tarball',
+    'msvc2013-win32':        'msvc',
+    'msvc2013-win64':        'msvc',
+    'setup-mingw-w64':       'setup_mingw_w64',
+    'setup-schroot-centos6': 'setup_schroot',
+    'setup-schroot-centos7': 'setup_schroot',
+    'setup-schroot-wheezy':  'setup_schroot',
+    'setup-schroot-jessie':  'setup_schroot',
+    'setup-schroot-trusty':  'setup_schroot',
+    'setup-schroot-precise': 'setup_schroot',
+    'update-all-schroots':   'update_schroot',
+    'centos6-amd64':         'linux_schroot',
+    'centos7-amd64':         'linux_schroot',
+    'wheezy-i386':           'linux_schroot',
+    'wheezy-amd64':          'linux_schroot',
+    'jessie-i386':           'linux_schroot',
+    'jessie-amd64':          'linux_schroot',
+    'trusty-i386':           'linux_schroot',
+    'trusty-amd64':          'linux_schroot',
+    'precise-i386':          'linux_schroot',
+    'precise-amd64':         'linux_schroot',
+    'mingw-w64-cross-win32': 'mingw64_cross',
+    'mingw-w64-cross-win64': 'mingw64_cross',
+    'posix-local':           'posix_local',
+    'osx-cocoa-x86-64':      'osx',
+    'osx-carbon-i386':       'osx'
 }
 
 QT_CONFIG = {
@@ -243,18 +243,6 @@ LINUX_SCHROOT_SETUP = {
                               'zlib-devel libpng-devel libjpeg-turbo-devel openssl-devel freetype-devel libicu-devel fontconfig-devel '\
                               'libX11-devel libXrender-devel libXext-devel',
         'rinse'             : 'centos-7'
-    },
-    'mingw-w64': {
-        'chroot_alias'      : 'mingw-w64',
-        'title'             : 'MinGW-w64 on Ubuntu Trusty',
-        'packaging_tool'    : 'apt',
-        'build_arch'        : ['amd64'],
-        'runtime_packages'  : '',
-        'build_packages'    : 'build-essential mingw-w64 nsis python ruby ruby-dev perl gperf bison flex git',
-        'debootstrap'       : ('trusty', 'http://archive.ubuntu.com/ubuntu/', """
-                                    deb http://archive.ubuntu.com/ubuntu/ trusty          main restricted universe multiverse
-                                    deb http://archive.ubuntu.com/ubuntu/ trusty-updates  main restricted universe multiverse
-                                    deb http://archive.ubuntu.com/ubuntu/ trusty-security main restricted universe multiverse""")
     }
 }
 
@@ -812,6 +800,12 @@ def build_update_schroot(config, basedir):
             chroot_shell(name, 'yum update -y')
         chroot_shell(name, 'gem update fpm')
 
+def check_setup_mingw_w64(config):
+    check_running_on_debian()
+
+def build_setup_mingw_w64(config, basedir):
+    install_packages('build-essential', 'mingw-w64', 'nsis', 'ruby', 'perl', 'gperf', 'bison', 'flex', 'git')
+
 QT_SUBMODULES = ['qtbase', 'qtsvg', 'qtxmlpatterns', 'qtwebkit']
 def check_source_tarball(config):
     if not get_output('git', 'rev-parse', '--short', 'HEAD'):
@@ -964,13 +958,9 @@ MINGW_W64_PREFIX = {
 }
 
 def check_mingw64_cross(config):
-    chroot_shell('mingw-w64', '%s-gcc --version' % MINGW_W64_PREFIX[rchop(config, '-dbg')])
+    shell('%s-gcc --version' % MINGW_W64_PREFIX[rchop(config, '-dbg')])
 
 def build_mingw64_cross(config, basedir):
-    os.chdir(os.path.realpath(os.path.join(basedir, '..')))
-    chroot_shell('mingw-w64', 'python scripts/build.py %s -chroot-build' % ' '.join(sys.argv[1:]))
-
-def chroot_build_mingw64_cross(config, basedir):
     version, simple_version = get_version(basedir)
     build_deplibs(config, basedir, mingw_w64=MINGW_W64_PREFIX.get(rchop(config, '-dbg')))
 
@@ -1008,12 +998,12 @@ def chroot_build_mingw64_cross(config, basedir):
     shell('make')
     shutil.copy('bin/libwkhtmltox0.a', 'bin/wkhtmltox.lib')
     shell('rm -f bin/lib*.dll')
-    for dll in ['libgcc_s_sjlj-1.dll', 'libstdc++-6.dll', 'libwinpthread-1.dll']:
+    for dll in ['libgcc_s_sjlj-1.dll', 'libgcc_s_seh-1.dll', 'libstdc++-6.dll']:
         dll_path = get_output('dpkg', '-S', dll)
         if dll_path:
             for line in dll_path.split('\n'):
                 loc = line[1+line.index(':'):].strip()
-                if exists(loc) and MINGW_W64_PREFIX[rchop(config, '-dbg')] in loc:
+                if exists(loc) and MINGW_W64_PREFIX[rchop(config, '-dbg')] in loc and '-posix' not in loc:
                     shell('cp %s bin/' % loc)
 
     os.chdir(os.path.join(basedir, '..'))
