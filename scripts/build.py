@@ -29,6 +29,8 @@ PROJECT_SETUP = {
 
 BUILDERS = {
     'source-tarball':        'source_tarball',
+    'msvc2012-win32':        'msvc',
+    'msvc2012-win64':        'msvc',
     'msvc2013-win32':        'msvc',
     'msvc2013-win64':        'msvc',
     'setup-mingw-w64':       'setup_mingw_w64',
@@ -843,9 +845,12 @@ def build_source_tarball(config, basedir):
 # --------------------------------------------------------------- MSVC (2013 only)
 
 MSVC_LOCATION = {
+    'msvc2012': 'VS110COMNTOOLS',
     'msvc2013': 'VS120COMNTOOLS'
 }
 MSVC_RUNTIME = {
+    'msvc2012-win32': ('96b377a27ac5445328cbaae210fc4f0aaa750d3f', 'http://download.microsoft.com/download/1/6/B/16B06F60-3B20-4FF2-B699-5E9B7962F9AE/VSU_4/vcredist_x86.exe'),
+    'msvc2012-win64': ('1a5d93dddbc431ab27b1da711cd3370891542797', 'http://download.microsoft.com/download/1/6/B/16B06F60-3B20-4FF2-B699-5E9B7962F9AE/VSU_4/vcredist_x64.exe'),
     'msvc2013-win32': ('df7f0a73bfa077e483e51bfb97f5e2eceedfb6a3', 'http://download.microsoft.com/download/2/E/6/2E61CFA4-993B-4DD4-91DA-3737CD5CD6E3/vcredist_x86.exe'),
     'msvc2013-win64': ('8bf41ba9eef02d30635a10433817dbb6886da5a2', 'http://download.microsoft.com/download/2/E/6/2E61CFA4-993B-4DD4-91DA-3737CD5CD6E3/vcredist_x64.exe')
 }
