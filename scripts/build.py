@@ -350,7 +350,7 @@ DEPENDENT_LIBS = {
         'build' : {
             'msvc*-win32*': {
                 'result': ['include/openssl/ssl.h', 'lib/ssleay32.lib', 'lib/libeay32.lib'],
-                'replace': [('util/pl/VC-32.pl', ' /MT', ' /MD')],
+                'replace': [('util/pl/VC-32.pl', ' /MT', ' %(cflags)s')],
                 'commands': [
                     'perl Configure --openssldir=%(destdir)s VC-WIN32 no-asm',
                     'ms\\do_ms.bat',
@@ -358,7 +358,7 @@ DEPENDENT_LIBS = {
             },
             'msvc*-win64*': {
                 'result': ['include/openssl/ssl.h', 'lib/ssleay32.lib', 'lib/libeay32.lib'],
-                'replace': [('util/pl/VC-32.pl', ' /MT', ' /MD')],
+                'replace': [('util/pl/VC-32.pl', ' /MT', ' %(cflags)s')],
                 'commands': [
                     'perl Configure --openssldir=%(destdir)s VC-WIN64A',
                     'ms\\do_win64a.bat',
@@ -385,6 +385,7 @@ DEPENDENT_LIBS = {
                     'include/zconf.h': 'zconf.h',
                     'lib/zdll.lib'   : 'zlib.lib'
                 },
+                'replace':  [('win32/Makefile.msc', '-MD', '%(cflags)s')],
                 'commands': ['nmake /f win32/Makefile.msc zlib.lib']
             },
             'mingw-w64-cross-win*': {
@@ -412,7 +413,8 @@ DEPENDENT_LIBS = {
                 },
                 'replace': [
                     ('scripts/makefile.vcwin32', '-I..\\zlib', '-I..\\deplibs\\include'),
-                    ('scripts/makefile.vcwin32', '..\\zlib\\zlib.lib', '..\\deplibs\\lib\\zdll.lib')],
+                    ('scripts/makefile.vcwin32', '..\\zlib\\zlib.lib', '..\\deplibs\\lib\\zdll.lib'),
+                    ('scripts/makefile.vcwin32', '-MD', '%(cflags)s')],
                 'commands': ['nmake /f scripts/makefile.vcwin32 libpng.lib']
             },
             'mingw-w64-cross-win*': {
@@ -459,7 +461,7 @@ DEPENDENT_LIBS = {
                 },
                 'replace':  [('makefile.vc', '!include <win32.mak>', ''),
                              ('makefile.vc', '$(cc)', 'cl'),
-                             ('makefile.vc', '$(cflags) $(cdebug) $(cvars)', '-c -nologo -D_CRT_SECURE_NO_DEPRECATE -MD -O2 -W3')],
+                             ('makefile.vc', '$(cflags) $(cdebug) $(cvars)', '-c -nologo -D_CRT_SECURE_NO_DEPRECATE %(cflags)s -O2 -W3')],
                 'commands': [
                     'copy /y jconfig.vc jconfig.h',
                     'nmake /f makefile.vc libjpeg.lib']
@@ -674,7 +676,10 @@ def download_tarball(url, sha1, dir, name):
 def _is_compiled(dst, loc):
     present = True
     for name in loc['result']:
-        present = present and exists(os.path.join(dst, name))
+        if isinstance(name, tuple):
+            present = present and bool([n for n in name if exists(os.path.join(dst, n))])
+        else:
+            present = present and exists(os.path.join(dst, name))
     return present
 
 def build_deplibs(config, basedir, **kwargs):
@@ -921,7 +926,8 @@ def build_msvc(config, basedir):
     os.environ.update(eval(stdout.strip()))
 
     version, simple_version = get_version(basedir)
-    build_deplibs(config, basedir)
+    cflags  = config.endswith('-dbg') and '/MDd /Zi' or '/MD'
+    build_deplibs(config, basedir, cflags=cflags)
 
     sha1, url = MSVC_RUNTIME[rchop(config, '-dbg')]
     shutil.copy(download_file(url, sha1, basedir), os.path.join(basedir, config, 'vcredist.exe'))
