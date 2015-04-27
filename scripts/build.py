@@ -401,14 +401,13 @@ DEPENDENT_LIBS = {
 
     'libpng': {
         'order' : 3,
-        'url' : 'http://downloads.sourceforge.net/libpng/libpng-1.5.21.tar.gz',
-        'sha1': '0ce1aa25abd55ad153516a29735b8ad432b4b771',
+        'url' : 'http://downloads.sourceforge.net/libpng/libpng-1.2.53.tar.gz',
+        'sha1': '22f3cc22d26727af05d7c9a970a7d050b6761bd7',
         'build' : {
             'msvc*': {
                 'result': {
                     'include/png.h'       : 'png.h',
                     'include/pngconf.h'   : 'pngconf.h',
-                    'include/pnglibconf.h': 'pnglibconf.h',
                     'lib/libpng.lib'      : 'libpng.lib'
                 },
                 'replace': [
@@ -420,7 +419,6 @@ DEPENDENT_LIBS = {
                 'result': {
                     'include/png.h'       : 'png.h',
                     'include/pngconf.h'   : 'pngconf.h',
-                    'include/pnglibconf.h': 'pnglibconf.h',
                     'lib/libpng.a'        : 'libpng.a'
                 },
                 'replace': [
@@ -432,13 +430,13 @@ DEPENDENT_LIBS = {
                 'commands': ['make -f scripts/makefile.gcc libpng.a']
             },
             'osx-carbon-i386': {
-                'result': ['include/png.h', 'include/pngconf.h', 'include/pnglibconf.h', 'lib/libpng.a'],
+                'result': ['include/png.h', 'include/pngconf.h', 'lib/libpng.a'],
                 'commands': [
                     'CFLAGS="-arch i386" ./configure --disable-shared --prefix=%(destdir)s',
                     'make install']
             },
             'osx-cocoa-x86-64': {
-                'result': ['include/png.h', 'include/pngconf.h', 'include/pnglibconf.h', 'lib/libpng.a'],
+                'result': ['include/png.h', 'include/pngconf.h', 'lib/libpng.a'],
                 'commands': [
                     'CFLAGS="-arch x86_64" ./configure --disable-shared --prefix=%(destdir)s',
                     'make install']
