@@ -345,8 +345,8 @@ deb http://archive.ubuntu.com/ubuntu/ trusty-security main restricted universe m
 DEPENDENT_LIBS = {
     'openssl': {
         'order' : 1,
-        'url'   : 'https://www.openssl.org/source/openssl-1.0.1m.tar.gz',
-        'sha1'  : '4ccaf6e505529652f9fdafa01d1d8300bd9f3179',
+        'url'   : 'https://openssl.org/source/openssl-1.0.2a.tar.gz',
+        'sha1'  : '46ecd325b8e587fa491f6bb02ad4a9fb9f382f5f',
         'build' : {
             'msvc*-win32*': {
                 'result': ['include/openssl/ssl.h', 'lib/ssleay32.lib', 'lib/libeay32.lib'],
@@ -489,8 +489,8 @@ DEPENDENT_LIBS = {
 
     'xz': {
         'order' : 5,
-        'url' : 'http://tukaani.org/xz/xz-5.2.0.tar.gz',
-        'sha1': 'ef6b8e0b6fd85eb1b844e555ae3ecbb3a4aa8e81',
+        'url' : 'http://tukaani.org/xz/xz-5.2.1.tar.gz',
+        'sha1': '6022493efb777ff4e872b63a60be1f1e146f3c0b',
         'build' : {
             'osx*': {
                 'result': ['bin/xz'],
