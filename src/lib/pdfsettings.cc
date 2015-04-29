@@ -109,6 +109,7 @@ struct DLL_LOCAL ReflectImpl<PdfGlobal>: public ReflectClass {
 		WKHTMLTOPDF_REFLECT(size);
 		WKHTMLTOPDF_REFLECT(quiet);
 		WKHTMLTOPDF_REFLECT(useGraphics);
+		WKHTMLTOPDF_REFLECT(resolveRelativeLinks);
 		WKHTMLTOPDF_REFLECT(orientation);
 		WKHTMLTOPDF_REFLECT(colorMode);
 		WKHTMLTOPDF_REFLECT(resolution);
@@ -367,6 +368,7 @@ Margin::Margin():
 PdfGlobal::PdfGlobal():
 	quiet(false),
 	useGraphics(false),
+	resolveRelativeLinks(true),
 	orientation(QPrinter::Portrait),
 	colorMode(QPrinter::Color),
 	resolution(QPrinter::HighResolution),

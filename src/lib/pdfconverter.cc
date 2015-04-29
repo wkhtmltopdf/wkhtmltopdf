@@ -579,9 +579,7 @@ void PdfConverterPrivate::findLinks(QWebFrame * frame, QVector<QPair<QWebElement
 					}
 				}
 			} else if (uexternal) {
-				// pass the unresolved url to WebKit. WebKit will resolve it
-				// depending upon the type of url - filepath, web-uri etc.
-				external.push_back( qMakePair(elm, h) );
+				external.push_back( qMakePair(elm, settings.resolveRelativeLinks ? href.toString() : h) );
 			}
 		}
 	}

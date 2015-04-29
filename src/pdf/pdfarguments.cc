@@ -257,6 +257,8 @@ PdfCommandLineParser::PdfCommandLineParser(PdfGlobal & s, QList<PdfObject> & ps)
  	addarg("enable-internal-links",0,"Make local links", new ConstSetter<bool>(od.useLocalLinks, true));
  	addarg("disable-external-links",0,"Do not make links to remote web pages", new ConstSetter<bool>(od.useExternalLinks, false));
  	addarg("enable-external-links",0,"Make links to remote web pages", new ConstSetter<bool>(od.useExternalLinks, true));
+ 	addarg("resolve-relative-links", 0, "Resolve relative external links into absolute links", new ConstSetter<bool>(s.resolveRelativeLinks, true));
+ 	addarg("keep-relative-links", 0, "Keep relative external links as relative external links", new ConstSetter<bool>(s.resolveRelativeLinks, false));
 
 	addarg("enable-toc-back-links",0,"Link from section header to toc", new ConstSetter<bool>(od.toc.backLinks,true));
 	addarg("disable-toc-back-links",0,"Do not link from section header to toc", new ConstSetter<bool>(od.toc.backLinks,false));
