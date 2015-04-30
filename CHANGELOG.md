@@ -1,9 +1,12 @@
 v0.12.3 (unreleased)
 ----------------------
 * removed support for CentOS 5 builds
-* update OpenSSL to 1.0.1m
+* update OpenSSL to 1.0.2a and xz to 5.2.1
+* downgrade libpng to 1.2.53
 * **#2104**: renamed COPYING to LICENSE
+* **#2190**: do not depend on ICU even if it is already installed
 * **#2280**: do not allow data URIs for --header-html or --footer-html
+* **#2322**: fix broken debug builds with MSVC
 
 v0.12.2.1 (2015-01-19)
 ----------------------
