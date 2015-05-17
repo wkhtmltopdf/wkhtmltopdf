@@ -90,8 +90,10 @@ void ConverterPrivate::cancel() {
 bool ConverterPrivate::convert() {
 	convertionDone=false;
 	beginConvert();
-	while (!convertionDone)
-		qApp->processEvents(QEventLoop::WaitForMoreEvents | QEventLoop::AllEvents);
+	while (!convertionDone) {
+		QCoreApplication::processEvents();
+		QCoreApplication::sendPostedEvents();
+	}
 	return !error;
 }
 

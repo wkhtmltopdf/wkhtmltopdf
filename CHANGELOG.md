@@ -5,6 +5,7 @@ v0.12.3 (unreleased)
 * downgrade libpng to 1.2.53
 * **#2104**: renamed COPYING to LICENSE
 * **#2190**: do not depend on ICU even if it is already installed
+* **#2254**: fix random hangs in the event loop
 * **#2280**: do not allow data URIs for --header-html or --footer-html
 * **#2322**: fix broken debug builds with MSVC
 
