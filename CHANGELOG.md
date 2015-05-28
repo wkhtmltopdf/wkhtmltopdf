@@ -1,5 +1,6 @@
 v0.12.3 (unreleased)
 ----------------------
+* **[qt]** upgrade the patched Qt to v4.8.7
 * removed support for CentOS 5 builds
 * update OpenSSL to 1.0.2a and xz to 5.2.1
 * downgrade libpng to 1.2.53
