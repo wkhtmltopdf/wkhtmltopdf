@@ -35,6 +35,16 @@
 #include "dllbegin.inc"
 namespace wkhtmltopdf {
 
+class DLL_LOCAL MyNetworkProxyFactory: public QObject, public QNetworkProxyFactory {
+	Q_OBJECT
+private:
+	QList<QString> bypassHosts;
+	QList<QNetworkProxy> originalProxy, noProxy;
+public:
+	MyNetworkProxyFactory(QNetworkProxy defaultProxy, QList<QString> bypassHosts);
+	QList<QNetworkProxy> queryProxy (const QNetworkProxyQuery & query);
+};
+
 class DLL_LOCAL MyNetworkAccessManager: public QNetworkAccessManager {
 	Q_OBJECT
 private:

@@ -107,6 +107,19 @@ QNetworkReply * MyNetworkAccessManager::createRequest(Operation op, const QNetwo
 	return QNetworkAccessManager::createRequest(op, r3, outgoingData);
 }
 
+MyNetworkProxyFactory::MyNetworkProxyFactory (QNetworkProxy proxy, QList<QString> bph):
+	bypassHosts(bph),
+	originalProxy(QList<QNetworkProxy>() << proxy),
+	noProxy(QList<QNetworkProxy>() << QNetworkProxy(QNetworkProxy::DefaultProxy)){}
+
+QList<QNetworkProxy> MyNetworkProxyFactory::queryProxy (const QNetworkProxyQuery & query) {
+	QString host = query.url().host();
+	foreach (const QString & bypassHost, bypassHosts) {
+		if (host.compare(bypassHost, Qt::CaseInsensitive) == 0)
+			return noProxy;
+	}
+	return originalProxy;
+}
 
 MyQWebPage::MyQWebPage(ResourceObject & res): resource(res) {}
 
@@ -192,7 +205,11 @@ ResourceObject::ResourceObject(MultiPageLoaderPrivate & mpl, const QUrl & u, con
 			proxy.setUser(settings.proxy.user);
 		if (!settings.proxy.password.isEmpty())
 			proxy.setPassword(settings.proxy.password);
-		networkAccessManager.setProxy(proxy);
+		if (!settings.bypassProxyForHosts.isEmpty())
+			networkAccessManager.setProxyFactory(
+				new MyNetworkProxyFactory(proxy, settings.bypassProxyForHosts));
+		else
+			networkAccessManager.setProxy(proxy);
 	}
 
 	webPage.setNetworkAccessManager(&networkAccessManager);

@@ -9,6 +9,7 @@ v0.12.3 (unreleased)
 * **#2190**: do not depend on ICU even if it is already installed
 * **#2280**: do not allow data URIs for --header-html or --footer-html
 * **#2322**: fix broken debug builds with MSVC
+* **#2355**: add support for proxy bypass for specific hosts with --bypass-proxy-for
 
 v0.12.2.1 (2015-01-19)
 ----------------------

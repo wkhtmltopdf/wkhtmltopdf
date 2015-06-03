@@ -76,6 +76,7 @@ ReflectImpl<LoadPage>::ReflectImpl(LoadPage & c) {
 	WKHTMLTOPDF_REFLECT(radiobuttonSvg);
 	WKHTMLTOPDF_REFLECT(radiobuttonCheckedSvg);
 	WKHTMLTOPDF_REFLECT(cacheDir);
+	WKHTMLTOPDF_REFLECT(bypassProxyForHosts);
 }
 
 ReflectImpl<Web>::ReflectImpl(Web & c) {

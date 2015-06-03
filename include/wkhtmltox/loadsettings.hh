@@ -117,6 +117,9 @@ struct DLL_PUBLIC LoadPage {
 
 	QString cacheDir;
 	static QList<QString> mediaFilesExtensions;
+
+	// Hosts to bypass
+	QList< QString > bypassProxyForHosts;
 };
 
 DLL_PUBLIC LoadPage::LoadErrorHandling strToLoadErrorHandling(const char * s, bool * ok=0);
