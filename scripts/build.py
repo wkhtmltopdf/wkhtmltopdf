@@ -1254,7 +1254,7 @@ def main():
         QT_CONFIG['common'].extend(['remove:-release', 'remove:-webkit', '-debug', '-webkit-debug'])
 
     if '-clean' in sys.argv[2:]:
-        rmdir(os.path.join(basedir, config))
+        rmdir(os.path.join(basedir, final_config))
 
     os.chdir(rootdir)
     if '-chroot-build' in sys.argv[2:]:
