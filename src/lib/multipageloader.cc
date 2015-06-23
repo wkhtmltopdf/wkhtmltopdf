@@ -269,19 +269,17 @@ void ResourceObject::loadFinished(bool ok) {
 			warning(QString("Failed loading page ") + url.toString() + " (ignored)");
 	}
 
-	if (!multiPageLoader.isMainLoader) {
-		loadDone();
-		return;
-	}
+	bool isMain = multiPageLoader.isMainLoader;
 
-	// Evaluate extra user supplied javascript
-	foreach (const QString & str, settings.runScript)
-		webPage.mainFrame()->evaluateJavaScript(str);
+	// Evaluate extra user supplied javascript for the main loader
+	if (isMain)
+		foreach (const QString & str, settings.runScript)
+			webPage.mainFrame()->evaluateJavaScript(str);
 
 	// XXX: If loading failed there's no need to wait
 	//      for javascript on this resource.
 	if (!ok || signalPrint || settings.jsdelay == 0) loadDone();
-	else if (!settings.windowStatus.isEmpty()) waitWindowStatus();
+	else if (isMain && !settings.windowStatus.isEmpty()) waitWindowStatus();
 	else QTimer::singleShot(settings.jsdelay, this, SLOT(loadDone()));
 }
 
