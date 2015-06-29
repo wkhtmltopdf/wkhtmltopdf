@@ -345,8 +345,8 @@ deb http://archive.ubuntu.com/ubuntu/ trusty-security main restricted universe m
 DEPENDENT_LIBS = {
     'openssl': {
         'order' : 1,
-        'url'   : 'https://openssl.org/source/openssl-1.0.2a.tar.gz',
-        'sha1'  : '46ecd325b8e587fa491f6bb02ad4a9fb9f382f5f',
+        'url'   : 'https://openssl.org/source/openssl-1.0.2c.tar.gz',
+        'sha1'  : '6e4a5e91159eb32383296c7c83ac0e59b83a0a44',
         'build' : {
             'msvc*-win32*': {
                 'result': ['include/openssl/ssl.h', 'lib/ssleay32.lib', 'lib/libeay32.lib'],
