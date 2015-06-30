@@ -1023,18 +1023,22 @@ void PdfConverterPrivate::printDocument() {
 			!o.open(stdout,QIODevice::WriteOnly) ||
 			!MultiPageLoader::copyFile(i,o) ) {
 			emit out.error("Count not write to stdout");
+			tempOut.removeAll();
 			fail();
 			return;
 		}
+		tempOut.removeAll();
 	}
 
 	if (settings.out.isEmpty()) {
 		QFile i(lout);
 		if (!i.open(QIODevice::ReadOnly)) {
 			emit out.error("Reading output failed");
+			tempOut.removeAll();
 			fail();
 		}
 		outputData = i.readAll();
+		tempOut.removeAll();
 	}
 	clearResources();
 #ifdef __EXTENSIVE_WKHTMLTOPDF_QT_HACK__
