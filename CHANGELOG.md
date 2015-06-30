@@ -12,6 +12,7 @@ v0.12.3 (unreleased)
 * **#2280**: do not allow data URIs for --header-html or --footer-html
 * **#2322**: fix broken debug builds with MSVC
 * **#2355**: add support for proxy bypass for specific hosts with --bypass-proxy-for
+* **#2418**: fix build error on OS X
 
 v0.12.2.1 (2015-01-19)
 ----------------------

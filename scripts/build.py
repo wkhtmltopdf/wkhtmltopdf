@@ -596,20 +596,21 @@ def get_registry_value(key, value=None):
     return None
 
 def get_version(basedir):
-    def make4digit(ver):
-        while ver.count('.') < 3:
-            ver += '.0'
-        return ver
     mkdir_p(basedir)
     text = open(os.path.join(basedir, '..', 'VERSION'), 'r').read()
     if '-' not in text:
-        return (text, make4digit(text))
-    version = make4digit(text[:text.index('-')])
+        return (text, text)
+    version = text[:text.index('-')]
     os.chdir(os.path.join(basedir, '..'))
     hash = get_output('git', 'rev-parse', '--short', 'HEAD')
     if not hash:
         return (text, version)
     return ('%s-%s' % (text, hash), version)
+
+def nsis_version(ver):
+    while ver.count('.') < 3:
+        ver += '.0'
+    return ver
 
 def qt_config(key, *opts):
     input, output = [], []
@@ -961,7 +962,7 @@ def build_msvc(config, basedir):
     makensis = os.path.join(get_registry_value(r'SOFTWARE\NSIS'), 'makensis.exe')
     os.chdir(os.path.join(basedir, '..'))
     shell('"%s" /DVERSION=%s /DSIMPLE_VERSION=%s /DTARGET=%s /DMSVC /DARCH=%s wkhtmltox.nsi' % \
-            (makensis, version, simple_version, config, arch))
+            (makensis, version, nsis_version(simple_version), config, arch))
 
 # ------------------------------------------------ MinGW-W64 Cross Environment
 
@@ -1024,7 +1025,7 @@ def chroot_build_mingw64_cross(config, basedir):
 
     os.chdir(os.path.join(basedir, '..'))
     shell('makensis -DVERSION=%s -DSIMPLE_VERSION=%s -DTARGET=%s -DMINGW -DARCH=%s wkhtmltox.nsi' % \
-            (version, simple_version, config, rchop(config, '-dbg').split('-')[-1]))
+            (version, nsis_version(simple_version), config, rchop(config, '-dbg').split('-')[-1]))
 
 # -------------------------------------------------- Linux schroot environment
 
