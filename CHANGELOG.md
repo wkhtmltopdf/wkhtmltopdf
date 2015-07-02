@@ -10,6 +10,7 @@ v0.12.3 (unreleased)
 * **#2183**: apply --javascript-delay settings for non-main resource loaders
 * **#2190**: do not depend on ICU even if it is already installed
 * **#2194**: **[qt]** fix debugging of Qt/WebKit due to missing debug information
+* **#2214**: **[qt]** fix broken rendering of transparent images when converting to PDF
 * **#2280**: do not allow data URIs for --header-html or --footer-html
 * **#2322**: fix broken debug builds with MSVC
 * **#2355**: add support for proxy bypass for specific hosts with --bypass-proxy-for
