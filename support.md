@@ -15,3 +15,5 @@ When reporting an issues, please include the following information:
 Need help? Try the [mailing list](http://groups.google.com/group/wkhtmltopdf-general).
 
 Got an issue? Report it over at [GitHub](https://github.com/wkhtmltopdf/wkhtmltopdf/issues).
+
+Follow [@wkhtmltopdf](https://twitter.com/wkhtmltopdf) on Twitter to receive news/updates.
