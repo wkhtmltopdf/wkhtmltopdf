@@ -50,7 +50,7 @@ Date       | Release
 2014-06-26 | [0.12.1](http://download.gna.org/wkhtmltopdf/0.12/0.12.1/)
 2014-02-06 | [0.12.0](http://download.gna.org/wkhtmltopdf/0.12/0.12.0/)
 
-If you need versions older than `0.12.0`, you can look at the [old downloads](old-downloads.html).
+If you need versions older than `0.12.0`, you can look at the [obsolete downloads](obsolete-downloads.html).
 
 ## FAQ
 
