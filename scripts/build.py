@@ -1217,7 +1217,7 @@ BASEDIR=%s
 cd $BASEDIR
 ./xz --decompress app.tar.xz
 cd $TGTDIR
-tar xf $BASEDIR/app.tar
+tar oxf $BASEDIR/app.tar
 mv $BASEDIR/uninstall-wkhtmltox $TGTDIR/bin
 rm -fr $BASEDIR
 """ % cfg['--prefix'])
