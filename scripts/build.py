@@ -23,7 +23,7 @@ BUILDERS = {
     'source-tarball':        'source_tarball',
     'msvc2013-win32':        'msvc',
     'msvc2013-win64':        'msvc',
-    'setup-mingw_w64':       'setup_schroot',
+    'setup-mingw-w64':       'setup_mingw_w64',
     'setup-schroot-centos6': 'setup_schroot',
     'setup-schroot-centos7': 'setup_schroot',
     'setup-schroot-wheezy':  'setup_schroot',
@@ -326,20 +326,6 @@ deb http://archive.ubuntu.com/ubuntu/ precise-security main restricted universe 
         ('write_file', 'update.sh', 'yum update -y\ngem update fpm\n'),
         ('fpm_setup',  'fpm_package.sh'),
         ('schroot_conf', 'CentOS 7')
-    ],
-
-    'mingw_w64:amd64': [
-        ('set_alias', 'mingw-w64'),
-        ('debootstrap', 'trusty', 'http://archive.ubuntu.com/ubuntu/'),
-        ('write_file', 'etc/apt/sources.list', """
-deb http://archive.ubuntu.com/ubuntu/ trusty          main restricted universe multiverse
-deb http://archive.ubuntu.com/ubuntu/ trusty-updates  main restricted universe multiverse
-deb http://archive.ubuntu.com/ubuntu/ trusty-security main restricted universe multiverse"""),
-        ('shell', 'apt-get update'),
-        ('shell', 'apt-get dist-upgrade --assume-yes'),
-        ('shell', 'apt-get install --assume-yes build-essential mingw-w64 nsis python ruby perl gperf bison flex git'),
-        ('write_file', 'update.sh', 'apt-get update\napt-get dist-upgrade --assume-yes\n'),
-        ('schroot_conf', 'MinGW-w64 on Ubuntu Trusty')
     ]
 }
 
@@ -839,6 +825,12 @@ def build_update_schroot(config, basedir):
         message('******************* %s\n' % name[name.index('wkhtmltopdf-'):])
         shell('schroot -c %s -- /bin/bash /update.sh' % name[name.index('wkhtmltopdf-'):])
 
+def check_setup_mingw_w64(config):
+    check_running_on_debian()
+
+def build_setup_mingw_w64(config, basedir):
+    install_packages('build-essential', 'mingw-w64', 'nsis', 'perl', 'git')
+
 def check_source_tarball(config):
     if not get_output('git', 'rev-parse', '--short', 'HEAD'):
         error("This can only be run inside a git checkout.")
@@ -971,13 +963,9 @@ MINGW_W64_PREFIX = {
 }
 
 def check_mingw64_cross(config):
-    chroot_shell('mingw-w64', '%s-gcc --version' % MINGW_W64_PREFIX[rchop(config, '-dbg')])
+    shell('%s-gcc --version' % MINGW_W64_PREFIX[rchop(config, '-dbg')])
 
 def build_mingw64_cross(config, basedir):
-    os.chdir(os.path.realpath(os.path.join(basedir, '..')))
-    chroot_shell('mingw-w64', 'python scripts/build.py %s -chroot-build' % ' '.join(sys.argv[1:]))
-
-def chroot_build_mingw64_cross(config, basedir):
     version, simple_version = get_version(basedir)
     build_deplibs(config, basedir, mingw_w64=MINGW_W64_PREFIX.get(rchop(config, '-dbg')))
 
@@ -1014,12 +1002,12 @@ def chroot_build_mingw64_cross(config, basedir):
     shell('make')
     shutil.copy('bin/libwkhtmltox0.a', 'bin/wkhtmltox.lib')
     shell('rm -f bin/lib*.dll')
-    for dll in ['libgcc_s_sjlj-1.dll', 'libstdc++-6.dll', 'libwinpthread-1.dll']:
+    for dll in ['libgcc_s_sjlj-1.dll', 'libgcc_s_seh-1.dll', 'libstdc++-6.dll']:
         dll_path = get_output('dpkg', '-S', dll)
         if dll_path:
             for line in dll_path.split('\n'):
                 loc = line[1+line.index(':'):].strip()
-                if exists(loc) and MINGW_W64_PREFIX[rchop(config, '-dbg')] in loc:
+                if exists(loc) and MINGW_W64_PREFIX[rchop(config, '-dbg')] in loc and '-posix' not in loc:
                     shell('cp %s bin/' % loc)
 
     os.chdir(os.path.join(basedir, '..'))
