@@ -39,8 +39,8 @@ BUILDERS = {
     'setup-schroot-trusty':  'setup_schroot',
     'setup-schroot-precise': 'setup_schroot',
     'update-all-schroots':   'update_schroot',
-    'generic-i386':          'linux_schroot',
-    'generic-amd64':         'linux_schroot',
+    'linux-generic-i386':    'linux_generic',
+    'linux-generic-amd64':   'linux_generic',
     'centos7-amd64':         'linux_schroot',
     'wheezy-i386':           'linux_schroot',
     'wheezy-amd64':          'linux_schroot',
@@ -366,6 +366,12 @@ DEPENDENT_LIBS = {
                 'commands': [
                     'CFLAGS="-arch x86_64" ./configure --disable-shared --prefix=%(destdir)s',
                     'make install']
+            },
+            'linux-generic-*': {
+                'result': ['include/png.h', 'include/pngconf.h', 'lib/libpng.a'],
+                'commands': [
+                    'CFLAGS="-fPIC" ./configure --disable-shared --enable-static --prefix=%(destdir)s',
+                    'make install']
             }
         }
     },
@@ -406,6 +412,12 @@ DEPENDENT_LIBS = {
                 'result': ['include/jpeglib.h', 'include/jmorecfg.h', 'include/jerror.h', 'include/jconfig.h', 'lib/libjpeg.a'],
                 'commands': [
                     'CFLAGS="-arch x86_64" ./configure --disable-shared --prefix=%(destdir)s',
+                    'make install']
+            },
+            'linux-generic-*': {
+                'result': ['include/jpeglib.h', 'include/jmorecfg.h', 'include/jerror.h', 'include/jconfig.h', 'lib/libjpeg.a'],
+                'commands': [
+                    'CFLAGS="-fPIC" ./configure --disable-shared --enable-static --prefix=%(destdir)s',
                     'make install']
             }
         }
@@ -1009,6 +1021,48 @@ def chroot_build_linux_schroot(config, basedir):
 
     os.environ['WKHTMLTOX_VERSION'] = version
     os.environ['XZ_OPT']            = '-9'
+    shell('%s/bin/qmake %s/../wkhtmltopdf.pro' % (qtdir, basedir))
+    shell('make install INSTALL_ROOT=%s' % dist)
+
+def check_linux_generic(config):
+    chroot_env = ('amd64' in config) and 'generic-amd64' or 'generic-i386'
+    chroot_shell(chroot_env, 'gcc --version')
+
+def build_linux_generic(config, basedir):
+    chroot_env = ('amd64' in config) and 'generic-amd64' or 'generic-i386'
+    os.chdir(os.path.realpath(os.path.join(basedir, '..')))
+    chroot_shell(chroot_env, 'python scripts/build.py %s -chroot-build' % ' '.join(sys.argv[1:]))
+
+    version, simple_version = get_version(basedir)
+    os.chdir(os.path.join(basedir, config))
+    shell('XZ_OPT=-9 tar Jcf ../%s-%s_%s.tar.xz wkhtmltox/' % (PROJECT_SETUP['name'], version, config))
+
+def chroot_build_linux_generic(config, basedir):
+    version, simple_version = get_version(basedir)
+    build_deplibs(config, basedir)
+
+    libdir = os.path.join(basedir, config, 'deplibs')
+    qtdir  = os.path.join(basedir, config, 'qt')
+    mkdir_p(qtdir)
+
+    configure_args = qt_config('posix',
+        '--prefix=%s'   % qtdir,
+        '-I%s/include'  % libdir,
+        '-L%s/lib'      % libdir,
+        '-DOPENSSL_NO_SSL2')
+    build_qt(qtdir, 'make -j%d' % CPU_COUNT, '%s/../qt/configure %s' % (basedir, configure_args))
+
+    app    = os.path.join(basedir, config, 'app')
+    dist   = os.path.join(basedir, config, 'wkhtmltox')
+
+    mkdir_p(app)
+    rmdir(dist)
+    mkdir_p(dist)
+
+    os.chdir(app)
+    shell('rm -f bin/*')
+
+    os.environ['WKHTMLTOX_VERSION'] = version
     shell('%s/bin/qmake %s/../wkhtmltopdf.pro' % (qtdir, basedir))
     shell('make install INSTALL_ROOT=%s' % dist)
 
