@@ -111,6 +111,7 @@ QT_CONFIG = {
         '-largefile',
         '-iconv',                   # iconv support is required for text codecs
         '-openssl',                 # load OpenSSL binaries at runtime
+        '-no-javascript-jit',       # can cause crashes/excess memory usage
         '-no-rpath',
         '-no-dbus',
         '-no-nis',
