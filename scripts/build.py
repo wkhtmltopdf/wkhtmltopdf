@@ -32,12 +32,15 @@ BUILDERS = {
     'msvc2013-win32':        'msvc',
     'msvc2013-win64':        'msvc',
     'setup-mingw-w64':       'setup_mingw_w64',
+    'setup-schroot-generic': 'setup_schroot',
     'setup-schroot-centos7': 'setup_schroot',
     'setup-schroot-wheezy':  'setup_schroot',
     'setup-schroot-jessie':  'setup_schroot',
     'setup-schroot-trusty':  'setup_schroot',
     'setup-schroot-precise': 'setup_schroot',
     'update-all-schroots':   'update_schroot',
+    'generic-i386':          'linux_schroot',
+    'generic-amd64':         'linux_schroot',
     'centos7-amd64':         'linux_schroot',
     'wheezy-i386':           'linux_schroot',
     'wheezy-amd64':          'linux_schroot',
@@ -231,6 +234,24 @@ LINUX_SCHROOT_SETUP = {
                                     deb http://archive.ubuntu.com/ubuntu/ precise-updates  main restricted universe multiverse
                                     deb http://archive.ubuntu.com/ubuntu/ precise-security main restricted universe multiverse""")
     },
+    'generic': {
+        'title'             : 'Generic (based on CentOS 6)',
+        'packaging_tool'    : 'yum',
+        'build_arch'        : ['amd64', 'i386'],
+        'compression'       : 'bzip2',
+        'wrapper_command'   : 'scl enable devtoolset-3 python27 -- ',
+        'runtime_packages'  : 'glibc libstdc++ zlib openssl freetype fontconfig '\
+                              'libX11 libXext libXrender xorg-x11-fonts-Type1 xorg-x11-fonts-75dpi',
+        'build_packages'    : 'scl-utils devtoolset-3-gcc-c++ python27 ruby perl git make gzip diffutils gperf bison flex '\
+                              'zlib-devel openssl-devel freetype-devel fontconfig-devel '\
+                              'libX11-devel libXrender-devel libXext-devel',
+        'rinse'             : ('centos-6', """
+[slc6-scl]
+name=Scientific Linux CERN (SLC6) - SCL addons
+baseurl=http://linuxsoft.cern.ch/cern/scl/slc6X/$basearch/yum/scl/
+gpgcheck=0
+enabled=1
+""")},
     'centos7': {
         'title'             : 'CentOS 7',
         'packaging_tool'    : 'yum',
@@ -241,7 +262,7 @@ LINUX_SCHROOT_SETUP = {
         'build_packages'    : 'gcc gcc-c++ binutils python ruby perl git make diffutils gperf bison flex '\
                               'zlib-devel libpng-devel libjpeg-turbo-devel openssl-devel freetype-devel libicu-devel fontconfig-devel '\
                               'libX11-devel libXrender-devel libXext-devel',
-        'rinse'             : 'centos-7'
+        'rinse'             : ('centos-7', '')
     }
 }
 
@@ -694,7 +715,7 @@ def check_setup_schroot(config):
 
 def build_setup_schroot(config, basedir):
     install_packages('git', 'debootstrap', 'schroot', 'rinse', 'debian-archive-keyring',
-                     'ruby', 'ruby-dev', 'libffi-dev')
+                     'ruby', 'ruby-dev', 'libffi-dev', 'tar', 'xz-utils')
     if not get_output('which', 'fpm'):
         shell('gem install -V fpm -N')
 
@@ -725,7 +746,6 @@ def build_setup_schroot(config, basedir):
             shell('mount -t sysfs sysfs %s/sys'  % root_dir)
             for cmd in cmds:
                 shell('%s %s %s' % (chroot, root_dir, cmd))
-            wrapper = distro.get('wrapper_command', '')
             shell('umount %s/proc' % root_dir)
             shell('umount %s/sys'  % root_dir)
 
@@ -741,14 +761,14 @@ def build_setup_schroot(config, basedir):
                      'apt-get install --assume-yes %s' % pkg_list)
         elif distro['packaging_tool'] == 'yum':
             rinse = (arch == 'i386' and 'linux32 rinse' or 'rinse')
-            shell('%s --arch %s --distribution %s --directory %s' % (rinse, arch, distro['rinse'], root_dir))
+            rinse_distro, extra_repos = distro['rinse']
+            shell('%s --arch %s --distribution %s --directory %s' % (rinse, arch, rinse_distro, root_dir))
 
             if arch == 'amd64':
                 open(os.path.join(root_dir, 'etc/yum.conf'), 'a').write('exclude = *.i?86\n')
 
-            for repo_url in distro.get('extra_repos', []):
-                location = os.path.join(root_dir, 'etc/yum.repos.d', repo_url.split('/')[-1])
-                urllib.urlretrieve(repo_url, location)
+            if extra_repos:
+                open(os.path.join(root_dir, 'etc/yum.repos.d/wkhtmltopdf.repo'), 'w').write(extra_repos)
 
             do_setup('yum clean all', 'yum update -y', 'yum install -y %s' % pkg_list)
 

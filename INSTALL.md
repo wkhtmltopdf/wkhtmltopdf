@@ -41,6 +41,7 @@ The following targets are currently supported:
 
 Target         | Setup of Build Environment                    | Building 32-bit binaries                 |  Building 64-bit binaries
 ------         | --------------------------                    | ------------------------                 |  ------------------------
+Generic        | `sudo scripts/build.py setup-schroot-generic` | `scripts/build.py linux-generic-i386`    | `scripts/build.py linux-generic-amd64`
 Debian Wheezy  | `sudo scripts/build.py setup-schroot-wheezy`  | `scripts/build.py wheezy-i386`           | `scripts/build.py wheezy-amd64`
 Debian Jessie  | `sudo scripts/build.py setup-schroot-jessie`  | `scripts/build.py jessie-i386`           | `scripts/build.py jessie-amd64`
 Ubuntu Trusty  | `sudo scripts/build.py setup-schroot-trusty`  | `scripts/build.py trusty-i386`           | `scripts/build.py trusty-amd64`
