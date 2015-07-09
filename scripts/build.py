@@ -19,20 +19,25 @@
 
 # --------------------------------------------------------------- CONFIGURATION
 
+PROJECT_SETUP = {
+    'name':         'wkhtmltox',
+    'description':  'convert HTML to PDF and various image formats using QtWebkit',
+    'license':      'LGPLv3',
+    'maintainer':   'Ashish Kulkarni <kulkarni.ashish@gmail.com>',
+    'url':          'http://wkhtmltopdf.org/'
+}
+
 BUILDERS = {
     'source-tarball':        'source_tarball',
     'msvc2013-win32':        'msvc',
     'msvc2013-win64':        'msvc',
     'setup-mingw-w64':       'setup_mingw_w64',
-    'setup-schroot-centos6': 'setup_schroot',
     'setup-schroot-centos7': 'setup_schroot',
     'setup-schroot-wheezy':  'setup_schroot',
     'setup-schroot-jessie':  'setup_schroot',
     'setup-schroot-trusty':  'setup_schroot',
     'setup-schroot-precise': 'setup_schroot',
     'update-all-schroots':   'update_schroot',
-    'centos6-i386':          'linux_schroot',
-    'centos6-amd64':         'linux_schroot',
     'centos7-amd64':         'linux_schroot',
     'wheezy-i386':           'linux_schroot',
     'wheezy-amd64':          'linux_schroot',
@@ -161,172 +166,83 @@ QT_CONFIG = {
     ]
 }
 
-FPM_SETUP = {
-    'common': {
-        '--name':        'wkhtmltox',
-        '--description': 'convert HTML to PDF and various image formats using QtWebkit',
-        '--version':     '$1',
-        '--license':     'LGPLv3',
-        '--vendor':      'wkhtmltopdf.org',
-        '--url':         'http://wkhtmltopdf.org',
-        '--maintainer':  'Ashish Kulkarni <kulkarni.ashish@gmail.com>',
-        '-s':            'dir',
-        '-C':            'dist',
-        '--prefix':      '/usr/local',
-        '--category':    'utils'
-    },
+LINUX_SCHROOT_SETUP = {
     'wheezy': {
-        '-t':                'deb',
-        '--deb-compression': 'xz',
-        '--provides':        'wkhtmltopdf',
-        '--conflicts':       'wkhtmltopdf',
-        '--replaces':        'wkhtmltopdf',
-        '--depends':         ['fontconfig', 'libfontconfig1', 'libfreetype6', 'libpng12-0', 'zlib1g', 'libjpeg8', 'libssl1.0.0',
-                              'libx11-6', 'libxext6', 'libxrender1', 'xfonts-base', 'xfonts-75dpi', 'libstdc++6', 'libc6']
+        'title'             : 'Debian Wheezy',
+        'packaging_tool'    : 'apt',
+        'build_arch'        : ['amd64', 'i386'],
+        'compression'       : 'xz',
+        'runtime_packages'  : 'libc6 libstdc++6 zlib1g libpng12-0 libjpeg62 '\
+                              'libssl1.0.0 libfreetype6 libicu48 fontconfig '\
+                              'libx11-6 libxext6 libxrender1 libxcb1 xfonts-base xfonts-75dpi',
+        'build_packages'    : 'xz-utils ruby python perl gperf bison flex git '\
+                              'zlib1g-dev libpng12-dev libjpeg62-dev libssl-dev libfreetype6-dev libicu-dev libfontconfig1-dev '\
+                              'libx11-dev libxext-dev libxrender-dev libxcb1-dev',
+        'debootstrap'       : ('wheezy', 'http://ftp.us.debian.org/debian/', """
+                                    deb http://ftp.debian.org/debian/ wheezy         main contrib non-free
+                                    deb http://ftp.debian.org/debian/ wheezy-updates main contrib non-free
+                                    deb http://security.debian.org/   wheezy/updates main contrib non-free""")
     },
     'jessie': {
-        '-t':                'deb',
-        '--deb-compression': 'xz',
-        '--provides':        'wkhtmltopdf',
-        '--conflicts':       'wkhtmltopdf',
-        '--replaces':        'wkhtmltopdf',
-        '--depends':         ['fontconfig', 'libfontconfig1', 'libfreetype6', 'libpng12-0', 'zlib1g', 'libjpeg62-turbo', 'libssl1.0.0',
-                              'libx11-6', 'libxext6', 'libxrender1', 'xfonts-base', 'xfonts-75dpi', 'libstdc++6', 'libc6']
+        'title'             : 'Debian Jessie',
+        'packaging_tool'    : 'apt',
+        'build_arch'        : ['amd64', 'i386'],
+        'compression'       : 'xz',
+        'runtime_packages'  : 'libc6 libstdc++6 zlib1g libpng12-0 libjpeg62-turbo '\
+                              'libssl1.0.0 libfreetype6 libicu52 fontconfig '\
+                              'libx11-6 libxext6 libxrender1 libxcb1 xfonts-base xfonts-75dpi',
+        'build_packages'    : 'xz-utils ruby python perl gperf bison flex git '\
+                              'zlib1g-dev libpng12-dev libjpeg62-turbo-dev libssl-dev libfreetype6-dev libicu-dev libfontconfig1-dev '\
+                              'libx11-dev libxext-dev libxrender-dev libxcb1-dev',
+        'debootstrap'       : ('jessie', 'http://ftp.us.debian.org/debian/', """
+                                    deb http://ftp.debian.org/debian/ jessie         main contrib non-free
+                                    deb http://ftp.debian.org/debian/ jessie-updates main contrib non-free
+                                    deb http://security.debian.org/   jessie/updates main contrib non-free""")
     },
     'trusty': {
-        '-t':                'deb',
-        '--deb-compression': 'xz',
-        '--provides':        'wkhtmltopdf',
-        '--conflicts':       'wkhtmltopdf',
-        '--replaces':        'wkhtmltopdf',
-        '--depends':         ['fontconfig', 'libfontconfig1', 'libfreetype6', 'libpng12-0', 'zlib1g', 'libjpeg-turbo8', 'libssl1.0.0',
-                              'libx11-6', 'libxext6', 'libxrender1', 'xfonts-base', 'xfonts-75dpi', 'libstdc++6', 'libc6']
+        'title'             : 'Ubuntu Trusty',
+        'packaging_tool'    : 'apt',
+        'build_arch'        : ['amd64', 'i386'],
+        'compression'       : 'xz',
+        'runtime_packages'  : 'libc6 libstdc++6 zlib1g libpng12-0 libjpeg-turbo8 '\
+                              'libssl1.0.0 libfreetype6 libicu52 fontconfig '\
+                              'libx11-6 libxext6 libxrender1 libxcb1 xfonts-base xfonts-75dpi',
+        'build_packages'    : 'xz-utils ruby python perl gperf bison flex git '\
+                              'zlib1g-dev libpng12-dev libjpeg-turbo8-dev libssl-dev libfreetype6-dev libicu-dev libfontconfig1-dev '\
+                              'libx11-dev libxext-dev libxrender-dev libxcb1-dev',
+        'debootstrap'       : ('trusty', 'http://archive.ubuntu.com/ubuntu/', """
+                                    deb http://archive.ubuntu.com/ubuntu/ trusty          main restricted universe multiverse
+                                    deb http://archive.ubuntu.com/ubuntu/ trusty-updates  main restricted universe multiverse
+                                    deb http://archive.ubuntu.com/ubuntu/ trusty-security main restricted universe multiverse""")
     },
     'precise': {
-        '-t':                'deb',
-        '--deb-compression': 'xz',
-        '--provides':        'wkhtmltopdf',
-        '--conflicts':       'wkhtmltopdf',
-        '--replaces':        'wkhtmltopdf',
-        '--depends':         ['fontconfig', 'libfontconfig1', 'libfreetype6', 'libpng12-0', 'zlib1g', 'libjpeg8', 'libssl1.0.0',
-                              'libx11-6', 'libxext6', 'libxrender1', 'xfonts-base', 'xfonts-75dpi', 'libstdc++6', 'libc6']
-    },
-    'centos6': {
-        '-t':                'rpm',
-        '--epoch':           '1',
-        '--rpm-compression': 'bzip2',
-        '--depends':         ['fontconfig', 'freetype', 'libpng', 'zlib', 'libjpeg', 'openssl', 'libstdc++', 'glibc',
-                              'libX11', 'libXext', 'libXrender', 'xorg-x11-fonts-Type1', 'xorg-x11-fonts-75dpi']
+        'title'             : 'Ubuntu Precise',
+        'packaging_tool'    : 'apt',
+        'build_arch'        : ['amd64', 'i386'],
+        'compression'       : 'xz',
+        'runtime_packages'  : 'libc6 libstdc++6 zlib1g libpng12-0 libjpeg-turbo8 '\
+                              'libssl1.0.0 libfreetype6 libicu48 fontconfig '\
+                              'libx11-6 libxext6 libxrender1 libxcb1 xfonts-base xfonts-75dpi',
+        'build_packages'    : 'xz-utils ruby python perl gperf bison flex git '\
+                              'zlib1g-dev libpng12-dev libjpeg-turbo8-dev libssl-dev libfreetype6-dev libicu-dev libfontconfig1-dev '\
+                              'libx11-dev libxext-dev libxrender-dev libxcb1-dev',
+        'debootstrap'       : ('precise', 'http://archive.ubuntu.com/ubuntu/', """
+                                    deb http://archive.ubuntu.com/ubuntu/ precise          main restricted universe multiverse
+                                    deb http://archive.ubuntu.com/ubuntu/ precise-updates  main restricted universe multiverse
+                                    deb http://archive.ubuntu.com/ubuntu/ precise-security main restricted universe multiverse""")
     },
     'centos7': {
-        '-t':                'rpm',
-        '--epoch':           '1',
-        '--rpm-compression': 'xz',
-        '--depends':         ['fontconfig', 'freetype', 'libpng', 'zlib', 'libjpeg-turbo', 'openssl', 'libstdc++', 'glibc',
-                              'libX11', 'libXext', 'libXrender', 'xorg-x11-fonts-Type1', 'xorg-x11-fonts-75dpi']
-    },
-    'osx': {
-        '-t':                         'osxpkg',
-        '-C':                         'pkg',
-        '--prefix':                   '/usr/local/share/wkhtmltox-installer',
-        '--osxpkg-identifier-prefix': 'org.wkhtmltopdf',
-        '--after-install':            'extract.sh'
+        'title'             : 'CentOS 7',
+        'packaging_tool'    : 'yum',
+        'build_arch'        : ['amd64'],
+        'compression'       : 'xz',
+        'runtime_packages'  : 'glibc libstdc++ zlib libpng libjpeg openssl freetype icu fontconfig '\
+                              'libX11 libXext libXrender xorg-x11-fonts-Type1 xorg-x11-fonts-75dpi',
+        'build_packages'    : 'gcc gcc-c++ binutils python ruby perl git make diffutils gperf bison flex '\
+                              'zlib-devel libpng-devel libjpeg-turbo-devel openssl-devel freetype-devel libicu-devel fontconfig-devel '\
+                              'libX11-devel libXrender-devel libXext-devel',
+        'rinse'             : 'centos-7'
     }
-}
-
-CHROOT_SETUP  = {
-    'wheezy': [
-        ('debootstrap', 'wheezy', 'http://ftp.us.debian.org/debian/'),
-        ('write_file', 'etc/apt/sources.list', """
-deb http://ftp.debian.org/debian/ wheezy         main contrib non-free
-deb http://ftp.debian.org/debian/ wheezy-updates main contrib non-free
-deb http://security.debian.org/   wheezy/updates main contrib non-free"""),
-        ('shell', 'apt-get update'),
-        ('shell', 'apt-get dist-upgrade --assume-yes'),
-        ('shell', 'apt-get install --assume-yes xz-utils libssl-dev libpng-dev libjpeg8-dev zlib1g-dev rubygems'),
-        ('shell', 'apt-get install --assume-yes libfontconfig1-dev libfreetype6-dev libx11-dev libxext-dev libxrender-dev'),
-        ('shell', 'gem install fpm --no-ri --no-rdoc'),
-        ('write_file', 'update.sh', 'apt-get update\napt-get dist-upgrade --assume-yes\ngem update fpm\n'),
-        ('fpm_setup',  'fpm_package.sh'),
-        ('schroot_conf', 'Debian Wheezy')
-    ],
-
-    'jessie': [
-        ('debootstrap', 'jessie', 'http://ftp.us.debian.org/debian/'),
-        ('write_file', 'etc/apt/sources.list', """
-deb http://ftp.debian.org/debian/ jessie         main contrib non-free
-deb http://ftp.debian.org/debian/ jessie-updates main contrib non-free
-deb http://security.debian.org/   jessie/updates main contrib non-free"""),
-        ('shell', 'apt-get update'),
-        ('shell', 'apt-get dist-upgrade --assume-yes'),
-        ('shell', 'apt-get install --assume-yes xz-utils libssl-dev libpng-dev libjpeg62-turbo-dev zlib1g-dev rubygems ruby-dev'),
-        ('shell', 'apt-get install --assume-yes libfontconfig1-dev libfreetype6-dev libx11-dev libxext-dev libxrender-dev'),
-        ('shell', 'gem install fpm --no-ri --no-rdoc'),
-        ('write_file', 'update.sh', 'apt-get update\napt-get dist-upgrade --assume-yes\ngem update fpm\n'),
-        ('fpm_setup',  'fpm_package.sh'),
-        ('schroot_conf', 'Debian Jessie')
-    ],
-
-    'trusty': [
-        ('debootstrap', 'trusty', 'http://archive.ubuntu.com/ubuntu/'),
-        ('write_file', 'etc/apt/sources.list', """
-deb http://archive.ubuntu.com/ubuntu/ trusty          main restricted universe multiverse
-deb http://archive.ubuntu.com/ubuntu/ trusty-updates  main restricted universe multiverse
-deb http://archive.ubuntu.com/ubuntu/ trusty-security main restricted universe multiverse"""),
-        ('shell', 'apt-get update'),
-        ('shell', 'apt-get dist-upgrade --assume-yes'),
-        ('shell', 'apt-get install --assume-yes xz-utils libssl-dev libpng-dev libjpeg-turbo8-dev zlib1g-dev ruby-dev'),
-        ('shell', 'apt-get install --assume-yes libfontconfig1-dev libfreetype6-dev libx11-dev libxext-dev libxrender-dev'),
-        ('shell', 'gem install fpm --no-ri --no-rdoc'),
-        ('write_file', 'update.sh', 'apt-get update\napt-get dist-upgrade --assume-yes\ngem update fpm\n'),
-        ('fpm_setup',  'fpm_package.sh'),
-        ('schroot_conf', 'Ubuntu Trusty')
-    ],
-
-    'precise': [
-        ('debootstrap', 'precise', 'http://archive.ubuntu.com/ubuntu/'),
-        ('write_file', 'usr/sbin/policy-rc.d', "#!/bin/bash\nexit 101\n"),
-        ('shell', 'chmod a+x /usr/sbin/policy-rc.d'),
-        ('write_file', 'etc/apt/sources.list', """
-deb http://archive.ubuntu.com/ubuntu/ precise          main restricted universe multiverse
-deb http://archive.ubuntu.com/ubuntu/ precise-updates  main restricted universe multiverse
-deb http://archive.ubuntu.com/ubuntu/ precise-security main restricted universe multiverse"""),
-        ('shell', 'apt-get update'),
-        ('shell', 'apt-get dist-upgrade --assume-yes'),
-        ('shell', 'apt-get install --assume-yes xz-utils libssl-dev libpng-dev libjpeg8-dev zlib1g-dev rubygems'),
-        ('shell', 'apt-get install --assume-yes libfontconfig1-dev libfreetype6-dev libx11-dev libxext-dev libxrender-dev'),
-        ('shell', 'gem install fpm --no-ri --no-rdoc'),
-        ('write_file', 'update.sh', 'apt-get update\napt-get dist-upgrade --assume-yes\ngem update fpm\n'),
-        ('fpm_setup',  'fpm_package.sh'),
-        ('schroot_conf', 'Ubuntu Precise')
-    ],
-
-    'centos6': [
-        ('rinse', 'centos-6'),
-        ('shell', 'yum update -y'),
-        ('append_file:amd64', 'etc/yum.conf', 'exclude = *.i?86\n'),
-        ('shell', 'yum install -y gcc gcc-c++ make diffutils perl ruby-devel rubygems rpm-build libffi-devel'),
-        ('shell', 'yum install -y openssl-devel libX11-devel libXrender-devel libXext-devel fontconfig-devel freetype-devel libjpeg-devel libpng-devel zlib-devel'),
-        ('shell', 'gem install fpm --no-ri --no-rdoc'),
-        ('write_file', 'update.sh', 'yum update -y\ngem update fpm\n'),
-        ('fpm_setup',  'fpm_package.sh'),
-        ('schroot_conf', 'CentOS 6')
-    ],
-
-    'centos7:amd64': [
-        ('rinse', 'centos-7'),
-        ('shell', 'yum install -y deltarpm'),
-        ('shell', "sed -i 's/mirrorlist/#mirrorlist/g' /etc/yum.repos.d/CentOS-Base.repo"),
-        ('shell', "sed -i 's/#baseurl/baseurl/g' /etc/yum.repos.d/CentOS-Base.repo"),
-        ('shell', 'yum update -y'),
-        ('append_file', 'etc/yum.conf', 'exclude = *.i?86\n'),
-        ('shell', 'yum install -y gcc gcc-c++ make diffutils perl ruby-devel rubygems rpm-build libffi-devel'),
-        ('shell', 'yum install -y openssl-devel libX11-devel libXrender-devel libXext-devel fontconfig-devel freetype-devel libjpeg-turbo-devel libpng-devel zlib-devel'),
-        ('shell', 'gem install fpm --no-ri --no-rdoc'),
-        ('write_file', 'update.sh', 'yum update -y\ngem update fpm\n'),
-        ('fpm_setup',  'fpm_package.sh'),
-        ('schroot_conf', 'CentOS 7')
-    ]
 }
 
 DEPENDENT_LIBS = {
@@ -553,7 +469,9 @@ def shell(cmd):
         error("%s\ncommand failed: exit code %d" % (cmd, ret))
 
 def chroot_shell(name, cmd):
-    ret = os.system('schroot -c wkhtmltopdf-%s -- %s ' % (name, cmd))
+    distro  = get_chroot_list().get(name)
+    wrapper = LINUX_SCHROOT_SETUP.get(distro, {}).get('wrapper_command', '')
+    ret = os.system('schroot -c wkhtmltox-%s -- %s%s ' % (name, wrapper, cmd))
     if ret != 0:
         error("command inside chroot failed: exit code %d" % ret)
 
@@ -614,17 +532,32 @@ def qt_config(key, *opts):
             output.remove(arg[1+arg.index(':'):])
     return ' '.join(output)
 
-def fpm_setup(cfg):
-    input, output = {}, ''
-    input.update(FPM_SETUP['common'])
-    input.update(FPM_SETUP[cfg])
-    for key in input:
-        if type(input[key]) is list:
-            for val in input[key]:
-                output += ' %s "%s"' % (key, val)
-        else:
-            output += ' %s "%s"' % (key, input[key])
-    return output, input
+def fpm_params(cfg, ver):
+    setup  = LINUX_SCHROOT_SETUP[cfg[:cfg.index('-')]]
+    output = '--force --prefix /usr/local --category utils -s dir -C dist'
+    for key in PROJECT_SETUP:
+        output += ' --%s "%s"' % (key, PROJECT_SETUP[key])
+
+    output += ' --version "%s"' % ver
+    output += ' --package ../%s-%s_linux-%s' % (PROJECT_SETUP['name'], ver, cfg)
+    if setup['packaging_tool'] == 'apt':
+        output += '.deb -t deb --deb-compression %s' % setup['compression']
+        output += ' --provides wkhtmltopdf --conflicts wkhtmltopdf --replaces wkhtmltopdf'
+    elif setup['packaging_tool'] == 'yum':
+        output += '.rpm -t rpm --rpm-compression %s --epoch 1' % setup['compression']
+
+    for depend in setup['runtime_packages'].split():
+        if setup['packaging_tool'] == 'apt':
+            version = get_output('dpkg-query', '-W', '-f=${Version}', depend)
+            if version:
+                output += ' --depends "%s >= %s"' % (depend, version)
+            else:
+                output += ' --depends %s' % depend
+        elif setup['packaging_tool'] == 'yum':
+            output += ' --depends %s' % depend
+
+    output += ' .'
+    return output
 
 def download_file(url, sha1, dir):
     name = url.split('/')[-1]
@@ -707,15 +640,24 @@ def build_deplibs(config, basedir, **kwargs):
 
         rmdir(srcdir)
 
+def build_qt(qtdir, make_cmd, configure_cmd):
+    configured = ''
+    if exists(os.path.join(qtdir, 'configured')):
+        configured = open(os.path.join(qtdir, 'configured'), 'r').read()
+    if not 'qt' in configured or not exists(qtdir):
+        mkdir_p(qtdir)
+        os.chdir(qtdir)
+        shell(configure_cmd)
+        open(os.path.join(qtdir, 'configured'), 'a').write('qt\n')
+    os.chdir(qtdir)
+    shell(make_cmd)
+
 def check_running_on_debian():
-    if not sys.platform.startswith('linux') or not exists('/etc/apt/sources.list'):
-        error('This can only be run on a Debian/Ubuntu distribution, aborting.')
+    if not sys.platform.startswith('linux') or not exists('/etc/apt/sources.list') or platform.architecture()[0] != '64bit':
+        error('This can only be run on a 64-bit Debian/Ubuntu distribution, aborting.')
 
     if os.geteuid() != 0:
         error('This script must be run as root.')
-
-    if platform.architecture()[0] == '64bit' and 'amd64' not in ARCH:
-        ARCH.insert(0, 'amd64')
 
 def install_packages(*names):
     inst = get_output('dpkg-query', '--show', '--showformat', '${Package}\n').split('\n')
@@ -725,9 +667,24 @@ def install_packages(*names):
         shell('apt-get update')
         shell('apt-get install --assume-yes %s' % (' '.join(miss)))
 
-# --------------------------------------------------------------- Linux chroot
+def get_chroot_list():
+    prefix = 'chroot:wkhtmltox-'
+    result = {}
+    for line in get_output('schroot', '--list').split('\n'):
+        if not line.startswith(prefix):
+            continue
+        name = line[len(prefix):]
+        for distro in LINUX_SCHROOT_SETUP:
+            if 'chroot_alias' in LINUX_SCHROOT_SETUP[distro]:
+                if name == LINUX_SCHROOT_SETUP[distro]['chroot_alias']:
+                    result[name] = distro
+                continue
+            for arch in LINUX_SCHROOT_SETUP[distro]['build_arch']:
+                if name == '%s-%s' % (distro, arch):
+                    result[name] = distro
+    return result
 
-ARCH = ['i386']
+# --------------------------------------------------------------- Linux chroot
 
 def check_setup_schroot(config):
     check_running_on_debian()
@@ -736,100 +693,95 @@ def check_setup_schroot(config):
         error('Unable to determine the login for which schroot access is to be given.')
 
 def build_setup_schroot(config, basedir):
-    install_packages('git', 'debootstrap', 'schroot', 'rinse', 'debian-archive-keyring')
-    os.environ['HOME'] = '/tmp' # workaround bug in gem when home directory doesn't exist
+    install_packages('git', 'debootstrap', 'schroot', 'rinse', 'debian-archive-keyring',
+                     'ruby', 'ruby-dev', 'libffi-dev')
+    if not get_output('which', 'fpm'):
+        shell('gem install -V fpm -N')
 
     login  = os.environ.get('SUDO_USER') or get_output('logname')
-    chroot = config[1+config.rindex('-'):]
+    target = config.split('-', 2)[2]
+    distro = LINUX_SCHROOT_SETUP.get(target)
+    allenv = get_chroot_list()
 
-    command_list = CHROOT_SETUP.get(chroot)
-    if not command_list and ('%s:amd64' % chroot) in CHROOT_SETUP:
-        command_list = CHROOT_SETUP['%s:amd64' % chroot]
-        if 'i386' in ARCH:
-            del ARCH[ARCH.index('i386')]
-
-    for arch in ARCH:
-        alias = '%s-%s' % (chroot, arch)
-        if command_list[0][0] == 'set_alias':
-            alias = command_list[0][1]
-            del command_list[0]
-        message('******************* %s\n' % alias)
+    for arch in distro['build_arch']:
+        alias    = distro.get('chroot_alias', '%s-%s' % (target, arch))
         base_dir = os.environ.get('WKHTMLTOX_CHROOT') or '/var/chroot'
-        root_dir = os.path.join(base_dir, alias)
-        os.system('umount %s/proc' % root_dir)
-        os.system('umount %s/sys'  % root_dir)
+        root_dir = os.path.join(base_dir, 'wkhtmltox-%s' % alias)
+        pkg_list = '%s %s' % (distro['build_packages'], distro.get('runtime_packages', ''))
+        chroot   = (arch == 'i386' and 'linux32 chroot' or 'chroot')
+
+        if alias in allenv:
+            message('******************* %s (skipped)\n' % alias)
+            continue
+
+        message('******************* %s\n' % alias)
+        os.system('umount %s/proc 2>/dev/null' % root_dir)
+        os.system('umount %s/sys  2>/dev/null' % root_dir)
         rmdir(root_dir)
         mkdir_p(root_dir)
-        for command in command_list:
-            # handle architecture-specific commands
-            name = command[0]
-            if ':' in name:
-                if name[1+name.rindex(':'):] != arch:
-                    continue
-                else:
-                    name = name[:name.rindex(':')]
 
-            # handle commands
-            if name == 'debootstrap':
-                shell('debootstrap --arch=%(arch)s --variant=buildd %(distro)s %(dir)s %(url)s' % {
-                    'arch': arch, 'dir': root_dir, 'distro': command[1], 'url': command[2] })
-                cmd = (arch == 'i386' and 'linux32 chroot' or 'chroot')
-                shell('%s %s mount -t proc  proc  /proc' % (cmd, root_dir))
-                shell('%s %s mount -t sysfs sysfs /sys'  % (cmd, root_dir))
-            elif name == 'rinse':
-                cmd = (arch == 'i386' and 'linux32 rinse' or 'rinse')
-                shell('%s --arch %s --distribution %s --directory %s' % (cmd, arch, command[1], root_dir))
-                shell('%s %s mount -t proc  proc  /proc' % (cmd, root_dir))
-                shell('%s %s mount -t sysfs sysfs /sys'  % (cmd, root_dir))
-            elif name == 'shell':
-                cmd = (arch == 'i386' and 'linux32 chroot' or 'chroot')
-                shell('%s %s %s' % (cmd, root_dir, command[1]))
-            elif name == 'write_file':
-                open(os.path.join(root_dir, command[1]), 'w').write(command[2].strip())
-            elif name == 'append_file':
-                open(os.path.join(root_dir, command[1]), 'a').write(command[2].strip())
-            elif name == 'download_file':
-                name = command[1].split('/')[-1]
-                loc  = os.path.join(root_dir, command[2], name)
-                if exists(loc): os.remove(loc)
-                def hook(cnt, bs, total):
-                    pct = int(cnt*bs*100/total)
-                    message("\rDownloading: %s [%d%%]" % (name, pct))
-                urllib.urlretrieve(command[1], loc, reporthook=hook)
-                message("\rDownloaded: %s%s\n" % (name, ' '*10))
-            elif name == 'fpm_setup':
-                args, cfg = fpm_setup(chroot)
-                cmd = '#!/bin/sh\nXZ_OPT=-9 fpm --force %s --package ../%s-$1_linux-%s-$2.%s .\n'
-                loc = os.path.join(root_dir, command[1])
-                open(loc, 'w').write(cmd % (args, cfg['--name'], chroot, cfg['-t']))
-                shell('chmod a+x %s' % loc)
-            elif name == 'schroot_conf':
-                cfg = open('/etc/schroot/chroot.d/wkhtmltopdf-%s' % alias, 'w')
-                cfg.write('[wkhtmltopdf-%s]\n' % alias)
-                cfg.write('type=directory\ndirectory=%s/\n' % root_dir)
-                cfg.write('description=%s %s for wkhtmltopdf\n' % (command[1], arch))
-                cfg.write('users=%s\nroot-users=root\n' % login)
-                if arch == 'i386' and 'amd64' in ARCH:
-                    cfg.write('personality=linux32\n')
-                cfg.close()
-        os.system('umount %s/proc' % root_dir)
-        os.system('umount %s/sys'  % root_dir)
+        def do_setup(*cmds):
+            shell('mount -t proc  proc  %s/proc' % root_dir)
+            shell('mount -t sysfs sysfs %s/sys'  % root_dir)
+            for cmd in cmds:
+                shell('%s %s %s' % (chroot, root_dir, cmd))
+            wrapper = distro.get('wrapper_command', '')
+            shell('umount %s/proc' % root_dir)
+            shell('umount %s/sys'  % root_dir)
+
+        if distro['packaging_tool'] == 'apt':
+            cfg = distro['debootstrap']
+            shell('debootstrap --arch=%s --variant=buildd %s %s %s' % (arch, cfg[0], root_dir, cfg[1]))
+
+            open(os.path.join(root_dir, 'etc/apt/sources.list'), 'w').write(cfg[2])
+            open(os.path.join(root_dir, 'usr/sbin/policy-rc.d'), 'w').write("#!/bin/bash\nexit 101\n")
+            do_setup('chmod a+x /usr/sbin/policy-rc.d',         # hack for Ubuntu Precise
+                     'apt-get update',
+                     'apt-get dist-upgrade --assume-yes',
+                     'apt-get install --assume-yes %s' % pkg_list)
+        elif distro['packaging_tool'] == 'yum':
+            rinse = (arch == 'i386' and 'linux32 rinse' or 'rinse')
+            shell('%s --arch %s --distribution %s --directory %s' % (rinse, arch, distro['rinse'], root_dir))
+
+            if arch == 'amd64':
+                open(os.path.join(root_dir, 'etc/yum.conf'), 'a').write('exclude = *.i?86\n')
+
+            for repo_url in distro.get('extra_repos', []):
+                location = os.path.join(root_dir, 'etc/yum.repos.d', repo_url.split('/')[-1])
+                urllib.urlretrieve(repo_url, location)
+
+            do_setup('yum clean all', 'yum update -y', 'yum install -y %s' % pkg_list)
+
+        open('/etc/schroot/chroot.d/wkhtmltox', 'a').write("""
+[wkhtmltox-%(alias)s]
+type=directory
+directory=%(dir)s
+description=%(title)s for wkhtmltox
+users=%(login)s
+root-users=root
+%(personality)s""" % { 'alias': alias, 'dir': root_dir, 'title': distro['title'], 'login': login,
+                       'personality': (arch == 'i386' and 'personality=linux32\n' or '\n') })
 
 def check_update_schroot(config):
     check_running_on_debian()
-    if not get_output('schroot', '--list'):
+    if not get_chroot_list():
         error('Unable to determine the list of available schroots.')
 
 def build_update_schroot(config, basedir):
-    for name in get_output('schroot', '--list').split('\n'):
-        message('******************* %s\n' % name[name.index('wkhtmltopdf-'):])
-        shell('schroot -c %s -- /bin/bash /update.sh' % name[name.index('wkhtmltopdf-'):])
+    for name, distro in get_chroot_list().iteritems():
+        message('******************* %s\n' % name)
+        tool = LINUX_SCHROOT_SETUP[distro]['packaging_tool']
+        if tool == 'apt':
+            chroot_shell(name, 'apt-get update')
+            chroot_shell(name, 'apt-get dist-upgrade --assume-yes')
+        elif tool == 'yum':
+            chroot_shell(name, 'yum update -y')
 
 def check_setup_mingw_w64(config):
     check_running_on_debian()
 
 def build_setup_mingw_w64(config, basedir):
-    install_packages('build-essential', 'mingw-w64', 'nsis', 'perl', 'git')
+    install_packages('build-essential', 'mingw-w64', 'nsis', 'perl', 'git', 'ruby', 'gperf', 'bison', 'flex')
 
 def check_source_tarball(config):
     if not get_output('git', 'rev-parse', '--short', 'HEAD'):
@@ -933,11 +885,7 @@ def build_msvc(config, basedir):
         '-L %s\\lib' % libdir,
         'OPENSSL_LIBS="-L%s\\\\lib -lssleay32 -llibeay32 -lUser32 -lAdvapi32 -lGdi32 -lCrypt32"' % libdir.replace('\\', '\\\\'))
 
-    os.chdir(qtdir)
-    if not exists('is_configured'):
-        shell('%s\\..\\qt\\configure.exe %s' % (basedir, configure_args))
-        open('is_configured', 'w').write('')
-    shell('nmake')
+    build_qt(qtdir, 'nmake', '%s\\..\\qt\\configure.exe %s' % (basedir, configure_args))
 
     appdir = os.path.join(basedir, config, 'app')
     mkdir_p(appdir)
@@ -983,12 +931,8 @@ def build_mingw64_cross(config, basedir):
     mkdir_p(qtdir)
     os.chdir(qtdir)
 
-    if not exists('is_configured'):
-        for var in ['CFLAGS', 'CXXFLAGS']:
-            os.environ[var] = '-w'
-        shell('%s/../qt/configure %s' % (basedir, configure_args))
-        shell('touch is_configured')
-    shell('make -j%d' % CPU_COUNT)
+    build_qt(qtdir, 'make -j%d' % CPU_COUNT,
+        '%s/../qt/configure %s' % (basedir, configure_args))
 
     appdir = os.path.join(basedir, config, 'app')
     mkdir_p(appdir)
@@ -1017,45 +961,36 @@ def build_mingw64_cross(config, basedir):
 # -------------------------------------------------- Linux schroot environment
 
 def check_linux_schroot(config):
-    shell('schroot -c wkhtmltopdf-%s -- gcc --version' % rchop(config, '-dbg'))
+    chroot_shell(rchop(config, '-dbg'), 'gcc --version')
 
 def build_linux_schroot(config, basedir):
+    os.chdir(os.path.realpath(os.path.join(basedir, '..')))
+    chroot_shell(rchop(config, '-dbg'), 'python scripts/build.py %s -chroot-build' % ' '.join(sys.argv[1:]))
+
+    version, simple_version = get_version(basedir)
+    os.chdir(os.path.join(basedir, config))
+    shell('fpm %s' % fpm_params(config, version))
+
+def chroot_build_linux_schroot(config, basedir):
     version, simple_version = get_version(basedir)
 
-    dir    = os.path.join(basedir, config)
-    script = os.path.join(dir, 'build.sh')
-    dist   = os.path.join(dir, 'dist')
+    qtdir  = os.path.join(basedir, config, 'qt')
+    mkdir_p(qtdir)
 
-    mkdir_p(dir)
-    rmdir(dist)
+    build_qt(qtdir, 'make -j%d' % CPU_COUNT,
+        '%s/../qt/configure %s' % (basedir, qt_config('posix', '--prefix=%s' % qtdir)))
 
-    configure_args = qt_config('posix', '--prefix=%s' % os.path.join(dir, 'qt'))
+    app    = os.path.join(basedir, config, 'app')
+    dist   = os.path.join(basedir, config, 'dist')
+    mkdir_p(app)
+    mkdir_p(dist)
+    os.chdir(app)
+    shell('rm -f bin/*')
 
-    lines = ['#!/bin/bash']
-    lines.append('# start of autogenerated build script')
-    lines.append('mkdir -p app qt')
-    lines.append('cd qt')
-    lines.append('export CFLAGS="-w"')
-    lines.append('export CXXLAGS="-w"')
-    lines.append('if [ ! -f is_configured ]; then')
-    lines.append('  ../../../qt/configure %s || exit 1' % configure_args)
-    lines.append('  touch is_configured')
-    lines.append('fi')
-    lines.append('if ! make -j%d -q; then\n  make -j%d || exit 1\nfi' % (CPU_COUNT, CPU_COUNT))
-    lines.append('cd ../app')
-    lines.append('rm -f bin/*')
-    lines.append('export WKHTMLTOX_VERSION=%s' % version)
-    lines.append('../qt/bin/qmake ../../../wkhtmltopdf.pro')
-    lines.append('make install INSTALL_ROOT=%s || exit 1' % dist)
-    lines.append('cd ..')
-    lines.append('/fpm_package.sh %s %s' % (version, config[1+config.index('-'):]))
-    lines.append('# end of build script')
-
-    open(script, 'w').write('\n'.join(lines))
-    os.chdir(dir)
-    shell('chmod +x build.sh')
-    shell('schroot -c wkhtmltopdf-%s -- ./build.sh' % rchop(config, '-dbg'))
-
+    os.environ['WKHTMLTOX_VERSION'] = version
+    os.environ['XZ_OPT']            = '-9'
+    shell('%s/bin/qmake %s/../wkhtmltopdf.pro' % (qtdir, basedir))
+    shell('make install INSTALL_ROOT=%s' % dist)
 
 # -------------------------------------------------- POSIX local environment
 
@@ -1078,13 +1013,8 @@ def build_posix_local(config, basedir):
     mkdir_p(os.path.join(dist, 'include', 'wkhtmltox'))
     mkdir_p(os.path.join(dist, 'lib'))
 
-    os.chdir(qt)
-    if not exists('is_configured'):
-        shell('../../../qt/configure %s' % qt_config('posix', '--prefix=%s' % qt))
-        shell('touch is_configured')
-
-    if subprocess.call([make, '-j%d' % CPU_COUNT]):
-        shell('%s -j%d' % (make, CPU_COUNT))
+    build_qt(qtdir, 'make -j%d' % CPU_COUNT,
+        '%s/../qt/configure %s' % (basedir, qt_config('posix', '--prefix=%s' % qt)))
 
     os.chdir(app)
     shell('rm -f bin/*')
@@ -1101,6 +1031,9 @@ def build_posix_local(config, basedir):
     shell('xz --compress --force --verbose -9 ../wkhtmltox-%s_local-%s.tar' % (version, platform.node()))
 
 # --------------------------------------------------------------- OS X
+
+OSXPKG_IDENTIFIER = 'org.wkhtmltopdf'
+OSXPKG_PREFIX     = '/usr/local/share/wkhtmltox-installer'
 
 def check_osx(config):
     if not platform.system() == 'Darwin' or not platform.mac_ver()[0]:
@@ -1142,12 +1075,7 @@ def build_osx(config, basedir):
     mkdir_p(get_dir('app'))
     mkdir_p(get_dir('pkg'))
 
-    os.chdir(get_dir('qt'))
-    if not exists('is_configured'):
-        shell('../../../qt/configure %s' % configure_args)
-        shell('touch is_configured')
-
-    shell('make -j%d' % CPU_COUNT)
+    build_qt(get_dir('qt'), 'make -j%d' % CPU_COUNT, '../../../qt/configure %s' % configure_args)
 
     os.chdir(get_dir('app'))
     shell('rm -f bin/*')
@@ -1179,7 +1107,6 @@ def build_osx(config, basedir):
     shell('%s --compress --force --verbose -9 ../pkg/app.tar' % xz)
     shutil.copy(xz, '../pkg/')
 
-    args, cfg = fpm_setup('osx')
     with open('../pkg/uninstall-wkhtmltox', 'w') as f:
         os.chmod('../pkg/uninstall-wkhtmltox', 0o755)
         f.write("""#!/bin/bash
@@ -1191,7 +1118,7 @@ cd /usr/local
 if which pkgutil >/dev/null; then
     pkgutil --forget %s.%s
 fi
-""" % (cfg['--osxpkg-identifier-prefix'], cfg['--name']))
+""" % (OSXPKG_IDENTIFIER, PROJECT_SETUP['name']))
         for root, dirs, files in os.walk(get_dir('dist')):
             for file in files:
                 f.write('echo REMOVE /usr/local/%(name)s && rm -f %(name)s\n' % { 'name': os.path.relpath(os.path.join(root, file)) })
@@ -1207,10 +1134,16 @@ cd $TGTDIR
 tar oxf $BASEDIR/app.tar
 mv $BASEDIR/uninstall-wkhtmltox $TGTDIR/bin
 rm -fr $BASEDIR
-""" % cfg['--prefix'])
+""" % OSXPKG_PREFIX)
 
     os.chdir(os.path.join(basedir, config))
-    shell('fpm --force %s --package ../%s-%s_%s.pkg .' % (args.replace('$1', version), cfg['--name'], version, config))
+    fpm_args = '--force --prefix %s --category utils -s dir -C pkg' % OSXPKG_PREFIX
+    for key in PROJECT_SETUP:
+        fpm_args += ' --%s "%s"' % (key, PROJECT_SETUP[key])
+    fpm_args += ' --osxpkg-identifier-prefix "%s" --version "%s"' % (OSXPKG_IDENTIFIER, version)
+    fpm_args += ' -t osxpkg --package ../%s-%s_%s.pkg' % (PROJECT_SETUP['name'], version, config)
+    fpm_args += ' --after-install extract.sh .'
+    shell('fpm %s' % fpm_args)
 
 # --------------------------------------------------------------- command line
 
