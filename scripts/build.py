@@ -730,15 +730,13 @@ def check_running_on_debian():
     if platform.architecture()[0] == '64bit' and 'amd64' not in ARCH:
         ARCH.insert(0, 'amd64')
 
-PACKAGE_NAME = re.compile(r'ii\s+(.+?)\s+.*')
 def install_packages(*names):
-    lines = get_output('dpkg-query', '--list').split('\n')
-    avail = [PACKAGE_NAME.match(line).group(1) for line in lines if PACKAGE_NAME.match(line)]
-    inst  = [name for name in names if name in avail]
+    inst = get_output('dpkg-query', '--show', '--showformat', '${Package}\n').split('\n')
+    miss = [name for name in names if name not in inst]
 
-    if len(inst) != len(names):
+    if miss:
         shell('apt-get update')
-        shell('apt-get install --assume-yes %s' % (' '.join(names)))
+        shell('apt-get install --assume-yes %s' % (' '.join(miss)))
 
 # --------------------------------------------------------------- Linux chroot
 
