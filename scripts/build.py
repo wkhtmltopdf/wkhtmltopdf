@@ -370,8 +370,8 @@ deb http://archive.ubuntu.com/ubuntu/ trusty-security main restricted universe m
 DEPENDENT_LIBS = {
     'openssl': {
         'order' : 1,
-        'url'   : 'https://www.openssl.org/source/openssl-1.0.1o.tar.gz',
-        'sha1'  : 'b003e3382607ef2c6d85b51e4ed7a4c0a76b8d5a',
+        'url'   : 'https://www.openssl.org/source/openssl-1.0.1p.tar.gz',
+        'sha1'  : '9d1977cc89242cd11471269ece2ed4650947c046',
         'build' : {
             'msvc*-win32*': {
                 'result': ['include/openssl/ssl.h', 'lib/ssleay32.lib', 'lib/libeay32.lib'],
@@ -426,8 +426,8 @@ DEPENDENT_LIBS = {
 
     'libpng': {
         'order' : 3,
-        'url' : 'http://downloads.sourceforge.net/libpng/libpng-1.5.21.tar.gz',
-        'sha1': '0ce1aa25abd55ad153516a29735b8ad432b4b771',
+        'url' : 'http://downloads.sourceforge.net/libpng/libpng-1.5.22.tar.gz',
+        'sha1': 'e912df0826dd6fb74f579ba60bf05c99807548ac',
         'build' : {
             'msvc*': {
                 'result': {
