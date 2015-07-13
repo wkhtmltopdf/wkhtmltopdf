@@ -2,7 +2,7 @@ v0.12.3 (unreleased)
 ----------------------
 * **[qt]** upgrade the patched Qt to v4.8.7
 * removed support for CentOS 5 builds
-* update OpenSSL to 1.0.2c and xz to 5.2.1
+* update OpenSSL to 1.0.2d and xz to 5.2.1
 * downgrade libpng to 1.2.53
 * **#1843**: add --keep-relative-links and --resolve-relative-links to resolve relative links
 * **#1981**: fix temporary PDF files not being removed when writing to stdout
