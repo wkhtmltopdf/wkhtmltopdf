@@ -25,6 +25,16 @@ Others                | [source code](http://download.gna.org/wkhtmltopdf/0.12/0
 
 ## Testing
 
+A preview [0.12.3-dev-79ff51e](https://github.com/wkhtmltopdf/wkhtmltopdf/tree/79ff51e) for the next version was released on July 14, 2015. It includes the following [changes since the 0.12.2.1 release](https://github.com/wkhtmltopdf/wkhtmltopdf/blob/79ff51e/CHANGELOG.md).
+
+Flavor  | Downloads                                                                                                                                                                                                                                               | Comments
+--------| ---------                                                                                                                                                                                                                                               | --------
+Windows | [32-bit](https://bitbucket.org/wkhtmltopdf/wkhtmltopdf/downloads/wkhtmltox-0.12.3-dev-79ff51e_msvc2013-win32.exe)         /   [64-bit](https://bitbucket.org/wkhtmltopdf/wkhtmltopdf/downloads/wkhtmltox-0.12.3-dev-79ff51e_msvc2013-win64.exe)         | for Windows Vista or later; bundles VC++ Runtime 2013
+Linux   | [32-bit](https://bitbucket.org/wkhtmltopdf/wkhtmltopdf/downloads/wkhtmltox-0.12.3-dev-79ff51e_linux-generic-i386.tar.xz)  /   [64-bit](https://bitbucket.org/wkhtmltopdf/wkhtmltopdf/downloads/wkhtmltox-0.12.3-dev-79ff51e_linux-generic-amd64.tar.xz) | depends on: zlib, fontconfig, freetype, X11 libs (libX11, libXext, libXrender)
+OS X    | [32-bit](https://bitbucket.org/wkhtmltopdf/wkhtmltopdf/downloads/wkhtmltox-0.12.3-dev-79ff51e_osx-carbon-i386.pkg)        /   [64-bit](https://bitbucket.org/wkhtmltopdf/wkhtmltopdf/downloads/wkhtmltox-0.12.3-dev-79ff51e_osx-cocoa-x86-64.pkg)       | for OS X 10.6 or later
+
+## Bleeding Edge
+
 An [alpha release](https://github.com/wkhtmltopdf/wkhtmltopdf/blob/0.13/README.md#013-alpha) based on Qt `5.4.2` (with an updated browser engine) is available. Please note that this is a work-in-progress and not all the features have been ported to it yet, so do not expect any support for any bugs you may encounter.
 
 Flavor                | Downloads                                                                                                                                                                                                                                                   | Comments
