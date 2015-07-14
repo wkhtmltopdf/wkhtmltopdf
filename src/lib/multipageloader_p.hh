@@ -135,8 +135,9 @@ public:
 	bool hasError;
 	bool finishedEmitted;
 	TempFile tempIn;
+	int dpi;
 
-	MultiPageLoaderPrivate(const settings::LoadGlobal & settings, MultiPageLoader & o);
+	MultiPageLoaderPrivate(const settings::LoadGlobal & settings, int dpi, MultiPageLoader & o);
 	~MultiPageLoaderPrivate();
 	LoaderObject * addResource(const QUrl & url, const settings::LoadPage & settings);
 	void load();

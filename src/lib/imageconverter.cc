@@ -45,7 +45,7 @@ namespace wkhtmltopdf {
 
 ImageConverterPrivate::ImageConverterPrivate(ImageConverter & o, wkhtmltopdf::settings::ImageGlobal & s, const QString * data):
 	settings(s),
-	loader(s.loadGlobal, true),
+	loader(s.loadGlobal, 96, true),
 	out(o) {
 	out.emitCheckboxSvgs(s.loadPage);
 	if (data) inputData = *data;
