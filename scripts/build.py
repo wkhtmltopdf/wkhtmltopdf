@@ -1076,6 +1076,7 @@ def build_posix_local(config, basedir):
 
     app    = os.path.join(basedir, config, 'app')
     qt     = os.path.join(basedir, config, 'qt')
+    qtdir  = qt
     dist   = os.path.join(basedir, config, 'wkhtmltox-%s' % version)
     make   = get_output('which gmake') and 'gmake' or 'make'
 
