@@ -1096,14 +1096,14 @@ def build_posix_local(config, basedir):
     os.environ['WKHTMLTOX_VERSION'] = version
     shell('../qt/bin/qmake ../../../wkhtmltopdf.pro')
     shell('%s -j%d' % (make, CPU_COUNT))
-    shell('cp bin/wkhtmlto* ../wkhtmltox-%s/bin' % version)
-    shell('cp -P bin/libwkhtmltox*.so.* ../wkhtmltox-%s/lib' % version)
-    shell('cp ../../../include/wkhtmltox/*.h ../wkhtmltox-%s/include/wkhtmltox' % version)
-    shell('cp ../../../include/wkhtmltox/dll*.inc ../wkhtmltox-%s/include/wkhtmltox' % version)
+    shell('cp bin/wkhtmlto* "../wkhtmltox-%s/bin"' % version)
+    shell('cp -P bin/libwkhtmltox*.so.* "../wkhtmltox-%s/lib"' % version)
+    shell('cp ../../../include/wkhtmltox/*.h "../wkhtmltox-%s/include/wkhtmltox"' % version)
+    shell('cp ../../../include/wkhtmltox/dll*.inc "../wkhtmltox-%s/include/wkhtmltox"' % version)
 
     os.chdir(os.path.join(basedir, config))
-    shell('tar -c -v -f ../wkhtmltox-%s_local-%s.tar wkhtmltox-%s/' % (version, platform.node(), version))
-    shell('xz --compress --force --verbose -9 ../wkhtmltox-%s_local-%s.tar' % (version, platform.node()))
+    shell('tar -c -v -f "../wkhtmltox-%s_local-%s.tar" "wkhtmltox-%s/"' % (version, platform.node(), version))
+    shell('xz --compress --force --verbose -9 "../wkhtmltox-%s_local-%s.tar"' % (version, platform.node()))
 
 # --------------------------------------------------------------- OS X
 
