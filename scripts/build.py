@@ -1087,7 +1087,7 @@ def build_posix_local(config, basedir):
     mkdir_p(os.path.join(dist, 'include', 'wkhtmltox'))
     mkdir_p(os.path.join(dist, 'lib'))
 
-    build_qt(qt, 'make -j%d' % CPU_COUNT,
+    build_qt(qt, '%s -j%d' % (make, CPU_COUNT),
         '%s/../qt/configure %s' % (basedir, qt_config('posix', '--prefix=%s' % qt)))
 
     os.chdir(app)
