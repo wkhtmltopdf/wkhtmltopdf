@@ -80,7 +80,7 @@ Proxy strToProxy(const char * proxy, bool * ok) {
 	}
 
 	//Read username and password
-	char * val = (char *) strchr(proxy,'@');
+	char * val = (char *) strrchr(proxy,'@');
 	p.user = p.password = "";
 	if (val != NULL) {
 		p.user = QString(proxy).left(val-proxy);
