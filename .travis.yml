@@ -1,6 +1,2 @@
-services:
-  - docker
-
 script:
-  - docker run --name ubuntu -v `pwd`:/root/wkhtmltopdf -w /root/wkhtmltopdf ubuntu:trusty apt-get install -y python
-  - docker run --name ubuntu -v `pwd`:/root/wkhtmltopdf -w /root/wkhtmltopdf ubuntu:trusty scripts/build.py trusty-amd64
+  - scripts/build.py trusty-amd64
