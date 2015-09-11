@@ -1,6 +1,5 @@
 services:
   - docker
 
-before_install:
 script:
   - docker run --name ubuntu -v $(PWD):/root/wkhtmltopdf -w /root/wkhtmltopdf ubuntu:trusty scripts/build.py trusty-amd64
