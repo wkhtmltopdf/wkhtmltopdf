@@ -580,14 +580,7 @@ def fpm_params(cfg, ver):
         output += '.rpm -t rpm --rpm-compression %s --epoch 1' % setup['compression']
 
     for depend in setup['runtime_packages'].split():
-        if setup['packaging_tool'] == 'apt':
-            version = get_output('dpkg-query', '-W', '-f=${Version}', depend)
-            if version:
-                output += ' --depends "%s >= %s"' % (depend, version)
-            else:
-                output += ' --depends %s' % depend
-        elif setup['packaging_tool'] == 'yum':
-            output += ' --depends %s' % depend
+        output += ' --depends %s' % depend
 
     output += ' .'
     return output

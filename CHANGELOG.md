@@ -16,6 +16,8 @@ v0.12.3 (unreleased)
 * **#2322**: fix broken debug builds with MSVC
 * **#2355**: add support for proxy bypass for specific hosts with --bypass-proxy-for
 * **#2418**: fix build error on OS X
+* **#2560**: allow using email address as proxy username
+* **#2572**: fix incorrect version detection when building distro-specific packages
 
 v0.12.2.1 (2015-01-19)
 ----------------------
