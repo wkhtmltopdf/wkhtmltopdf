@@ -581,8 +581,9 @@ def fpm_params(cfg, ver):
 
     for depend in setup['runtime_packages'].split():
         if setup['packaging_tool'] == 'apt':
-            version = get_output('dpkg-query', '-W', '-f=${Version}', depend)
+            version = get_output('dpkg-query', '-W', '-f=${Version} ', depend)
             if version:
+                version = version.split(' ')[0]
                 output += ' --depends "%s >= %s"' % (depend, version)
             else:
                 output += ' --depends %s' % depend
