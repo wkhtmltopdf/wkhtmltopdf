@@ -96,9 +96,9 @@ int main() {
 	 */
 	wkhtmltopdf_add_object(c, os, NULL);
 
-	/* Perform the actual convertion */
+	/* Perform the actual conversion */
 	if (!wkhtmltopdf_convert(c))
-		fprintf(stderr, "Convertion failed!");
+		fprintf(stderr, "Conversion failed!");
 
 	/* Output possible http error code encountered */
 	printf("httpErrorCode: %d\n", wkhtmltopdf_http_error_code(c));

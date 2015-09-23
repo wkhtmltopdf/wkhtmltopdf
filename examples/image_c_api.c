@@ -82,9 +82,9 @@ int main() {
 	/* Call the waring function when a warning is issued */
 	wkhtmltoimage_set_warning_callback(c, warning);
 
-	/* Perform the actual convertion */
+	/* Perform the actual conversion */
 	if (!wkhtmltoimage_convert(c))
-		fprintf(stderr, "Convertion failed!");
+		fprintf(stderr, "Conversion failed!");
 
 	/* Output possible http error code encountered */
 	printf("httpErrorCode: %d\n", wkhtmltoimage_http_error_code(c));
