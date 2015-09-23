@@ -45,7 +45,7 @@ protected:
 	virtual Converter & outer() = 0;
 	int errorCode;
 
-	bool convertionDone;
+	bool conversionDone;
 
 	void updateWebSettings(QWebSettings * ws, const settings::Web & s) const;
 public slots:

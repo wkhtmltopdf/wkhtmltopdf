@@ -60,7 +60,7 @@ void ConverterPrivate::updateWebSettings(QWebSettings * ws, const settings::Web 
 
 void ConverterPrivate::fail() {
 	error = true;
-	convertionDone = true;
+	conversionDone = true;
 	clearResources();
 	emit outer().finished(false);
 	qApp->exit(0); // quit qt's event handling
@@ -88,9 +88,9 @@ void ConverterPrivate::cancel() {
 }
 
 bool ConverterPrivate::convert() {
-	convertionDone=false;
+	conversionDone=false;
 	beginConvert();
-	while (!convertionDone)
+	while (!conversionDone)
 		qApp->processEvents(QEventLoop::WaitForMoreEvents | QEventLoop::AllEvents);
 	return !error;
 }
@@ -138,7 +138,7 @@ int Converter::httpErrorCode() {
   \brief Start a asynchronous conversion of html pages to a pdf document.
   Once conversion is done an finished signal will be emitted
 */
-void Converter::beginConvertion() {
+void Converter::beginConversion() {
 	priv().beginConvert();
 }
 

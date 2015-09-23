@@ -62,7 +62,7 @@ ImageConverterPrivate::ImageConverterPrivate(ImageConverter & o, wkhtmltopdf::se
 
 void ImageConverterPrivate::beginConvert() {
 	error = false;
-	convertionDone = false;
+	conversionDone = false;
 	errorCode = 0;
 	progressString = "0%";
 	loaderObject = loader.addResource(settings.in, settings.loadPage, &inputData);
@@ -226,7 +226,7 @@ void ImageConverterPrivate::pagesLoaded(bool ok) {
 
 	currentPhase = 2;
 	emit out.phaseChanged();
-	convertionDone = true;
+	conversionDone = true;
 	emit out.finished(true);
 
 	qApp->exit(0); // quit qt's event handling

@@ -530,7 +530,7 @@ CAPI(void) wkhtmltopdf_set_finished_callback(wkhtmltopdf_converter * converter, 
 }
 
 //CAPI(void) wkhtmltopdf_begin_conversion(wkhtmltopdf_converter * converter) {
-//	reinterpret_cast<MyPdfConverter *>(converter)->converter.beginConvertion();
+//	reinterpret_cast<MyPdfConverter *>(converter)->converter.beginConversion();
 //}
 
 /**
@@ -684,5 +684,6 @@ CAPI(long) wkhtmltopdf_get_output(wkhtmltopdf_converter * converter, const unsig
 //  LocalWords:  includeInOutline pagesCount tocXsl xsl struct typedef str CAPI
 //  LocalWords:  param STRINGIZEE STRINGIZE deinit qApp strcpy wkhtmltox arg ug
 //  LocalWords:  WS MACX MyLooksStyle setStyle isNull qstrncpy MyPdfConverter
-//  LocalWords:  beginConvertion paragm addResource currentPhase phaseCount
-//  LocalWords:  urrent http httpErrorCode QByteArray constData
+//  LocalWords:  beginConversion beginConvertion paragm addResource
+//  LocalWords:  currentPhase phaseCount urrent http httpErrorCode QByteArray
+//  LocalWords:  constData
