@@ -1047,7 +1047,7 @@ void PdfConverterPrivate::printDocument() {
 	currentPhase = 2;
 #endif
 	emit out.phaseChanged();
-	convertionDone = true;
+	conversionDone = true;
 	emit out.finished(true);
 
 	qApp->exit(0); // quit qt's event handling

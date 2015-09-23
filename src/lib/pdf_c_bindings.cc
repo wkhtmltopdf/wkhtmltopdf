@@ -1,4 +1,4 @@
-// -*- mode: c++; tab-width: 4; indent-tabs-mode: t; eval: (progn (c-set-style "stroustrup") (c-set-offset 'innamespace 0)); -*-
+n// -*- mode: c++; tab-width: 4; indent-tabs-mode: t; eval: (progn (c-set-style "stroustrup") (c-set-offset 'innamespace 0)); -*-
 // vi:set ts=4 sts=4 sw=4 noet :
 //
 // Copyright 2010 wkhtmltopdf authors
@@ -76,7 +76,7 @@
  * - \b load.debugJavascript Forward javascript warnings and errors to the warning callback.
  *      Must be either "true" or "false".
  * - \b load.loadErrorHandling How should we handle obejcts that fail to load. Must be one of:
- *      - "abort" Abort the convertion process
+ *      - "abort" Abort the conversion process
  *      - "skip" Do not add the object to the final output
  *      - "ignore" Try to add the object to the final output.
  * - \b load.proxy String describing what proxy to use when loading the object.
@@ -530,7 +530,7 @@ CAPI(void) wkhtmltopdf_set_finished_callback(wkhtmltopdf_converter * converter, 
 }
 
 //CAPI(void) wkhtmltopdf_begin_conversion(wkhtmltopdf_converter * converter) {
-//	reinterpret_cast<MyPdfConverter *>(converter)->converter.beginConvertion();
+//	reinterpret_cast<MyPdfConverter *>(converter)->converter.beginConversion();
 //}
 
 /**
@@ -684,5 +684,6 @@ CAPI(long) wkhtmltopdf_get_output(wkhtmltopdf_converter * converter, const unsig
 //  LocalWords:  includeInOutline pagesCount tocXsl xsl struct typedef str CAPI
 //  LocalWords:  param STRINGIZEE STRINGIZE deinit qApp strcpy wkhtmltox arg ug
 //  LocalWords:  WS MACX MyLooksStyle setStyle isNull qstrncpy MyPdfConverter
-//  LocalWords:  beginConvertion paragm addResource currentPhase phaseCount
-//  LocalWords:  urrent http httpErrorCode QByteArray constData
+//  LocalWords:  beginConversion beginConvertion paragm addResource
+//  LocalWords:  currentPhase phaseCount urrent http httpErrorCode QByteArray
+//  LocalWords:  constData
