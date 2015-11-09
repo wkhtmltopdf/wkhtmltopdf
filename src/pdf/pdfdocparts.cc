@@ -54,7 +54,7 @@ void PdfCommandLineParser::outputSynopsis(Outputter * o) const {
 	o->text(" section can only be placed in the global options area");
 	o->endParagraph();
 
-	o->paragraph("A page objects puts the content of a singe webpage into the output document.");
+	o->paragraph("A page objects puts the content of a single webpage into the output document.");
 	o->verbatim("(page)? <input url/file name> [PAGE OPTION]...");
 	o->beginParagraph();
 	o->text("Options for the page object can be placed in the global options and the page "
@@ -65,7 +65,7 @@ void PdfCommandLineParser::outputSynopsis(Outputter * o) const {
 	o->text(" sections.");
 	o->endParagraph();
 
-	o->paragraph("A cover objects puts the content of a singe webpage into the output document, "
+	o->paragraph("A cover objects puts the content of a single webpage into the output document, "
 				 "the page does not appear in the table of content, and does not have headers and footers.");
 	o->verbatim("cover <input url/file name> [PAGE OPTION]...");
 	o->paragraph("All options that can be specified for a page object can also be specified for a cover.");
