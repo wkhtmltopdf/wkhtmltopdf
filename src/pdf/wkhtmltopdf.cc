@@ -33,6 +33,8 @@
 #include <wkhtmltox/pdfconverter.hh>
 #include <wkhtmltox/pdfsettings.hh>
 #include <wkhtmltox/utilities.hh>
+#include <string>
+#include <vector>
 
 #if defined(Q_OS_UNIX)
 #include <locale.h>
@@ -40,16 +42,16 @@
 
 using namespace wkhtmltopdf::settings;
 using namespace wkhtmltopdf;
+using namespace std;
 
 /*!
  * State mashine driven, shell like parser. This is used for
  * reading commandline options from stdin
  * \param buff the line to parse
- * \param nargc on return will hold the number of arguments read
- * \param nargv on return will hold the arguments read and be NULL terminated
+ * \param nargv on return will hold the arguments read.
  */
 enum State {skip, tok, q1, q2, q1_esc, q2_esc, tok_esc};
-void parseString(char * buff, int &nargc, char **nargv) {
+void parseString(char * buff, vector<string> &nargv) {
 	State state = skip;
 	int write_start=0;
 	int write=0;
@@ -72,8 +74,7 @@ void parseString(char * buff, int &nargc, char **nargv) {
 				next_state=skip;
 				if (write_start != write) {
 					buff[write++]='\0';
-					nargv[nargc++] = buff+write_start;
-					if (nargc > 998) exit(1);
+					nargv.push_back(string(buff + write_start));
 				}
 				write_start = write;
 			} else buff[write++] = buff[read];
@@ -111,9 +112,8 @@ void parseString(char * buff, int &nargc, char **nargv) {
 	//Remember the last parameter
 	if (write_start != write) {
 		buff[write++]='\0';
-		nargv[nargc++] = buff+write_start;
+		nargv.push_back(string(buff + write_start));
 	}
-	nargv[nargc]=NULL;
 }
 
 int main(int argc, char * argv[]) {
@@ -146,30 +146,49 @@ int main(int argc, char * argv[]) {
 
 	if (parser.readArgsFromStdin) {
 		char buff[20400];
-		char *nargv[1000];
-		nargv[0] = argv[0];
-		for (int i=0; i < argc; ++i) nargv[i] = argv[i];
-		while (fgets(buff,20398,stdin)) {
-			int nargc=argc;
-			parseString(buff,nargc,nargv);
-
-			PdfGlobal globalSettings;
-			QList<PdfObject> objectSettings;
-			//Create a command line parser to parse commandline arguments
-			PdfCommandLineParser parser(globalSettings, objectSettings);
-			//Setup default values in settings
-			//parser.loadDefaults();
-			//Parse the arguments
-			parser.parseArguments(nargc, (const char**)nargv, true);
-
-			PdfConverter converter(globalSettings);
-			ProgressFeedback feedback(globalSettings.quiet, converter);
-			foreach (const PdfObject & object, objectSettings)
-				converter.addResource(object);
-
-			if (!converter.convert())
-				exit(EXIT_FAILURE);
+		string str = "";
+		while (fgets(buff, 20398, stdin)) {
+			str += buff;
 		}
+
+		char* buffer = new char[str.size() + 1];
+		strcpy(buffer, str.c_str());
+
+		vector<string>vargv;
+		for (int i = 0; i < argc; ++i) {
+			vargv.push_back(string(argv[i]));
+		}
+		parseString(buffer, vargv);
+		delete[] buffer;
+
+		int nargc = vargv.size();
+		char** nargv = new char*[nargc];
+		for (int i = 0; i < nargc; i++) {
+			nargv[i] = new char[vargv[i].size() + 1];
+			strcpy(nargv[i], vargv[i].c_str());
+		}
+
+		PdfGlobal globalSettings;
+		QList<PdfObject> objectSettings;
+		//Create a command line parser to parse commandline arguments
+		PdfCommandLineParser parser(globalSettings, objectSettings);
+		//Setup default values in settings
+		//parser.loadDefaults();
+		//Parse the arguments
+		parser.parseArguments(nargc, (const char**)nargv, true);
+		for (int i = 0; i < nargc; i++) {
+			delete[] nargv[i];
+		}
+		delete[] nargv;
+
+		PdfConverter converter(globalSettings);
+		ProgressFeedback feedback(globalSettings.quiet, converter);
+		foreach (const PdfObject & object, objectSettings)
+			converter.addResource(object);
+
+		if (!converter.convert())
+			exit(EXIT_FAILURE);
+
 		exit(EXIT_SUCCESS);
 	}
 	//Create the actual page converter to convert the pages
