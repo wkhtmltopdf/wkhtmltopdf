@@ -48,8 +48,7 @@ using namespace std;
  * State mashine driven, shell like parser. This is used for
  * reading commandline options from stdin
  * \param buff the line to parse
- * \param nargc on return will hold the number of arguments read
- * \param nargv on return will hold the arguments read and be NULL terminated
+ * \param nargv on return will hold the arguments read.
  */
 enum State {skip, tok, q1, q2, q1_esc, q2_esc, tok_esc};
 void parseString(char * buff, vector<string> &nargv) {
@@ -115,7 +114,6 @@ void parseString(char * buff, vector<string> &nargv) {
 		buff[write++]='\0';
 		nargv.push_back(string(buff + write_start));
 	}
-	nargv[nargc]=NULL;
 }
 
 int main(int argc, char * argv[]) {
