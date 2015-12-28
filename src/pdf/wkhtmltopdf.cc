@@ -33,6 +33,8 @@
 #include <wkhtmltox/pdfconverter.hh>
 #include <wkhtmltox/pdfsettings.hh>
 #include <wkhtmltox/utilities.hh>
+#include <string>
+#include <vector>
 
 #if defined(Q_OS_UNIX)
 #include <locale.h>
@@ -40,6 +42,7 @@
 
 using namespace wkhtmltopdf::settings;
 using namespace wkhtmltopdf;
+using namespace std;
 
 /*!
  * State mashine driven, shell like parser. This is used for
@@ -178,7 +181,7 @@ int main(int argc, char * argv[]) {
 			delete[] nargv[i];
 		}
 		delete[] nargv;
-		
+
 		PdfConverter converter(globalSettings);
 		ProgressFeedback feedback(globalSettings.quiet, converter);
 		foreach (const PdfObject & object, objectSettings)
