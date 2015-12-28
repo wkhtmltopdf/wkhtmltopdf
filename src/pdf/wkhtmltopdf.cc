@@ -163,8 +163,9 @@ int main(int argc, char * argv[]) {
 		parseString(buffer, vargv);
 		delete[] buffer;
 
-		char** nargv = new char*[vargv.size()];
-		for (int i = 0; i < vargv.size(); i++) {
+		int nargc = vargv.size();
+		char** nargv = new char*[nargc];
+		for (int i = 0; i < nargc; i++) {
 			nargv[i] = new char[vargv[i].size() + 1];
 			strcpy(nargv[i], vargv[i].c_str());
 		}
@@ -177,7 +178,7 @@ int main(int argc, char * argv[]) {
 		//parser.loadDefaults();
 		//Parse the arguments
 		parser.parseArguments(nargc, (const char**)nargv, true);
-		for (int i = 0; i < vargv.size(); i++) {
+		for (int i = 0; i < nargc; i++) {
 			delete[] nargv[i];
 		}
 		delete[] nargv;
