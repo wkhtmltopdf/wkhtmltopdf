@@ -269,8 +269,8 @@ enabled=1
 DEPENDENT_LIBS = {
     'openssl': {
         'order' : 1,
-        'url'   : 'https://openssl.org/source/openssl-1.0.2d.tar.gz',
-        'sha1'  : 'd01d17b44663e8ffa6a33a5a30053779d9593c3d',
+        'url'   : 'https://openssl.org/source/openssl-1.0.2e.tar.gz',
+        'sha1'  : '2c5691496761cb18f98476eefa4d35c835448fb6',
         'build' : {
             'msvc*-win32*': {
                 'result': ['include/openssl/ssl.h', 'lib/ssleay32.lib', 'lib/libeay32.lib'],
@@ -326,8 +326,8 @@ DEPENDENT_LIBS = {
 
     'libpng': {
         'order' : 3,
-        'url' : 'http://downloads.sourceforge.net/libpng/libpng-1.2.53.tar.gz',
-        'sha1': '22f3cc22d26727af05d7c9a970a7d050b6761bd7',
+        'url' : 'http://downloads.sourceforge.net/libpng/libpng-1.2.56.tar.gz',
+        'sha1': '9619a20e1bfc34edfbc4931a632a2d6a2c8a9fbc',
         'build' : {
             'msvc*': {
                 'result': {
@@ -378,8 +378,8 @@ DEPENDENT_LIBS = {
 
     'libjpeg': {
         'order' : 4,
-        'url' : 'http://ijg.org/files/jpegsrc.v9a.tar.gz',
-        'sha1': 'd65ed6f88d318f7380a3a5f75d578744e732daca',
+        'url' : 'http://ijg.org/files/jpegsrc.v9b.tar.gz',
+        'sha1': '15dd867617a88abd07573e06a86ace9bdb998ac2',
         'build' : {
             'msvc*': {
                 'result': {
@@ -425,8 +425,8 @@ DEPENDENT_LIBS = {
 
     'xz': {
         'order' : 5,
-        'url' : 'http://tukaani.org/xz/xz-5.2.1.tar.gz',
-        'sha1': '6022493efb777ff4e872b63a60be1f1e146f3c0b',
+        'url' : 'http://tukaani.org/xz/xz-5.2.2.tar.gz',
+        'sha1': '14663612422ab61386673be78fbb2556f50a1f08',
         'build' : {
             'osx*': {
                 'result': ['bin/xz'],
