@@ -1,5 +1,5 @@
-v0.12.3 (unreleased)
-----------------------
+v0.12.3 (2016-01-20)
+--------------------
 * **[qt]** upgrade the patched Qt to the last Qt 4.8 commit
 * removed support for CentOS 5 builds
 * update OpenSSL to 1.0.2e and xz to 5.2.2 and libjpeg to 9b
