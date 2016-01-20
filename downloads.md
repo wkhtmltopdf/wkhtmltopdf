@@ -6,32 +6,13 @@ All downloads are hosted at [gna.org](http://download.gna.org/wkhtmltopdf/), so 
 
 ## Stable
 
-The current stable version is **0.12.2.1**, which was released on January 19, 2015 (see changes [since 0.12.1](https://github.com/wkhtmltopdf/wkhtmltopdf/releases/tag/0.12.2.1)).
+The current stable version is **0.12.3**, which was released on January 20, 2016 -- see changes [since 0.12.2.1](https://github.com/wkhtmltopdf/wkhtmltopdf/releases/tag/0.12.3).
 
-Flavor                | Downloads                                                                                                                                                                                                              | Comments
----------             | ---------                                                                                                                                                                                                              | --------
-Windows (MSVC 2013)   | [32-bit](http://download.gna.org/wkhtmltopdf/0.12/0.12.2.4/wkhtmltox-0.12.2.4_msvc2013-win32.exe)         /   [64-bit](http://download.gna.org/wkhtmltopdf/0.12/0.12.2.4/wkhtmltox-0.12.2.4_msvc2013-win64.exe)        | for Windows Vista or later; bundles VC++ Runtime 2013
-Windows (MinGW-w64)   | [32-bit](http://download.gna.org/wkhtmltopdf/0.12/0.12.2.4/wkhtmltox-0.12.2.4_mingw-w64-cross-win32.exe)  /   [64-bit](http://download.gna.org/wkhtmltopdf/0.12/0.12.2.4/wkhtmltox-0.12.2.4_mingw-w64-cross-win64.exe) | for Windows XP/2003 or later; bundles gcc DLLs
-Linux (Debian Wheezy) | [32-bit](http://download.gna.org/wkhtmltopdf/0.12/0.12.2.1/wkhtmltox-0.12.2.1_linux-wheezy-i386.deb)      /   [64-bit](http://download.gna.org/wkhtmltopdf/0.12/0.12.2.1/wkhtmltox-0.12.2.1_linux-wheezy-amd64.deb)    | built on Debian 7.8
-Linux (Debian Jessie) | [32-bit](http://download.gna.org/wkhtmltopdf/0.12/0.12.2.1/wkhtmltox-0.12.2.1_linux-jessie-i386.deb)      /   [64-bit](http://download.gna.org/wkhtmltopdf/0.12/0.12.2.1/wkhtmltox-0.12.2.1_linux-jessie-amd64.deb)    | built on Debian 8 (prerelease)
-Linux (Ubuntu Trusty) | [32-bit](http://download.gna.org/wkhtmltopdf/0.12/0.12.2.1/wkhtmltox-0.12.2.1_linux-trusty-i386.deb)      /   [64-bit](http://download.gna.org/wkhtmltopdf/0.12/0.12.2.1/wkhtmltox-0.12.2.1_linux-trusty-amd64.deb)    | built on Ubuntu 14.04.1
-Linux (Ubuntu Precise)| [32-bit](http://download.gna.org/wkhtmltopdf/0.12/0.12.2.1/wkhtmltox-0.12.2.1_linux-precise-i386.deb)     /   [64-bit](http://download.gna.org/wkhtmltopdf/0.12/0.12.2.1/wkhtmltox-0.12.2.1_linux-precise-amd64.deb)   | built on Ubuntu 12.04.5
-Linux (CentOS 7)      | [64-bit](http://download.gna.org/wkhtmltopdf/0.12/0.12.2.1/wkhtmltox-0.12.2.1_linux-centos7-amd64.rpm)                                                                                                                 | built on CentOS 7.0.1406
-Linux (CentOS 6)      | [32-bit](http://download.gna.org/wkhtmltopdf/0.12/0.12.2.1/wkhtmltox-0.12.2.1_linux-centos6-i386.rpm)     /   [64-bit](http://download.gna.org/wkhtmltopdf/0.12/0.12.2.1/wkhtmltox-0.12.2.1_linux-centos6-amd64.rpm)   | built on CentOS 6.6
-Linux (CentOS 5)      | [32-bit](http://download.gna.org/wkhtmltopdf/0.12/0.12.2.1/wkhtmltox-0.12.2.1_linux-centos5-i386.rpm)     /   [64-bit](http://download.gna.org/wkhtmltopdf/0.12/0.12.2.1/wkhtmltox-0.12.2.1_linux-centos5-amd64.rpm)   | built on CentOS 5.11
-OS X                  | [32-bit](http://download.gna.org/wkhtmltopdf/0.12/0.12.2.1/wkhtmltox-0.12.2.1_osx-carbon-i386.pkg)        /   [64-bit](http://download.gna.org/wkhtmltopdf/0.12/0.12.2.1/wkhtmltox-0.12.2.1_osx-cocoa-x86-64.pkg)      | for OS X 10.6 or later
-FreeBSD               | [converters/wkhtmltopdf](http://www.freshports.org/converters/wkhtmltopdf)                                                                                                                                             | available as an official port and package
-Others                | [source code](http://download.gna.org/wkhtmltopdf/0.12/0.12.2.1/wkhtmltox-0.12.2.1.tar.bz2)                                                                                                                            | read [INSTALL.md](https://github.com/wkhtmltopdf/wkhtmltopdf/blob/0.12.2.1/INSTALL.md#others) for compilation instructions
-
-## Testing
-
-A preview [0.12.3-dev-79ff51e](https://github.com/wkhtmltopdf/wkhtmltopdf/tree/79ff51e) for the next version was released on July 14, 2015. It includes the following [changes since the 0.12.2.1 release](https://github.com/wkhtmltopdf/wkhtmltopdf/blob/79ff51e/CHANGELOG.md).
-
-Flavor  | Downloads                                                                                                                                                                                                                                               | Comments
---------| ---------                                                                                                                                                                                                                                               | --------
-Windows | [32-bit](https://bitbucket.org/wkhtmltopdf/wkhtmltopdf/downloads/wkhtmltox-0.12.3-dev-79ff51e_msvc2013-win32.exe)         /   [64-bit](https://bitbucket.org/wkhtmltopdf/wkhtmltopdf/downloads/wkhtmltox-0.12.3-dev-79ff51e_msvc2013-win64.exe)         | for Windows Vista or later; bundles VC++ Runtime 2013
-Linux   | [32-bit](https://bitbucket.org/wkhtmltopdf/wkhtmltopdf/downloads/wkhtmltox-0.12.3-dev-79ff51e_linux-generic-i386.tar.xz)  /   [64-bit](https://bitbucket.org/wkhtmltopdf/wkhtmltopdf/downloads/wkhtmltox-0.12.3-dev-79ff51e_linux-generic-amd64.tar.xz) | depends on: zlib, fontconfig, freetype, X11 libs (libX11, libXext, libXrender)
-OS X    | [32-bit](https://bitbucket.org/wkhtmltopdf/wkhtmltopdf/downloads/wkhtmltox-0.12.3-dev-79ff51e_osx-carbon-i386.pkg)        /   [64-bit](https://bitbucket.org/wkhtmltopdf/wkhtmltopdf/downloads/wkhtmltox-0.12.3-dev-79ff51e_osx-cocoa-x86-64.pkg)       | for OS X 10.6 or later
+Flavor  | Downloads                                                                                                                                                                                                       | Comments
+--------| ---------                                                                                                                                                                                                       | --------
+Windows | [32-bit](http://download.gna.org/wkhtmltopdf/0.12/0.12.3/wkhtmltox-0.12.3_msvc2013-win32.exe)         /   [64-bit](http://download.gna.org/wkhtmltopdf/0.12/0.12.3/wkhtmltox-0.12.3_msvc2013-win64.exe)         | for Windows Vista or later; bundles VC++ Runtime 2013
+Linux   | [32-bit](http://download.gna.org/wkhtmltopdf/0.12/0.12.3/wkhtmltox-0.12.3_linux-generic-i386.tar.xz)  /   [64-bit](http://download.gna.org/wkhtmltopdf/0.12/0.12.3/wkhtmltox-0.12.3_linux-generic-amd64.tar.xz) | depends on: zlib, fontconfig, freetype, X11 libs (libX11, libXext, libXrender)
+OS X    | [32-bit](http://download.gna.org/wkhtmltopdf/0.12/0.12.3/wkhtmltox-0.12.3_osx-carbon-i386.pkg)        /   [64-bit](http://download.gna.org/wkhtmltopdf/0.12/0.12.3/wkhtmltox-0.12.3_osx-cocoa-x86-64.pkg)       | for OS X 10.6 or later
 
 ## Bleeding Edge
 
@@ -52,10 +33,14 @@ Builds for OS X will be made available as soon as support for it is added in the
 
 ## Archive
 
-Please note that bug reports **will not be accepted** against the following, which are considered obsolete. It is recommended to use the latest stable or testing release instead, and report an issue if there is a regression from a previous release.
+Please note that bug reports **will not be accepted** against the following, which are considered obsolete. It is recommended to use the latest stable release instead, and report an issue if there is a regression from a previous release.
 
 Date       | Release
 ----       | -------
+2015-07-12 | [0.12.2.4](http://download.gna.org/wkhtmltopdf/0.12/0.12.2.4/) (windows-only)
+2015-06-20 | [0.12.2.3](http://download.gna.org/wkhtmltopdf/0.12/0.12.2.3/) (windows-only)
+2015-04-06 | [0.12.2.2](http://download.gna.org/wkhtmltopdf/0.12/0.12.2.2/) (windows-only)
+2015-01-19 | [0.12.2.1](http://download.gna.org/wkhtmltopdf/0.12/0.12.2.1/)
 2015-01-09 | [0.12.2](http://download.gna.org/wkhtmltopdf/0.12/0.12.2/)
 2014-06-26 | [0.12.1](http://download.gna.org/wkhtmltopdf/0.12/0.12.1/)
 2014-02-06 | [0.12.0](http://download.gna.org/wkhtmltopdf/0.12/0.12.0/)
@@ -64,19 +49,13 @@ If you need versions older than `0.12.0`, you can look at the [obsolete download
 
 ## FAQ
 
-#### Where are the "static linux" binaries?
+#### Where are all the "distro-specific" binaries?
 
-The above binaries are static (i.e. do not depend on Qt) but still depend on packages provided by your distribution. As each distribution has a different version for each required package (along with their dependencies, compilation flags, security hardening options such as ASLR), it is not possible to build a single binary which will work consistently across all distributions. Hence, distro-specific packages have been provided as they explicitly declare the required packages and are easy to install.
+The generic linux binaries should work across all distributions as they are built on CentOS 6 with statically-linked `libpng` and `libjpeg`. However, in case of vulnerabilities in either library a new release will have to be done -- similar to what was required for Windows earlier. Support for the distro-specific binaries is still present in the build script but is likely to be removed in future.
 
-#### Can I get the binaries directly without the package/installer?
+#### My platform is not supported! What should I do?
 
-You can't, but you can extract it from the packages -- see [this post](https://groups.google.com/d/msg/wkhtmltopdf-general/5gPvvd9bgRo/wI4RmGA0dIsJ) on the mailing list.
-
-#### My distribution is not supported! What should I do?
-
-Compile the source code with the instructions given above. It is not possible to compile for all distributions, and each new release requires at least 2 days to build all the above combinations (which are >= 400+ MiB of **compressed** packages/installers).
-
-There are unoffical build instructions for [SmartOS](https://github.com/wkhtmltopdf/wkhtmltopdf/issues/1794) and [OpenBSD](https://github.com/wkhtmltopdf/wkhtmltopdf/issues/1991), but they are still a work in progress.
+Compile the source code with the instructions given above. There are unoffical build instructions for [SmartOS](https://github.com/wkhtmltopdf/wkhtmltopdf/issues/1794) and [OpenBSD](https://github.com/wkhtmltopdf/wkhtmltopdf/issues/1991), but they are still a work in progress.
 
 #### Symantec reports a virus `WS.Reputation.1` for the Windows builds
 
