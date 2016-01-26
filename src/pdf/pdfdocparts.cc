@@ -54,7 +54,7 @@ void PdfCommandLineParser::outputSynopsis(Outputter * o) const {
 	o->text(" section can only be placed in the global options area");
 	o->endParagraph();
 
-	o->paragraph("A page objects puts the content of a singe webpage into the output document.");
+	o->paragraph("A page objects puts the content of a single webpage into the output document.");
 	o->verbatim("(page)? <input url/file name> [PAGE OPTION]...");
 	o->beginParagraph();
 	o->text("Options for the page object can be placed in the global options and the page "
