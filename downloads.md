@@ -6,13 +6,13 @@ All downloads are hosted at [gna.org](http://download.gna.org/wkhtmltopdf/), so 
 
 ## Stable
 
-The current stable version is **0.12.3**, which was released on January 20, 2016 -- see changes [since 0.12.2.1](https://github.com/wkhtmltopdf/wkhtmltopdf/releases/tag/0.12.3).
+The current stable series is **0.12.3**, which was released on January 20, 2016 -- see changes [since 0.12.2.1](https://github.com/wkhtmltopdf/wkhtmltopdf/releases/tag/0.12.3).
 
-Flavor  | Downloads                                                                                                                                                                                                       | Comments
---------| ---------                                                                                                                                                                                                       | --------
-Windows | [32-bit](http://download.gna.org/wkhtmltopdf/0.12/0.12.3/wkhtmltox-0.12.3_msvc2013-win32.exe)         /   [64-bit](http://download.gna.org/wkhtmltopdf/0.12/0.12.3/wkhtmltox-0.12.3_msvc2013-win64.exe)         | for Windows Vista or later; bundles VC++ Runtime 2013
-Linux   | [32-bit](http://download.gna.org/wkhtmltopdf/0.12/0.12.3/wkhtmltox-0.12.3_linux-generic-i386.tar.xz)  /   [64-bit](http://download.gna.org/wkhtmltopdf/0.12/0.12.3/wkhtmltox-0.12.3_linux-generic-amd64.tar.xz) | depends on: zlib, fontconfig, freetype, X11 libs (libX11, libXext, libXrender)
-OS X    | [32-bit](http://download.gna.org/wkhtmltopdf/0.12/0.12.3/wkhtmltox-0.12.3_osx-carbon-i386.pkg)        /   [64-bit](http://download.gna.org/wkhtmltopdf/0.12/0.12.3/wkhtmltox-0.12.3_osx-cocoa-x86-64.pkg)       | for OS X 10.6 or later
+Flavor  | Version      | Downloads                                                                                                                                                                                                           | Comments
+--------| ------------ | ---------                                                                                                                                                                                                           | --------
+Windows | **0.12.3.1** | [32-bit](http://download.gna.org/wkhtmltopdf/0.12/0.12.3.1/wkhtmltox-0.12.3.1_msvc2013-win32.exe)         /   [64-bit](http://download.gna.org/wkhtmltopdf/0.12/0.12.3.1/wkhtmltox-0.12.3.1_msvc2013-win64.exe)     | for Windows Vista or later; bundles VC++ Runtime 2013
+Linux   | 0.12.3       | [32-bit](http://download.gna.org/wkhtmltopdf/0.12/0.12.3/wkhtmltox-0.12.3_linux-generic-i386.tar.xz)      /   [64-bit](http://download.gna.org/wkhtmltopdf/0.12/0.12.3/wkhtmltox-0.12.3_linux-generic-amd64.tar.xz) | depends on: zlib, fontconfig, freetype, X11 libs (libX11, libXext, libXrender)
+OS X    | 0.12.3       | [32-bit](http://download.gna.org/wkhtmltopdf/0.12/0.12.3/wkhtmltox-0.12.3_osx-carbon-i386.pkg)            /   [64-bit](http://download.gna.org/wkhtmltopdf/0.12/0.12.3/wkhtmltox-0.12.3_osx-cocoa-x86-64.pkg)       | for OS X 10.6 or later
 
 ## Bleeding Edge
 
