@@ -1,3 +1,7 @@
+v0.12.3.1 (2016-01-30)
+----------------------
+* update OpenSSL to 1.0.2f
+
 v0.12.3 (2016-01-20)
 --------------------
 * **[qt]** upgrade the patched Qt to the last Qt 4.8 commit
