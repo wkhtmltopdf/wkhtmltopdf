@@ -269,8 +269,8 @@ enabled=1
 DEPENDENT_LIBS = {
     'openssl': {
         'order' : 1,
-        'url'   : 'https://openssl.org/source/openssl-1.0.2e.tar.gz',
-        'sha1'  : '2c5691496761cb18f98476eefa4d35c835448fb6',
+        'url'   : 'https://openssl.org/source/openssl-1.0.2f.tar.gz',
+        'sha1'  : '2047c592a6e5a42bd37970bdb4a931428110a927',
         'build' : {
             'msvc*-win32*': {
                 'result': ['include/openssl/ssl.h', 'lib/ssleay32.lib', 'lib/libeay32.lib'],
