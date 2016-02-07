@@ -54,7 +54,7 @@ void PdfCommandLineParser::outputSynopsis(Outputter * o) const {
 	o->text(" section can only be placed in the global options area");
 	o->endParagraph();
 
-	o->paragraph("A page objects puts the content of a singe webpage into the output document.");
+	o->paragraph("A page objects puts the content of a single webpage into the output document.");
 	o->verbatim("(page)? <input url/file name> [PAGE OPTION]...");
 	o->beginParagraph();
 	o->text("Options for the page object can be placed in the global options and the page "
@@ -65,7 +65,7 @@ void PdfCommandLineParser::outputSynopsis(Outputter * o) const {
 	o->text(" sections.");
 	o->endParagraph();
 
-	o->paragraph("A cover objects puts the content of a singe webpage into the output document, "
+	o->paragraph("A cover objects puts the content of a single webpage into the output document, "
 				 "the page does not appear in the table of content, and does not have headers and footers.");
 	o->verbatim("cover <input url/file name> [PAGE OPTION]...");
 	o->paragraph("All options that can be specified for a page object can also be specified for a cover.");
@@ -131,7 +131,7 @@ void PdfCommandLineParser::outputNotPatched(Outputter * o, bool sure) const {
 	o->listItem("Generating a table of contents.");
 	o->listItem("Adding links in the generated PDF file.");
 	o->listItem("Printing using the screen media-type.");
-	o->listItem("Disabling the smart shrink feature of webkit.");
+	o->listItem("Disabling the smart shrink feature of WebKit.");
 	o->endList();
 	o->endSection();
 }
@@ -144,9 +144,9 @@ void PdfCommandLineParser::outputPageBreakDoc(Outputter * o) const {
 	o->beginSection("Page Breaking");
 	o->paragraph(
 		"The current page breaking algorithm of WebKit leaves much to be desired. "
-		"Basically Webkit will render everything into one long page, and then cut it up "
+		"Basically WebKit will render everything into one long page, and then cut it up "
 		"into pages. This means that if you have two columns of text where one is "
-		"vertically shifted by half a line. Then Webkit will cut a line into to pieces "
+		"vertically shifted by half a line. Then WebKit will cut a line into to pieces "
 		"display the top half on one page. And the bottom half on another page. "
 		"It will also break image in two and so on.  If you are using the patched version of "
 		"QT you can use the CSS page-break-inside property to remedy this somewhat. "
@@ -243,7 +243,7 @@ void PdfCommandLineParser::outputTableOfContentDoc(Outputter * o) const {
 	o->listItem("\"title\" the name of the section.");
 	o->listItem("\"page\" the page number the section occurs on.");
 	o->listItem("\"link\" a URL that links to the section.");
-	o->listItem("\"backLink\" the name of the anchor the the section will link back to.");
+	o->listItem("\"backLink\" the name of the anchor the section will link back to.");
 	o->endList();
 
 	o->paragraph("The remaining TOC options only affect the default style sheet "
