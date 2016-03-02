@@ -10,7 +10,7 @@ The current stable series is **0.12.3**, which was released on January 20, 2016 
 
 Flavor  | Version      | Downloads                                                                                                                                                                                                           | Comments
 --------| ------------ | ---------                                                                                                                                                                                                           | --------
-Windows | **0.12.3.1** | [32-bit](http://download.gna.org/wkhtmltopdf/0.12/0.12.3.1/wkhtmltox-0.12.3.1_msvc2013-win32.exe)         /   [64-bit](http://download.gna.org/wkhtmltopdf/0.12/0.12.3.1/wkhtmltox-0.12.3.1_msvc2013-win64.exe)     | for Windows Vista or later; bundles VC++ Runtime 2013
+Windows | **0.12.3.2** | [32-bit](http://download.gna.org/wkhtmltopdf/0.12/0.12.3.2/wkhtmltox-0.12.3.2_msvc2013-win32.exe)         /   [64-bit](http://download.gna.org/wkhtmltopdf/0.12/0.12.3.2/wkhtmltox-0.12.3.2_msvc2013-win64.exe)     | for Windows Vista or later; bundles VC++ Runtime 2013
 Linux   | 0.12.3       | [32-bit](http://download.gna.org/wkhtmltopdf/0.12/0.12.3/wkhtmltox-0.12.3_linux-generic-i386.tar.xz)      /   [64-bit](http://download.gna.org/wkhtmltopdf/0.12/0.12.3/wkhtmltox-0.12.3_linux-generic-amd64.tar.xz) | depends on: zlib, fontconfig, freetype, X11 libs (libX11, libXext, libXrender)
 OS X    | 0.12.3       | [32-bit](http://download.gna.org/wkhtmltopdf/0.12/0.12.3/wkhtmltox-0.12.3_osx-carbon-i386.pkg)            /   [64-bit](http://download.gna.org/wkhtmltopdf/0.12/0.12.3/wkhtmltox-0.12.3_osx-cocoa-x86-64.pkg)       | for OS X 10.6 or later
 
