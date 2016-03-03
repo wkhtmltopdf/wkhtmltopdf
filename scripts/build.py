@@ -667,6 +667,10 @@ def build_deplibs(config, basedir, **kwargs):
         rmdir(srcdir)
 
 def build_qt(qtdir, make_cmd, configure_cmd):
+    if not exists(os.path.join(qtdir, configure_cmd.split(' ')[0])):
+        error('\nIt seems you did not clone the repository with the --recursive argument, '
+              'use `git submodule update --init --recursive` to update submodules')
+
     configured = ''
     if exists(os.path.join(qtdir, 'configured')):
         configured = open(os.path.join(qtdir, 'configured'), 'r').read()
