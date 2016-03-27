@@ -49,7 +49,7 @@ int toimage(int argc, char** argv) {
 #endif
     QApplication a(argc, argv, use_graphics);
     QStringList args = a.arguments();
-    if (args.first().toLower().startsWith("wkhtmltox"))
+    if (argc > 1 && QRegExp("image|pdf").exactMatch(args.at(1)))
         args.removeAt(1);
 
     //Parse the arguments

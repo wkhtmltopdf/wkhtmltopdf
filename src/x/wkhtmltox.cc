@@ -25,9 +25,9 @@
 int main(int argc, char * argv[]) {
     if (argc > 1)
         if (QByteArray(argv[1]) == "image")
-            return toimage(argc - 1, argv);
+            return toimage(argc, argv);
         else if (QByteArray(argv[1]) == "pdf")
-            return topdf(argc - 1, argv);
+            return topdf(argc, argv);
 
     fprintf(stderr, "\nUsage:\twkhtmltox image|pdf [params]\n");
     return 1;
