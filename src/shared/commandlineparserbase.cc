@@ -105,7 +105,7 @@ void CommandLineParserBase::license(FILE * fd) const {
 
 void CommandLineParserBase::parseArg(int sections, const QStringList& argv, bool & defaultMode, int & arg, char * page) {
     int argc = argv.size();
-	if (argv[arg][1] == '-') { //We have a long style argument
+    if (argv[arg].size() > 1 && argv[arg][1] == '-') { //We have a long style argument
 		//After an -- apperas in the argument list all that follows is interpreted as default arguments
         if (argv[arg].size() == 2) {
 			defaultMode=true;
