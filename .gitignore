@@ -8,7 +8,7 @@ wkhtmltopdf.app/
 wkhtmltopdf.xcodeproj/
 release*/
 test/
-static-build/
+static-build*/
 .obj/
 doc/
 libdoc/
@@ -21,3 +21,4 @@ gitcontrol.bat
 gitcmd.lnk
 *.tar.bz2
 *.pyc
+*.user

@@ -37,7 +37,7 @@ public:
 	virtual QString getDesc() const;
 	virtual ~ArgHandler();
 	int section;
-	virtual bool operator() (const char ** args, CommandLineParserBase & parser, char * page) = 0;
+        virtual bool operator() (const QStringList& args, CommandLineParserBase & parser, char * page) = 0;
 };
 
 class CommandLineParserBase {
@@ -77,7 +77,7 @@ public:
 	virtual char * mapAddress(char * d, char *) const {return d;}
 	virtual void license(FILE * fd) const;
 	virtual void version(FILE * fd) const;
-	void parseArg(int sections, const int argc, const char ** argv, bool & defaultMode, int & arg, char * page);
+        void parseArg(int sections, const QStringList& argv, bool & defaultMode, int & arg, char * page);
 
 	virtual QString appName() const = 0;
 	const char *appVersion() const;

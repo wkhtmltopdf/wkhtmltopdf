@@ -47,4 +47,4 @@ CONFIG(shared, shared|static) {
 }
 
 # Input
-SOURCES += wkhtmltoimage.cc imagearguments.cc imagecommandlineparser.cc imagedocparts.cc
+SOURCES += wkhtmltoimage.cc imagearguments.cc imagecommandlineparser.cc imagedocparts.cc main.cc

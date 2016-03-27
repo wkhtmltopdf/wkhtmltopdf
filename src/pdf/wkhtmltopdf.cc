@@ -33,6 +33,7 @@
 #include <wkhtmltox/pdfconverter.hh>
 #include <wkhtmltox/pdfsettings.hh>
 #include <wkhtmltox/utilities.hh>
+#include "declarations.hh"
 
 #if defined(Q_OS_UNIX)
 #include <locale.h>
@@ -49,7 +50,7 @@ using namespace wkhtmltopdf;
  * \param nargv on return will hold the arguments read and be NULL terminated
  */
 enum State {skip, tok, q1, q2, q1_esc, q2_esc, tok_esc};
-void parseString(char * buff, int &nargc, char **nargv) {
+void parseString(char * buff, int &nargc, QStringList& nargv) {
 	State state = skip;
 	int write_start=0;
 	int write=0;
@@ -72,7 +73,8 @@ void parseString(char * buff, int &nargc, char **nargv) {
 				next_state=skip;
 				if (write_start != write) {
 					buff[write++]='\0';
-					nargv[nargc++] = buff+write_start;
+                    nargc++;
+                    nargv.append(QString::fromUtf8(buff+write_start));
 					if (nargc > 998) exit(1);
 				}
 				write_start = write;
@@ -111,12 +113,13 @@ void parseString(char * buff, int &nargc, char **nargv) {
 	//Remember the last parameter
 	if (write_start != write) {
 		buff[write++]='\0';
-		nargv[nargc++] = buff+write_start;
-	}
-	nargv[nargc]=NULL;
+        nargc++;
+        nargv.append(QString::fromUtf8(buff+write_start));
+    }
+    nargc = nargv.size();
 }
 
-int main(int argc, char * argv[]) {
+int topdf(int argc, char * argv[]) {
 #if defined(Q_OS_UNIX)
 	setlocale(LC_ALL, "");
 #endif
@@ -129,28 +132,29 @@ int main(int argc, char * argv[]) {
 	//Setup default values in settings
 	//parser.loadDefaults();
 
-	//Parse the arguments
-	parser.parseArguments(argc, (const char**)argv);
-
-	//Construct QApplication required for printing
-	bool use_graphics=true;
+    //Construct QApplication required for printing
+    bool use_graphics=true;
 #if defined(Q_OS_UNIX) || defined(Q_OS_MAC)
 #ifdef __EXTENSIVE_WKHTMLTOPDF_QT_HACK__
-	use_graphics=globalSettings.useGraphics;
-	if (!use_graphics) QApplication::setGraphicsSystem("raster");
+    use_graphics=globalSettings.useGraphics;
+    if (!use_graphics) QApplication::setGraphicsSystem("raster");
 #endif
 #endif
-	QApplication a(argc, argv, use_graphics);
+    QApplication a(argc, argv, use_graphics);
+    QStringList args = a.arguments();
+    if (argc > 1 && QRegExp("image|pdf").exactMatch(args.at(1)))
+        args.removeAt(1);
+
+	//Parse the arguments
+    parser.parseArguments(args);
 	MyLooksStyle * style = new MyLooksStyle();
 	a.setStyle(style);
 
 	if (parser.readArgsFromStdin) {
 		char buff[20400];
-		char *nargv[1000];
-		nargv[0] = argv[0];
-		for (int i=0; i < argc; ++i) nargv[i] = argv[i];
+        QStringList nargv = args;
 		while (fgets(buff,20398,stdin)) {
-			int nargc=argc;
+            int nargc=args.size();
 			parseString(buff,nargc,nargv);
 
 			PdfGlobal globalSettings;
@@ -160,7 +164,7 @@ int main(int argc, char * argv[]) {
 			//Setup default values in settings
 			//parser.loadDefaults();
 			//Parse the arguments
-			parser.parseArguments(nargc, (const char**)nargv, true);
+            parser.parseArguments(nargv, true);
 
 			PdfConverter converter(globalSettings);
 			ProgressFeedback feedback(globalSettings.quiet, converter);

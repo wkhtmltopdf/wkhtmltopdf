@@ -357,11 +357,11 @@ CAPI(void) wkhtmltopdf_destroy_global_settings(wkhtmltopdf_global_settings * obj
  *
  * \param settings The settings object to change
  * \param name The name of the setting
- * \param value The new value for the setting
+ * \param value The new value for the setting (UTF-8 encoded)
  * \returns 1 if the setting was updated successfully and 0 otherwise.
  */
 CAPI(int) wkhtmltopdf_set_global_setting(wkhtmltopdf_global_settings * settings, const char * name, const char * value) {
-	return reinterpret_cast<settings::PdfGlobal *>(settings)->set(name, value);
+    return reinterpret_cast<settings::PdfGlobal *>(settings)->set(name, QString::fromUtf8(value));
 }
 
 /**

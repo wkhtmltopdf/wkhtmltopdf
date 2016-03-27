@@ -109,17 +109,18 @@ void ImageCommandLineParser::readme(FILE * fd, bool html) const {
  * \param argc the number of command line arguments
  * \param argv a NULL terminated list with the arguments
  */
-void ImageCommandLineParser::parseArguments(int argc, const char ** argv, bool final) {
+void ImageCommandLineParser::parseArguments(const QStringList& argv, bool final) {
 	settings.in="";
     settings.out="";
 	bool defaultMode=false;
+    int argc = argv.size();
 	for (int i=1; i < argc; ++i) {
         if (i==argc-2 && (argv[i][0] != '-' || argv[i][1] == '\0')) { // the arg before last (in)
-            settings.in = QString::fromLocal8Bit(argv[i]);
+            settings.in = argv[i];
         } else if (i==argc-1 && (argv[i][0] != '-' || argv[i][1] == '\0')) { // the last arg (out)
-            settings.out = QString::fromLocal8Bit(argv[i]);
+            settings.out = argv[i];
 		} else {
-			parseArg(global, argc, argv, defaultMode, i, 0);
+            parseArg(global, argv, defaultMode, i, 0);
 		}
 	}
 

@@ -18,14 +18,14 @@
 include(../../common.pri)
 
 TEMPLATE = app
-TARGET = wkhtmltopdf
+TARGET = wkhtmltox
 DESTDIR = ../../bin
 DEPENDPATH += . ../shared
 INCLUDEPATH += . ../shared
 
 unix {
     man.path=$$INSTALLBASE/share/man/man1
-    man.extra=LD_LIBRARY_PATH=../../bin/ ../../bin/wkhtmltopdf --manpage | gzip > $(INSTALL_ROOT)/share/man/man1/wkhtmltopdf.1.gz
+    man.extra=LD_LIBRARY_PATH=../../bin/ ../../bin/wkhtmltox --manpage | gzip > $(INSTALL_ROOT)/share/man/man1/wkhtmltox.1.gz
 
     QMAKE_EXTRA_TARGETS += man
     INSTALLS += man
@@ -46,6 +46,11 @@ CONFIG(shared, shared|static) {
   include(../lib/lib.pri)
 }
 
-#Application part
-SOURCES += wkhtmltopdf.cc pdfarguments.cc pdfcommandlineparser.cc \
-           pdfdocparts.cc main.cc
+# pdf
+SOURCES += ../pdf/wkhtmltopdf.cc ../pdf/pdfarguments.cc ../pdf/pdfcommandlineparser.cc \
+           ../pdf/pdfdocparts.cc
+# image
+SOURCES += ../image/wkhtmltoimage.cc ../image/imagearguments.cc ../image/imagecommandlineparser.cc \
+    ../image/imagedocparts.cc
+# x
+SOURCES += wkhtmltox.cc

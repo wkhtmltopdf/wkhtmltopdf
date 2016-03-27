@@ -269,7 +269,7 @@ enabled=1
 DEPENDENT_LIBS = {
     'openssl': {
         'order' : 1,
-        'url'   : 'https://openssl.org/source/openssl-1.0.2f.tar.gz',
+        'url'   : 'https://openssl.org/source/old/1.0.2/openssl-1.0.2f.tar.gz',
         'sha1'  : '2047c592a6e5a42bd37970bdb4a931428110a927',
         'build' : {
             'msvc*-win32*': {

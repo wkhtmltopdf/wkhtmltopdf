@@ -121,7 +121,7 @@ struct OrientationTM: public SomeSetterTM<QPrinter::Orientation> {
 typedef SomeSetter<OrientationTM> OrientationSetter;
 
 struct DefaultTocFunc {
-	bool operator()(const char **, CommandLineParserBase &, char *) {
+    bool operator()(const QStringList&, CommandLineParserBase &, char *) {
 		QFile file;
 		file.open(stdout, QIODevice::WriteOnly | QIODevice::Text);
 		QTextStream stream(&file);
@@ -136,7 +136,7 @@ struct DefaultTocFunc {
   Set the default header
 */
 struct DefaultHeaderFunc {
-	bool operator()(const char **, CommandLineParserBase & p, char * page) {
+    bool operator()(const QStringList&, CommandLineParserBase & p, char * page) {
 		reinterpret_cast<PdfObject*>(page)->header.left="[webpage]";
 		reinterpret_cast<PdfObject*>(page)->header.right="[page]/[topage]";
 		reinterpret_cast<PdfObject*>(page)->header.line=true;
@@ -149,7 +149,7 @@ struct DefaultHeaderFunc {
   Setup default book mode
 */
 struct BookFunc {
-	bool operator()(const char **, CommandLineParserBase &) {
+    bool operator()(const QStringList&, CommandLineParserBase &) {
 		//p.settings.header.left="[section]";
 		//p.settings.header.right="[page]/[toPage]";
 		//p.settings.header.line=true;
