@@ -61,7 +61,7 @@ public:
 	virtual void manpage(FILE * fd) const;
 	virtual void readme(FILE * fd, bool html) const;
 
-	void parseArguments(int argc, const char ** argv, bool fromStdin=false);
+        void parseArguments(const QStringList& argv, bool fromStdin=false);
 
 	virtual char * mapAddress(char * d, char * ns) const {
 		const char * _od = reinterpret_cast<const char *>(&od);

@@ -25,12 +25,13 @@
 #include <wkhtmltox/imageconverter.hh>
 #include <wkhtmltox/imagesettings.hh>
 #include <wkhtmltox/utilities.hh>
+#include "declarations.hh"
 
 #if defined(Q_OS_UNIX)
 #include <locale.h>
 #endif
 
-int main(int argc, char** argv) {
+int toimage(int argc, char** argv) {
 #if defined(Q_OS_UNIX)
 	setlocale(LC_ALL, "");
 #endif
@@ -38,18 +39,22 @@ int main(int argc, char** argv) {
 	wkhtmltopdf::settings::ImageGlobal settings;
 	//Create a command line parser to parse commandline arguments
 	ImageCommandLineParser parser(settings);
-	//Parse the arguments
-	parser.parseArguments(argc, (const char**)argv);
 
-
-	bool use_graphics=true;
+    bool use_graphics=true;
 #if defined(Q_OS_UNIX) || defined(Q_OS_MAC)
 #ifdef __EXTENSIVE_WKHTMLTOPDF_QT_HACK__
-	use_graphics=settings.useGraphics;
-	if (!use_graphics) QApplication::setGraphicsSystem("raster");
+    use_graphics=settings.useGraphics;
+    if (!use_graphics) QApplication::setGraphicsSystem("raster");
 #endif
 #endif
-	QApplication a(argc, argv, use_graphics);
+    QApplication a(argc, argv, use_graphics);
+    QStringList args = a.arguments();
+    if (args.first().toLower().startsWith("wkhtmltox"))
+        args.removeAt(1);
+
+    //Parse the arguments
+    parser.parseArguments(args);
+
 	MyLooksStyle * style = new MyLooksStyle();
 	a.setStyle(style);
 

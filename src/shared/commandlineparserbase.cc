@@ -103,33 +103,34 @@ void CommandLineParserBase::license(FILE * fd) const {
 	delete o;
 }
 
-void CommandLineParserBase::parseArg(int sections, const int argc, const char ** argv, bool & defaultMode, int & arg, char * page) {
+void CommandLineParserBase::parseArg(int sections, const QStringList& argv, bool & defaultMode, int & arg, char * page) {
+    int argc = argv.size();
 	if (argv[arg][1] == '-') { //We have a long style argument
 		//After an -- apperas in the argument list all that follows is interpreted as default arguments
-		if (argv[arg][2] == '0') {
+        if (argv[arg].size() == 2) {
 			defaultMode=true;
 			return;
 		}
 		//Try to find a handler for this long switch
-		QHash<QString, ArgHandler*>::iterator j = longToHandler.find(argv[arg]+2);
+        QHash<QString, ArgHandler*>::iterator j = longToHandler.find(argv[arg].mid(2));
 		if (j == longToHandler.end()) { //Ups that argument did not exist
-			fprintf(stderr, "Unknown long argument %s\n\n", argv[arg]);
+            fprintf(stderr, "Unknown long argument %s\n\n", argv[arg].toUtf8());
 			usage(stderr, false);
 			exit(1);
 		}
 		if (!(j.value()->section & sections)) {
-			fprintf(stderr, "%s specified in incorrect location\n\n", argv[arg]);
+            fprintf(stderr, "%s specified in incorrect location\n\n", argv[arg].toUtf8());
 			usage(stderr, false);
 			exit(1);
 		}
 		//Check to see if there is enough arguments to the switch
 		if (argc-arg < j.value()->argn.size()+1) {
-			fprintf(stderr, "Not enough arguments parsed to %s\n\n", argv[arg]);
+            fprintf(stderr, "Not enough arguments parsed to %s\n\n", argv[arg].toUtf8());
 			usage(stderr, false);
 			exit(1);
 		}
-		if (!(*(j.value()))(argv+arg+1, *this, page)) {
-			fprintf(stderr, "Invalid argument(s) parsed to %s\n\n", argv[arg]);
+        if (!(*(j.value()))(argv.mid(arg+1), *this, page)) {
+            fprintf(stderr, "Invalid argument(s) parsed to %s\n\n", argv[arg].toUtf8());
 			usage(stderr, false);
 			exit(1);
 		}
@@ -141,28 +142,28 @@ void CommandLineParserBase::parseArg(int sections, const int argc, const char **
 		arg += j.value()->argn.size();
 	} else {
 		int c=arg;//Remember the current argument we are parsing
-		for (int j=1; argv[c][j] != '\0'; ++j) {
-			QHash<char, ArgHandler*>::iterator k = shortToHandler.find(argv[c][j]);
+        for (int j=1; argv[c].size() > j; ++j) {
+            QHash<char, ArgHandler*>::iterator k = shortToHandler.find(argv[c][j].toLatin1());
 			//If the short argument is invalid print usage information and exit
 			if (k == shortToHandler.end()) {
-				fprintf(stderr, "Unknown switch -%c\n\n", argv[c][j]);
+                fprintf(stderr, "Unknown switch -%c\n\n", argv[c][j].toLatin1());
 				usage(stderr, false);
 				exit(1);
 			}
 
 			if (!(k.value()->section & sections)) {
-				fprintf(stderr, "-%c specified in incorrect location\n\n", argv[c][j]);
+                fprintf(stderr, "-%c specified in incorrect location\n\n", argv[c][j].toLatin1());
 				usage(stderr, false);
 				exit(1);
 			}
 			//Check to see if there is enough arguments to the switch
 			if (argc-arg < k.value()->argn.size()+1) {
-				fprintf(stderr, "Not enough arguments parsed to -%c\n\n", argv[c][j]);
+                fprintf(stderr, "Not enough arguments parsed to -%c\n\n", argv[c][j].toLatin1());
 				usage(stderr, false);
 				exit(1);
 			}
-			if (!(*(k.value()))(argv+arg+1, *this, page)) {
-				fprintf(stderr, "Invalid argument(s) parsed to -%c\n\n", argv[c][j]);
+            if (!(*(k.value()))(argv.mid(arg+1), *this, page)) {
+                fprintf(stderr, "Invalid argument(s) parsed to -%c\n\n", argv[c][j].toLatin1());
 				usage(stderr, false);
 				exit(1);
 			}

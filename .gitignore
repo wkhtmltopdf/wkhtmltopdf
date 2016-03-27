@@ -21,3 +21,4 @@ gitcontrol.bat
 gitcmd.lnk
 *.tar.bz2
 *.pyc
+*.user

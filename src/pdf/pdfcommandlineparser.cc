@@ -140,16 +140,17 @@ void PdfCommandLineParser::readme(FILE * fd, bool html) const {
  * \param argc the number of command line arguments
  * \param argv a NULL terminated list with the arguments
  */
-void PdfCommandLineParser::parseArguments(int argc, const char ** argv, bool fromStdin) {
+void PdfCommandLineParser::parseArguments(const QStringList& argv, bool fromStdin) {
 	bool defaultMode = false;
 	int arg=1;
+    int argc = argv.size();
 
 	PdfObject def;
 
 	//Parse global options
 	for (;arg < argc;++arg) {
-		if (argv[arg][0] != '-' || argv[arg][1] == '\0' || defaultMode) break;
-		parseArg(global | page, argc, argv, defaultMode, arg, (char *)&def);
+        if (argv[arg][0] != '-' || argv[arg].size() == 1 || defaultMode) break;
+        parseArg(global | page, argv, defaultMode, arg, (char *)&def);
 	}
 
 	if (readArgsFromStdin && !fromStdin) return;
@@ -159,18 +160,18 @@ void PdfCommandLineParser::parseArguments(int argc, const char ** argv, bool fro
 		pageSettings.push_back(def);
 		PdfObject & ps = pageSettings.back();
 		int sections = page;
-		if (!strcmp(argv[arg],"cover")) {
+        if (argv[arg] == "cover") {
 			++arg;
 			if (arg >= argc-1) {
 				fprintf(stderr, "You need to specify a input file to cover\n\n");
 				usage(stderr, false);
 				exit(1);
 			}
-			ps.page = QString::fromLocal8Bit(argv[arg++]);
+            ps.page = argv[arg++];
 			// parse page options and then override the header/footer settings
 			for (;arg < argc;++arg) {
-				if (argv[arg][0] != '-' || argv[arg][1] == '\0' || defaultMode) break;
-				parseArg(sections, argc, argv, defaultMode, arg, (char*)&ps);
+                if (argv[arg][0] != '-' || argv[arg].size() == 1 || defaultMode) break;
+                parseArg(sections, argv, defaultMode, arg, (char*)&ps);
 			}
 
 			ps.header.left = ps.header.right = ps.header.center = "";
@@ -180,12 +181,12 @@ void PdfCommandLineParser::parseArguments(int argc, const char ** argv, bool fro
 			ps.includeInOutline = false;
 
 			continue;
-		} else if (!strcmp(argv[arg],"toc")) {
+        } else if (argv[arg] == "toc") {
 			++arg;
 			sections = page | toc;
 			ps.isTableOfContent = true;
 		} else {
-			if (!strcmp(argv[arg],"page")) {
+            if (argv[arg] == "page") {
 				++arg;
 				if (arg >= argc-1) {
 					fprintf(stderr, "You need to specify a input file to page\n\n");
@@ -193,13 +194,12 @@ void PdfCommandLineParser::parseArguments(int argc, const char ** argv, bool fro
 					exit(1);
 				}
 			}
-			QByteArray a(argv[arg]);
-			ps.page = QString::fromLocal8Bit(a);
+            ps.page = argv[arg];
 			++arg;
 		}
 		for (;arg < argc;++arg) {
-			if (argv[arg][0] != '-' || argv[arg][1] == '\0' || defaultMode) break;
-			parseArg(sections, argc, argv, defaultMode, arg, (char*)&ps);
+            if (argv[arg][0] != '-' || argv[arg].size() == 1 || defaultMode) break;
+            parseArg(sections, argv, defaultMode, arg, (char*)&ps);
 		}
 	}
 
@@ -208,5 +208,5 @@ void PdfCommandLineParser::parseArguments(int argc, const char ** argv, bool fro
 		usage(stderr, false);
 		exit(1);
 	}
-	globalSettings.out = QString::fromLocal8Bit(argv[argc-1]);
+    globalSettings.out =argv[argc-1];
 }
