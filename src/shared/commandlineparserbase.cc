@@ -114,23 +114,23 @@ void CommandLineParserBase::parseArg(int sections, const QStringList& argv, bool
 		//Try to find a handler for this long switch
         QHash<QString, ArgHandler*>::iterator j = longToHandler.find(argv[arg].mid(2));
 		if (j == longToHandler.end()) { //Ups that argument did not exist
-            fprintf(stderr, "Unknown long argument %s\n\n", argv[arg].toUtf8());
+            fprintf(stderr, "Unknown long argument %s\n\n", argv[arg].toUtf8().data());
 			usage(stderr, false);
 			exit(1);
 		}
 		if (!(j.value()->section & sections)) {
-            fprintf(stderr, "%s specified in incorrect location\n\n", argv[arg].toUtf8());
+            fprintf(stderr, "%s specified in incorrect location\n\n", argv[arg].toUtf8().data());
 			usage(stderr, false);
 			exit(1);
 		}
 		//Check to see if there is enough arguments to the switch
 		if (argc-arg < j.value()->argn.size()+1) {
-            fprintf(stderr, "Not enough arguments parsed to %s\n\n", argv[arg].toUtf8());
+            fprintf(stderr, "Not enough arguments parsed to %s\n\n", argv[arg].toUtf8().data());
 			usage(stderr, false);
 			exit(1);
 		}
         if (!(*(j.value()))(argv.mid(arg+1), *this, page)) {
-            fprintf(stderr, "Invalid argument(s) parsed to %s\n\n", argv[arg].toUtf8());
+            fprintf(stderr, "Invalid argument(s) parsed to %s\n\n", argv[arg].toUtf8().data());
 			usage(stderr, false);
 			exit(1);
 		}
