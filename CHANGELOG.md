@@ -1,6 +1,9 @@
 v0.12.4 (unreleased)
 --------------------
 * update OpenSSL to 1.0.2g
+* **#2416**: make background transparent by default for headers/footers
+* **#2885**: enforce UTF-8 encoding for input strings in the API
+* **#2887**: improve docs to make examples of header/footer variables more explicit
 
 v0.12.3 (2016-01-20)
 --------------------

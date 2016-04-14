@@ -651,6 +651,9 @@ void PdfConverterPrivate::endPage(PageObject & object, bool hasHeaderFooter, int
 		updateWebSettings(header->settings(), object.settings.web);
 		painter->save();
 		painter->resetTransform();
+		QPalette pal = header->palette();
+		pal.setBrush(QPalette::Base, Qt::transparent);
+		header->setPalette(pal);
 		double spacing = s.header.spacing * printer->height() / printer->heightMM();
         // clear vertical margins for proper header rendering
         printer->setPageMargins(leftMargin, 0, rightMargin, 0, settings.margin.left.second);
@@ -680,6 +683,9 @@ void PdfConverterPrivate::endPage(PageObject & object, bool hasHeaderFooter, int
 		updateWebSettings(footer->settings(), object.settings.web);
 		painter->save();
 		painter->resetTransform();
+		QPalette pal = footer->palette();
+		pal.setBrush(QPalette::Base, Qt::transparent);
+		footer->setPalette(pal);
 		double spacing = s.footer.spacing * printer->height() / printer->heightMM();
 		painter->translate(0, printer->height()+ spacing);
         // clear vertical margins for proper header rendering
