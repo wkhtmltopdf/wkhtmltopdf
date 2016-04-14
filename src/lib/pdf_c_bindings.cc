@@ -357,11 +357,11 @@ CAPI(void) wkhtmltopdf_destroy_global_settings(wkhtmltopdf_global_settings * obj
  *
  * \param settings The settings object to change
  * \param name The name of the setting
- * \param value The new value for the setting
+ * \param value The new value for the setting (encoded in UTF-8)
  * \returns 1 if the setting was updated successfully and 0 otherwise.
  */
 CAPI(int) wkhtmltopdf_set_global_setting(wkhtmltopdf_global_settings * settings, const char * name, const char * value) {
-	return reinterpret_cast<settings::PdfGlobal *>(settings)->set(name, value);
+	return reinterpret_cast<settings::PdfGlobal *>(settings)->set(name, QString::fromUtf8(value));
 }
 
 /**
@@ -371,7 +371,7 @@ CAPI(int) wkhtmltopdf_set_global_setting(wkhtmltopdf_global_settings * settings,
  *
  * \param settings The settings object to inspect
  * \param name The name of the setting to read
- * \param value A buffer of length at least \a vs, where the value is stored.
+ * \param value A buffer of length at least \a vs, where the value (encoded in UTF-8) is stored.
  * \param vs The length of \a value
  * \returns 1 If the the setting exists and was read successfully and 0 otherwise
  */
@@ -414,21 +414,21 @@ CAPI(void) wkhtmltopdf_destroy_object_settings(wkhtmltopdf_object_settings * obj
  *
  * \param settings The settings object to change
  * \param name The name of the setting
- * \param value The new value for the setting
+ * \param value The new value for the setting (encoded in UTF-8)
  * \returns 1 if the setting was updated successfully and 0 otherwise.
  */
 CAPI(int) wkhtmltopdf_set_object_setting(wkhtmltopdf_object_settings * settings, const char * name, const char * value) {
-	return reinterpret_cast<settings::PdfObject *>(settings)->set(name, value);
+	return reinterpret_cast<settings::PdfObject *>(settings)->set(name, QString::fromUtf8(value));
 }
 
 /**
- * \brief Retrieve a setting in a global settings object
+ * \brief Retrieve a setting in a object settings object
  *
  * \sa \ref pagesettings, wkhtmltopdf_create_global_settings, wkhtmltopdf_set_global_setting
  *
  * \param settings The settings object to inspect
  * \param name The name of the setting to read
- * \param value A buffer of length at least \a vs, where the value is stored.
+ * \param value A buffer of length at least \a vs, where the value is stored (encoded in UTF-8).
  * \param vs The length of \a value
  * \returns 1 If the the setting exists and was read successfully and 0 otherwise
  */
@@ -566,7 +566,7 @@ CAPI(int) wkhtmltopdf_convert(wkhtmltopdf_converter * converter) {
  *
  * \param converter The converter to add the object to
  * \param settings The setting describing the object to add
- * \param data HTML content of the object to convert or NULL
+ * \param data HTML content of the object to convert (encoded in UTF-8) or NULL
  */
 CAPI(void) wkhtmltopdf_add_object(wkhtmltopdf_converter * converter, wkhtmltopdf_object_settings * settings, const char * data) {
 	QString str= QString::fromUtf8(data);

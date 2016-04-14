@@ -104,7 +104,7 @@ CAPI(wkhtmltoimage_global_settings *) wkhtmltoimage_create_global_settings() {
 }
 
 CAPI(int) wkhtmltoimage_set_global_setting(wkhtmltoimage_global_settings * settings, const char * name, const char * value) {
-	return reinterpret_cast<settings::ImageGlobal *>(settings)->set(name, value);
+	return reinterpret_cast<settings::ImageGlobal *>(settings)->set(name, QString::fromUtf8(value));
 }
 
 CAPI(int) wkhtmltoimage_get_global_setting(wkhtmltoimage_global_settings * settings, const char * name, char * value, int vs) {
