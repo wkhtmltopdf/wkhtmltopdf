@@ -1,6 +1,6 @@
 v0.12.4 (unreleased)
 --------------------
-* update OpenSSL to 1.0.2f
+* update OpenSSL to 1.0.2g
 
 v0.12.3 (2016-01-20)
 --------------------
