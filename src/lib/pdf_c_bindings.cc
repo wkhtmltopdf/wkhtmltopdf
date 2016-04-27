@@ -76,7 +76,7 @@
  * - \b load.debugJavascript Forward javascript warnings and errors to the warning callback.
  *      Must be either "true" or "false".
  * - \b load.loadErrorHandling How should we handle obejcts that fail to load. Must be one of:
- *      - "abort" Abort the convertion process
+ *      - "abort" Abort the conversion process
  *      - "skip" Do not add the object to the final output
  *      - "ignore" Try to add the object to the final output.
  * - \b load.proxy String describing what proxy to use when loading the object.

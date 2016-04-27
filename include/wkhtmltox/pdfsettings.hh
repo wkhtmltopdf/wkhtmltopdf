@@ -155,7 +155,7 @@ struct DLL_PUBLIC HeaderFooter {
 	QString right;
 	//! Text to render at the center
 	QString center;
-	//! Should a line seperate the header/footer and the document
+	//! Should a line separate the header/footer and the document
 	bool line;
 	//! Url of the document the html document that should be used as a header/footer
 	QString htmlUrl;

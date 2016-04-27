@@ -730,7 +730,7 @@ void MultiPageLoader::cancel() {
 /*!
   \fn MultiPageLoader::loadFinished(bool ok)
   \brief Signal emitted when all pages have been loaded
-  \param ok True if all the pages have been loaded sucessfully
+  \param ok True if all the pages have been loaded successfully
 */
 
 /*!
@@ -746,13 +746,13 @@ void MultiPageLoader::cancel() {
 
 /*!
   \fn void MultiPageLoader::warning(QString text)
-  \brief Signal emitted when a none fatal warning has occured
+  \brief Signal emitted when a none fatal warning has occurred
   \param text A string describing the warning
 */
 
 /*!
   \fn void MultiPageLoader::error(QString text)
-  \brief Signal emitted when a fatal error has occured
+  \brief Signal emitted when a fatal error has occurred
   \param text A string describing the error
 */
 }

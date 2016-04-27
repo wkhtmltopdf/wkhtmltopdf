@@ -36,7 +36,7 @@ void phase_changed(wkhtmltopdf_converter * c) {
 	printf("%s\n", wkhtmltopdf_phase_description(c, phase));
 }
 
-/* Print a message to stderr when an error occures */
+/* Print a message to stderr when an error occurs */
 void error(wkhtmltopdf_converter * c, const char * msg) {
 	fprintf(stderr, "Error: %s\n", msg);
 }
@@ -83,7 +83,7 @@ int main() {
 	/* Call the phase _changed function when the phase changes */
 	wkhtmltopdf_set_phase_changed_callback(c, phase_changed);
 
-	/* Call the error function when an error occures */
+	/* Call the error function when an error occurs */
 	wkhtmltopdf_set_error_callback(c, error);
 
 	/* Call the warning function when a warning is issued */
@@ -96,9 +96,9 @@ int main() {
 	 */
 	wkhtmltopdf_add_object(c, os, NULL);
 
-	/* Perform the actual convertion */
+	/* Perform the actual conversion */
 	if (!wkhtmltopdf_convert(c))
-		fprintf(stderr, "Convertion failed!");
+		fprintf(stderr, "Conversion failed!");
 
 	/* Output possible http error code encountered */
 	printf("httpErrorCode: %d\n", wkhtmltopdf_http_error_code(c));

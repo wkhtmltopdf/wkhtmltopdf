@@ -44,7 +44,7 @@ TempFile::~TempFile() {
 
 /*!
   \brief Create a new temporary file
-  \param ext The extention of the temporary file
+  \param ext The extension of the temporary file
   \returns Path of the new temporary file
 */
 QString TempFile::create(const QString & ext) {

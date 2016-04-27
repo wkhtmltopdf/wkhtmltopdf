@@ -50,7 +50,7 @@ CentOS 7       | `sudo scripts/build.py setup-schroot-centos7` | not available  
 MinGW-w64      | `sudo scripts/build.py setup-mingw-w64`       | `scripts/build.py mingw-w64-cross-win32` | `scripts/build.py mingw-w64-cross-win64`
 
 The MinGW-w64 toolchain can cross-compile 32/64-bit Windows binaries from
-Linux -- it is useful for targetting Windows XP/Windows 2003, which are not
+Linux -- it is useful for targeting Windows XP/Windows 2003, which are not
 supported by default when compiling with MSVC 2013. You may require a
 working internet connection during the build to download and compile
 the dependent libraries (e.g. OpenSSL).

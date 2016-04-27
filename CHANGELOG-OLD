@@ -1,5 +1,5 @@
 ﻿v0.11.0 rc2:
-* #354: Propper handling of directly embedded grayscale jpeg images
+* #354: Proper handling of directly embedded grayscale jpeg images
 * #429: output filenames interperted as latin1 instead of utf8
 * #441: Gif images do not work
 * #463: Null byte in anchor name
@@ -119,7 +119,7 @@ v0.9.1
 * Fixed up man page
 * #140: --disable-javascript shod not affect --header-html
 * #142: We now wait for --redirect-delay microseconds before printing a page,
-  allowing for javascript redirects to occure, or dynamic content to be
+  allowing for javascript redirects to occur, or dynamic content to be
   generated. However if a window.print() javascript statement is executed
   we wait no longer.
 * #147: Detect if --header-html is html
@@ -130,7 +130,7 @@ v0.9.1
 v0.9.0
 * Complete code rewrite.
 * Add support for HTML headers and footers.
-* Do not exit 0 when a 404 has occured
+* Do not exit 0 when a 404 has occurred
 * Added a manual/readme
 * Added an installer under windows
 * #47: Give better error message if destination is not writeble
@@ -151,7 +151,7 @@ v0.9.0
 * Make static build work with older versions of libc
 * Much more that I have now forgotten.
 * Add support for custom page sizes
-* Upgrade to qt4.6 fixing issues with not beeing able to copy text in acroread
+* Upgrade to qt4.6 fixing issues with not being able to copy text in acroread
 * Upgrade to qt4.6 fixing issues with only one font family working.
 
 v0.8.3
