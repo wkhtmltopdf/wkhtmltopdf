@@ -3,6 +3,7 @@ v0.12.4 (unreleased)
 * update OpenSSL to 1.0.2g
 * **[qt]** change screen size in headless mode to a more sane value (1366x768)
 * **#2416**: make background transparent by default for headers/footers
+* **#2673**: fail immediately in the build script if the Qt source is not available
 * **#2885**: enforce UTF-8 encoding for input strings in the API
 * **#2887**: improve docs to make examples of header/footer variables more explicit
 

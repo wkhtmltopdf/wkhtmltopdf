@@ -1225,6 +1225,10 @@ def usage(exit_code=2):
 def main():
     rootdir = os.path.realpath(os.path.join(os.path.dirname(os.path.realpath(__file__)), '..'))
     basedir = os.path.join(rootdir, 'static-build')
+
+    if not exists(os.path.join(rootdir, 'qt', 'configure')):
+        error('error: source code for Qt not available, cannot proceed.')
+
     if len(sys.argv) == 1:
         usage(0)
 
