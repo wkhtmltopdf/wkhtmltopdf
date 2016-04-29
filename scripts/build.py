@@ -923,6 +923,9 @@ def build_msvc(config, basedir):
     shell('%s\\bin\\qmake %s\\..\\wkhtmltopdf.pro' % (qtdir, basedir))
     shell('nmake')
 
+    if config.endswith('-dbg'):
+        return
+
     makensis = os.path.join(get_registry_value(r'SOFTWARE\NSIS'), 'makensis.exe')
     os.chdir(os.path.join(basedir, '..'))
     shell('"%s" /DVERSION=%s /DSIMPLE_VERSION=%s /DTARGET=%s /DMSVC /DARCH=%s wkhtmltox.nsi' % \
@@ -979,6 +982,9 @@ def build_mingw64_cross(config, basedir):
                 if exists(loc) and MINGW_W64_PREFIX[rchop(config, '-dbg')] in loc and '-posix' not in loc:
                     shell('cp %s bin/' % loc)
 
+    if config.endswith('-dbg'):
+        return
+
     os.chdir(os.path.join(basedir, '..'))
     shell('makensis -DVERSION=%s -DSIMPLE_VERSION=%s -DTARGET=%s -DMINGW -DARCH=%s wkhtmltox.nsi' % \
             (version, nsis_version(simple_version), config, rchop(config, '-dbg').split('-')[-1]))
@@ -1025,6 +1031,9 @@ def build_linux_generic(config, basedir):
     chroot_env = ('amd64' in config) and 'generic-amd64' or 'generic-i386'
     os.chdir(os.path.realpath(os.path.join(basedir, '..')))
     chroot_shell(chroot_env, 'python scripts/build.py %s -chroot-build' % ' '.join(sys.argv[1:]))
+
+    if config.endswith('-dbg'):
+        return
 
     version, simple_version = get_version(basedir)
     os.chdir(os.path.join(basedir, config))
@@ -1093,6 +1102,9 @@ def build_posix_local(config, basedir):
     shell('cp ../../../include/wkhtmltox/*.h ../wkhtmltox-%s/include/wkhtmltox' % version)
     shell('cp ../../../include/wkhtmltox/dll*.inc ../wkhtmltox-%s/include/wkhtmltox' % version)
 
+    if config.endswith('-dbg'):
+        return
+
     os.chdir(os.path.join(basedir, config))
     shell('tar -c -v -f ../wkhtmltox-%s_local-%s.tar wkhtmltox-%s/' % (version, platform.node(), version))
     shell('xz --compress --force --verbose -9 ../wkhtmltox-%s_local-%s.tar' % (version, platform.node()))
@@ -1159,6 +1171,9 @@ def build_osx(config, basedir):
                 'bin/'+item]))
 
     shell('make install INSTALL_ROOT=%s' % get_dir('dist'))
+
+    if config.endswith('-dbg'):
+        return
 
     def _osx_tar(info):
         info.uid   = info.gid   = 0
