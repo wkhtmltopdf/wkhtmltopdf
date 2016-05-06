@@ -1,6 +1,6 @@
 v0.12.4 (unreleased)
 --------------------
-* update OpenSSL to 1.0.2g
+* update OpenSSL to 1.0.2h
 * **[qt]** change screen size in headless mode to a more sane value (1366x768)
 * **[qt]** fix compilation failure on OS X 10.11 due to usage of deprecated APIs
 * **#2004**: **[qt]** fix rendering of form fields in PDF output
