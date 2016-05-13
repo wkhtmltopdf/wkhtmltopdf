@@ -170,6 +170,8 @@ struct DLL_PUBLIC PdfObject {
 
 	QString page;
 
+    //! custom page orientation
+    QString pageSpecificOrientation;
 	//! Header related settings
 	HeaderFooter header;
 

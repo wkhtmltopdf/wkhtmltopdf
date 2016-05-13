@@ -821,8 +821,29 @@ void PdfConverterPrivate::headersLoaded(bool ok) {
 void PdfConverterPrivate::spoolPage(int page) {
 	progressString = QString("Page ") + QString::number(actualPage) + QString(" of ") + QString::number(actualPages);
 	emit out.progressChanged(actualPage * 100 / actualPages);
-	if (actualPage != 1)
-		printer->newPage();
+	if (actualPage != 1){
+	// We skip the --page-orientation arg for the first page and instead rely on --orientation Landscape in Global Args if needed
+	// Page Format must be specified before call to newPage();
+	if (objects[currentObject].settings.pageSpecificOrientation != NULL){
+      
+		QChar c = objects[currentObject].settings.pageSpecificOrientation.at(0);
+		char orientParam = c.toUpper().toLatin1();
+
+      	fprintf(stdout, "Custom page orientation ");	
+			
+		if (orientParam == 'L'){
+				printer->setOrientation(QPrinter::Landscape);
+		    	fprintf(stdout, "Landscape\n");		 	
+				}
+				else{
+				printer->setOrientation(QPrinter::Portrait);
+		      	fprintf(stdout, "Portrait\n");	
+				}			
+		}	
+
+
+	printer->newPage();
+    }
 
 	webPrinter->spoolPage(page+1);
 	foreach (QWebElement elm, pageFormElements[page+1]) {
@@ -905,6 +926,24 @@ void PdfConverterPrivate::beginPrintObject(PageObject & obj) {
 		foreach (QWebElement elm, obj.page->mainFrame()->findAllElements("textarea"))
 			elm.setStyleProperty("color","white");
 	}
+
+
+// Need to set the Orientation of the Page before generating the Output
+	if (obj.settings.pageSpecificOrientation != NULL){
+      
+			QChar c = obj.settings.pageSpecificOrientation.at(0);
+			char orientParam = c.toUpper().toLatin1();
+      		//fprintf(stdout, "Custom page orientation ");	
+			
+			if (orientParam == 'L'){
+				printer->setOrientation(QPrinter::Landscape);
+		      	//fprintf(stdout, "Landscape\n");	
+				}
+				else{
+				printer->setOrientation(QPrinter::Portrait);
+		      	//fprintf(stdout, "Portrait\n");	
+				}			
+			}
 
 	//output
 	webPrinter = new QWebPrinter(obj.page->mainFrame(), printer, *painter);
