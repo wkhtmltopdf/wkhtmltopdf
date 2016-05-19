@@ -546,13 +546,28 @@ void PdfConverterPrivate::findLinks(QWebFrame * frame, QVector<QPair<QWebElement
 		uexternal  = PageObject::webPageToObject[frame->page()]->settings.useExternalLinks;
 	}
 	if (!ulocal && !uexternal) return;
-	foreach (const QWebElement & elm, frame->findAllElements("a")) {
+	foreach (QWebElement elm, frame->findAllElements("a")) {
+
+		QString id=elm.attribute("id");
+		if (id.isEmpty()) id=elm.attribute("ns0:id");
+		if (id.startsWith("__WKANCHOR_")) anchors[id] = elm;
+
 		QString n=elm.attribute("name");
 		if (n.isEmpty()) n=elm.attribute("ns0:name");
 		if (n.startsWith("__WKANCHOR_")) anchors[n] = elm;
 
 		QString h=elm.attribute("href");
 		if (h.isEmpty()) h=elm.attribute("ns0:href");
+		
+		if (h.isEmpty() && (id.length() > 0 || n.length() > 0)) {
+			if (elm.firstChild().isNull()) {
+				elm.setStyleProperty("font-size","1px");
+				elm.setStyleProperty("height","0px");
+				elm.setStyleProperty("float","left");
+				elm.prependInside("&nbsp;");
+			}
+		}
+
 		if (h.startsWith("__WKANCHOR_")) {
 			local.push_back( qMakePair(elm, h) );
 		} else {
