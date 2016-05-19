@@ -139,10 +139,8 @@ QT_CONFIG = {
 
     'mingw-w64-cross' : [
         '-silent',                  # perform a silent build
-        '-openssl-linked',          # static linkage for OpenSSL
-        '-no-reduce-exports',
-        '-no-rpath',
-        '-xplatform win32-g++-4.6'
+        '-xplatform win32-g++',
+        '-openssl-linked'           # static linkage for OpenSSL
     ],
 
     'osx': [
@@ -435,6 +433,14 @@ DEPENDENT_LIBS = {
                     'bash source/runConfigureICU %(icu_dbg)s Cygwin/MSVC --enable-static --disable-shared --disable-tests --disable-samples --prefix=%(cygdest)s',
                     'make', 'make install'
                 ]
+            },
+            'mingw-w64-cross-win*': {
+                'result': ['include/unicode/ucnv.h', 'include/unicode/ustring.h', 'lib/libsicuin.a', 'lib/libsicuuc.a', 'lib/libsicudt.a'],
+                'commands': [
+                    'cp -R source source.host',
+                    'cd source.host; ./configure; make',
+                    'source/configure --host=%(mingw_w64)s --enable-release --disable-debug --enable-static --disable-shared --disable-tests --disable-samples --prefix=%(destdir)s --with-cross-build=`pwd`/source.host',
+                    'make install']
             }
         }
     }
@@ -976,21 +982,26 @@ def build_mingw64_cross(config, basedir):
     build_deplibs(config, basedir, mingw_w64=MINGW_W64_PREFIX.get(rchop(config, '-dbg')))
 
     libdir = os.path.join(basedir, config, 'deplibs')
-    qtdir  = os.path.join(basedir, config, 'qt')
+    qtdir  = os.path.join(basedir, config, 'qt5')
 
     configure_args = qt_config('mingw-w64-cross',
-        '--prefix=%s'   % qtdir,
-        '-I%s/include'  % libdir,
-        '-L%s/lib'      % libdir,
+        '--prefix=%s/qtbase' % qtdir,
+        '-I%s/include'       % libdir,
+        '-L%s/lib'           % libdir,
         '-device-option CROSS_COMPILE=%s-' % MINGW_W64_PREFIX[rchop(config, '-dbg')])
 
-    os.environ['OPENSSL_LIBS'] = '-lssl -lcrypto -L%s/lib -lws2_32 -lgdi32 -lcrypt32' % libdir
+    os.environ['OPENSSL_LIBS']  = '-lssl -lcrypto -L%s/lib -lws2_32 -lgdi32 -lcrypt32' % libdir
+    os.environ['SQLITE3SRCDIR'] = '%s/../qt5/qtbase/src/3rdparty/sqlite' % basedir
 
     mkdir_p(qtdir)
-    os.chdir(qtdir)
-
-    build_qt(qtdir, 'make -j%d' % CPU_COUNT,
-        '%s/../qt/configure %s' % (basedir, configure_args))
+    build_qtmodule(qtdir, 'qtbase', 'make -j%d' % CPU_COUNT,
+        '%s/../qt5/qtbase/configure %s' % (basedir, configure_args))
+    build_qtmodule(qtdir, 'qtsvg',  'make -j%d' % CPU_COUNT,
+        '%s/qtbase/bin/qmake %s/../qt5/qtsvg/qtsvg.pro' % (qtdir, basedir))
+    build_qtmodule(qtdir, 'qtxmlpatterns', 'make -j%d' % CPU_COUNT,
+        '%s/qtbase/bin/qmake %s/../qt5/qtxmlpatterns/qtxmlpatterns.pro' % (qtdir, basedir))
+    build_qtmodule(qtdir, 'qtwebkit', 'make -j%d' % CPU_COUNT,
+        '%s/qtbase/bin/qmake %s/../qt5/qtwebkit/WebKit.pro WEBKIT_CONFIG-=build_webkit2' % (qtdir, basedir))
 
     appdir = os.path.join(basedir, config, 'app')
     mkdir_p(appdir)
@@ -999,8 +1010,8 @@ def build_mingw64_cross(config, basedir):
 
     # set up cross compiling prefix correctly
     os.environ['WKHTMLTOX_VERSION'] = version
-    shell('%s/bin/qmake -set CROSS_COMPILE %s-' % (qtdir, MINGW_W64_PREFIX[rchop(config, '-dbg')]))
-    shell('%s/bin/qmake -spec win32-g++-4.6 %s/../wkhtmltopdf.pro' % (qtdir, basedir))
+    shell('%s/qtbase/bin/qmake -set CROSS_COMPILE %s-' % (qtdir, MINGW_W64_PREFIX[rchop(config, '-dbg')]))
+    shell('%s/qtbase/bin/qmake -spec win32-g++ %s/../wkhtmltopdf.pro' % (qtdir, basedir))
     shell('make')
     shutil.copy('bin/libwkhtmltox0.a', 'bin/wkhtmltox.lib')
     shell('rm -f bin/lib*.dll')
