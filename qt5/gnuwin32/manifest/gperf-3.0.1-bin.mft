@@ -1,0 +1,14 @@
+bin/gperf.exe
+contrib/gperf/3.0.1/depends-GnuWin32.lst
+contrib/gperf/3.0.1/gperf-3.0.1-GnuWin32.README
+contrib/gperf/3.0.1/gperf-3.0.1-src/AUTHORS
+contrib/gperf/3.0.1/gperf-3.0.1-src/ChangeLog
+contrib/gperf/3.0.1/gperf-3.0.1-src/COPYING
+contrib/gperf/3.0.1/gperf-3.0.1-src/INSTALL
+contrib/gperf/3.0.1/gperf-3.0.1-src/NEWS
+contrib/gperf/3.0.1/gperf-3.0.1-src/README
+contrib/gperf/3.0.1/gperf-3.0.1/check.log
+contrib/gperf/3.0.1/gperf-3.0.1/check_err.log
+man/cat1/gperf.1.txt
+manifest/gperf-3.0.1-bin.mft
+manifest/gperf-3.0.1-bin.ver

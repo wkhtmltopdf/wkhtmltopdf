@@ -1,3 +1,18 @@
 [submodule "qt"]
 	path = qt
-	url = https://github.com/wkhtmltopdf/qt.git
+	url = ../qt.git
+	branch = wk_4.8.7
+[submodule "qt5/qtbase"]
+	path = qt5/qtbase
+	url = ../qtbase.git
+	branch = wk_master
+[submodule "qt5/qtwebkit"]
+	path = qt5/qtwebkit
+	url = ../qtwebkit.git
+	branch = wk_master
+[submodule "qt5/qtxmlpatterns"]
+	path = qt5/qtxmlpatterns
+	url = https://code.qt.io/qt/qtxmlpatterns.git
+[submodule "qt5/qtsvg"]
+	path = qt5/qtsvg
+	url = https://code.qt.io/qt/qtsvg.git

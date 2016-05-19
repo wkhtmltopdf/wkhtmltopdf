@@ -353,6 +353,7 @@ DEPENDENT_LIBS = {
 }
 
 EXCLUDE_SRC_TARBALL = [
+    'qt5*',
     'qt/config.profiles*',
     'qt/demos*',
     'qt/dist*',

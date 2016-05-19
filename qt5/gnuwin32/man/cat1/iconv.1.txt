@@ -1,0 +1,48 @@
+ICONV(1)           Linux Programmer's Manual           ICONV(1)
+
+
+
+
+
+NAME
+       iconv - character set conversion
+
+SYNOPSIS
+       iconv [-c] [-s] [-f encoding] [-t encoding] [inputfile ...]
+       iconv -l
+
+DESCRIPTION
+       The  iconv  program  converts  text from one encoding to
+       another encoding.  More precisely, it converts from  the
+       encoding  given  for the -f option to the encoding given
+       for the -t option. Either of these encodings defaults to
+       the  encoding  of the current locale. All the inputfiles
+       are read and converted  in  turn;  if  no  inputfile  is
+       given, the standard input is used. The converted text is
+       printed to standard output.
+
+       When option -c is given, characters that cannot be  con-
+       verted  are  silently discarded, instead of leading to a
+       conversion error.
+
+       When option -s is given, error messages about invalid or
+       unconvertible  characters  are  omitted,  but the actual
+       converted text is unaffected.
+
+       The encodings permitted are system  dependent.  For  the
+       libiconv   implementation,   they   are  listed  in  the
+       iconv_open(3) manual page.
+
+       The iconv -l command lists the names  of  the  supported
+       encodings,  in  a system dependent format. For the libi-
+       conv implementation, the  names  are  printed  in  upper
+       case,  separated  by  whitespace,  and alias names of an
+       encoding are listed on the same  line  as  the  encoding
+       itself.
+
+SEE ALSO
+       iconv_open(3), locale(7)
+
+
+
+GNU                     January 13, 2002               ICONV(1)

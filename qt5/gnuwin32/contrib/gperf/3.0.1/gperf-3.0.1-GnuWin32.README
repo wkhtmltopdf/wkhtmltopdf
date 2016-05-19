@@ -1,0 +1,54 @@
+* Gperf-3.0.1 for Windows *
+===========================
+
+What is it?
+-----------
+Gperf: generate a perfect hash function from a key set
+
+Description
+-----------
+GNU gperf is a perfect hash function generator. For a given list of
+strings, it produces a hash function and hash table in the form of
+C or C++ code, for looking up a value depending on the input string.
+The hash function is perfect,' which means that the hash table has
+no collisions, and the hash table lookup needs a single string
+comparison only. GNU gperf is highly customizable. There are options
+for generating C and C++ code, for emitting 'switch' statements or
+nested 'ifs' instead of a hash table, and for tuning the algorithm
+that gperf uses.
+	 
+Homepage
+--------
+http://www.gnu.org/software/gperf/gperf.html
+	 
+System
+------
+- MS-Windows 95 / 98 / ME / NT / 2000 / XP with msvcrt.dll
+- if msvcrt.dll is not in your Windows/System folder, get it from
+  Microsoft <http://support.microsoft.com/default.aspx?scid=kb;en-us;259403">
+  or by installing Internet Explorer 4.0 or higher
+  <http://www.microsoft.com/windows/ie>
+
+Notes
+-----
+- Bugs and questions on this MS-Windows port: gnuwin32@users.sourceforge.net
+
+Package Availability
+--------------------
+- in: http://gnuwin32.sourceforge.net
+
+Sources
+-------
+- gperf-3.0.1-src.zip
+
+Compilation
+-----------
+The package has been compiled with GNU auto-tools, GNU make, and Mingw
+(GCC for MS-Windows). Any differences from the original sources are given
+in gperf-3.0.1-GnuWin32.diffs in gperf-3.0.1-src.zip. Libraries needed
+for compilation can be found at the lines starting with 'LIBS = ' in the
+Makefiles. Usually, these are standard libraries provided with Mingw, or
+libraries from the package itself; 'gw32c' refers to the libgw32c package,
+which provides MS-Windows substitutes or stubs for functions normally found in
+Unix. For more information, see: http://gnuwin32.sourceforge.net/compile.html
+and http://gnuwin32.sourceforge.net/packages/libgw32c.htm.

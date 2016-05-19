@@ -1,0 +1,9 @@
+This directory contains the Windows binaries of various tools such as bison
+from the GnuWin32 project (http://gnuwin32.sourceforge.net/). We've put them
+here for your convenience, as they are needed to build projects such as
+QtWebKit.
+
+Aside from GnuWin32 binaries this directory also contains a distribution of Win
+flex-bison project (http://sourceforge.net/projects/winflexbison/), which provides
+much newer ports of Flex and Bison than what GnuWin32 provides.
+
