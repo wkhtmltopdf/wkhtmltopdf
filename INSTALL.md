@@ -44,6 +44,7 @@ Target         | Setup of Build Environment                    | Building 32-bit
 Generic        | `sudo scripts/build.py setup-schroot-generic` | `scripts/build.py linux-generic-i386`    | `scripts/build.py linux-generic-amd64`
 Debian Wheezy  | `sudo scripts/build.py setup-schroot-wheezy`  | `scripts/build.py wheezy-i386`           | `scripts/build.py wheezy-amd64`
 Debian Jessie  | `sudo scripts/build.py setup-schroot-jessie`  | `scripts/build.py jessie-i386`           | `scripts/build.py jessie-amd64`
+Ubuntu Xenial  | `sudo scripts/build.py setup-schroot-xenial`  | `scripts/build.py xenial-i386`           | `scripts/build.py xenial-amd64`
 Ubuntu Trusty  | `sudo scripts/build.py setup-schroot-trusty`  | `scripts/build.py trusty-i386`           | `scripts/build.py trusty-amd64`
 Ubuntu Precise | `sudo scripts/build.py setup-schroot-precise` | `scripts/build.py precise-i386`          | `scripts/build.py precise-amd64`
 CentOS 7       | `sudo scripts/build.py setup-schroot-centos7` | not available                            | `scripts/build.py centos7-amd64`

@@ -37,6 +37,7 @@ BUILDERS = {
     'setup-schroot-wheezy':  'setup_schroot',
     'setup-schroot-jessie':  'setup_schroot',
     'setup-schroot-trusty':  'setup_schroot',
+    'setup-schroot-xenial':  'setup_schroot',
     'setup-schroot-precise': 'setup_schroot',
     'update-all-schroots':   'update_schroot',
     'linux-generic-i386':    'linux_generic',
@@ -46,6 +47,8 @@ BUILDERS = {
     'wheezy-amd64':          'linux_schroot',
     'jessie-i386':           'linux_schroot',
     'jessie-amd64':          'linux_schroot',
+    'xenial-i386':           'linux_schroot',
+    'xenial-amd64':          'linux_schroot',
     'trusty-i386':           'linux_schroot',
     'trusty-amd64':          'linux_schroot',
     'precise-i386':          'linux_schroot',
@@ -182,6 +185,22 @@ LINUX_SCHROOT_SETUP = {
                                     deb http://ftp.debian.org/debian/ jessie         main contrib non-free
                                     deb http://ftp.debian.org/debian/ jessie-updates main contrib non-free
                                     deb http://security.debian.org/   jessie/updates main contrib non-free""")
+    },
+    'xenial': {
+        'title'             : 'Ubuntu Xenial',
+        'packaging_tool'    : 'apt',
+        'build_arch'        : ['amd64', 'i386'],
+        'compression'       : 'xz',
+        'runtime_packages'  : 'libc6 libstdc++6 zlib1g libpng12-0 libjpeg-turbo8 '\
+                              'libssl1.0.0 libfreetype6 libicu55 fontconfig '\
+                              'libx11-6 libxext6 libxrender1 libxcb1 xfonts-base xfonts-75dpi',
+        'build_packages'    : 'xz-utils ruby python perl gperf bison flex git '\
+                              'zlib1g-dev libpng12-dev libjpeg-turbo8-dev libssl-dev libfreetype6-dev libicu-dev libfontconfig1-dev '\
+                              'libx11-dev libxext-dev libxrender-dev libxcb1-dev',
+        'debootstrap'       : ('xenial', 'http://archive.ubuntu.com/ubuntu/', """
+                                    deb http://archive.ubuntu.com/ubuntu/ xenial          main restricted universe multiverse
+                                    deb http://archive.ubuntu.com/ubuntu/ xenial-updates  main restricted universe multiverse
+                                    deb http://archive.ubuntu.com/ubuntu/ xenial-security main restricted universe multiverse""")
     },
     'trusty': {
         'title'             : 'Ubuntu Trusty',
