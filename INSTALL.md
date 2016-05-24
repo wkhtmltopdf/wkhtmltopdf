@@ -79,9 +79,8 @@ native package (either DEB or RPM, depending on the distribution) in the
 Windows
 -------
 
-* Install Visual Studio 2013 Update 4 -- [Community Edition](http://go.microsoft.com/?linkid=9863609)
-  should also work.
-* Do "Windows Update" to ensure that VC/SDK security patches are up-to-date
+* Install Visual Studio [2013 (update 5)](https://go.microsoft.com/fwlink/?LinkId=532496)
+  or Visual Studio [2015 (update 3)](https://go.microsoft.com/fwlink/?LinkId=615448).
 * Install the latest [ActivePerl](http://www.activestate.com/activeperl/downloads) release
 * Install the latest [Python 2.7](http://www.python.org/downloads/windows/) release
 * Install [NSIS 2.46](http://nsis.sourceforge.net/Download)
@@ -91,6 +90,7 @@ Windows
 Target          | Building 32-bit binaries               |  Building 64-bit binaries
 ------          | ------------------------               |  ------------------------
 MSVC 2013       | `scripts\build.py msvc2013-win32`      | `scripts/build.py msvc2013-win64`
+MSVC 2015       | `scripts\build.py msvc2015-win32`      | `scripts/build.py msvc2015-win64`
 
 During the build, a working internet connection is required to download and
 compile the dependent libraries (e.g. OpenSSL). The output installers should
