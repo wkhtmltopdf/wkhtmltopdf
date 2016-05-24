@@ -62,7 +62,7 @@ FunctionEnd
 !ifdef MSVC
   InitPluginsDir
   ClearErrors
-  ReadRegDWORD $R0 HKLM "SOFTWARE\Microsoft\DevDiv\vc\Servicing\12.0\RuntimeMinimum" "Install"
+  ReadRegDWORD $R0 HKLM "SOFTWARE\Microsoft\DevDiv\vc\Servicing\${MSVC}\RuntimeMinimum" "Install"
   IfErrors need_vcruntime
   IntCmp $R0 1 skip_vcruntime need_vcruntime need_vcruntime
 need_vcruntime:

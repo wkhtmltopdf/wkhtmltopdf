@@ -842,7 +842,7 @@ def build_source_tarball(config, basedir):
 # --------------------------------------------------------------- MSVC (2013 only)
 
 MSVC_LOCATION = {
-    'msvc2013': 'VS120COMNTOOLS'
+    'msvc2013': ('VS120COMNTOOLS', '12.0')
 }
 MSVC_RUNTIME = {
     'msvc2013-win32': ('df7f0a73bfa077e483e51bfb97f5e2eceedfb6a3', 'http://download.microsoft.com/download/2/E/6/2E61CFA4-993B-4DD4-91DA-3737CD5CD6E3/vcredist_x86.exe'),
@@ -851,7 +851,7 @@ MSVC_RUNTIME = {
 
 def check_msvc(config):
     version, arch = rchop(config, '-dbg').split('-')
-    env_var = MSVC_LOCATION[version]
+    env_var, _ = MSVC_LOCATION[version]
     if not env_var in os.environ:
         error("%s does not seem to be installed." % version)
 
@@ -876,7 +876,8 @@ def check_msvc(config):
 
 def build_msvc(config, basedir):
     msvc, arch = rchop(config, '-dbg').split('-')
-    vcdir = os.path.join(os.environ[MSVC_LOCATION[msvc]], '..', '..', 'VC')
+    env_var, reg_ver = MSVC_LOCATION[msvc]
+    vcdir = os.path.join(os.environ[env_var], '..', '..', 'VC')
     vcarg = 'x86'
     if arch == 'win64':
         if exists(os.path.join(vcdir, 'bin', 'amd64', 'cl.exe')):
@@ -928,8 +929,8 @@ def build_msvc(config, basedir):
 
     makensis = os.path.join(get_registry_value(r'SOFTWARE\NSIS'), 'makensis.exe')
     os.chdir(os.path.join(basedir, '..'))
-    shell('"%s" /DVERSION=%s /DSIMPLE_VERSION=%s /DTARGET=%s /DMSVC /DARCH=%s wkhtmltox.nsi' % \
-            (makensis, version, nsis_version(simple_version), config, arch))
+    shell('"%s" /DVERSION=%s /DSIMPLE_VERSION=%s /DTARGET=%s /DMSVC=%s /DARCH=%s wkhtmltox.nsi' % \
+            (makensis, version, nsis_version(simple_version), config, reg_ver, arch))
 
 # ------------------------------------------------ MinGW-W64 Cross Environment
 
