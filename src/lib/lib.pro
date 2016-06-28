@@ -33,6 +33,10 @@ unix {
    INSTALLS += headers
 }
 
+macx {
+    QMAKE_LFLAGS_SONAME = -Wl,-install_name,$$INSTALLBASE/lib/
+}
+
 windows {
    TARGET_EXT=.dll
 }
