@@ -429,7 +429,11 @@ DEPENDENT_LIBS = {
                 'result': ['include/unicode/ucnv.h', 'include/unicode/ustring.h', ('lib/sicuin.lib', 'lib/sicuind.lib'), ('lib/sicudt.lib', 'lib/sicudtd.lib')],
                 'commands': [
                     'bash source/runConfigureICU %(icu_dbg)s Cygwin/MSVC --enable-static --disable-shared --disable-tests --disable-samples --prefix=%(cygdest)s',
-                    'make', 'make install'
+                    'make',
+                    # For some strange reason make install fails with:
+                    #   /usr/bin/install: cannot create regular file '<path>/WKHTML~1/STATIC~1/MSVC20~2/deplibs/lib/sicudtd.lib': No such file or directory
+                    # - however running it in a login shell seems to make the problem go away
+                    r'pwd | bash --login -c "read d; cd \"$d\"; make install"'
                 ]
             },
             'mingw-w64-cross-win*': {
