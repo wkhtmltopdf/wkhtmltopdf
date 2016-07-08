@@ -533,14 +533,38 @@ def mkdir_p(path):
     if not exists(path):
         os.makedirs(path)
 
-def get_registry_value(key, value=None):
+def get_registry_value(key, value=None, hive=winreg.HKEY_LOCAL_MACHINE):
     for mask in [0, winreg.KEY_WOW64_64KEY, winreg.KEY_WOW64_32KEY]:
         try:
-            reg_key = winreg.OpenKey(winreg.HKEY_LOCAL_MACHINE, key, 0, winreg.KEY_READ | mask)
+            reg_key = winreg.OpenKey(hive, key, 0, winreg.KEY_READ | mask)
             return winreg.QueryValueEx(reg_key, value)[0]
         except WindowsError:
             pass
     return None
+
+def get_registry_subkeys(key, hive=winreg.HKEY_LOCAL_MACHINE):
+    subkeys = []
+    for mask in [0, winreg.KEY_WOW64_64KEY, winreg.KEY_WOW64_32KEY]:
+        try:
+            reg_key = winreg.OpenKey(hive, key, 0, winreg.KEY_READ | mask)
+        except WindowsError:
+            continue
+        i = 0
+        subkeynames = []
+        while True:
+            try:
+                subkeyname = winreg.EnumKey(reg_key, i)
+                subkeynames.append(subkeyname)
+            except WindowsError:
+                break
+            i += 1
+        for n in subkeynames:
+            try:
+                subkey = winreg.OpenKey(reg_key, n)
+                subkeys.append((n, subkey))
+            except WindowsError:
+                continue
+    return subkeys
 
 def get_version(basedir):
     mkdir_p(basedir)
@@ -869,6 +893,38 @@ MSVC_RUNTIME = {
     'msvc2013-win64': ('8bf41ba9eef02d30635a10433817dbb6886da5a2', 'http://download.microsoft.com/download/2/E/6/2E61CFA4-993B-4DD4-91DA-3737CD5CD6E3/vcredist_x64.exe')
 }
 
+def check_ruby_bin_dir(bin_dir):
+    ruby_exe = os.path.join(bin_dir, 'ruby.exe')
+    if not os.path.exists(ruby_exe):
+        return False
+    ruby = get_output(ruby_exe, '--version')
+    return ruby and 'ruby' in ruby
+
+def windows_find_ruby():
+    ruby = get_output('ruby', '--version')
+    if ruby and 'ruby' in ruby:
+        return (True, None)
+    # The ruby installer on Windows has some bad behaviour where
+    # it installs ruby local to the user even though it's installed
+    # somewhere that all users can access (usually c:\ruby<version>-<arch>)
+    # We usually won't have access to other users' HKCU if we are not elevated,
+    # so just check our own HKCU
+    for (_, key) in get_registry_subkeys(r'SOFTWARE\RubyInstaller\MRI', hive=winreg.HKEY_CURRENT_USER):
+        try:
+            installLocation = winreg.QueryValueEx(key, 'InstallLocation')[0]
+        except WindowsError:
+            continue
+        rubyBin = os.path.join(installLocation, 'bin')
+        if check_ruby_bin_dir(rubyBin):
+            return (False, rubyBin)
+    # Try looking in standard install location c:\ruby<version>-<arch>
+    sysdrive = os.getenv("SystemDrive")+'\\'
+    for rubydir in (p for p in os.listdir(sysdrive) if p.lower().startswith('ruby')):
+        rubyBin = os.path.join(sysdrive, rubydir, 'bin')
+        if check_ruby_bin_dir(rubyBin):
+            return (False, rubyBin)
+    return None
+
 def check_msvc(config):
     version, arch = rchop(config, '-dbg').split('-')
     env_var = MSVC_LOCATION[version]
@@ -890,8 +946,8 @@ def check_msvc(config):
     if not perl or 'perl5' not in perl:
         error("perl does not seem to be installed.")
 
-    ruby = get_output('ruby', '--version')
-    if not ruby or 'ruby' not in ruby:
+    ruby = windows_find_ruby()
+    if not ruby:
         error("ruby does not seem to be installed.")
 
     nsis = get_registry_value(r'SOFTWARE\NSIS')
@@ -930,6 +986,9 @@ def build_msvc(config, basedir):
     cygdest = get_output(os.path.join(cygwin, 'bin', 'cygpath.exe'), '-ua', libdir)
     cflags  = config.endswith('-dbg') and '/MDd /Zi' or '/MD'
     icu_dbg = config.endswith('-dbg') and '--enable-debug --disable-release' or ''
+    _, ruby_bin_dir = windows_find_ruby()
+    if ruby_bin_dir:
+        path = r'%s;%s' % (path, ruby_bin_dir)
     os.environ['PATH'] = r'%s;%s\bin' % (path, cygwin)
     build_deplibs(config, basedir, cygwin=cygwin, cygdest=cygdest, cflags=cflags, icu_dbg=icu_dbg)
 
