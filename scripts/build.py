@@ -31,6 +31,8 @@ BUILDERS = {
     'source-tarball':        'source_tarball',
     'msvc2013-win32':        'msvc',
     'msvc2013-win64':        'msvc',
+    'msvc2015-win32':        'msvc',
+    'msvc2015-win64':        'msvc',
     'setup-mingw-w64':       'setup_mingw_w64',
     'setup-schroot-generic': 'setup_schroot',
     'setup-schroot-centos7': 'setup_schroot',
@@ -420,14 +422,18 @@ DEPENDENT_LIBS = {
 
     'icu4c': {
         'order' : 6,
-        'url' : 'http://download.icu-project.org/files/icu4c/55.1/icu4c-55_1-src.tgz',
-        'sha1': '3bb301c11be0e239c653e8aa2925c53f6f4dc88d',
+        'url' : 'http://download.icu-project.org/files/icu4c/57.1/icu4c-57_1-src.tgz',
+        'sha1': 'ca5f5cc584f45e87bf56bf8b7f9244d12a5ada67',
         'build' : {
             'msvc*': {
                 'result': ['include/unicode/ucnv.h', 'include/unicode/ustring.h', ('lib/sicuin.lib', 'lib/sicuind.lib'), ('lib/sicudt.lib', 'lib/sicudtd.lib')],
                 'commands': [
                     'bash source/runConfigureICU %(icu_dbg)s Cygwin/MSVC --enable-static --disable-shared --disable-tests --disable-samples --prefix=%(cygdest)s',
-                    'make', 'make install'
+                    'make',
+                    # For some strange reason make install fails with:
+                    #   /usr/bin/install: cannot create regular file '<path>/WKHTML~1/STATIC~1/MSVC20~2/deplibs/lib/sicudtd.lib': No such file or directory
+                    # - however running it in a login shell seems to make the problem go away
+                    r'pwd | bash --login -c "read d; cd \"$d\"; make install"'
                 ]
             },
             'mingw-w64-cross-win*': {
@@ -862,11 +868,14 @@ def build_source_tarball(config, basedir):
 # --------------------------------------------------------------- MSVC (2013 only)
 
 MSVC_LOCATION = {
-    'msvc2013': 'VS120COMNTOOLS'
+    'msvc2013': 'VS120COMNTOOLS',
+	'msvc2015': 'VS140COMNTOOLS'
 }
 MSVC_RUNTIME = {
     'msvc2013-win32': ('df7f0a73bfa077e483e51bfb97f5e2eceedfb6a3', 'http://download.microsoft.com/download/2/E/6/2E61CFA4-993B-4DD4-91DA-3737CD5CD6E3/vcredist_x86.exe'),
-    'msvc2013-win64': ('8bf41ba9eef02d30635a10433817dbb6886da5a2', 'http://download.microsoft.com/download/2/E/6/2E61CFA4-993B-4DD4-91DA-3737CD5CD6E3/vcredist_x64.exe')
+    'msvc2013-win64': ('8bf41ba9eef02d30635a10433817dbb6886da5a2', 'http://download.microsoft.com/download/2/E/6/2E61CFA4-993B-4DD4-91DA-3737CD5CD6E3/vcredist_x64.exe'),
+	'msvc2015-win32': ('bfb74e498c44d3a103ca3aa2831763fb417134d1', 'http://download.microsoft.com/download/9/3/F/93FCF1E7-E6A4-478B-96E7-D4B285925B00/vc_redist.x86.exe'),
+	'msvc2015-win64': ('3155cb0f146b927fcc30647c1a904cd162548c8c', 'http://download.microsoft.com/download/9/3/F/93FCF1E7-E6A4-478B-96E7-D4B285925B00/vc_redist.x64.exe')
 }
 
 def check_msvc(config):
