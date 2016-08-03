@@ -27,23 +27,12 @@ namespace wkhtmltopdf {
 */
 
 /*!
-  \class ProgressFeedback
-  \brief Produce progress feedback on the terminal
-*/
-
-#define S(t) ((t).toLocal8Bit().constData())
-
-/*!
   \brief Write out a warning message
   \param message The warning message
 */
 void ProgressFeedback::warning(const QString &message) {
 	if (quiet) return;
-	fprintf(stderr, "Warning: %s",S(message));
-	for (int l = 9 + message.size(); l < lw; ++l)
-		fprintf(stderr, " ");
-	fprintf(stderr, "\n");
-	lw = 0;
+    qDebug() << "Warning: " << message;
 }
 
 /*!
@@ -51,11 +40,7 @@ void ProgressFeedback::warning(const QString &message) {
   \param message The error message
 */
 void ProgressFeedback::error(const QString &message) {
-	fprintf(stderr, "Error: %s",S(message));
-	for (int l = 7 + message.size(); l < lw; ++l)
-		fprintf(stderr, " ");
-	fprintf(stderr, "\n");
-	lw = 0;
+    qDebug() << "Error: " << message;
 }
 
 /*!
@@ -63,16 +48,10 @@ void ProgressFeedback::error(const QString &message) {
 */
 void ProgressFeedback::phaseChanged() {
 	if (quiet) return;
-	QString desc=converter.phaseDescription();
-	fprintf(stderr, "%s", S(desc));
-
-	int l = desc.size();
+    QString desc=converter.phaseDescription();
+    qDebug() << desc;
 	if (converter.currentPhase() < converter.phaseCount() -1)
-		l += fprintf(stderr," (%d/%d)",converter.currentPhase()+1,converter.phaseCount()-1);
-	for (; l < lw; ++l)
-		fprintf(stderr, " ");
-	fprintf(stderr, "\n");
-	lw = 0;
+        qDebug() << QString("(%1/%2)").arg(converter.currentPhase()+1).arg(converter.phaseCount()-1);
 }
 
 /*!
@@ -80,25 +59,22 @@ void ProgressFeedback::phaseChanged() {
 */
 void ProgressFeedback::progressChanged(int progress) {
 	if (quiet) return;
-	fprintf(stderr, "[");
+    QString s = "[";
 	int w=60;
 	progress *= w;
 	progress /= 100;
 	for (int i=0; i < w; ++i) {
-		if (i < progress) fprintf(stderr, "=");
-		else if (i == progress) fprintf(stderr, ">");
-		else fprintf(stderr, " ");
+        if (i < progress) s.append("=");
+        else if (i == progress) s.append(">");
+        else s.append(" ");
 	}
-	fprintf(stderr, "]");
-	fprintf(stderr, " %s", S(converter.progressString()));
-	int l=1+w+2+converter.progressString().size();
-	for (int i=l; i < lw; ++i) fprintf(stderr, " ");
-	lw = l;
-	fprintf(stderr, "\r");
+    s.append("]");
+    s.append(converter.progressString());
+    qDebug() << s;
 }
 
 ProgressFeedback::ProgressFeedback(bool q, Converter & _):
-    quiet(q), converter(_), lw(0) {
+    quiet(q), converter(_) {
     connect(&converter, SIGNAL(warning(const QString &)), this, SLOT(warning(const QString &)));
 	connect(&converter, SIGNAL(error(const QString &)), this, SLOT(error(const QString &)));
 	connect(&converter, SIGNAL(phaseChanged()), this, SLOT(phaseChanged()));

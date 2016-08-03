@@ -28,7 +28,6 @@ class ProgressFeedback: public QObject {
 private:
 	bool quiet;
 	Converter & converter;
-	int lw;
 public slots:
 	void warning(const QString &message);
 	void error(const QString &message);
