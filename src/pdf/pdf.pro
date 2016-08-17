@@ -25,7 +25,7 @@ INCLUDEPATH += . ../shared
 
 unix {
     man.path=$$INSTALLBASE/share/man/man1
-    man.extra=LD_LIBRARY_PATH=../../bin/ ../../bin/wkhtmltopdf --manpage | gzip > $(INSTALL_ROOT)/share/man/man1/wkhtmltopdf.1.gz
+    man.extra=LD_LIBRARY_PATH=../../bin/ ../../bin/wkhtmltopdf --manpage | gzip > $(INSTALL_ROOT)$$INSTALLBASE/share/man/man1/wkhtmltopdf.1.gz
 
     QMAKE_EXTRA_TARGETS += man
     INSTALLS += man
