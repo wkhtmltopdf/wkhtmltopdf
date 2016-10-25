@@ -53,6 +53,21 @@ struct DLL_PUBLIC LoadGlobal {
 	LoadGlobal();
 	//! Path of the cookie jar file
 	QString cookieJar;
+
+	//! String containing the ssl client cert private key in OpenSSL PEM format
+	QString clientSslKeyString;
+
+	//! Path to the ssl client cert private key in OpenSSL PEM format
+	QString clientSslKeyPath;
+
+	//! Password to ssl client cert private key
+	QString clientSslKeyPassword;
+
+	//! String containing the ssl client cert public key in OpenSSL PEM format, optionally followed by intermediate ca and trusted certs
+	QString clientSslCrtString;
+
+	//! Path to the ssl client cert public key in OpenSSL PEM format, optionally followed by intermediate ca and trusted certs
+	QString clientSslCrtPath;
 };
 
 struct DLL_PUBLIC LoadPage {

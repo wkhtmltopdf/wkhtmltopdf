@@ -31,6 +31,11 @@
 #include <QWebPage>
 #include <QWebSettings>
 #include <QXmlQuery>
+#include <QSslCertificate>
+#include <QSslKey>
+#include <QList>
+#include <QByteArray>
+#include <QSslConfiguration>
 #include <algorithm>
 #include <qapplication.h>
 #include <qfileinfo.h>
@@ -45,6 +50,7 @@ using namespace wkhtmltopdf::settings;
 
 #define STRINGIZE_(x) #x
 #define STRINGIZE(x) STRINGIZE_(x)
+#define S(t) ((t).toLocal8Bit().constData())
 
 const qreal PdfConverter::millimeterToPointMultiplier = 2.83464567;
 
@@ -131,6 +137,52 @@ PdfConverterPrivate::PdfConverterPrivate(PdfGlobal & s, PdfConverter & o) :
 		int height = viewportSizeList.last().toInt();
 		viewportSize = QSize(width,height);
 	}
+
+    if(settings.load.clientSslKeyString != NULL || settings.load.clientSslKeyPath != NULL){
+        bool success = true;
+        QSslConfiguration sslConfig = QSslConfiguration::defaultConfiguration();
+        if(settings.load.clientSslKeyPassword == NULL){
+            fprintf(stderr, "Client ssl key can not be loaded without password. Skipping ssl config.");
+        }else if(settings.load.clientSslKeyString != NULL){
+            QSslKey key(settings.load.clientSslKeyString.toUtf8(), QSsl::Rsa, QSsl::Pem, QSsl::PrivateKey, settings.load.clientSslKeyPassword.toUtf8());
+             sslConfig.setPrivateKey(key);
+        }else{
+            //key not supplied as string use path
+            QFile keyFile(settings.load.clientSslKeyPath);
+            success = keyFile.open(QFile::ReadOnly);
+            if(!success){
+                 fprintf(stderr, "Client ssl key file coult not be loaded. Skipping ssl config.");
+            }
+            QSslKey key(&keyFile, QSsl::Rsa, QSsl::Pem, QSsl::PrivateKey, settings.load.clientSslKeyPassword.toUtf8());
+            sslConfig.setPrivateKey(key);
+            keyFile.close();
+        }
+        if(success){
+             if(settings.load.clientSslCrtString == NULL && settings.load.clientSslCrtPath == NULL){
+                 success = false;
+                 fprintf(stderr, "Client ssl cert is required when a ssl client key has been supplied. Skipping ssl config.");
+             }else if(settings.load.clientSslCrtString != NULL){
+                 QList<QSslCertificate> chainCerts =
+                         QSslCertificate::fromData(settings.load.clientSslCrtString.toUtf8(), QSsl::Pem);
+                 QList<QSslCertificate> cas =  sslConfig.caCertificates();
+                 cas.append(chainCerts);
+                 sslConfig.setLocalCertificate(chainCerts.first());
+                 sslConfig.setCaCertificates(cas);
+             }else{
+                //key not supplied as string use path
+                 QList<QSslCertificate> chainCerts =
+                         QSslCertificate::fromPath(settings.load.clientSslCrtPath.toLatin1(),  QSsl::Pem, QRegExp::FixedString);
+                 QList<QSslCertificate> cas =  sslConfig.caCertificates();
+                 cas.append(chainCerts);
+                 sslConfig.setLocalCertificate(chainCerts.first());
+                 sslConfig.setCaCertificates(cas);
+             }
+
+             if(success){
+                 QSslConfiguration::setDefaultConfiguration(sslConfig);
+             }
+        }
+    }
 }
 
 PdfConverterPrivate::~PdfConverterPrivate() {

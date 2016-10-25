@@ -174,6 +174,11 @@ void CommandLineParserBase::addGlobalLoadArgs(LoadGlobal & s) {
 	qthack(false);
 
     addarg("cookie-jar", 0, "Read and write cookies from and to the supplied cookie jar file", new QStrSetter(s.cookieJar, "path") );
+    addarg("ssl-key-string",0,"String containing the ssl client cert private key in OpenSSL PEM format", new QStrSetter(s.clientSslKeyString, "PEM String"));
+    addarg("ssl-key-path",0,"Path to ssl client cert private key in OpenSSL PEM format", new QStrSetter(s.clientSslKeyPath, "path"));
+    addarg("ssl-key-password",0,"Password to ssl client cert private key", new QStrSetter(s.clientSslKeyPassword, "password"));
+    addarg("ssl-crt-string",0,"String containing the ssl client cert public key in OpenSSL PEM format, optionally followed by intermediate ca and trusted certs", new QStrSetter(s.clientSslCrtString, "PEM String"));
+    addarg("ssl-crt-path",0,"Path to the ssl client cert public key in OpenSSL PEM format, optionally followed by intermediate ca and trusted certs", new QStrSetter(s.clientSslCrtPath, "path"));
 }
 
 void CommandLineParserBase::addWebArgs(Web & s) {

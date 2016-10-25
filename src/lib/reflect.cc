@@ -52,6 +52,11 @@ ReflectClass::~ReflectClass() {
 
 ReflectImpl<LoadGlobal>::ReflectImpl(LoadGlobal & c) {
 	WKHTMLTOPDF_REFLECT(cookieJar);
+	WKHTMLTOPDF_REFLECT(clientSslKeyString);
+	WKHTMLTOPDF_REFLECT(clientSslKeyPath);
+	WKHTMLTOPDF_REFLECT(clientSslKeyPassword);
+	WKHTMLTOPDF_REFLECT(clientSslCrtString);
+	WKHTMLTOPDF_REFLECT(clientSslCrtPath);
 }
 
 ReflectImpl<LoadPage>::ReflectImpl(LoadPage & c) {
