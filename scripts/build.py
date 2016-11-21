@@ -271,8 +271,8 @@ enabled=1
 DEPENDENT_LIBS = {
     'openssl': {
         'order' : 1,
-        'url'   : 'https://openssl.org/source/openssl-1.0.2h.tar.gz',
-        'sha1'  : '577585f5f5d299c44dd3c993d3c0ac7a219e4949',
+        'url'   : 'https://openssl.org/source/openssl-1.0.2j.tar.gz',
+        'sha1'  : 'bdfbdb416942f666865fa48fe13c2d0e588df54f',
         'build' : {
             'msvc*-win32*': {
                 'result': ['include/openssl/ssl.h', 'lib/ssleay32.lib', 'lib/libeay32.lib'],
@@ -328,13 +328,14 @@ DEPENDENT_LIBS = {
 
     'libpng': {
         'order' : 3,
-        'url' : 'http://downloads.sourceforge.net/libpng/libpng-1.2.56.tar.gz',
-        'sha1': '9619a20e1bfc34edfbc4931a632a2d6a2c8a9fbc',
+        'url' : 'http://downloads.sourceforge.net/libpng/libpng-1.6.26.tar.gz',
+        'sha1': '3b2652f89b8fdcb6c29e9ed7642dfcfc0bbcf17e',
         'build' : {
             'msvc*': {
                 'result': {
                     'include/png.h'       : 'png.h',
                     'include/pngconf.h'   : 'pngconf.h',
+                    'include/pnglibconf.h': 'pnglibconf.h',
                     'lib/libpng.lib'      : 'libpng.lib'
                 },
                 'replace': [
@@ -347,6 +348,7 @@ DEPENDENT_LIBS = {
                 'result': {
                     'include/png.h'       : 'png.h',
                     'include/pngconf.h'   : 'pngconf.h',
+                    'include/pnglibconf.h': 'pnglibconf.h',
                     'lib/libpng.a'        : 'libpng.a'
                 },
                 'replace': [
