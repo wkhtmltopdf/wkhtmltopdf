@@ -241,10 +241,10 @@ LINUX_SCHROOT_SETUP = {
         'packaging_tool'    : 'yum',
         'build_arch'        : ['amd64', 'i386'],
         'compression'       : 'bzip2',
-        'wrapper_command'   : 'scl enable devtoolset-3 python27 -- ',
+        'wrapper_command'   : 'scl enable devtoolset-3 python27 git19 -- ',
         'runtime_packages'  : 'glibc libstdc++ zlib openssl freetype fontconfig '\
                               'libX11 libXext libXrender xorg-x11-fonts-Type1 xorg-x11-fonts-75dpi',
-        'build_packages'    : 'scl-utils devtoolset-3-gcc-c++ python27 ruby perl git make gzip diffutils gperf bison flex '\
+        'build_packages'    : 'scl-utils devtoolset-3-gcc-c++ python27 git19 ruby perl git make gzip diffutils gperf bison flex '\
                               'zlib-devel openssl-devel freetype-devel fontconfig-devel '\
                               'libX11-devel libXrender-devel libXext-devel',
         'rinse'             : ('centos-6', """
