@@ -1,4 +1,4 @@
-v0.12.4 (unreleased)
+v0.12.4 (2016-11-22)
 --------------------
 * add support for building with VS2015
 * update OpenSSL to 1.0.2j and libpng to 1.6.26
