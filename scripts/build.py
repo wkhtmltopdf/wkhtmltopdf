@@ -449,7 +449,7 @@ def get_registry_value(key, value=None):
 
 def get_version(basedir):
     mkdir_p(basedir)
-    text = open(os.path.join(basedir, '..', 'VERSION'), 'r').read()
+    text = open(os.path.join(basedir, '..', 'VERSION'), 'r').read().strip()
     if '-' not in text:
         return (text, text)
     version = text[:text.index('-')]
