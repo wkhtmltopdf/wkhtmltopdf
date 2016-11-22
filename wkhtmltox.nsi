@@ -36,11 +36,11 @@ Function ${un}DeleteFiles
   Delete "$INSTDIR\libeay32.dll"
   Delete "$INSTDIR\wkhtmltopdf.exe"
   Delete "$INSTDIR\wkhtmltoimage.exe"
-; remove as per current installer layout
   Delete "$INSTDIR\bin\libgcc_s_sjlj-1.dll"
   Delete "$INSTDIR\bin\libgcc_s_seh-1.dll"
   Delete "$INSTDIR\bin\libstdc++-6.dll"
   Delete "$INSTDIR\bin\libwinpthread-1.dll"
+; remove as per current installer layout
   Delete "$INSTDIR\bin\wkhtmltoimage.exe"
   Delete "$INSTDIR\bin\wkhtmltopdf.exe"
   Delete "$INSTDIR\bin\wkhtmltox.dll"
@@ -87,9 +87,6 @@ skip_vcruntime:
   File static-build\${TARGET}\app\bin\wkhtmltoimage.exe
   File static-build\${TARGET}\app\bin\wkhtmltopdf.exe
   File static-build\${TARGET}\app\bin\wkhtmltox.dll
-!ifdef MINGW
-  File static-build\${TARGET}\app\bin\lib*.dll
-!endif
 
   SetOutPath "$INSTDIR\lib"
   File static-build\${TARGET}\app\bin\wkhtmltox.lib
