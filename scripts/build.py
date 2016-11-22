@@ -35,23 +35,9 @@ BUILDERS = {
     'msvc2015-win64':        'msvc',
     'setup-mingw-w64':       'setup_mingw_w64',
     'setup-schroot-generic': 'setup_schroot',
-    'setup-schroot-centos7': 'setup_schroot',
-    'setup-schroot-wheezy':  'setup_schroot',
-    'setup-schroot-jessie':  'setup_schroot',
-    'setup-schroot-trusty':  'setup_schroot',
-    'setup-schroot-precise': 'setup_schroot',
     'update-all-schroots':   'update_schroot',
     'linux-generic-i386':    'linux_generic',
     'linux-generic-amd64':   'linux_generic',
-    'centos7-amd64':         'linux_schroot',
-    'wheezy-i386':           'linux_schroot',
-    'wheezy-amd64':          'linux_schroot',
-    'jessie-i386':           'linux_schroot',
-    'jessie-amd64':          'linux_schroot',
-    'trusty-i386':           'linux_schroot',
-    'trusty-amd64':          'linux_schroot',
-    'precise-i386':          'linux_schroot',
-    'precise-amd64':         'linux_schroot',
     'mingw-w64-cross-win32': 'mingw64_cross',
     'mingw-w64-cross-win64': 'mingw64_cross',
     'posix-local':           'posix_local',
@@ -172,70 +158,6 @@ QT_CONFIG = {
 }
 
 LINUX_SCHROOT_SETUP = {
-    'wheezy': {
-        'title'             : 'Debian Wheezy',
-        'packaging_tool'    : 'apt',
-        'build_arch'        : ['amd64', 'i386'],
-        'compression'       : 'xz',
-        'runtime_packages'  : 'libc6 libstdc++6 zlib1g libpng12-0 libjpeg62 '\
-                              'libssl1.0.0 libfreetype6 libicu48 fontconfig '\
-                              'libx11-6 libxext6 libxrender1 libxcb1 xfonts-base xfonts-75dpi',
-        'build_packages'    : 'xz-utils ruby python perl gperf bison flex git '\
-                              'zlib1g-dev libpng12-dev libjpeg62-dev libssl-dev libfreetype6-dev libicu-dev libfontconfig1-dev '\
-                              'libx11-dev libxext-dev libxrender-dev libxcb1-dev',
-        'debootstrap'       : ('wheezy', 'http://ftp.us.debian.org/debian/', """
-                                    deb http://ftp.debian.org/debian/ wheezy         main contrib non-free
-                                    deb http://ftp.debian.org/debian/ wheezy-updates main contrib non-free
-                                    deb http://security.debian.org/   wheezy/updates main contrib non-free""")
-    },
-    'jessie': {
-        'title'             : 'Debian Jessie',
-        'packaging_tool'    : 'apt',
-        'build_arch'        : ['amd64', 'i386'],
-        'compression'       : 'xz',
-        'runtime_packages'  : 'libc6 libstdc++6 zlib1g libpng12-0 libjpeg62-turbo '\
-                              'libssl1.0.0 libfreetype6 libicu52 fontconfig '\
-                              'libx11-6 libxext6 libxrender1 libxcb1 xfonts-base xfonts-75dpi',
-        'build_packages'    : 'xz-utils ruby python perl gperf bison flex git '\
-                              'zlib1g-dev libpng12-dev libjpeg62-turbo-dev libssl-dev libfreetype6-dev libicu-dev libfontconfig1-dev '\
-                              'libx11-dev libxext-dev libxrender-dev libxcb1-dev',
-        'debootstrap'       : ('jessie', 'http://ftp.us.debian.org/debian/', """
-                                    deb http://ftp.debian.org/debian/ jessie         main contrib non-free
-                                    deb http://ftp.debian.org/debian/ jessie-updates main contrib non-free
-                                    deb http://security.debian.org/   jessie/updates main contrib non-free""")
-    },
-    'trusty': {
-        'title'             : 'Ubuntu Trusty',
-        'packaging_tool'    : 'apt',
-        'build_arch'        : ['amd64', 'i386'],
-        'compression'       : 'xz',
-        'runtime_packages'  : 'libc6 libstdc++6 zlib1g libpng12-0 libjpeg-turbo8 '\
-                              'libssl1.0.0 libfreetype6 libicu52 fontconfig '\
-                              'libx11-6 libxext6 libxrender1 libxcb1 xfonts-base xfonts-75dpi',
-        'build_packages'    : 'xz-utils ruby python perl gperf bison flex git '\
-                              'zlib1g-dev libpng12-dev libjpeg-turbo8-dev libssl-dev libfreetype6-dev libicu-dev libfontconfig1-dev '\
-                              'libx11-dev libxext-dev libxrender-dev libxcb1-dev',
-        'debootstrap'       : ('trusty', 'http://archive.ubuntu.com/ubuntu/', """
-                                    deb http://archive.ubuntu.com/ubuntu/ trusty          main restricted universe multiverse
-                                    deb http://archive.ubuntu.com/ubuntu/ trusty-updates  main restricted universe multiverse
-                                    deb http://archive.ubuntu.com/ubuntu/ trusty-security main restricted universe multiverse""")
-    },
-    'precise': {
-        'title'             : 'Ubuntu Precise',
-        'packaging_tool'    : 'apt',
-        'build_arch'        : ['amd64', 'i386'],
-        'compression'       : 'xz',
-        'runtime_packages'  : 'libc6 libstdc++6 zlib1g libpng12-0 libjpeg-turbo8 '\
-                              'libssl1.0.0 libfreetype6 libicu48 fontconfig '\
-                              'libx11-6 libxext6 libxrender1 libxcb1 xfonts-base xfonts-75dpi',
-        'build_packages'    : 'xz-utils ruby python perl gperf bison flex git '\
-                              'zlib1g-dev libpng12-dev libjpeg-turbo8-dev libssl-dev libfreetype6-dev libicu-dev libfontconfig1-dev '\
-                              'libx11-dev libxext-dev libxrender-dev libxcb1-dev',
-        'debootstrap'       : ('precise', 'http://archive.ubuntu.com/ubuntu/', """
-                                    deb http://archive.ubuntu.com/ubuntu/ precise          main restricted universe multiverse
-                                    deb http://archive.ubuntu.com/ubuntu/ precise-updates  main restricted universe multiverse
-                                    deb http://archive.ubuntu.com/ubuntu/ precise-security main restricted universe multiverse""")
-    },
     'generic': {
         'title'             : 'Generic (based on CentOS 6)',
         'packaging_tool'    : 'yum',
@@ -253,19 +175,7 @@ name=Scientific Linux CERN (SLC6) - SCL addons
 baseurl=http://linuxsoft.cern.ch/cern/scl/slc6X/$basearch/yum/scl/
 gpgcheck=0
 enabled=1
-""")},
-    'centos7': {
-        'title'             : 'CentOS 7',
-        'packaging_tool'    : 'yum',
-        'build_arch'        : ['amd64'],
-        'compression'       : 'xz',
-        'runtime_packages'  : 'glibc libstdc++ zlib libpng libjpeg openssl freetype icu fontconfig '\
-                              'libX11 libXext libXrender xorg-x11-fonts-Type1 xorg-x11-fonts-75dpi',
-        'build_packages'    : 'gcc gcc-c++ binutils python ruby perl git make diffutils gperf bison flex '\
-                              'zlib-devel libpng-devel libjpeg-turbo-devel openssl-devel freetype-devel libicu-devel fontconfig-devel '\
-                              'libX11-devel libXrender-devel libXext-devel',
-        'rinse'             : ('centos-7', '')
-    }
+""")}
 }
 
 DEPENDENT_LIBS = {
