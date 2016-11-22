@@ -213,7 +213,10 @@ ResourceObject::ResourceObject(MultiPageLoaderPrivate & mpl, const QUrl & u, con
 	}
 
 	webPage.setNetworkAccessManager(&networkAccessManager);
-	webPage.mainFrame()->setZoomFactor(settings.zoomFactor);
+
+	double devicePixelRatio = multiPageLoader.dpi / 96.; // The used version of WebKit always renders at 96 DPI when no zoom is applied. It does not fully support a device pixel ratio != 1 natively.
+	webPage.mainFrame()->setZoomFactor(devicePixelRatio * settings.zoomFactor); // Zoom in the page to achieve a higher DPI.
+	webPage.setDevicePixelRatio(devicePixelRatio); // Fix CSS media queries (does not affect anything else).
 }
 
 /*!
@@ -525,8 +528,8 @@ bool MultiPageLoader::copyFile(QFile & src, QFile & dst) {
 	return true;
 }
 
-MultiPageLoaderPrivate::MultiPageLoaderPrivate(const settings::LoadGlobal & s, MultiPageLoader & o):
-	outer(o), settings(s) {
+MultiPageLoaderPrivate::MultiPageLoaderPrivate(const settings::LoadGlobal & s, int dpi_, MultiPageLoader & o):
+	outer(o), settings(s), dpi(dpi_) {
 
 	cookieJar = new MyCookieJar();
 
@@ -588,8 +591,8 @@ void MultiPageLoaderPrivate::fail() {
   \brief Construct a multipage loader object, load settings read from the supplied settings
   \param s The settings to be used while loading pages
 */
-MultiPageLoader::MultiPageLoader(settings::LoadGlobal & s, bool mainLoader):
-	d(new MultiPageLoaderPrivate(s, *this)) {
+MultiPageLoader::MultiPageLoader(settings::LoadGlobal & s, int dpi, bool mainLoader):
+	d(new MultiPageLoaderPrivate(s, dpi, *this)) {
 	d->isMainLoader = mainLoader;
 }
 

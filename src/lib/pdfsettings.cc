@@ -372,7 +372,7 @@ PdfGlobal::PdfGlobal():
 	orientation(QPrinter::Portrait),
 	colorMode(QPrinter::Color),
 	resolution(QPrinter::HighResolution),
-	dpi(-1),
+	dpi(96),
 	pageOffset(0),
 	copies(1),
 	collate(true),
