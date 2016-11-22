@@ -6,8 +6,10 @@ v0.12.4 (unreleased)
 * **[qt]** allow screen size in headless mode to be overriden via environment variables
 * **[qt]** fix compilation failure on OS X 10.11 due to usage of deprecated APIs
 * **#2004**: **[qt]** fix rendering of form fields in PDF output
+* **#2353**: **[qt]** context.setLineDash doesn't work in Canvas
 * **#2416**: make background transparent by default for headers/footers
 * **#2673**: fail immediately in the build script if the Qt source is not available
+* **#2684**: **[qt]** fix crash in WebKit (RenderBlock::removeFloatingObjectsBelow)
 * **#2885**: enforce UTF-8 encoding for input strings in the API
 * **#2887**: improve docs to make examples of header/footer variables more explicit
 
