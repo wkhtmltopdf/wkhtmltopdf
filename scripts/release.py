@@ -19,27 +19,12 @@
 
 import os, sys, platform, subprocess, build
 
-def get_build_targets():
-    map = {}
-    for k, v in build.BUILDERS.iteritems():
-        if not v in map:
-            map[v] = []
-        map[v].append(k)
-        map[v].sort()
-    return map
-
-def get_targets():
-    if platform.system() == 'Windows':
-        return ['msvc2013-win32', 'msvc2013-win64']
-    elif platform.system() == 'Darwin':
-        builders = ['osx']
-    else:
-        builders = ['source_tarball', 'linux_schroot', 'mingw64_cross']
-
-    targets, map = [], get_build_targets()
-    for builder in builders:
-        targets.extend(map[builder])
-    return targets
+PLATFORM_TARGETS = {
+    'Windows': ['msvc2015-win64', 'msvc2015-win32'],
+    'Darwin':  ['osx-cocoa-x86-64', 'osx-carbon-i386'],
+    'Linux':   ['source-tarball', 'linux-generic-amd64', 'linux-generic-i386',
+                'mingw-w64-cross-win64', 'mingw-w64-cross-win32']
+}
 
 def build_target(basedir, target):
     build.message('*************** building: %s\n\n' % target)
@@ -73,7 +58,7 @@ def main():
     build.shell('git submodule update')
 
     status = {}
-    for target in get_targets():
+    for target in PLATFORM_TARGETS.get(platform.system(), []):
         if not build_target(basedir, target):
             status[target] = 'failed'
             continue
