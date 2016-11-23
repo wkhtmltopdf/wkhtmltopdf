@@ -33,7 +33,7 @@ and [non standard home directories](https://github.com/wkhtmltopdf/wkhtmltopdf/i
 (i.e. not located in `/home`) are not supported -- you are advised to
 use a VM instead to build wkhtmltopdf.
 
-Building is supported only on 64-bit Debian Jessie (i.e. stable release), and
+Building is supported only on latest stable Debian/Ubuntu 64-bit, and
 the binaries are produced in a self-contained chroot environment for the
 target distribution -- you will need to first setup the build environment
 and then only you can perform the build for a 32-bit or 64-bit binary.
@@ -42,11 +42,6 @@ The following targets are currently supported:
 Target         | Setup of Build Environment                    | Building 32-bit binaries                 |  Building 64-bit binaries
 ------         | --------------------------                    | ------------------------                 |  ------------------------
 Generic        | `sudo scripts/build.py setup-schroot-generic` | `scripts/build.py linux-generic-i386`    | `scripts/build.py linux-generic-amd64`
-Debian Wheezy  | `sudo scripts/build.py setup-schroot-wheezy`  | `scripts/build.py wheezy-i386`           | `scripts/build.py wheezy-amd64`
-Debian Jessie  | `sudo scripts/build.py setup-schroot-jessie`  | `scripts/build.py jessie-i386`           | `scripts/build.py jessie-amd64`
-Ubuntu Trusty  | `sudo scripts/build.py setup-schroot-trusty`  | `scripts/build.py trusty-i386`           | `scripts/build.py trusty-amd64`
-Ubuntu Precise | `sudo scripts/build.py setup-schroot-precise` | `scripts/build.py precise-i386`          | `scripts/build.py precise-amd64`
-CentOS 7       | `sudo scripts/build.py setup-schroot-centos7` | not available                            | `scripts/build.py centos7-amd64`
 MinGW-w64      | `sudo scripts/build.py setup-mingw-w64`       | `scripts/build.py mingw-w64-cross-win32` | `scripts/build.py mingw-w64-cross-win64`
 
 The MinGW-w64 toolchain can cross-compile 32/64-bit Windows binaries from
