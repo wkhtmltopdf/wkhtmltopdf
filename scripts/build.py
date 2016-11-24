@@ -479,26 +479,6 @@ def qt_config(key, *opts):
             output.remove(arg[1+arg.index(':'):])
     return ' '.join(output)
 
-def fpm_params(cfg, ver):
-    setup  = LINUX_SCHROOT_SETUP[cfg[:cfg.index('-')]]
-    output = '--force --prefix /usr/local --category utils -s dir -C dist'
-    for key in PROJECT_SETUP:
-        output += ' --%s "%s"' % (key, PROJECT_SETUP[key])
-
-    output += ' --version "%s"' % ver
-    output += ' --package ../%s-%s_linux-%s' % (PROJECT_SETUP['name'], ver, cfg)
-    if setup['packaging_tool'] == 'apt':
-        output += '.deb -t deb --deb-compression %s' % setup['compression']
-        output += ' --provides wkhtmltopdf --conflicts wkhtmltopdf --replaces wkhtmltopdf'
-    elif setup['packaging_tool'] == 'yum':
-        output += '.rpm -t rpm --rpm-compression %s --epoch 1' % setup['compression']
-
-    for depend in setup['runtime_packages'].split():
-        output += ' --depends %s' % depend
-
-    output += ' .'
-    return output
-
 def download_file(url, sha1, dir):
     name = url.split('/')[-1]
     loc  = os.path.join(dir, name)
@@ -634,9 +614,7 @@ def check_setup_schroot(config):
 
 def build_setup_schroot(config, basedir):
     install_packages('git', 'debootstrap', 'schroot', 'rinse', 'debian-archive-keyring',
-                     'build-essential', 'ruby', 'ruby-dev', 'libffi-dev', 'tar', 'xz-utils')
-    if not get_output('which', 'fpm'):
-        shell('gem install fpm --no-ri --no-rdoc')
+                     'build-essential', 'tar', 'xz-utils')
 
     login  = os.environ.get('SUDO_USER') or get_output('logname')
     target = config.split('-', 2)[2]
@@ -668,17 +646,7 @@ def build_setup_schroot(config, basedir):
             shell('umount %s/proc' % root_dir)
             shell('umount %s/sys'  % root_dir)
 
-        if distro['packaging_tool'] == 'apt':
-            cfg = distro['debootstrap']
-            shell('debootstrap --arch=%s --variant=buildd %s %s %s' % (arch, cfg[0], root_dir, cfg[1]))
-
-            open(os.path.join(root_dir, 'etc/apt/sources.list'), 'w').write(cfg[2])
-            open(os.path.join(root_dir, 'usr/sbin/policy-rc.d'), 'w').write("#!/bin/bash\nexit 101\n")
-            do_setup('chmod a+x /usr/sbin/policy-rc.d',         # hack for Ubuntu Precise
-                     'apt-get update',
-                     'apt-get dist-upgrade --assume-yes',
-                     'apt-get install --assume-yes %s' % pkg_list)
-        elif distro['packaging_tool'] == 'yum':
+        if distro['packaging_tool'] == 'yum':
             rinse = (arch == 'i386' and 'linux32 rinse' or 'rinse')
             rinse_distro, extra_repos = distro['rinse']
             shell('%s --arch %s --distribution %s --directory %s' % (rinse, arch, rinse_distro, root_dir))
@@ -900,38 +868,6 @@ def build_mingw64_cross(config, basedir):
             (version, nsis_version(simple_version), config, rchop(config, '-dbg').split('-')[-1]))
 
 # -------------------------------------------------- Linux schroot environment
-
-def check_linux_schroot(config):
-    chroot_shell(rchop(config, '-dbg'), 'gcc --version')
-
-def build_linux_schroot(config, basedir):
-    os.chdir(os.path.realpath(os.path.join(basedir, '..')))
-    chroot_shell(rchop(config, '-dbg'), 'python scripts/build.py %s -chroot-build' % ' '.join(sys.argv[1:]))
-
-    version, simple_version = get_version(basedir)
-    os.chdir(os.path.join(basedir, config))
-    shell('fpm %s' % fpm_params(config, version))
-
-def chroot_build_linux_schroot(config, basedir):
-    version, simple_version = get_version(basedir)
-
-    qtdir  = os.path.join(basedir, config, 'qt')
-    mkdir_p(qtdir)
-
-    build_qt(qtdir, 'make -j%d' % CPU_COUNT,
-        '%s/../qt/configure %s' % (basedir, qt_config('posix', '--prefix=%s' % qtdir)))
-
-    app    = os.path.join(basedir, config, 'app')
-    dist   = os.path.join(basedir, config, 'dist')
-    mkdir_p(app)
-    mkdir_p(dist)
-    os.chdir(app)
-    shell('rm -f bin/*')
-
-    os.environ['WKHTMLTOX_VERSION'] = version
-    os.environ['XZ_OPT']            = '-9'
-    shell('%s/bin/qmake %s/../wkhtmltopdf.pro' % (qtdir, basedir))
-    shell('make install INSTALL_ROOT=%s' % dist)
 
 def check_linux_generic(config):
     chroot_env = ('amd64' in config) and 'generic-amd64' or 'generic-i386'
