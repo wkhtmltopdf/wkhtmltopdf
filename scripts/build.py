@@ -139,6 +139,8 @@ QT_CONFIG = {
     ],
 
     'mingw-w64-cross' : [
+        'remove:-static',
+        '-shared',
         '-silent',                  # perform a silent build
         '-openssl-linked',          # static linkage for OpenSSL
         '-no-reduce-exports',
@@ -203,7 +205,7 @@ DEPENDENT_LIBS = {
             'mingw-w64-cross-win*': {
                 'result': ['include/openssl/ssl.h', 'lib/libssl.a', 'lib/libcrypto.a'],
                 'commands': [
-                    'perl Configure --openssldir=%(destdir)s --cross-compile-prefix=%(mingw_w64)s- no-shared no-asm mingw64',
+                    'perl Configure --openssldir=%(destdir)s --cross-compile-prefix=%(mingw_w64)s- shared no-asm mingw64',
                     'make',
                     'make install_sw']
             }
@@ -226,9 +228,10 @@ DEPENDENT_LIBS = {
             },
             'mingw-w64-cross-win*': {
                 'result': {
+                    'bin/zlib1.dll'  : 'zlib1.dll',
                     'include/zlib.h' : 'zlib.h',
                     'include/zconf.h': 'zconf.h',
-                    'lib/libz.a'     : 'libz.a'
+                    'lib/libz.dll.a' : 'libz.dll.a'
                 },
                 'replace':  [('win32/Makefile.gcc', 'PREFIX =', 'PREFIX = %(mingw_w64)s-')],
                 'commands': ['make -f win32/Makefile.gcc']
@@ -255,19 +258,10 @@ DEPENDENT_LIBS = {
                 'commands': ['nmake /f scripts/makefile.vcwin32 libpng.lib']
             },
             'mingw-w64-cross-win*': {
-                'result': {
-                    'include/png.h'       : 'png.h',
-                    'include/pngconf.h'   : 'pngconf.h',
-                    'include/pnglibconf.h': 'pnglibconf.h',
-                    'lib/libpng.a'        : 'libpng.a'
-                },
-                'replace': [
-                    ('scripts/makefile.gcc', 'ZLIBINC = ../zlib', 'ZLIBINC = %(destdir)s/include'),
-                    ('scripts/makefile.gcc', 'ZLIBLIB = ../zlib', 'ZLIBLIB = %(destdir)s/lib'),
-                    ('scripts/makefile.gcc', 'CC = gcc', 'CC = %(mingw_w64)s-gcc'),
-                    ('scripts/makefile.gcc', 'AR_RC = ar', 'AR_RC = %(mingw_w64)s-ar'),
-                    ('scripts/makefile.gcc', 'RANLIB = ranlib', 'RANLIB = %(mingw_w64)s-ranlib')],
-                'commands': ['make -f scripts/makefile.gcc libpng.a']
+                'result': ['include/png.h', 'include/pngconf.h',  'include/pnglibconf.h',
+                           'lib/libpng.dll.a', 'bin/libpng16-16.dll'],
+                'commands': ['%(destenv)s ./configure --host=%(mingw_w64)s --disable-static --enable-shared --prefix=%(destdir)s',
+                             'make install']
             },
             'osx-carbon-i386': {
                 'result': ['include/png.h', 'include/pngconf.h', 'lib/libpng.a'],
@@ -311,9 +305,9 @@ DEPENDENT_LIBS = {
                     'nmake /f makefile.vc libjpeg.lib']
             },
             'mingw-w64-cross-win*': {
-                'result': ['include/jpeglib.h', 'include/jmorecfg.h', 'include/jerror.h', 'include/jconfig.h', 'lib/libjpeg.a'],
+                'result': ['include/jpeglib.h', 'include/jmorecfg.h', 'include/jerror.h', 'include/jconfig.h', 'lib/libjpeg.dll.a', 'bin/libjpeg-9.dll'],
                 'commands': [
-                    './configure --host=%(mingw_w64)s --disable-shared --prefix=%(destdir)s',
+                    '%(destenv)s ./configure --host=%(mingw_w64)s --disable-static --enable-shared --prefix=%(destdir)s',
                     'make install']
             },
             'osx-carbon-i386': {
@@ -384,7 +378,7 @@ EXCLUDE_SRC_TARBALL = [
 
 # --------------------------------------------------------------- HELPERS
 
-import os, sys, platform, subprocess, shutil, re, fnmatch, multiprocessing, urllib, hashlib, tarfile
+import os, sys, platform, subprocess, shutil, re, fnmatch, glob, multiprocessing, urllib, hashlib, tarfile
 
 from os.path import exists
 
@@ -534,7 +528,8 @@ def build_deplibs(config, basedir, **kwargs):
     mkdir_p(os.path.join(basedir, config))
 
     dstdir = os.path.join(basedir, config, 'deplibs')
-    vars   = {'destdir': dstdir }
+    vars   = {'destdir': dstdir,
+              'destenv': 'CPPFLAGS="-I%s/include" LDFLAGS="-L%s/lib"' % (dstdir, dstdir) }
     vars.update(kwargs)
     for lib in sorted(DEPENDENT_LIBS, key=lambda x: DEPENDENT_LIBS[x]['order']):
         cfg = None
@@ -844,10 +839,10 @@ def build_mingw64_cross(config, basedir):
     configure_args = qt_config('mingw-w64-cross',
         '--prefix=%s'   % qtdir,
         '-I%s/include'  % libdir,
-        '-L%s/lib'      % libdir,
         '-device-option CROSS_COMPILE=%s-' % MINGW_W64_PREFIX[rchop(config, '-dbg')])
 
-    os.environ['OPENSSL_LIBS'] = '-lssl -lcrypto -L%s/lib -lws2_32 -lgdi32 -lcrypt32' % libdir
+    os.environ['LDFLAGS'] = '-lwinmm -L%s/lib' % libdir
+    os.environ['OPENSSL_LIBS'] = '-lssl -lcrypto -L%s/lib -lws2_32 -lgdi32 -lcrypt32 -lwinmm' % libdir
 
     mkdir_p(qtdir)
     os.chdir(qtdir)
@@ -866,6 +861,18 @@ def build_mingw64_cross(config, basedir):
     shell('%s/bin/qmake -spec win32-g++-4.6 %s/../wkhtmltopdf.pro' % (qtdir, basedir))
     shell('make')
     shutil.copy('bin/libwkhtmltox0.a', 'bin/wkhtmltox.lib')
+    shell('rm -fr bin-dep && mkdir bin-dep')
+    for dll in ['libgcc_s_sjlj-1.dll', 'libgcc_s_seh-1.dll', 'libstdc++-6.dll']:
+        dll_path = get_output('dpkg', '-S', dll)
+        if dll_path:
+            for line in dll_path.split('\n'):
+                loc = line[1+line.index(':'):].strip()
+                if exists(loc) and MINGW_W64_PREFIX[rchop(config, '-dbg')] in loc and '-posix' not in loc:
+                    shell('cp %s bin-dep/' % loc)
+    for module in ['Core', 'Gui', 'Network', 'Svg', 'WebKit', 'XmlPatterns']:
+        shell('cp %s/bin/Qt%s4.dll bin-dep/' % (qtdir, module))
+    for loc in glob.glob('%s/bin/*.dll' % libdir):
+        shell('cp %s bin-dep/' % loc)
 
     if config.endswith('-dbg'):
         return
