@@ -1,0 +1,180 @@
+project:
+    name:         wkhtmltox
+    description:  convert HTML to PDF and various image formats using QtWebkit
+    license:      LGPLv3
+    maintainer:   Ashish Kulkarni <kulkarni.ashish@gmail.com>
+    url:          http://wkhtmltopdf.org/
+
+vagrant-builders:
+    mingw:
+        - mingw-w64-cross-win32
+        - mingw-w64-cross-win64
+    linux32:
+        - linux-generic-i386
+    linux64:
+        - linux-generic-amd64
+    osx:
+        - osx-cocoa-x86-64
+        - osx-carbon-i386
+
+qt-config:
+    common: |
+        -opensource
+        -confirm-license
+        -fast
+        -release
+        -static
+        -graphicssystem raster
+        -webkit
+        -exceptions
+        -xmlpatterns
+        -system-zlib
+        -system-libpng
+        -system-libjpeg
+        -no-libmng
+        -no-libtiff
+        -no-accessibility
+        -no-stl
+        -no-qt3support
+        -no-phonon
+        -no-phonon-backend
+        -no-opengl
+        -no-declarative
+        -no-script
+        -no-scripttools
+        -no-sql-ibase
+        -no-sql-mysql
+        -no-sql-odbc
+        -no-sql-psql
+        -no-sql-sqlite
+        -no-sql-sqlite2
+        -no-mmx
+        -no-3dnow
+        -no-sse
+        -no-sse2
+        -no-multimedia
+        -nomake demos
+        -nomake docs
+        -nomake examples
+        -nomake tools
+        -nomake tests
+        -nomake translations
+    msvc: |
+        -mp
+        -qt-style-windows
+        -qt-style-cleanlooks
+        -no-style-windowsxp
+        -no-style-windowsvista
+        -no-style-plastique
+        -no-style-motif
+        -no-style-cde
+        -openssl-linked
+    posix: |
+        -silent
+        -xrender
+        -largefile
+        -iconv
+        -openssl
+        -no-javascript-jit
+        -no-rpath
+        -no-dbus
+        -no-nis
+        -no-cups
+        -no-pch
+        -no-gtkstyle
+        -no-nas-sound
+        -no-sm
+        -no-xshape
+        -no-xinerama
+        -no-xcursor
+        -no-xfixes
+        -no-xrandr
+        -no-mitshm
+        -no-xinput
+        -no-xkb
+        -no-glib
+        -no-gstreamer
+        -no-icu
+        -no-openvg
+        -no-xsync
+        -no-audio-backend
+        -no-sse3
+        -no-ssse3
+        -no-sse4.1
+        -no-sse4.2
+        -no-avx
+        -no-neon
+    mingw-w64-cross: |
+        -silent
+        -openssl-linked
+        -no-reduce-exports
+        -no-rpath
+        -xplatform win32-g++-4.6
+    osx: |
+        -silent
+        -no-framework
+        -no-dwarf2
+        -xrender
+        -openssl
+        -largefile
+        -no-rpath
+
+dependent-libs:
+    - name : openssl
+      url  : https://openssl.org/source/openssl-1.0.2j.tar.gz
+      sha1 : bdfbdb416942f666865fa48fe13c2d0e588df54f
+      build:
+          mingw-w64-cross:
+              commands: |
+                  perl Configure --openssldir=%(destdir)s --cross-compile-prefix=%(mingw_w64)s- no-shared no-asm mingw64
+                  make
+                  make install_sw
+              verify:
+                  - include/openssl/ssl.h
+                  - lib/libssl.a
+                  - lib/libcrypto.a
+    - name : zlib
+      url  : http://downloads.sourceforge.net/libpng/zlib-1.2.8.tar.gz
+      sha1 : a4d316c404ff54ca545ea71a27af7dbc29817088
+      build:
+          mingw-w64-cross:
+              replace:
+                  win32/Makefile.gcc:
+                    'PREFIX =': 'PREFIX = %(mingw_w64)s-'
+              commands: |
+                  make -f win32/Makefile.gcc
+              install:
+                  include/zlib.h : zlib.h
+                  include/zconf.h: zconf.h
+                  lib/libz.a     : libz.a
+    - name : libpng
+      url  : http://downloads.sourceforge.net/libpng/libpng-1.6.26.tar.gz
+      sha1 : 3b2652f89b8fdcb6c29e9ed7642dfcfc0bbcf17e
+      build:
+          mingw-w64-cross:
+              commands: |
+                  %(mingw_flags)s ./configure --host=%(mingw_w64)s --disable-shared --enable-static --prefix=%(destdir)s
+                  make install
+              verify:
+                  - include/png.h
+                  - include/pngconf.h
+                  - include/pnglibconf.h
+                  - lib/libpng.a
+    - name : libjpeg
+      url  : http://ijg.org/files/jpegsrc.v9b.tar.gz
+      sha1 : 15dd867617a88abd07573e06a86ace9bdb998ac2
+      build:
+          mingw-w64-cross:
+              commands: |
+                  %(mingw_flags)s ./configure --host=%(mingw_w64)s --disable-shared --enable-static --prefix=%(destdir)s
+                  make install
+              verify:
+                  - include/jpeglib.h
+                  - include/jmorecfg.h
+                  - include/jerror.h
+                  - include/jconfig.h
+                  - lib/libjpeg.a
+
+mingw-w64-prefix:
+    mingw-w64-cross-win32: i686-w64-mingw32
+    mingw-w64-cross-win64: x86_64-w64-mingw32
