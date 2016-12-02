@@ -49,22 +49,7 @@ struct DLL_PUBLIC PostItem {
 struct DLL_PUBLIC LoadGlobal {
 	LoadGlobal();
 	//! Path of the cookie jar file
-	QString cookieJar;
-
-        //! String containing the ssl client cert private key in OpenSSL PEM format
-    	QString clientSslKeyString;
-    
-   	//! Path to the ssl client cert private key in OpenSSL PEM format
-   	QString clientSslKeyPath;
-
-	//! Password to ssl client cert private key
-	QString clientSslKeyPassword;
-    
-	//! String containing the ssl client cert public key in OpenSSL PEM format, optionally followed by intermediate ca and trusted certs
-	QString clientSslCrtString;
-
-	//! Path to the ssl client cert public key in OpenSSL PEM format, optionally followed by intermediate ca and trusted certs
-	QString clientSslCrtPath;
+        QString cookieJar;
 };
 
 struct DLL_PUBLIC LoadPage {
@@ -81,6 +66,15 @@ struct DLL_PUBLIC LoadPage {
 
 	//! Password used for http auth login
 	QString password;
+
+        //! Path to the ssl client cert private key in OpenSSL PEM format
+        QString clientSslKeyPath;
+
+        //! Password to ssl client cert private key
+        QString clientSslKeyPassword;
+
+        //! Path to the ssl client cert public key in OpenSSL PEM format, optionally followed by intermediate ca and trusted certs
+        QString clientSslCrtPath;
 
 	//! How many milliseconds should we wait for a Javascript redirect
 	int jsdelay;
