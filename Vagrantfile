@@ -6,65 +6,36 @@ Vagrant.configure(2) do |config|
       p.memory = 2048
     end
 
-    config.vm.define "osx" do |osx|
-        osx.vm.box           = "AndrewDryga/vagrant-box-osx"
-        osx.vm.box_version   = "0.1.0"
-        osx.vm.synced_folder ".", "/source", type: 'rsync',
-            rsync__exclude: ".git/"
-        osx.vm.provision    "shell", inline: <<-OSX_PROVISION
-            sudo xcodebuild -license accept
-            # http://stackoverflow.com/a/22355874
-            sudo ARCHFLAGS=-Wno-error=unused-command-line-argument-hard-error-in-future gem install fpm --no-ri --no-rdoc
-        OSX_PROVISION
+    config.vm.define "centos6_64" do |linux|
+        linux.vm.box       = "bento/centos-6.7"
+        linux.vm.provision "shell", path: "vagrant/centos6.sh"
     end
 
-    config.vm.define "linux64" do |linux|
-        linux.vm.box           = "bento/centos-6.7"
-        linux.vm.synced_folder ".", "/source"
-        linux.vm.provision    "shell", inline: <<-LINUX_PROVISION
-            sudo cat <<REPO > /etc/yum.repos.d/slc6.repo
-[slc6-scl]
-name=Scientific Linux CERN (SLC6) - SCL addons
-baseurl=http://linuxsoft.cern.ch/cern/scl/slc6X/x86_64/yum/scl/
-gpgcheck=0
-enabled=1
-REPO
-            sudo yum clean all && yum update -y
-            sudo yum install -y scl-utils devtoolset-3-gcc-c++ python27 git19 \
-                ruby perl git make gzip diffutils gperf bison flex \
-                zlib-devel openssl-devel freetype-devel fontconfig-devel \
-                libX11-devel libXrender-devel libXext-devel
-            echo 'source scl_source enable devtoolset-3 python27 git19' > /etc/profile.d/scl_env.sh
-        LINUX_PROVISION
+    config.vm.define "centos6_32" do |linux|
+        linux.vm.box       = "bento/centos-6.7-i386"
+        linux.vm.provision "shell", path: "vagrant/centos6.sh"
     end
 
-    config.vm.define "linux32" do |linux|
-        linux.vm.box           = "bento/centos-6.7"
-        linux.vm.synced_folder ".", "/source"
-        linux.vm.provision    "shell", inline: <<-LINUX_PROVISION
-            sudo cat <<REPO > /etc/yum.repos.d/slc6.repo
-[slc6-scl]
-name=Scientific Linux CERN (SLC6) - SCL addons
-baseurl=http://linuxsoft.cern.ch/cern/scl/slc6X/i386/yum/scl/
-gpgcheck=0
-enabled=1
-REPO
-            sudo yum clean all && yum update -y
-            sudo yum install -y scl-utils devtoolset-3-gcc-c++ python27 git19 \
-                ruby perl git make gzip diffutils gperf bison flex \
-                zlib-devel openssl-devel freetype-devel fontconfig-devel \
-                libX11-devel libXrender-devel libXext-devel
-            echo 'source scl_source enable devtoolset-3 python27 git19' > /etc/profile.d/scl_env.sh
-        LINUX_PROVISION
+    config.vm.define "yaketty64_mingw" do |mingw|
+        mingw.vm.box       = "ubuntu/yakkety64"
+        mingw.vm.provision "shell", path: "vagrant/mingw.sh"
     end
 
-    config.vm.define "mingw" do |mingw|
-        mingw.vm.box           = "ubuntu/yakkety64"
-        mingw.vm.synced_folder ".", "/source"
-        mingw.vm.provision    "shell", inline: <<-MINGW_PROVISION
-            sudo apt-get update
-            sudo apt-get install -y build-essential mingw-w64 nsis \
-                python perl git ruby gperf bison flex
-        MINGW_PROVISION
+    config.vm.define "osx_10.9" do |osx|
+        osx.vm.box         = "AndrewDryga/vagrant-box-osx"
+        osx.vm.box_version = "0.1.0"
+        osx.vm.synced_folder ".", "/vagrant", type: "rsync", rsync__exclude: ".git/"
+        osx.vm.provision     "shell", path: "vagrant/osx.sh"
     end
+
+    config.vm.define "windows_10" do |windows|
+        windows.vm.box           = "gusztavvargadr/windows10ee"
+        windows.vm.communicator  = "winrm"
+        windows.vm.guest         = :windows
+        windows.vm.network :private_network, ip: "10.255.67.217", :netmask => "255.255.0.0", :mac => "080027AEC176"
+        windows.vm.network       :forwarded_port, guest: 22,   host: 22222, id: "ssh"
+        windows.vm.network       :forwarded_port, guest: 5985, host: 5985,  id: "winrm"
+        windows.vm.provision     "shell", path: "vagrant/windows.cmd"
+    end
+
 end
