@@ -9,6 +9,7 @@ wkhtmltopdf.xcodeproj/
 release*/
 test/
 static-build/
+.vagrant/
 .obj/
 doc/
 libdoc/
