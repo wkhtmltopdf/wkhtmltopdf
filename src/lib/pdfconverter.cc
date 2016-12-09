@@ -131,7 +131,6 @@ PdfConverterPrivate::PdfConverterPrivate(PdfGlobal & s, PdfConverter & o) :
 		int height = viewportSizeList.last().toInt();
 		viewportSize = QSize(width,height);
 	}
-
 }
 
 PdfConverterPrivate::~PdfConverterPrivate() {
