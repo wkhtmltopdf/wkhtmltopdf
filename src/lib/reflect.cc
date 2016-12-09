@@ -51,15 +51,15 @@ ReflectClass::~ReflectClass() {
 }
 
 ReflectImpl<LoadGlobal>::ReflectImpl(LoadGlobal & c) {
-    WKHTMLTOPDF_REFLECT(cookieJar);
+	WKHTMLTOPDF_REFLECT(cookieJar);
 }
 
 ReflectImpl<LoadPage>::ReflectImpl(LoadPage & c) {
 	WKHTMLTOPDF_REFLECT(username);
 	WKHTMLTOPDF_REFLECT(password);
-    WKHTMLTOPDF_REFLECT(clientSslKeyPath);
-    WKHTMLTOPDF_REFLECT(clientSslKeyPassword);
-    WKHTMLTOPDF_REFLECT(clientSslCrtPath);
+	WKHTMLTOPDF_REFLECT(clientSslKeyPath);
+	WKHTMLTOPDF_REFLECT(clientSslKeyPassword);
+	WKHTMLTOPDF_REFLECT(clientSslCrtPath);
 	WKHTMLTOPDF_REFLECT(jsdelay);
 	WKHTMLTOPDF_REFLECT(windowStatus);
 	WKHTMLTOPDF_REFLECT(zoomFactor);
