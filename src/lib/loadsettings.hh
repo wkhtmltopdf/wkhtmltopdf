@@ -52,7 +52,7 @@ struct DLL_PUBLIC PostItem {
 struct DLL_PUBLIC LoadGlobal {
 	LoadGlobal();
 	//! Path of the cookie jar file
-    QString cookieJar;
+	QString cookieJar;
 };
 
 struct DLL_PUBLIC LoadPage {

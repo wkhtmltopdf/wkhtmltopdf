@@ -132,7 +132,6 @@ PdfConverterPrivate::PdfConverterPrivate(PdfGlobal & s, PdfConverter & o) :
 		viewportSize = QSize(width,height);
 	}
 
-
 }
 
 PdfConverterPrivate::~PdfConverterPrivate() {
