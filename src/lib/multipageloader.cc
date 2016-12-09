@@ -130,7 +130,7 @@ QNetworkReply * MyNetworkAccessManager::createRequest(Operation op, const QNetwo
 
 			r3.setSslConfiguration(sslConfig);
 		}
-    }
+	}
 
 	return QNetworkAccessManager::createRequest(op, r3, outgoingData);
 }
