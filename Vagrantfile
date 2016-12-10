@@ -33,8 +33,8 @@ Vagrant.configure(2) do |config|
         windows.vm.communicator  = "winrm"
         windows.vm.guest         = :windows
         windows.vm.network :private_network, ip: "10.255.67.217", :netmask => "255.255.0.0", :mac => "080027AEC176"
-        windows.vm.network       :forwarded_port, guest: 22,   host: 22222, id: "ssh"
-        windows.vm.network       :forwarded_port, guest: 5985, host: 5985,  id: "winrm"
+        windows.vm.network       :forwarded_port, guest: 22,   host: 22222, id: "ssh",   auto_correct: true
+        windows.vm.network       :forwarded_port, guest: 5985, host: 5985,  id: "winrm", auto_correct: true
         windows.vm.provision     "shell", path: "vagrant/windows.cmd"
     end
 
