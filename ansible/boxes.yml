@@ -54,7 +54,14 @@ vagrant:
 
   centos6_64:
     enabled: true
-    box: bento/centos-6.7
+    box: centos/6
     network:
       name: private_network
       ip: 192.168.4.5
+
+  centos7_64:
+    enabled: true
+    box: centos/7
+    network:
+      name: private_network
+      ip: 192.168.4.6
