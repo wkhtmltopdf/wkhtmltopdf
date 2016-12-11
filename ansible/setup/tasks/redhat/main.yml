@@ -1,0 +1,20 @@
+---
+# file: setup/tasks/redhat/main.yml
+#
+# RedHat setup entry point task.
+#
+
+- name: redhat | include distribution-release variables, e.g. centos-6, redhat-6, etc
+  include_vars: "{{ item }}"
+  with_items:
+    - "{{ ansible_distribution | lower }}-{{ ansible_distribution_major_version | lower }}.yml"
+
+- name: redhat | upgrade all packages
+  yum:
+    name='*'
+    state=latest
+    update_cache=yes
+  become: yes
+
+- name: redhat | redirect execution to distribution-release generic task, centos-6, redhat-6, etc
+  include: "{{ ansible_distribution | lower }}-{{ ansible_distribution_major_version | lower }}.yml"

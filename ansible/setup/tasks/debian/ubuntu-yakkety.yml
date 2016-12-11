@@ -1,0 +1,12 @@
+---
+# file: setup/tasks/debian/ubuntu-yakkety.yml
+#
+# Tasks to setup a Ubuntu Yakkety instance.
+#
+
+- name: ubuntu-yakkety | install build dependencies
+  apt:
+    name="{{ item }}"
+    state=present
+  become: yes
+  with_items: "{{ build_dependencies }}"

@@ -1,0 +1,18 @@
+---
+# file: setup/tasks/debian/main.yml
+#
+# Debian setup entry point task.
+#
+
+- name: debian | include OS family / distribution / release specific variables
+  include_vars: "{{ item }}"
+  with_items:
+    - "{{ ansible_distribution | lower }}-{{ ansible_distribution_release | lower }}.yml"
+
+- name: debian | update cache and upgrade packages
+  apt:
+    upgrade=dist
+    update_cache=yes
+  become: yes
+
+- include: "{{ ansible_distribution | lower }}-{{ ansible_distribution_release | lower }}.yml"

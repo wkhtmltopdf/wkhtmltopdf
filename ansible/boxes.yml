@@ -1,0 +1,60 @@
+---
+# file: dev_environment/boxes.yml
+#
+
+provider:
+  virtualbox:
+    memory: 2048
+    cpus: 2
+
+vagrant:
+
+  # Darwin
+
+  ## OSX
+
+  ### x86_64
+
+
+  # Debian
+
+  ## Ubuntu
+
+  ### x86_64
+
+  xenial_64:
+    enabled: true
+    box: ubuntu/xenial64
+    network:
+      name: private_network
+      ip: 192.168.3.2
+
+  yakkety_64:
+    enabled: true
+    box: ubuntu/yakkety64
+    network:
+      name: private_network
+      ip: 192.168.3.3
+
+
+  # RedHat
+
+  ## CentOS
+
+  ### i386
+
+  centos6_32:
+    enabled: true
+    box: bento/centos-6.7-i386
+    network:
+      name: private_network
+      ip: 192.168.4.4
+
+  ### x86_64
+
+  centos6_64:
+    enabled: true
+    box: bento/centos-6.7
+    network:
+      name: private_network
+      ip: 192.168.4.5

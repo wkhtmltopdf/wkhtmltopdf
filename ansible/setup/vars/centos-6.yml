@@ -1,0 +1,28 @@
+---
+# file: setup/vars/redhat-centos6.yml
+#
+# Variables to setup a CentOS 6 instance.
+#
+
+# note: order of the list below is important
+build_dependencies:
+  - scl-utils
+  - devtoolset-3-gcc-c++
+  - python27
+  - git19
+  - ruby200
+  - perl
+  - git
+  - make
+  - gzip
+  - diffutils
+  - gperf
+  - bison
+  - flex
+  - zlib-devel
+  - openssl-devel
+  - freetype-devel
+  - fontconfig-devel
+  - libX11-devel
+  - libXrender-devel
+  - libXext-devel
