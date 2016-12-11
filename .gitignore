@@ -1,4 +1,5 @@
 # ignore mac build files
+ansible/*.retry
 build/
 *.plist
 *~
