@@ -31,7 +31,7 @@ Vagrant.configure('2') do |config|
       host.vm.guest = box_settings['guest'] unless not box_settings.key? 'guest'
 
       host.vm.network box_settings['network']['name'], ip: box_settings['network']['ip'] unless box_settings.key? 'network'
-      host.vm.synced_folder '.', '/vagrant', disabled: true
+      host.vm.synced_folder '../', '/vagrant', disabled: true
 
       puts "[DEBUG] applying virtualbox settings for #{box_name} box..."
       customize_args = [ "modifyvm", :id ]
