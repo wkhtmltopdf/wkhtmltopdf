@@ -1,0 +1,28 @@
+---
+# file: setup/vars/redhat-centos7.yml
+#
+# Variables to setup a CentOS 7 instance.
+#
+
+# note: order of the list below is important
+build_dependencies:
+  - scl-utils
+  - devtoolset-4-gcc-c++
+  - python27
+  - git19
+  - ruby200
+  - perl
+  - git
+  - make
+  - gzip
+  - diffutils
+  - gperf
+  - bison
+  - flex
+  - zlib-devel
+  - openssl-devel
+  - freetype-devel
+  - fontconfig-devel
+  - libX11-devel
+  - libXrender-devel
+  - libXext-devel
