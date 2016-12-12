@@ -10,6 +10,13 @@ to build [wkhtmltopdf][wkhtmltopdf].
 - [vagrant][vagrant]
 
 
+## Role variables
+
+- **setup_architecture**: instance architecture (`i386` or `amd64`).
+- **setup_dir_build**: directory where repo is mounted (default: `/vagrant`).
+  Be sure this matches what you have on the `Vagrantfile`.
+
+
 ## Usage
 
 Before starting,
