@@ -19,7 +19,7 @@
 
 from subprocess import check_output, check_call, CalledProcessError, STDOUT
 from hashlib    import sha1
-from sys        import stderr, exit
+from sys        import stdout, stderr, exit
 from os         import path, makedirs, remove
 from yaml       import load as load_yaml
 from shutil     import rmtree, copy as copy_file
@@ -31,7 +31,7 @@ class Builder(object):
     def __init__(self, target, debug, build_dir):
         self.target    = target
         self.debug     = debug
-        self.src_dir   = path.dirname(__file__)
+        self.src_dir   = path.abspath(path.dirname(__file__))
         self.build_dir = build_dir
         with open(path.join(self.src_dir, 'build.yml'), 'r') as f:
             self.config = load_yaml(f.read())
@@ -48,9 +48,10 @@ class Builder(object):
 
     def shell(self, cmd, **kwargs):
         try:
-            check_call(cmd, shell=True, **kwargs)
-        except CalledProcessError:
-            self.abort("command failed: %s" % cmd)
+            stdout.write('    %s\n' % cmd)
+            check_output(cmd, shell=True, stderr=STDOUT, **kwargs)
+        except CalledProcessError as e:
+            self.abort("\n%scommand failed: exit code %s" % (e.output.decode('utf-8'), e.returncode))
 
     def output(self, *cmd, **kwargs):
         try:
@@ -104,6 +105,7 @@ class Builder(object):
             if not key or is_compiled(lib['build'][key[0]], None):
                 continue
 
+            stdout.write('%s %s\n' % ('-'*40, lib['name']))
             config = lib['build'][key[0]]
             libdir = self.download_targz(lib, destdir)
 
@@ -153,7 +155,6 @@ class Mingw64Builder(VagrantBuilder):
 
 def main():
     builder = VagrantBuilder(target='mingw-w64-cross-win32', debug=False, build_dir='/tmp/wk')
-    print(builder.version)
     builder.build_deplibs(
         mingw_w64='i686-w64-mingw32',
         mingw_flags='CPPFLAGS=-I%(destdir)s/include CFLAGS=-I%(destdir)s/include LDFLAGS=-L%(destdir)s/lib')
