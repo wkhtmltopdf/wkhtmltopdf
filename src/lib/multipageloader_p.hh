@@ -112,6 +112,7 @@ class DLL_LOCAL MyCookieJar: public QNetworkCookieJar {
 private:
 	QList<QNetworkCookie> extraCookies;
 public:
+	void clearExtraCookies();
 	void useCookie(const QUrl & url, const QString & name, const QString & value);
 	QList<QNetworkCookie> cookiesForUrl(const QUrl & url) const;
 	void loadFromFile(const QString & path);

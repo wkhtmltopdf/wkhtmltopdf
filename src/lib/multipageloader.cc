@@ -451,6 +451,7 @@ void ResourceObject::load() {
 	}
 
 
+	multiPageLoader.cookieJar->clearExtraCookies();
 	typedef QPair<QString, QString> SSP;
  	foreach (const SSP & pair, settings.cookies)
 		multiPageLoader.cookieJar->useCookie(url, pair.first, pair.second);
@@ -467,6 +468,10 @@ void ResourceObject::load() {
 			r.setHeader(QNetworkRequest::ContentTypeHeader, QString("multipart/form-data, boundary=")+boundary);
 		webPage.mainFrame()->load(r, QNetworkAccessManager::PostOperation, postData);
 	}
+}
+
+void MyCookieJar::clearExtraCookies() {
+	extraCookies.clear();	
 }
 
 void MyCookieJar::useCookie(const QUrl &, const QString & name, const QString & value) {
