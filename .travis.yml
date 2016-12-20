@@ -1,0 +1,2 @@
+script:
+  - scripts/build.py trusty-amd64
