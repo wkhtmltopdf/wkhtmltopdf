@@ -1,0 +1,17 @@
+---
+# file: setup/vars/debian-yakkety.yml
+#
+# Variables to setup a Ubuntu Yakkety instance.
+#
+
+build_dependencies:
+  - bison
+  - build-essential
+  - flex
+  - git
+  - gperf
+  - mingw-w64
+  - nsis
+  - perl
+  - python
+  - ruby

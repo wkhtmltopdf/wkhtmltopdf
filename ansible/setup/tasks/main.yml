@@ -1,0 +1,16 @@
+---
+# file: setup/tasks/main.yml
+#
+
+- include: debug.yml
+  when: debug | default(false)
+  tags: debug
+
+- include: validation.yml
+  tags: validation
+
+- name: redirect execution to OS task, e.g. debian/main.yml, redhat/main.yml, etc
+  include: "{{ ansible_os_family }}/main.yml"
+
+- include: build.yml
+  tags: build

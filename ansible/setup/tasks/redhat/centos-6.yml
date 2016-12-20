@@ -1,0 +1,32 @@
+---
+# file: setup/tasks/redhat/centos-6.yml
+#
+# Tasks to setup a CentOS 6 instance.
+#
+
+- name: centos-6 | setup SLC6 repository
+  yum_repository:
+    name=slc6-scl
+    description='Scientific Linux CERN (SLC6) - SCL addons.'
+    baseurl='http://linuxsoft.cern.ch/cern/scl/slc6X/$basearch/yum/scl/'
+    gpgkey='http://linuxsoft.cern.ch/cern/scl/RPM-GPG-KEY-cern'
+    gpgcheck=yes
+    enabled=yes
+    state=present
+  become: yes
+
+- name: centos-6 | install build dependencies
+  yum:
+    name="{{ item }}"
+    state=present
+  become: yes
+  with_items: "{{ build_dependencies }}"
+
+- name: centos-6 | setup scl_env.sh file
+  copy:
+    content='source scl_source enable devtoolset-3 python27 git19 ruby200'
+    dest=/etc/profile.d/scl_env.sh
+    owner="{{ ansible_env.USER }}"
+    group="{{ ansible_env.USER }}"
+    mode=0644
+  become: yes

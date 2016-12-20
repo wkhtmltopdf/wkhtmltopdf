@@ -1,0 +1,19 @@
+---
+
+- name: setup python2
+  hosts: "{{ vagrant_box }}"
+  gather_facts: no
+
+  tasks:
+    - raw: sudo apt-get update -qq && sudo apt-get install -qq python2.7
+      when: playbook_python2 is defined and
+            playbook_python2
+      changed_when: false
+
+
+- name: setup play
+  hosts: "{{ vagrant_box }}"
+  gather_facts: yes
+
+  roles:
+    - role: setup

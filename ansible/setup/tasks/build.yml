@@ -1,0 +1,16 @@
+---
+# file: setup/tasks/build.yml
+#
+# build software.
+#
+
+- name: build | setup chroot
+  shell: python2.7 ./scripts/build.py setup-schroot-generic
+  args:
+    chdir: "{{ setup_dir_build }}"
+  become: yes
+
+- name: build | setup chroot
+  shell: "python2.7 ./scripts/build.py linux-generic-{{ setup_architecture }}"
+  args:
+    chdir: "{{ setup_dir_build }}"

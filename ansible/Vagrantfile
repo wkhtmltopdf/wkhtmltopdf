@@ -1,0 +1,67 @@
+#!/usr/bin/env ruby
+
+require 'yaml'
+
+
+CONFIGURATION_FILE = 'boxes.yml'
+PLAYBOOK = 'setup.yml'
+
+
+Vagrant.configure('2') do |config|
+
+  # overcome 'stdin: is not a tty' errors when trying to provision on vivid64
+  config.ssh.pty = true
+  config.ssh.shell = 'bash'
+
+  puts "[DEBUG] loading box settings from #{CONFIGURATION_FILE}..."
+  vagrant_environment = YAML.load_file(File.expand_path(CONFIGURATION_FILE, File.dirname(__FILE__)))
+
+  vagrant_environment['vagrant'].each do |box_name, box_settings|
+    box_name = "#{box_name}.vagrant.dev"
+    if not box_settings['enabled']
+        puts "[DEBUG] #{box_name} is not enabled. skipping..."
+        next
+    end
+
+    puts "[DEBUG] applying #{box_name} settings..."
+    config.vm.define box_name do |host|
+
+      host.vm.box = box_settings['box'] unless not box_settings.key? 'box'
+      host.vm.box_version = box_settings['version'] unless not box_settings.key? 'version'
+      host.vm.guest = box_settings['guest'] unless not box_settings.key? 'guest'
+
+      host.vm.network box_settings['network']['name'], ip: box_settings['network']['ip'] unless box_settings.key? 'network'
+      host.vm.synced_folder '../', '/vagrant', disabled: false
+
+      puts "[DEBUG] applying virtualbox settings for #{box_name} box..."
+      customize_args = [ "modifyvm", :id ]
+      vagrant_environment['provider']['virtualbox'].collect { |k, v| customize_args |= ["--#{k}", v.to_s] }
+      host.vm.provider 'virtualbox' do |vb|
+        vb.customize customize_args
+      end
+
+      puts "[DEBUG] provision using ansible vagrant playbook..."
+      host.vm.provision 'ansible' do |ansible|
+
+        ansible.host_vars = {
+            'xenial_64.vagrant.dev' => {
+                'ansible_python_interpreter' => '/usr/bin/python2.7',
+                'playbook_python2' => true
+            },
+            'yakkety_64.vagrant.dev' => {
+                'ansible_python_interpreter' => '/usr/bin/python2.7',
+                'playbook_python2' => true
+            }
+        }
+
+        ansible.playbook = PLAYBOOK
+        ansible.verbose = 'v'
+        ansible.extra_vars = {
+            'env': 'vagrant',
+            'debug': 'yes',
+            'vagrant_box': "#{box_name}"
+        }
+      end
+    end
+  end
+end

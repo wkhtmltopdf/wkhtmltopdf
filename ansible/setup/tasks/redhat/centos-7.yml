@@ -1,0 +1,42 @@
+---
+# file: setup/tasks/redhat/centos-7.yml
+#
+# Tasks to setup a CentOS 7 instance.
+#
+
+#- name: centos-7 | setup SLC6 repository
+#  yum_repository:
+#    name=slc6-scl
+#    description='Scientific Linux CERN (SLC6) - SCL addons.'
+#    baseurl='http://linuxsoft.cern.ch/cern/scl/slc6X/$basearch/yum/scl/'
+#    gpgkey='http://linuxsoft.cern.ch/cern/scl/RPM-GPG-KEY-cern'
+#    gpgcheck=yes
+#    enabled=yes
+#    state=present
+#  become: yes
+
+- name: centos-7 | added Software Collections repo
+  yum:
+    name=centos-release-scl-rh
+    state=present
+  become: yes
+
+- name: centos-7 | enable Software Collections repo
+  shell: yum-config-manager --enable rhel-server-rhscl-7-rpms
+  become: yes
+
+- name: centos-7 | install build dependencies
+  yum:
+    name="{{ item }}"
+    state=present
+  become: yes
+  with_items: "{{ build_dependencies }}"
+
+- name: centos-7 | setup scl_env.sh file
+  copy:
+    content='source scl_source enable devtoolset-4 python27 git19 ruby200'
+    dest=/etc/profile.d/scl_env.sh
+    owner="{{ ansible_env.USER }}"
+    group="{{ ansible_env.USER }}"
+    mode=0644
+  become: yes

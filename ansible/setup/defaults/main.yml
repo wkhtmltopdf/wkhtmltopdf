@@ -1,0 +1,9 @@
+---
+# file: setup/defaults/main.yml
+#
+# Default variables for setup role.
+#
+
+setup_architecture: "{{ (ansible_architecture == 'x86_64') | ternary('amd64', 'i386') }}"
+
+setup_dir_build: /vagrant
