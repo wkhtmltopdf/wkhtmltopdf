@@ -16,7 +16,7 @@ Vagrant.configure(2) do |config|
         linux.vm.provision "shell", path: "vagrant/centos6.sh"
     end
 
-    config.vm.define "yaketty64_mingw" do |mingw|
+    config.vm.define "yakkety64_mingw" do |mingw|
         mingw.vm.box       = "ubuntu/yakkety64"
         mingw.vm.provision "shell", path: "vagrant/mingw.sh"
     end
