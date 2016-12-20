@@ -415,6 +415,13 @@ def shell(cmd):
     if ret != 0:
         error("%s\ncommand failed: exit code %d" % (cmd, ret))
 
+def silent_shell(cmd):
+    message('    %s\n' % cmd)
+    try:
+        subprocess.check_output(cmd, stderr=subprocess.STDOUT, shell=True)
+    except subprocess.CalledProcessError as e:
+        error("\n%s\ncommand failed: exit code %d" % (e.output.decode('utf-8'), e.returncode))
+
 def chroot_shell(name, cmd):
     distro  = get_chroot_list().get(name)
     wrapper = LINUX_SCHROOT_SETUP.get(distro, {}).get('wrapper_command', '')
@@ -549,7 +556,7 @@ def build_deplibs(config, basedir, **kwargs):
 
         os.chdir(srcdir)
         for command in build_cfg['commands']:
-            shell(command % vars)
+            silent_shell(command % vars)
         if not type(build_cfg['result']) is list:
             for target in build_cfg['result']:
                 mkdir_p(os.path.dirname(os.path.join(dstdir, target)))
