@@ -305,7 +305,8 @@ QString unitRealToStr(const UnitReal & ur, bool * ok) {
 	case QPrinter::Point: c = "pt"; break;
 	case QPrinter::Millimeter: c = "mm"; break;
 	default:
-		if (ok) *ok=false; break;
+		if (ok) *ok=false;
+		return "";
 	}
 	return QString("%1%2").arg(ur.first).arg(c);
 }
