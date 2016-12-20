@@ -1,0 +1,69 @@
+language: cpp
+dist:     trusty
+sudo:     true
+email:    false
+
+matrix:
+  include:
+    - os:         linux
+      env:        TARGET=system-qt4-linux
+      addons:
+        apt:
+          packages:
+          - libqtwebkit-dev
+
+    - os:         linux
+      env:        TARGET=system-qt5-linux
+      addons:
+        apt:
+          packages:
+          - libqt5webkit5-dev
+          - libqt5xmlpatterns5-dev
+          - libqt5svg5-dev
+
+    - os:         linux
+      env:        TARGET=custom-qt4-linux
+      addons:
+        apt:
+          packages:
+          - zlib1g-dev
+          - libpng12-dev
+          - libjpeg-turbo8-dev
+          - libssl-dev
+          - libfreetype6-dev
+          - libicu-dev
+          - libfontconfig1-dev
+          - libx11-dev
+          - libxext-dev
+          - libxrender-dev
+          - libxcb1-dev
+
+    - os:         osx
+      osx_image:  xcode8.2
+      env:        TARGET=custom-qt4-osx
+
+    - os:         linux
+      env:        TARGET=custom-qt4-windows
+      addons:
+        apt:
+          packages:
+          - g++-mingw-w64-i686
+
+install:
+- sed -i -e 's/    SYNCQT_OPTS=/    SYNCQT_OPTS=-quiet/g' qt/configure
+- test -n "$CC"  && unset CC
+- test -n "$CXX" && unset CXX
+
+script:
+- >
+    if   [[ $TARGET == "system-qt4-linux"   ]]; then qmake-qt4 CONFIG+=silent && make;
+    elif [[ $TARGET == "system-qt5-linux"   ]]; then /usr/lib/x86_64-linux-gnu/qt5/bin/qmake CONFIG+=silent && make;
+    elif [[ $TARGET == "custom-qt4-linux"   ]]; then CFLAGS=-w CXXFLAGS=-w scripts/build.py posix-local -debug;
+    elif [[ $TARGET == "custom-qt4-windows" ]]; then CFLAGS=-w CXXFLAGS=-w scripts/build.py mingw-w64-cross-win32 -debug;
+    elif [[ $TARGET == "custom-qt4-osx"     ]]; then
+        WKHTMLTOX_QT_CONFIG="remove:-openssl -no-openssl" \
+        CFLAGS="-w -mmacosx-version-min=10.6" \
+        CXXFLAGS="-w -mmacosx-version-min=10.6" \
+        OBJCFLAGS="-w -mmacosx-version-min=10.6" \
+        scripts/build.py osx-cocoa-x86-64 -debug;
+    fi
