@@ -1,0 +1,45 @@
+---
+layout: default
+---
+<!-- First Band (Image) -->
+
+<div class="row">
+  <div class="large-12 columns">
+    <img src="images/banner.jpg">
+
+    <hr>
+  </div>
+</div>
+
+<div class="row">
+  <div class="small-12 columns">
+    <h2>What is it?</h2>
+    <p><code>wkhtmltopdf</code> and <code>wkhtmltoimage</code> are open source (LGPLv3) command line tools to render HTML into PDF and various image formats using the Qt WebKit rendering engine. These run entirely &quot;headless&quot; and do not require a display or display service.</p>
+    <p>There is also a C library, if you're into that kind of thing.</p>
+
+    <h2>How do I use it?</h2>
+    <ol>
+      <li><a href="downloads.html">Download a precompiled binary</a> or build <a href="https://github.com/wkhtmltopdf/wkhtmltopdf">from source</a></li>
+      <li>Create your HTML document that you want to turn into a PDF (or image)</li>
+      <li>
+        <p>Run your HTML document through the tool.<br>
+        For example, if I really like the treatment <a href="http://google.com">Google</a> has done to their logo today and want to capture it forever as a PDF:</p>
+        <p>
+          <code>wkhtmltopdf http://google.com google.pdf</code>
+        </p>
+      </li>
+    </ol>
+
+    <h2>Additional options</h2>
+    <p>That's great, I've always wanted to turn Google's homepage into a PDF, but I want a table of contents as well.</p>
+    <p>There are plenty of command line options. Check out the <a href="usage/wkhtmltopdf.txt">auto-generated wkhtmltopdf manual</a>.
+
+    <h2>Get Hardcore</h2>
+    <p>Command line tools are awesome, but I want a C library.</p>
+    <p>No problem. Check out the <a href="libwkhtmltox">library documentation</a>.</p>
+
+    <h2>Real world examples?</h2>
+    <p>Like we said, if you really like Google's homepage today and want to save it as a PDF, you could use wkhtmltopdf for that.</p>
+    <p>Seriously, you could use it to generate invoices, create birthday cards, or all other sorts of fun things. Just use your imagination!</p>
+  </div>
+</div>

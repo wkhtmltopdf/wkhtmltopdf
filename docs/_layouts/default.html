@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<!--[if IE 9]><html class="lt-ie10" lang="en" > <![endif]-->
+<html class="no-js" lang="en" >
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{% if page.title %}{{ page.title }} - {% endif %}wkhtmltopdf</title>
+
+  <link rel="stylesheet" href="css/normalize.css">
+  <link rel="stylesheet" href="css/foundation.css">
+
+  <link rel="stylesheet" href="css/site.css">
+
+  <script src="js/vendor/modernizr.js"></script>
+
+</head>
+<body>
+
+   <!-- Header and Nav -->
+
+  <div id="header-row">
+    <div class="row">
+      <div class="large-5 columns">
+        <h1>
+          <a href="index.html"><img src="images/logo.png" alt="wkhtmltopdf"></a>
+        </h1>
+      </div>
+      <div class="large-7 columns">
+        <ul class="button-group right">
+          <li><a href="downloads.html" class="button">Downloads</a></li>
+          <li><a href="docs.html" class="button">Docs</a></li>
+          <li><a href="support.html" class="button">Support</a></li>
+          <li><a href="https://github.com/wkhtmltopdf/wkhtmltopdf" class="button">Source</a></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- End Header and Nav -->
+
+  <!-- Content -->
+
+  <div class="row">
+    <div class="small-12 columns margin-top">
+
+      {{ content }}
+
+    </div>
+  </div>
+
+  <!-- End Content -->
+
+  <!-- Footer -->
+
+  <footer class="row">
+    <div class="large-12 columns">
+      <hr />
+      <div class="row">
+        <div class="large-8 columns">Project maintained by <a href="https://github.com/ashkulz">Ashish Kulkarni</a>, originally created by <a href="https://github.com/antialize">Jakob Truelsen</a>.</div>
+        <div class="large-4 columns">
+          <ul class="inline-list right">
+            <li><a href="downloads.html">Downloads</a></li>
+            <li><a href="docs.html">Docs</a></li>
+            <li><a href="support.html">Support</a></li>
+            <li><a href="https://github.com/wkhtmltopdf/wkhtmltopdf">Source</a></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <script src="https://code.jquery.com/jquery-2.1.0.min.js"></script>
+  <script src="js/foundation.min.js"></script>
+  <script>
+    $(document).foundation();
+  </script>
+</body>
+</html>
