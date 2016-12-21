@@ -974,7 +974,7 @@ def check_osx(config):
     if not get_output('xcode-select', '--print-path'):
         error('Xcode is not installed, aborting.')
 
-    if not get_output('which', 'fpm'):
+    if not config.endswith('-dbg') and not get_output('which', 'fpm'):
         error('Please install fpm by running "sudo gem install fpm --no-ri --no-rdoc"')
 
 def build_osx(config, basedir):
