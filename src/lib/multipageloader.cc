@@ -26,11 +26,13 @@
 #include <QNetworkDiskCache>
 #include <QTimer>
 #include <QUuid>
-#include <QSslCertificate>
-#include <QSslKey>
 #include <QList>
 #include <QByteArray>
+#if (QT_VERSION >= 0x050000 && !defined QT_NO_SSL) || !defined QT_NO_OPENSSL
+#include <QSslCertificate>
+#include <QSslKey>
 #include <QSslConfiguration>
+#endif
 #if QT_VERSION >= 0x050000
 #include <QUrlQuery>
 #endif
@@ -110,6 +112,7 @@ QNetworkReply * MyNetworkAccessManager::createRequest(Operation op, const QNetwo
 			r3.setRawHeader(j.first.toLatin1(), j.second.toLatin1());
 	}
 
+	#if (QT_VERSION >= 0x050000 && !defined QT_NO_SSL) || !defined QT_NO_OPENSSL
 	if(!settings.clientSslKeyPath.isEmpty() && !settings.clientSslKeyPassword.isEmpty()
 			&& !settings.clientSslCrtPath.isEmpty()){
 		bool success = true;
@@ -133,6 +136,7 @@ QNetworkReply * MyNetworkAccessManager::createRequest(Operation op, const QNetwo
 			}
 		}
 	}
+	#endif
 
 	return QNetworkAccessManager::createRequest(op, r3, outgoingData);
 }
