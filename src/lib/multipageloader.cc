@@ -125,10 +125,12 @@ QNetworkReply * MyNetworkAccessManager::createRequest(Operation op, const QNetwo
 				QSslCertificate::fromPath(settings.clientSslCrtPath.toLatin1(),  QSsl::Pem, QRegExp::FixedString);
 			QList<QSslCertificate> cas =  sslConfig.caCertificates();
 			cas.append(chainCerts);
-			sslConfig.setLocalCertificate(chainCerts.first());
-			sslConfig.setCaCertificates(cas);
+			if(!chainCerts.isEmpty()){
+				sslConfig.setLocalCertificate(chainCerts.first());
+				sslConfig.setCaCertificates(cas);
 
-			r3.setSslConfiguration(sslConfig);
+				r3.setSslConfiguration(sslConfig);
+			}
 		}
 	}
 
