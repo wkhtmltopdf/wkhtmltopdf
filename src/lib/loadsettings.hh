@@ -70,6 +70,15 @@ struct DLL_PUBLIC LoadPage {
 	//! Password used for http auth login
 	QString password;
 
+	//! Path to the ssl client cert private key in OpenSSL PEM format
+	QString clientSslKeyPath;
+
+	//! Password to ssl client cert private key
+	QString clientSslKeyPassword;
+
+	//! Path to the ssl client cert public key in OpenSSL PEM format, optionally followed by intermediate ca and trusted certs
+	QString clientSslCrtPath;
+
 	//! How many milliseconds should we wait for a Javascript redirect
 	int jsdelay;
 

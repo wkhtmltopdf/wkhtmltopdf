@@ -26,6 +26,13 @@
 #include <QNetworkDiskCache>
 #include <QTimer>
 #include <QUuid>
+#include <QList>
+#include <QByteArray>
+#if (QT_VERSION >= 0x050000 && !defined QT_NO_SSL) || !defined QT_NO_OPENSSL
+#include <QSslCertificate>
+#include <QSslKey>
+#include <QSslConfiguration>
+#endif
 #if QT_VERSION >= 0x050000
 #include <QUrlQuery>
 #endif
@@ -104,6 +111,33 @@ QNetworkReply * MyNetworkAccessManager::createRequest(Operation op, const QNetwo
 		foreach (const HT & j, settings.customHeaders)
 			r3.setRawHeader(j.first.toLatin1(), j.second.toLatin1());
 	}
+
+	#if (QT_VERSION >= 0x050000 && !defined QT_NO_SSL) || !defined QT_NO_OPENSSL
+	if(!settings.clientSslKeyPath.isEmpty() && !settings.clientSslKeyPassword.isEmpty()
+			&& !settings.clientSslCrtPath.isEmpty()){
+		bool success = true;
+		QSslConfiguration sslConfig = QSslConfiguration::defaultConfiguration();
+
+		QFile keyFile(settings.clientSslKeyPath);
+		if(keyFile.open(QFile::ReadOnly)){
+			QSslKey key(&keyFile, QSsl::Rsa, QSsl::Pem, QSsl::PrivateKey, settings.clientSslKeyPassword.toUtf8());
+			sslConfig.setPrivateKey(key);
+			keyFile.close();
+			
+			QList<QSslCertificate> chainCerts =
+				QSslCertificate::fromPath(settings.clientSslCrtPath.toLatin1(),  QSsl::Pem, QRegExp::FixedString);
+			QList<QSslCertificate> cas =  sslConfig.caCertificates();
+			cas.append(chainCerts);
+			if(!chainCerts.isEmpty()){
+				sslConfig.setLocalCertificate(chainCerts.first());
+				sslConfig.setCaCertificates(cas);
+
+				r3.setSslConfiguration(sslConfig);
+			}
+		}
+	}
+	#endif
+
 	return QNetworkAccessManager::createRequest(op, r3, outgoingData);
 }
 
