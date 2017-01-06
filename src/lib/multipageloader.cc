@@ -115,7 +115,6 @@ QNetworkReply * MyNetworkAccessManager::createRequest(Operation op, const QNetwo
 	#if (QT_VERSION >= 0x050000 && !defined QT_NO_SSL) || !defined QT_NO_OPENSSL
 	if(!settings.clientSslKeyPath.isEmpty() && !settings.clientSslKeyPassword.isEmpty()
 			&& !settings.clientSslCrtPath.isEmpty()){
-		bool success = true;
 		QSslConfiguration sslConfig = QSslConfiguration::defaultConfiguration();
 
 		QFile keyFile(settings.clientSslKeyPath);

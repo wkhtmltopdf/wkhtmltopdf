@@ -121,7 +121,7 @@ QString proxyToStr(const Proxy & p) {
 		if (!p.password.isEmpty()) res += ":" + p.password;
 	}
 	res += p.host;
-	if (!p.host.isEmpty()) res += ":" + p.port;
+	if (!p.host.isEmpty()) res += ":" + QString::number(p.port);
 	return res;
 }
 
