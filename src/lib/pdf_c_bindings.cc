@@ -468,21 +468,21 @@ CAPI(void) wkhtmltopdf_destroy_converter(wkhtmltopdf_converter * converter) {
 }
 
 /**
- * \brief Set the function that should be called when an errors occurs during conversion
+ * \brief Set the function that should be called when an warning message is issued during conversion
  *
- * \param converter The converter object on which errors we want the callback to be called
- * \param cb The function to call when an error occurs
+ * \param converter The converter object on which warnings we want the callback to be called
+ * \param cb The function to call when warning message is issued
+ *
  */
 CAPI(void) wkhtmltopdf_set_warning_callback(wkhtmltopdf_converter * converter, wkhtmltopdf_str_callback cb) {
 	reinterpret_cast<MyPdfConverter *>(converter)->warning_cb = cb;
 }
 
 /**
- * \brief Set the function that should be called when an warning message is issued during conversion
+ * \brief Set the function that should be called when an errors occurs during conversion
  *
- * \param converter The converter object on which warnings we want the callback to be called
- * \param cb The function to call when warning message is issued
- *
+ * \param converter The converter object on which errors we want the callback to be called
+ * \param cb The function to call when an error occurs
  */
 CAPI(void) wkhtmltopdf_set_error_callback(wkhtmltopdf_converter * converter, wkhtmltopdf_str_callback cb) {
 	reinterpret_cast<MyPdfConverter *>(converter)->error_cb = cb;
