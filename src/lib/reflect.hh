@@ -75,7 +75,10 @@ struct DLL_LOCAL ReflectImpl<bool>: public ReflectSimple {
 	void set(const QString & value, bool * ok) {
 		if (value == "true") b=true;
 		else if (value == "false") b=false;
-		else *ok=false;
+		else {
+			*ok=false;
+			return;
+		}
 		*ok=true;
 	}
 };
