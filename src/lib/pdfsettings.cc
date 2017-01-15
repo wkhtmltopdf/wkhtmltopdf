@@ -118,6 +118,7 @@ struct DLL_LOCAL ReflectImpl<PdfGlobal>: public ReflectClass {
 		WKHTMLTOPDF_REFLECT(copies);
 		WKHTMLTOPDF_REFLECT(collate);
 		WKHTMLTOPDF_REFLECT(outline);
+		WKHTMLTOPDF_REFLECT(outlineDepth);
 		WKHTMLTOPDF_REFLECT(dumpOutline);
 		WKHTMLTOPDF_REFLECT(out);
 		WKHTMLTOPDF_REFLECT(documentTitle);
