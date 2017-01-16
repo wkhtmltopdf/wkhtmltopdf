@@ -212,8 +212,8 @@ DEPENDENT_LIBS = {
 
     'zlib': {
         'order' : 2,
-        'url'   : 'http://downloads.sourceforge.net/libpng/zlib-1.2.8.tar.gz',
-        'sha1'  : 'a4d316c404ff54ca545ea71a27af7dbc29817088',
+        'url'   : 'http://downloads.sourceforge.net/libpng/zlib-1.2.11.tar.gz',
+        'sha1'  : 'e6d119755acdf9104d7ba236b1242696940ed6dd',
         'build' : {
             'msvc*': {
                 'result': {
@@ -238,8 +238,8 @@ DEPENDENT_LIBS = {
 
     'libpng': {
         'order' : 3,
-        'url' : 'http://downloads.sourceforge.net/libpng/libpng-1.6.26.tar.gz',
-        'sha1': '3b2652f89b8fdcb6c29e9ed7642dfcfc0bbcf17e',
+        'url' : 'http://downloads.sourceforge.net/libpng/libpng-1.6.28.tar.gz',
+        'sha1': '004556d65f21baed83755f8e094112711e39ebae',
         'build' : {
             'msvc*': {
                 'result': {
@@ -339,8 +339,8 @@ DEPENDENT_LIBS = {
 
     'xz': {
         'order' : 5,
-        'url' : 'http://tukaani.org/xz/xz-5.2.2.tar.gz',
-        'sha1': '14663612422ab61386673be78fbb2556f50a1f08',
+        'url' : 'http://tukaani.org/xz/xz-5.2.3.tar.gz',
+        'sha1': '529638eec3597e429cc54c74551ac0a89169e841',
         'build' : {
             'osx*': {
                 'result': ['bin/xz'],

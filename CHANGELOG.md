@@ -1,3 +1,7 @@
+v0.12.5 (unreleased)
+--------------------
+* update zlib to 1.2.11, libpng to 1.6.28 and xz to 5.2.3
+
 v0.12.4 (2016-11-22)
 --------------------
 * add support for building with VS2015
