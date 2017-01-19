@@ -12,14 +12,14 @@ Document objects:
   options area. Options from the Global Options section can only be placed in
   the global options area
 
-  A page objects puts the content of a singe webpage into the output document.
+  A page objects puts the content of a single webpage into the output document.
 
   (page)? <input url/file name> [PAGE OPTION]...
   Options for the page object can be placed in the global options and the page
   options areas. The applicable options can be found in the Page Options and 
   Headers And Footer Options sections.
 
-  A cover objects puts the content of a singe webpage into the output document,
+  A cover object puts the content of a single webpage into the output document,
   the page does not appear in the table of content, and does not have headers
   and footers.
 
