@@ -103,6 +103,10 @@ CAPI(wkhtmltoimage_global_settings *) wkhtmltoimage_create_global_settings() {
 	return reinterpret_cast<wkhtmltoimage_global_settings *>(new settings::ImageGlobal());
 }
 
+CAPI(void) wkhtmltoimage_destroy_global_settings(wkhtmltoimage_global_settings * obj) {
+	delete reinterpret_cast<settings::ImageGlobal *>(obj);
+}
+
 CAPI(int) wkhtmltoimage_set_global_setting(wkhtmltoimage_global_settings * settings, const char * name, const char * value) {
 	return reinterpret_cast<settings::ImageGlobal *>(settings)->set(name, QString::fromUtf8(value));
 }
