@@ -26,7 +26,7 @@ namespace wkhtmltopdf {
 class ProgressFeedback: public QObject {
 	Q_OBJECT
 private:
-	bool quiet;
+	int verbosity;
 	Converter & converter;
 	int lw;
 public slots:
@@ -35,7 +35,7 @@ public slots:
 	void phaseChanged();
 	void progressChanged(int progress);
 public:
-	ProgressFeedback(bool quiet, Converter & _);
+	ProgressFeedback(int verbosity, Converter & _);
 };
 
 }

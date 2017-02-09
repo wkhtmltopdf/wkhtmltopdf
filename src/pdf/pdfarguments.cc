@@ -176,7 +176,7 @@ PdfCommandLineParser::PdfCommandLineParser(PdfGlobal & s, QList<PdfObject> & ps)
 	extended(false);
 	qthack(false);
 
-	addarg("quiet", 'q', "Be less verbose", new ConstSetter<bool>(s.quiet,true));
+	addarg("verbosity", 'v', "Verbosity level from 0 (quiet) to 2 (extra verbose)", new IntSetter(s.verbosity, "number"));
 
 	addarg("no-collate", 0, "Do not collate when printing multiple copies", new ConstSetter<bool>(s.collate, false));
 	addarg("collate", 0, "Collate when printing multiple copies", new ConstSetter<bool>(s.collate, true));
