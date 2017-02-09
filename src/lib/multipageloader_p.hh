@@ -58,6 +58,7 @@ public:
 	QNetworkReply * createRequest(Operation op, const QNetworkRequest & req, QIODevice * outgoingData = 0);
 signals:
 	void warning(const QString & text);
+	void error(const QString & text);
 };
 
 class DLL_LOCAL MultiPageLoaderPrivate;
