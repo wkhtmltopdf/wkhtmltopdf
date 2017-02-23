@@ -6,13 +6,13 @@ Synopsis:
   
 Document objects:
   wkhtmltopdf is able to put several objects into the output file, an object is
-  either a single webpage, a cover webpage or a table of content.  The objects
+  either a single webpage, a cover webpage or a table of contents.  The objects
   are put into the output document in the order they are specified on the
   command line, options can be specified on a per object basis or in the global
   options area. Options from the Global Options section can only be placed in
   the global options area
 
-  A page objects puts the content of a singe webpage into the output document.
+  A page objects puts the contents of a singe webpage into the output document.
 
   (page)? <input url/file name> [PAGE OPTION]...
   Options for the page object can be placed in the global options and the page
@@ -20,19 +20,19 @@ Document objects:
   Headers And Footer Options sections.
 
   A cover objects puts the content of a singe webpage into the output document,
-  the page does not appear in the table of content, and does not have headers
+  the page does not appear in the table of contents, and does not have headers
   and footers.
 
   cover <input url/file name> [PAGE OPTION]...
   All options that can be specified for a page object can also be specified for
   a cover.
 
-  A table of content object inserts a table of content into the output document.
+  A table of contents object inserts a table of contents into the output document.
 
   toc [TOC OPTION]...
   All options that can be specified for a page object can also be specified for
   a toc, further more the options from the TOC Options section can also be
-  applied. The table of content is generated via XSLT which means that it can be
+  applied. The table of contents is generated via XSLT which means that it can be
   styled to look however you want it to look. To get an aide of how to do this
   you can dump the default xslt document by supplying the
   --dump-default-toc-xsl, and the outline it works on by supplying
@@ -226,7 +226,7 @@ TOC Options:
                                       font is scaled by this factor (default
                                       0.8)
       --xsl-style-sheet <file>        Use the supplied xsl style sheet for
-                                      printing the table of content
+                                      printing the table of contents
 
 Page sizes:
   The default page size of the rendered document is A4, but using this
@@ -332,13 +332,13 @@ Outlines:
   generous in the HTML document.  The --outline-depth switch can be used to
   bound this.
 
-Table Of Content:
-  A table of content can be added to the document by adding a toc object to the
+Table Of Contents:
+  A table of contents can be added to the document by adding a toc object to the
   command line. For example:
 
   wkhtmltopdf toc http://qt-project.org/doc/qt-4.8/qstring.html qstring.pdf
   
-  The table of content is generated based on the H tags in the input documents.
+  The table of contents is generated based on the H tags in the input documents.
   First a XML document is generated, then it is converted to HTML using XSLT.
 
   The generated XML document can be viewed by dumping it to a file using the
