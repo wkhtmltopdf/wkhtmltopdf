@@ -1,9 +1,9 @@
 Name:
-  wkhtmltopdf 0.12.2.1 (with patched qt)
+  wkhtmltopdf 0.12.4 (with patched qt)
 
 Synopsis:
   wkhtmltopdf [GLOBAL OPTION]... [OBJECT]... <output file>
-  
+
 Document objects:
   wkhtmltopdf is able to put several objects into the output file, an object is
   either a single webpage, a cover webpage or a table of content.  The objects
@@ -12,14 +12,14 @@ Document objects:
   options area. Options from the Global Options section can only be placed in
   the global options area
 
-  A page objects puts the content of a singe webpage into the output document.
+  A page objects puts the content of a single webpage into the output document.
 
   (page)? <input url/file name> [PAGE OPTION]...
   Options for the page object can be placed in the global options and the page
-  options areas. The applicable options can be found in the Page Options and 
+  options areas. The applicable options can be found in the Page Options and
   Headers And Footer Options sections.
 
-  A cover objects puts the content of a singe webpage into the output document,
+  A cover objects puts the content of a single webpage into the output document,
   the page does not appear in the table of content, and does not have headers
   and footers.
 
@@ -52,7 +52,7 @@ Global Options:
       --copies <number>               Number of copies to print into the pdf
                                       file (default 1)
   -d, --dpi <dpi>                     Change the dpi explicitly (this has no
-                                      effect on X11 based systems)
+                                      effect on X11 based systems) (default 96)
   -H, --extended-help                 Display more extensive help, detailing
                                       less common command switches
   -g, --grayscale                     PDF will be generated in grayscale
@@ -84,6 +84,8 @@ Global Options:
       --title <text>                  The title of the generated pdf file (The
                                       title of the first document is used if not
                                       specified)
+      --use-xserver                   Use the X server (some plugins and other
+                                      stuff might not work without X11)
   -V, --version                       Output version information and exit
 
 Outline Options:
@@ -99,6 +101,7 @@ Page Options:
                                       folder to be loaded (repeatable)
       --background                    Do print background (default)
       --no-background                 Do not print background
+      --bypass-proxy-for <value>      Bypass proxy for host (repeatable)
       --cache-dir <path>              Web cache directory
       --checkbox-checked-svg <path>   Use this SVG file when rendering checked
                                       checkboxes
@@ -135,6 +138,8 @@ Page Options:
                                       (default)
       --javascript-delay <msec>       Wait some milliseconds for javascript
                                       finish (default 200)
+      --keep-relative-links           Keep relative external links as relative
+                                      external links
       --load-error-handling <handler> Specify how to handle pages that fail to
                                       load: abort, ignore or skip (default
                                       abort)
@@ -166,6 +171,8 @@ Page Options:
                                       radiobuttons
       --radiobutton-svg <path>        Use this SVG file when rendering unchecked
                                       radiobuttons
+      --resolve-relative-links        Resolve relative external links into
+                                      absolute links (default)
       --run-script <js>               Run this additional javascript after the
                                       page is done loading (repeatable)
       --disable-smart-shrinking       Disable the intelligent shrinking strategy
@@ -231,7 +238,7 @@ TOC Options:
 Page sizes:
   The default page size of the rendered document is A4, but using this
   --page-size optionthis can be changed to almost anything else, such as: A3,
-  Letter and Legal.  For a full list of supported pages sizes please see 
+  Letter and Legal.  For a full list of supported pages sizes please see
   <http://qt-project.org/doc/qt-4.8/qprinter.html#PaperSize-enum>.
 
   For a more fine grained control over the page size the --page-height and
@@ -251,7 +258,7 @@ Reading arguments from stdin:
   echo "http://qt-project.org/doc/qt-4.8/qapplication.html qapplication.pdf" >> cmds
   echo "cover google.com http://en.wikipedia.org/wiki/Qt_(software) qt.pdf" >> cmds
   wkhtmltopdf --read-args-from-stdin --book < cmds
-  
+
 Specifying A Proxy:
   By default proxy information will be read from the environment variables:
   proxy, all_proxy and http_proxy, proxy options can also by specified with the
@@ -260,13 +267,13 @@ Specifying A Proxy:
   <type> := "http://" | "socks5://"
   <serif> := <username> (":" <password>)? "@"
   <proxy> := "None" | <type>? <string>? <host> (":" <port>)?
-  
+
   Here are some examples (In case you are unfamiliar with the BNF):
 
   http://user:password@myproxyserver:8080
   socks5://myproxyserver
   None
-  
+
 Footers And Headers:
   Headers and footers can be added to the document by the --header-* and
   --footer* arguments respectfully.  In header and footer text string supplied
@@ -285,8 +292,8 @@ Footers And Headers:
    * [doctitle]   Replaced by the title of the output document
    * [sitepage]   Replaced by the number of the page in the current site being converted
    * [sitepages]  Replaced by the number of pages in the current site being converted
-  
-  
+
+
   As an example specifying --header-right "Page [page] of [toPage]", will result
   in the text "Page x of y" where x is the number of the current page and y is
   the number of the last page, to appear in the upper left corner in the
@@ -298,14 +305,23 @@ Footers And Headers:
 
   <html><head><script>
   function subst() {
-    var vars={};
-    var x=window.location.search.substring(1).split('&');
-    for (var i in x) {var z=x[i].split('=',2);vars[z[0]] = unescape(z[1]);}
-    var x=['frompage','topage','page','webpage','section','subsection','subsubsection'];
-    for (var i in x) {
-      var y = document.getElementsByClassName(x[i]);
-      for (var j=0; j<y.length; ++j) y[j].textContent = vars[x[i]];
-    }
+      var vars = {};
+      var query_strings_from_url = document.location.search.substring(1).split('&');
+      for (var query_string in query_strings_from_url) {
+          if (query_strings_from_url.hasOwnProperty(query_string)) {
+              var temp_var = query_strings_from_url[query_string].split('=', 2);
+              vars[temp_var[0]] = decodeURI(temp_var[1]);
+          }
+      }
+      var css_selector_classes = ['page', 'frompage', 'topage', 'webpage', 'section', 'subsection', 'date', 'isodate', 'time', 'title', 'doctitle', 'sitepage', 'sitepages'];
+      for (var css_class in css_selector_classes) {
+          if (css_selector_classes.hasOwnProperty(css_class)) {
+              var element = document.getElementsByClassName(css_selector_classes[css_class]);
+              for (var j = 0; j < element.length; ++j) {
+                  element[j].textContent = vars[css_selector_classes[css_class]];
+              }
+          }
+      }
   }
   </script></head><body style="border:0; margin: 0;" onload="subst()">
   <table style="border-bottom: 1px solid black; width: 100%">
@@ -317,8 +333,8 @@ Footers And Headers:
     </tr>
   </table>
   </body></html>
-  
-  
+
+
   As can be seen from the example, the arguments are sent to the header/footer
   html documents in get fashion.
 
@@ -326,7 +342,7 @@ Outlines:
   Wkhtmltopdf with patched qt has support for PDF outlines also known as book
   marks, this can be enabled by specifying the --outline switch. The outlines
   are generated based on the <h?> tags, for a in-depth description of how this
-  is done see the Table Of Contest section. 
+  is done see the Table Of Content section.
 
   The outline tree can sometimes be very deep, if the <h?> tags where spread to
   generous in the HTML document.  The --outline-depth switch can be used to
@@ -337,7 +353,7 @@ Table Of Content:
   command line. For example:
 
   wkhtmltopdf toc http://qt-project.org/doc/qt-4.8/qstring.html qstring.pdf
-  
+
   The table of content is generated based on the H tags in the input documents.
   First a XML document is generated, then it is converted to HTML using XSLT.
 
@@ -345,12 +361,12 @@ Table Of Content:
   --dump-outline switch. For example:
 
   wkhtmltopdf --dump-outline toc.xml http://qt-project.org/doc/qt-4.8/qstring.html qstring.pdf
-  
+
   The XSLT document can be specified using the --xsl-style-sheet switch. For
   example:
 
   wkhtmltopdf toc --xsl-style-sheet my.xsl http://qt-project.org/doc/qt-4.8/qstring.html qstring.pdf
-  
+
   The --dump-default-toc-xsl switch can be used to dump the default XSLT style
   sheet to stdout. This is a good start for writing your own style sheet
 
@@ -363,12 +379,12 @@ Table Of Content:
  * "title" the name of the section.
  * "page" the page number the section occurs on.
  * "link" a URL that links to the section.
- * "backLink" the name of the anchor the the section will link back to.
+ * "backLink" the name of the anchor the section will link back to.
 
   The remaining TOC options only affect the default style sheet so they will not
   work when specifying a custom style sheet.
 
 Contact:
-  If you experience bugs or want to request new features please visit 
+  If you experience bugs or want to request new features please visit
   <https://github.com/wkhtmltopdf/wkhtmltopdf/issues>
 
