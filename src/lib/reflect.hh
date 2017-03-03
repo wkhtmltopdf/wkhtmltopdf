@@ -61,6 +61,22 @@ public:
 	~ReflectClass();
 };
 
+class DLL_LOCAL QuietArgBackwardsCompatReflect: public ReflectSimple {
+	int & v;
+public:
+	QuietArgBackwardsCompatReflect(int & _): v(_) {}
+	QString get() {return v?"false":"true";}
+	void set(const QString & value, bool * ok) {
+		if (value == "true") v=0;
+		else if (value == "false") v=1;
+		else {
+			*ok=false;
+			return;
+		}
+		*ok=true;
+	}
+};
+
 template <typename X>
 class DLL_LOCAL ReflectImpl {
 private:

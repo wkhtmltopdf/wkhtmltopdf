@@ -57,8 +57,8 @@ struct DLL_PUBLIC ImageGlobal {
 	LoadPage loadPage;
 	Web web;
 
-	//! Be less verbose
-	bool quiet;
+	//! Verbosity level from 0 (quiet) to 2 (extra verbose)
+	int verbosity;
 
 	bool transparent;
 

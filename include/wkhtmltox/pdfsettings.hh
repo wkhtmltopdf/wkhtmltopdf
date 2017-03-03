@@ -82,8 +82,8 @@ struct DLL_PUBLIC PdfGlobal {
 	//! Size related settings
 	Size size;
 
-	//! Be less verbose
-	bool quiet;
+	//! Verbosity level from 0 (quiet) to 2 (extra verbose)
+	int verbosity;
 
 	//! Should we use the graphics system
 	bool useGraphics;

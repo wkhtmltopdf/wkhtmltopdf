@@ -107,7 +107,8 @@ template<>
 struct DLL_LOCAL ReflectImpl<PdfGlobal>: public ReflectClass {
 	ReflectImpl(PdfGlobal & c) {
 		WKHTMLTOPDF_REFLECT(size);
-		WKHTMLTOPDF_REFLECT(quiet);
+		ReflectClass::add("quiet", new QuietArgBackwardsCompatReflect(c.verbosity));	// Fake the "quiet" argument
+		WKHTMLTOPDF_REFLECT(verbosity);
 		WKHTMLTOPDF_REFLECT(useGraphics);
 		WKHTMLTOPDF_REFLECT(resolveRelativeLinks);
 		WKHTMLTOPDF_REFLECT(orientation);
@@ -368,7 +369,7 @@ Margin::Margin():
 	left(UnitReal(10,QPrinter::Millimeter)) {}
 
 PdfGlobal::PdfGlobal():
-	quiet(false),
+	verbosity(1),
 	useGraphics(false),
 	resolveRelativeLinks(true),
 	orientation(QPrinter::Portrait),
