@@ -24,6 +24,7 @@
 #include <QNetworkProxy>
 #include <QPrinter>
 #include <QString>
+#include <wkhtmltox/logging.hh>
 #include <wkhtmltox/loadsettings.hh>
 #include <wkhtmltox/websettings.hh>
 
@@ -85,8 +86,8 @@ struct DLL_PUBLIC PdfGlobal {
 	//! Size related settings
 	Size size;
 
-	//! Verbosity level from 0 (quiet) to 2 (extra verbose)
-	int verbosity;
+	//! Log level
+	LogLevel logLevel;
 
 	//! Should we use the graphics system
 	bool useGraphics;

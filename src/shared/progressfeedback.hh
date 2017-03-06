@@ -21,12 +21,13 @@
 #ifndef __PROGRESSFEEDBACK_HH__
 #define __PROGRESSFEEDBACK_HH__
 #include <wkhtmltox/converter.hh>
+#include <wkhtmltox/logging.hh>
 namespace wkhtmltopdf {
 
 class ProgressFeedback: public QObject {
 	Q_OBJECT
 private:
-	int verbosity;
+	settings::LogLevel logLevel;
 	Converter & converter;
 	int lw;
 public slots:
@@ -35,7 +36,7 @@ public slots:
 	void phaseChanged();
 	void progressChanged(int progress);
 public:
-	ProgressFeedback(int verbosity, Converter & _);
+	ProgressFeedback(settings::LogLevel logLevel, Converter & _);
 };
 
 }

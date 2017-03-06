@@ -25,6 +25,7 @@
 #define typeof decltype
 #endif
 
+#include "logging.hh"
 #include "loadsettings.hh"
 #include "websettings.hh"
 #include <QStringList>
@@ -62,13 +63,13 @@ public:
 };
 
 class DLL_LOCAL QuietArgBackwardsCompatReflect: public ReflectSimple {
-	int & v;
+	LogLevel & l;
 public:
-	QuietArgBackwardsCompatReflect(int & _): v(_) {}
-	QString get() {return v?"false":"true";}
+	QuietArgBackwardsCompatReflect(LogLevel & _): l(_) {}
+	QString get() {return l == None ? "true":"false";}
 	void set(const QString & value, bool * ok) {
-		if (value == "true") v=0;
-		else if (value == "false") v=1;
+		if (value == "true") l=None;
+		else if (value == "false") l=Info;
 		else {
 			*ok=false;
 			return;
@@ -81,6 +82,18 @@ template <typename X>
 class DLL_LOCAL ReflectImpl {
 private:
 	ReflectImpl();
+};
+
+template<>
+struct DLL_LOCAL ReflectImpl<LogLevel>: public ReflectSimple {
+	LogLevel & l;
+	ReflectImpl(LogLevel & _): l(_) {	}
+	QString get() {
+		return logLevelToStr(l, 0);
+	}
+	void set(const QString & value, bool * ok) {
+		l = strToLogLevel(qPrintable(value), ok);
+	}
 };
 
 template<>
