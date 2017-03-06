@@ -31,8 +31,8 @@ ImageCommandLineParser::ImageCommandLineParser(wkhtmltopdf::settings::ImageGloba
 
 	extended(false);
 	qthack(false);
-	addarg("quiet", 'q', "Be less verbose, maintained for backwards compatibility; it corresponds to --verbosity level 0 (true) and 1 (false)", new ConstSetter<int>(s.verbosity, 0));
-	addarg("verbosity", 'v', "Verbosity level from 0 (quiet) to 2 (extra verbose)", new IntSetter(s.verbosity, "number"));
+	addarg("quiet", 'q', "Be less verbose, maintained for backwards compatibility; Same as using --log-level none", new ConstSetter<wkhtmltopdf::settings::LogLevel>(s.logLevel, wkhtmltopdf::settings::None));
+	addarg("log-level", 0, "Set log level to: none, error, warn or info", new LogLevelSetter(s.logLevel, "level"));
 	addarg("width",0,"Set screen width, note that this is used only as a guide line. Use --disable-smart-width to make it strict.", new IntSetter(s.screenWidth,"int"));
 	addarg("height",0,"Set screen height (default is calculated from page content)", new IntSetter(s.screenHeight, "int"));
 	// addarg("scale-w",0,"Set width for resizing", new IntSetter(s.scale.width,"int"));

@@ -41,8 +41,8 @@ struct DLL_LOCAL ReflectImpl<ImageGlobal>: public ReflectClass {
 	ReflectImpl(ImageGlobal & c) {
 		WKHTMLTOPDF_REFLECT(screenWidth);
 		WKHTMLTOPDF_REFLECT(screenHeight);
-		ReflectClass::add("quiet", new QuietArgBackwardsCompatReflect(c.verbosity));	// Fake the "quiet" argument
-		WKHTMLTOPDF_REFLECT(verbosity);
+		ReflectClass::add("quiet", new QuietArgBackwardsCompatReflect(c.logLevel));	// Fake the "quiet" argument
+		WKHTMLTOPDF_REFLECT(logLevel);
 		WKHTMLTOPDF_REFLECT(transparent);
 		WKHTMLTOPDF_REFLECT(useGraphics);
 		WKHTMLTOPDF_REFLECT(in);
@@ -61,7 +61,7 @@ CropSettings::CropSettings():
 	height(-1) {}
 
 ImageGlobal::ImageGlobal():
-	verbosity(1),
+	logLevel(Info),
 	transparent(false),
 	useGraphics(false),
 	in(""),
