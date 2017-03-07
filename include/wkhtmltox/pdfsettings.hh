@@ -1,3 +1,6 @@
+// -*- mode: c++; tab-width: 4; indent-tabs-mode: t; eval: (progn (c-set-style "stroustrup") (c-set-offset 'innamespace 0)); -*-
+// vi:set ts=4 sts=4 sw=4 noet :
+//
 // Copyright 2010 wkhtmltopdf authors
 //
 // This file is part of wkhtmltopdf.
@@ -21,6 +24,7 @@
 #include <QNetworkProxy>
 #include <QPrinter>
 #include <QString>
+#include <wkhtmltox/logging.hh>
 #include <wkhtmltox/loadsettings.hh>
 #include <wkhtmltox/websettings.hh>
 
@@ -82,13 +86,13 @@ struct DLL_PUBLIC PdfGlobal {
 	//! Size related settings
 	Size size;
 
-	//! Be less verbose
-	bool quiet;
+	//! Log level
+	LogLevel logLevel;
 
 	//! Should we use the graphics system
 	bool useGraphics;
-	
-	//! Should relative links be resolved
+
+	//! Should relative links be resolved or kept as-is
 	bool resolveRelativeLinks;
 
 	//! Should we orientate in landscape or portrate

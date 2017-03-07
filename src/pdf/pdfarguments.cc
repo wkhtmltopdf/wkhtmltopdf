@@ -176,7 +176,8 @@ PdfCommandLineParser::PdfCommandLineParser(PdfGlobal & s, QList<PdfObject> & ps)
 	extended(false);
 	qthack(false);
 
-	addarg("quiet", 'q', "Be less verbose", new ConstSetter<bool>(s.quiet,true));
+	addarg("quiet", 'q', "Be less verbose, maintained for backwards compatibility; Same as using --log-level none", new ConstSetter<LogLevel>(s.logLevel, None));
+	addarg("log-level", 0, "Set log level to: none, error, warn or info", new LogLevelSetter(s.logLevel, "level"));
 
 	addarg("no-collate", 0, "Do not collate when printing multiple copies", new ConstSetter<bool>(s.collate, false));
 	addarg("collate", 0, "Collate when printing multiple copies", new ConstSetter<bool>(s.collate, true));

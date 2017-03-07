@@ -32,7 +32,7 @@ public:
 	virtual ~Converter() {};
 
     int currentPhase();
-	int phaseCount();
+    int phaseCount();
     QString phaseDescription(int phase=-1);
     QString progressString();
     int httpErrorCode();

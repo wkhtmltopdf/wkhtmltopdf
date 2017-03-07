@@ -22,6 +22,7 @@
 #define __ARGHANDLER_INL__
 #include "commandlineparserbase.hh"
 #include <wkhtmltox/loadsettings.hh>
+#include <wkhtmltox/logging.hh>
 
 template <typename T> class DstArgHandler: public ArgHandler {
 public:
@@ -164,6 +165,19 @@ struct FloatTM: public SomeSetterTM<float> {
   Argument handler setting an float variable
 */
 typedef SomeSetter<FloatTM> FloatSetter;
+
+struct LogLevelTM: public SomeSetterTM<wkhtmltopdf::settings::LogLevel> {
+	static wkhtmltopdf::settings::LogLevel strToT(const char * val, bool & ok) {
+		return wkhtmltopdf::settings::strToLogLevel(val, &ok);
+	}
+	static QString TToStr(const wkhtmltopdf::settings::LogLevel & l, bool & ok) {
+		return wkhtmltopdf::settings::logLevelToStr(l, &ok);
+	}
+};
+/*!
+  Argument handler setting an loglevel variable
+*/
+typedef SomeSetter<LogLevelTM> LogLevelSetter;
 
 struct StrTM: public SomeSetterTM<const char *> {
 	static const char * strToT(const char * val, bool & ok) {

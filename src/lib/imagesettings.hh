@@ -22,6 +22,7 @@
 #define __IMAGESETTINGS_HH__
 
 #include <QString>
+#include <wkhtmltox/logging.hh>
 #include <wkhtmltox/loadsettings.hh>
 #include <wkhtmltox/websettings.hh>
 
@@ -60,8 +61,8 @@ struct DLL_PUBLIC ImageGlobal {
 	LoadPage loadPage;
 	Web web;
 
-	//! Be less verbose
-	bool quiet;
+	//! Log level
+	LogLevel logLevel;
 
 	bool transparent;
 

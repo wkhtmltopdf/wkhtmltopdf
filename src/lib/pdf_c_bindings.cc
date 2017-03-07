@@ -209,11 +209,11 @@ QApplication * a = 0;
 int usage = 0;
 
 void MyPdfConverter::warning(const QString & message) {
-	if (warning_cb) (warning_cb)(reinterpret_cast<wkhtmltopdf_converter*>(this), message.toUtf8().constData());
+	if (warning_cb && globalSettings->logLevel > settings::Error) (warning_cb)(reinterpret_cast<wkhtmltopdf_converter*>(this), message.toUtf8().constData());
 }
 
 void MyPdfConverter::error(const QString & message) {
-	if (error_cb) (error_cb)(reinterpret_cast<wkhtmltopdf_converter*>(this), message.toUtf8().constData());
+	if (error_cb && globalSettings->logLevel > settings::None) (error_cb)(reinterpret_cast<wkhtmltopdf_converter*>(this), message.toUtf8().constData());
 }
 
 void MyPdfConverter::phaseChanged() {

@@ -1,3 +1,6 @@
+// -*- mode: c++; tab-width: 4; indent-tabs-mode: t; eval: (progn (c-set-style "stroustrup") (c-set-offset 'innamespace 0)); -*-
+// vi:set ts=4 sts=4 sw=4 noet :
+//
 // Copyright 2010 wkhtmltopdf authors
 //
 // This file is part of wkhtmltopdf.
@@ -19,6 +22,7 @@
 #define __IMAGESETTINGS_HH__
 
 #include <QString>
+#include <wkhtmltox/logging.hh>
 #include <wkhtmltox/loadsettings.hh>
 #include <wkhtmltox/websettings.hh>
 
@@ -57,8 +61,8 @@ struct DLL_PUBLIC ImageGlobal {
 	LoadPage loadPage;
 	Web web;
 
-	//! Be less verbose
-	bool quiet;
+	//! Log level
+	LogLevel logLevel;
 
 	bool transparent;
 

@@ -208,7 +208,7 @@ int main(int argc, char * argv[]) {
 			parser.parseArguments(nargc, (const char**)nargv, true);
 
 			PdfConverter converter(globalSettings);
-			ProgressFeedback feedback(globalSettings.quiet, converter);
+			ProgressFeedback feedback(globalSettings.logLevel, converter);
 			foreach (const PdfObject & object, objectSettings)
 				converter.addResource(object);
 
@@ -227,7 +227,7 @@ int main(int argc, char * argv[]) {
 	QObject::connect(&converter, SIGNAL(radiobuttonSvgChanged(const QString &)), style, SLOT(setRadioButtonSvg(const QString &)));
 	QObject::connect(&converter, SIGNAL(radiobuttonCheckedSvgChanged(const QString &)), style, SLOT(setRadioButtonCheckedSvg(const QString &)));
 
-	ProgressFeedback feedback(globalSettings.quiet, converter);
+	ProgressFeedback feedback(globalSettings.logLevel, converter);
 	foreach (const PdfObject & object, objectSettings)
 		converter.addResource(object);
 
