@@ -99,7 +99,7 @@
  *
  * \section pagePdfGlobal Pdf global settings
  * The \ref wkhtmltopdf_global_settings structure contains the following settings:
- * - \b size.paperSize  The paper size of the output document, e.g. "A4".
+ * - \b size.pageSize  The paper size of the output document, e.g. "A4".
  * - \b size.width The with of the output document, e.g.  "4cm".
  * - \b size.height The height of the output document, e.g. "12in".
  * - \b orientation The orientation of the output document, must be either "Landscape" or "Portrait".
@@ -679,7 +679,7 @@ CAPI(long) wkhtmltopdf_get_output(wkhtmltopdf_converter * converter, const unsig
 //  LocalWords:  QString cb bool ok globalSettings phaseChanged progressChanged
 //  LocalWords:  objectSettings utf CropSettings HeaderFooter ImageGlobal dpi sa
 //  LocalWords:  PdfGlobal PdfObject TableOfContent pagePdfGlobal pagePdfObject
-//  LocalWords:  pageImageGlobal pageGlobalLoad paperSize colorMode Grayscale
+//  LocalWords:  pageImageGlobal pageGlobalLoad pageSize colorMode Grayscale
 //  LocalWords:  pageOffset outlineDepth dumpOutline stdout pageLoad pageWeb aa
 //  LocalWords:  includeInOutline pagesCount tocXsl xsl struct typedef str CAPI
 //  LocalWords:  param STRINGIZEE STRINGIZE deinit qApp strcpy wkhtmltox arg ug
