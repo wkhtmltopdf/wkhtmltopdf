@@ -6,14 +6,14 @@ email:    false
 matrix:
   include:
     - os:         linux
-      env:        TARGET=system-qt4-linux
+      env:        TRAVIS_TARGET=system-qt4-linux
       addons:
         apt:
           packages:
           - libqtwebkit-dev
 
     - os:         linux
-      env:        TARGET=system-qt5-linux
+      env:        TRAVIS_TARGET=system-qt5-linux
       addons:
         apt:
           packages:
@@ -22,7 +22,7 @@ matrix:
           - libqt5svg5-dev
 
     - os:         linux
-      env:        TARGET=custom-qt4-linux
+      env:        TRAVIS_TARGET=custom-qt4-linux
       addons:
         apt:
           packages:
@@ -40,17 +40,17 @@ matrix:
 
     - os:         osx
       osx_image:  xcode8.2
-      env:        TARGET=custom-qt4-osx
+      env:        TRAVIS_TARGET=custom-qt4-osx
 
     - os:         linux
-      env:        TARGET=custom-qt4-windows
+      env:        TRAVIS_TARGET=custom-qt4-windows
       addons:
         apt:
           packages:
           - g++-mingw-w64-i686
 
     - os:         linux
-      env:        TARGET=custom-qt5-windows
+      env:        TRAVIS_TARGET=custom-qt5-windows
       addons:
         apt:
           packages:
@@ -63,12 +63,12 @@ install:
 
 script:
 - >
-    if   [[ $TARGET == "system-qt4-linux"   ]]; then qmake-qt4 CONFIG+=silent && make;
-    elif [[ $TARGET == "system-qt5-linux"   ]]; then /usr/lib/x86_64-linux-gnu/qt5/bin/qmake CONFIG+=silent && make;
-    elif [[ $TARGET == "custom-qt5-windows" ]]; then CFLAGS=-w CXXFLAGS=-w scripts/build5.py mingw-w64-cross-win32 -debug;
-    elif [[ $TARGET == "custom-qt4-linux"   ]]; then CFLAGS=-w CXXFLAGS=-w scripts/build.py posix-local -debug;
-    elif [[ $TARGET == "custom-qt4-windows" ]]; then CFLAGS=-w CXXFLAGS=-w scripts/build.py mingw-w64-cross-win32 -debug;
-    elif [[ $TARGET == "custom-qt4-osx"     ]]; then
+    if   [[ $TRAVIS_TARGET == "system-qt4-linux"   ]]; then qmake-qt4 CONFIG+=silent && make;
+    elif [[ $TRAVIS_TARGET == "system-qt5-linux"   ]]; then /usr/lib/x86_64-linux-gnu/qt5/bin/qmake CONFIG+=silent && make;
+    elif [[ $TRAVIS_TARGET == "custom-qt5-windows" ]]; then CFLAGS=-w CXXFLAGS=-w scripts/build5.py mingw-w64-cross-win32 -debug;
+    elif [[ $TRAVIS_TARGET == "custom-qt4-linux"   ]]; then CFLAGS=-w CXXFLAGS=-w scripts/build.py posix-local -debug;
+    elif [[ $TRAVIS_TARGET == "custom-qt4-windows" ]]; then CFLAGS=-w CXXFLAGS=-w scripts/build.py mingw-w64-cross-win32 -debug;
+    elif [[ $TRAVIS_TARGET == "custom-qt4-osx"     ]]; then
         WKHTMLTOX_QT_CONFIG="remove:-openssl -no-openssl" \
         CFLAGS="-w -mmacosx-version-min=10.6" \
         CXXFLAGS="-w -mmacosx-version-min=10.6" \
