@@ -4,6 +4,8 @@ layout: default
 
 All downloads are hosted at [gna.org](http://download.gna.org/wkhtmltopdf/), so you can browse for a specific download or use the links below.
 
+**Please read [this notice](https://github.com/wkhtmltopdf/wkhtmltopdf/issues/3390#issuecomment-287982282) if you downloaded any file between 16-Mar-2017 and 21-Mar-2017**.
+
 ## Stable
 
 The current stable series is **0.12.4**, which was released on November 22, 2016 -- see changes [since 0.12.3](https://github.com/wkhtmltopdf/wkhtmltopdf/releases/tag/0.12.4).
