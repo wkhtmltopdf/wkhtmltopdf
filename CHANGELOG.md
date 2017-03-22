@@ -2,6 +2,7 @@ v0.12.5 (unreleased)
 --------------------
 * fixed build without patched Qt and integrate with Travis CI and AppVeyor
 * **#1524**: **[qt]** partial fix for overlapping text when repeating headers/footers in table (qt#29)
+* **#1914**: **[qt]** rotated elements not rendered on thead on second page and beyond
 * **#1870**: fixed sending of duplicate cookies (#3257)
 * **#3206**: added support for SSL client certificates
 * **#3241**: fix for DPI regression on OS X (#3386)
