@@ -1,6 +1,15 @@
 v0.12.5 (unreleased)
 --------------------
-* update zlib to 1.2.11, libpng to 1.6.28 and xz to 5.2.3
+* fixed build without patched Qt and integrate with Travis CI and AppVeyor
+* **#1524**: **[qt]** partial fix for overlapping text when repeating headers/footers in table (qt#29)
+* **#1870**: fixed sending of duplicate cookies (#3257)
+* **#3206**: added support for SSL client certificates
+* **#3241**: fix for DPI regression on OS X (#3386)
+* **#3363**: added error message for network errors related to non-media files
+* **#3364**: new option `verbosity` to allow different log levels in both CLI and API
+* switch to self-hosted website and downloads as gna.org is shutting down (#3390)
+* minor documentation updates and fixing compiler warnings
+* update OpenSSL to 1.0.2k, zlib to 1.2.11, libpng to 1.6.28 and xz to 5.2.3
 
 v0.12.4 (2016-11-22)
 --------------------
