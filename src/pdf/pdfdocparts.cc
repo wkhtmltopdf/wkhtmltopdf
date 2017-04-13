@@ -187,6 +187,7 @@ void PdfCommandLineParser::outputHeaderFooterDoc(Outputter * o) const {
 	o->paragraph("Headers and footers can also be supplied with HTML documents. As an example one "
 				 "could specify --header-html header.html, and use the following content in header.html:");
 	o->verbatim(
+"<!DOCTYPE html>\n"
 "<html><head><script>\n"
 "function subst() {\n"
 "    var vars = {};\n"
