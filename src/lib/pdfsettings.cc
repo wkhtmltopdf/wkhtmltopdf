@@ -128,6 +128,7 @@ struct DLL_LOCAL ReflectImpl<PdfGlobal>: public ReflectClass {
 		WKHTMLTOPDF_REFLECT(imageDPI);
 		WKHTMLTOPDF_REFLECT(imageQuality);
 		WKHTMLTOPDF_REFLECT(load);
+		WKHTMLTOPDF_REFLECT(viewportSize);
 	}
 };
 
