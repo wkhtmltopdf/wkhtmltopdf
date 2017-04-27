@@ -77,7 +77,7 @@ void PdfCommandLineParser::outputSynopsis(Outputter * o) const {
 			"further more the options from the ");
 	o->sectionLink("TOC Options");
 	o->text(" section can also be applied. The table of contents is generated via XSLT which means "
-			"that it can be styled to look however you want it to look. To get an aide of how to "
+			"that it can be styled to look however you want it to look. To get an idea of how to "
 			"do this you can dump the default xslt document by supplying the --dump-default-toc-xsl, and the outline it works on by supplying --dump-outline, see the ");
 	o->sectionLink("Outline Options");
 	o->text(" section.");
