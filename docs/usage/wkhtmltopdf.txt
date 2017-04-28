@@ -33,7 +33,7 @@ Document objects:
   All options that can be specified for a page object can also be specified for
   a toc, further more the options from the TOC Options section can also be
   applied. The table of content is generated via XSLT which means that it can be
-  styled to look however you want it to look. To get an aide of how to do this
+  styled to look however you want it to look. To get an idea of how to do this
   you can dump the default xslt document by supplying the
   --dump-default-toc-xsl, and the outline it works on by supplying
   --dump-outline, see the Outline Options section.

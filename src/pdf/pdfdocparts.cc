@@ -313,7 +313,7 @@ void PdfCommandLineParser::outputDocStart(Outputter * o) const {
 void PdfCommandLineParser::outputArgsFromStdin(Outputter * o) const {
 	o->beginSection("Reading arguments from stdin");
 	o->paragraph("If you need to convert a lot of pages in a batch, and you feel that wkhtmltopdf "
-				 "is a bit to slow to start up, then you should try --read-args-from-stdin,");
+				 "is a bit too slow to start up, then you should try --read-args-from-stdin,");
 	o->paragraph("When --read-args-from-stdin each line of input sent to wkhtmltopdf on stdin "
 				 "will act as a separate invocation of wkhtmltopdf, with the arguments specified "
 				 "on the given line combined with the arguments given to wkhtmltopdf");
