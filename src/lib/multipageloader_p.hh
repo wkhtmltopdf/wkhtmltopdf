@@ -107,6 +107,7 @@ public slots:
 	void error(const QString & str);
 	void sslErrors(QNetworkReply *reply, const QList<QSslError> &);
 	void amfinished(QNetworkReply * reply);
+	void dumpHtml();
 };
 
 class DLL_LOCAL MyCookieJar: public QNetworkCookieJar {

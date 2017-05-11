@@ -217,6 +217,7 @@ void CommandLineParserBase::addPageLoadArgs(LoadPage & s) {
 
 	addarg("javascript-delay",0,"Wait some milliseconds for javascript finish", new IntSetter(s.jsdelay,"msec"));
 	addarg("window-status",0,"Wait until window.status is equal to this string before rendering page", new QStrSetter(s.windowStatus, "windowStatus"));
+	addarg("dump-html",0,"Write rendered HTML to a directory", new QStrSetter(s.dumpHtml, "dir"));
 
 	addarg("zoom",0,"Use this zoom factor", new FloatSetter(s.zoomFactor,"float",1.0));
 	addarg("cookie",0,"Set an additional cookie (repeatable), value should be url encoded.", new MapSetter<>(s.cookies, "name", "value"));
