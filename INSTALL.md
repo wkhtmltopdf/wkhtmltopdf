@@ -7,6 +7,7 @@ spaces/special characters in the name. In case you already have a cloned
 repository, update to the latest version by running the following commands:
 
     git pull
+    git submodule init
     git submodule update
 
 Please ensure that you have enough disk space in the location you have cloned
