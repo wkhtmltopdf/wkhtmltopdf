@@ -37,6 +37,11 @@ Building is supported only on latest stable Debian/Ubuntu 64-bit, and
 the binaries are produced in a self-contained chroot environment for the
 target distribution -- you will need to first setup the build environment
 and then only you can perform the build for a 32-bit or 64-bit binary.
+
+Note to Ubuntu users with an encrypted home directory: You may not be able 
+to access your home directory in the schroot.  For a workaround see 
+https://bugs.launchpad.net/ubuntu/+source/schroot/+bug/791908
+
 The following targets are currently supported:
 
 Target         | Setup of Build Environment                    | Building 32-bit binaries                 |  Building 64-bit binaries
