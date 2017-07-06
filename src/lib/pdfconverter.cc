@@ -836,7 +836,7 @@ void PdfConverterPrivate::spoolPage(int page) {
 				name,
 				tn == "TEXTAREA",
 				type == "password",
-				elm.evaluateJavaScript("this.readonly;").toBool(),
+				elm.evaluateJavaScript("this.readOnly;").toBool(),
 				elm.hasAttribute("maxlength")?elm.attribute("maxlength").toInt():-1
 				);
 		} else if (type == "checkbox") {
@@ -844,7 +844,7 @@ void PdfConverterPrivate::spoolPage(int page) {
 				webPrinter->elementLocation(elm).second,
 				elm.evaluateJavaScript("this.checked;").toBool(),
 				name,
-				elm.evaluateJavaScript("this.readonly;").toBool());
+				elm.evaluateJavaScript("this.readOnly;").toBool());
 		}
 	}
 	for (QHash<QString, QWebElement>::iterator i=pageAnchors[page+1].begin();
