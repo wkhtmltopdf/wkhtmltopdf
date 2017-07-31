@@ -44,6 +44,7 @@ void ProgressFeedback::warning(const QString &message) {
 		fprintf(stderr, " ");
 	fprintf(stderr, "\n");
 	lw = 0;
+	fflush(stderr);
 }
 
 /*!
@@ -57,6 +58,7 @@ void ProgressFeedback::error(const QString &message) {
 		fprintf(stderr, " ");
 	fprintf(stderr, "\n");
 	lw = 0;
+	fflush(stderr);
 }
 
 /*!
@@ -74,6 +76,7 @@ void ProgressFeedback::phaseChanged() {
 		fprintf(stderr, " ");
 	fprintf(stderr, "\n");
 	lw = 0;
+	fflush(stderr);
 }
 
 /*!
@@ -96,6 +99,7 @@ void ProgressFeedback::progressChanged(int progress) {
 	for (int i=l; i < lw; ++i) fprintf(stderr, " ");
 	lw = l;
 	fprintf(stderr, "\r");
+	fflush(stderr);
 }
 
 ProgressFeedback::ProgressFeedback(settings::LogLevel l, Converter & _):
