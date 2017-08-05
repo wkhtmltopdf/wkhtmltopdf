@@ -397,7 +397,8 @@ void ResourceObject::amfinished(QNetworkReply * reply) {
 	if ((networkStatus != 0 && networkStatus != 5) || (httpStatus > 399 && httpErrorCode == 0))
 	{
 		QFileInfo fi(reply->url().toString());
-		bool mediaFile = settings::LoadPage::mediaFilesExtensions.contains(fi.completeSuffix().toLower());
+		QString extension = fi.completeSuffix().toLower().remove(QRegExp("\\?.*$"));
+		bool mediaFile = settings::LoadPage::mediaFilesExtensions.contains(extension);
 		if ( ! mediaFile) {
 			// XXX: Notify network errors as higher priority than HTTP errors.
 			//      QT's QNetworkReply::NetworkError enum uses values overlapping
