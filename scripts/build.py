@@ -151,7 +151,7 @@ QT_CONFIG = {
         '-no-framework',
         '-no-dwarf2',
         '-xrender',                 # xrender support is required
-        '-openssl',                 # load OpenSSL binaries at runtime
+        '-no-openssl',              # do not load OpenSSL binaries at runtime
         '-largefile',
         '-no-rpath'
     ]
