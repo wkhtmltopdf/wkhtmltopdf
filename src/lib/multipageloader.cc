@@ -211,8 +211,10 @@ ResourceObject::ResourceObject(MultiPageLoaderPrivate & mpl, const QUrl & u, con
 	connect(&webPage, SIGNAL(printRequested(QWebFrame*)), this, SLOT(printRequested(QWebFrame*)));
 
 	//If some ssl error occurs we want sslErrors to be called, so the we can ignore it
+	#if (QT_VERSION >= 0x050000 && !defined QT_NO_SSL) || !defined QT_NO_OPENSSL
 	connect(&networkAccessManager, SIGNAL(sslErrors(QNetworkReply*, const QList<QSslError>&)),this,
 	        SLOT(sslErrors(QNetworkReply*, const QList<QSslError>&)));
+    #endif
 
 	connect(&networkAccessManager, SIGNAL(finished (QNetworkReply *)),
 			this, SLOT(amfinished (QNetworkReply *) ) );
