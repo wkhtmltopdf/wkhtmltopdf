@@ -18,7 +18,6 @@
 // You should have received a copy of the GNU Lesser General Public License
 // along with wkhtmltopdf.  If not, see <http://www.gnu.org/licenses/>.
 
-
 #include "multipageloader_p.hh"
 #include <QFile>
 #include <QFileInfo>
@@ -231,12 +230,13 @@ ResourceObject::ResourceObject(MultiPageLoaderPrivate & mpl, const QUrl & u, con
 		proxy.setHostName(settings.proxy.host);
 		proxy.setPort(settings.proxy.port);
 		proxy.setType(settings.proxy.type);
-		// to retrieve a web page, it's not needed to use a fully transparent
-		// http proxy. Moreover, the CONNECT() method is frequently disabled
-		// by proxies administrators.
-		if (settings.proxy.type == QNetworkProxy::HttpProxy)
-			proxy.setCapabilities(QNetworkProxy::CachingCapability |
-			                      QNetworkProxy::TunnelingCapability);
+
+		if (settings.proxy.type == QNetworkProxy::HttpProxy) {
+			QNetworkProxy::Capabilities capabilities = QNetworkProxy::CachingCapability | QNetworkProxy::TunnelingCapability;
+			if (settings.proxyHostNameLookup)
+				capabilities |= QNetworkProxy::HostNameLookupCapability;
+			proxy.setCapabilities(capabilities);
+		}
 		if (!settings.proxy.user.isEmpty())
 			proxy.setUser(settings.proxy.user);
 		if (!settings.proxy.password.isEmpty())
