@@ -203,6 +203,7 @@ void CommandLineParserBase::addPageLoadArgs(LoadPage & s) {
 	extended(true);
 	qthack(false);
 	addarg("proxy",'p',"Use a proxy", new ProxySetter(s.proxy, "proxy"));
+	addarg("proxy-hostname-lookup", 0, "Use the proxy for resolving hostnames", new ConstSetter<bool>(s.proxyHostNameLookup, true));
 	addarg("bypass-proxy-for", 0, "Bypass proxy for host (repeatable)", new StringListSetter(s.bypassProxyForHosts, "value"));
 	addarg("username",0,"HTTP Authentication username", new QStrSetter(s.username, "username"));
 	addarg("password",0,"HTTP Authentication password", new QStrSetter(s.password, "password"));

@@ -145,7 +145,8 @@ LoadPage::LoadPage():
 	debugJavascript(false),
 	loadErrorHandling(abort),
 	mediaLoadErrorHandling(ignore),
-	cacheDir("") {};
+	cacheDir(""),
+	proxyHostNameLookup(false) {};
 
 }
 }

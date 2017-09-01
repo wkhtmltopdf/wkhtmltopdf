@@ -129,6 +129,9 @@ struct DLL_PUBLIC LoadPage {
 
 	// Hosts to bypass
 	QList< QString > bypassProxyForHosts;
+
+	//! Whether to use the proxy for resolving hostnames
+	bool proxyHostNameLookup;
 };
 
 DLL_PUBLIC LoadPage::LoadErrorHandling strToLoadErrorHandling(const char * s, bool * ok=0);
