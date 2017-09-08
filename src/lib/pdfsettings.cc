@@ -162,6 +162,7 @@ struct DLL_LOCAL ReflectImpl<PdfObject>: public ReflectClass {
 		WKHTMLTOPDF_REFLECT(includeInOutline);
 		WKHTMLTOPDF_REFLECT(pagesCount);
 		WKHTMLTOPDF_REFLECT(isTableOfContent);
+		WKHTMLTOPDF_REFLECT(isCover);
 		WKHTMLTOPDF_REFLECT(tocXsl);
 	}
 };
@@ -405,6 +406,7 @@ PdfObject::PdfObject():
 	includeInOutline(true),
 	pagesCount(true),
 	isTableOfContent(false),
+	isCover(false),
 	tocXsl("") {};
 
 QString PdfGlobal::get(const char * name) {
