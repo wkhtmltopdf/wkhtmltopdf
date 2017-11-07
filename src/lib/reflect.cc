@@ -72,6 +72,7 @@ ReflectImpl<LoadPage>::ReflectImpl(LoadPage & c) {
 	WKHTMLTOPDF_REFLECT(stopSlowScripts);
 	WKHTMLTOPDF_REFLECT(debugJavascript);
 	WKHTMLTOPDF_REFLECT(loadErrorHandling);
+	WKHTMLTOPDF_REFLECT(mediaLoadErrorHandling);
 	WKHTMLTOPDF_REFLECT(proxy);
 	WKHTMLTOPDF_REFLECT(runScript);
 	WKHTMLTOPDF_REFLECT(checkboxSvg);
