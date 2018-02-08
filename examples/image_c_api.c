@@ -63,7 +63,7 @@ int main() {
 	 */
 	gs = wkhtmltoimage_create_global_settings();
 
-	/* We want to convert to convert the qstring documentation page */
+	/* We want to convert the qstring documentation page */
 	wkhtmltoimage_set_global_setting(gs, "in", "http://www.google.com/");
 	wkhtmltoimage_set_global_setting(gs, "fmt", "jpeg");
 
