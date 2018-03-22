@@ -792,12 +792,12 @@ void PdfConverterPrivate::measuringHeadersLoaded(bool ok) {
         PageObject & obj = objects[d];
         if (obj.measuringHeader) {
             // add spacing to prevent moving header out of page
-            obj.headerReserveHeight = calculateHeaderHeight(obj, *obj.measuringHeader) + obj.settings.header.spacing;
+            obj.headerReserveHeight = calculateHeaderHeight(obj, *obj.measuringHeader) + obj.settings.header.spacing + obj.settings.header.margin;
         }
 
         if (obj.measuringFooter) {
             // add spacing to prevent moving footer out of page
-            obj.footerReserveHeight = calculateHeaderHeight(obj, *obj.measuringFooter) + obj.settings.footer.spacing;
+            obj.footerReserveHeight = calculateHeaderHeight(obj, *obj.measuringFooter) + obj.settings.footer.spacing + obj.settings.footer.margin;
         }
     }
 #endif
