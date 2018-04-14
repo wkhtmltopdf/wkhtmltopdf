@@ -304,6 +304,7 @@ CAPI(int) wkhtmltopdf_init(int use_graphics) {
 		Q_UNUSED(use_graphics);
 #endif
 		a = new QApplication(aa, arg, ug);
+		a->setApplicationName(x);
 		MyLooksStyle * style = new MyLooksStyle();
 		a->setStyle(style);
 	}
