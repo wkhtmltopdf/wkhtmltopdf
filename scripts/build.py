@@ -339,7 +339,7 @@ DEPENDENT_LIBS = {
 
     'xz': {
         'order' : 5,
-        'url' : 'http://tukaani.org/xz/xz-5.2.3.tar.gz',
+        'url' : 'http://downloads.sourceforge.net/lzmautils/xz-5.2.3.tar.gz',
         'sha1': '529638eec3597e429cc54c74551ac0a89169e841',
         'build' : {
             'osx*': {
