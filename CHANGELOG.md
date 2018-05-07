@@ -18,7 +18,7 @@ v0.12.5 (unreleased)
 * add setting to perform hostname lookup via proxy (#3628)
 * correctly pass --copies to underlying QPrinter (#3747)
 * minor documentation updates and fixing compiler warnings
-* add various Qt patches to get compilation working in recent distributions
+* add various Qt patches to support OpenSSL 1.1 and latest MinGW/macOS environments
 * update OpenSSL to 1.0.2k, zlib to 1.2.11, libpng to 1.6.28 and xz to 5.2.3
 
 v0.12.4 (2016-11-22)

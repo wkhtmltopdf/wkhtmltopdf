@@ -106,7 +106,7 @@ QT_CONFIG = {
         '-xrender',                 # xrender support is required
         '-largefile',
         '-iconv',                   # iconv support is required for text codecs
-        '-openssl',                 # load OpenSSL binaries at runtime
+        '-openssl-linked',          # directly link to OpenSSL during compilation
         '-no-javascript-jit',       # can cause crashes/excess memory usage
         '-no-rpath',
         '-no-dbus',
