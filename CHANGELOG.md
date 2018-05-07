@@ -10,6 +10,8 @@ v0.12.5 (unreleased)
 * **#3364**: new option `verbosity` to allow different log levels in both CLI and API
 * **#3476**: fix application name in libwkhtmltox (#3878)
 * **#3672**: **[qt]** fix broken PDF with fonts having spaces in name (qt#38)
+* **#3680**: **[qt]** fix build on macOS 10.13
+* **#3900**: **[qt]** properly encode URLs with unicode characters in links
 * switch to self-hosted website and downloads as gna.org is shutting down (#3390)
 * add viewportSize to C API (#3440)
 * fix conversion of read-only form fields (#3550)
