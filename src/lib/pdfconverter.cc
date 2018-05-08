@@ -991,10 +991,26 @@ void PdfConverterPrivate::printDocument() {
 	progressString = "Preparing";
 	emit out.progressChanged(0);
 
+	qreal leftMargin, topMargin, rightMargin, bottomMargin;
+	printer->getPageMargins(&leftMargin, &topMargin, &rightMargin, &bottomMargin, settings.margin.left.second);
+
 	for (int cc_=0; cc_ < cc; ++cc_) {
 		pageNumber=1;
 		for (int d=0; d < objects.size(); ++d) {
+			if (objects[d].settings.isCover) {
+				painter->save();
+				printer->setPageMargins(leftMargin, 0, rightMargin, 0, settings.margin.left.second);
+				painter->translate(0, -topMargin * printer->height() / printer->heightMM());
+				painter->translate(0, printer->height() / printer->heightMM());
+			}
+
 			beginPrintObject(objects[d]);
+
+			if (objects[d].settings.isCover) {
+				printer->setPageMargins(leftMargin, topMargin, rightMargin, bottomMargin, settings.margin.left.second);
+				painter->restore();
+			}
+
 			// XXX: In some cases nothing gets loaded at all,
 			//      so we would get no webPrinter instance.
 			int pageCount = webPrinter != 0 ? webPrinter->pageCount() : 0;
