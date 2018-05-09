@@ -165,6 +165,8 @@ struct DLL_PUBLIC HeaderFooter {
 	QString htmlUrl;
 	//! Spacing
 	float spacing;
+	//! Margin
+	float margin;
 };
 
 struct DLL_PUBLIC PdfObject {

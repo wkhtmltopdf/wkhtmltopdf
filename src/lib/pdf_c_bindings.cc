@@ -95,6 +95,7 @@
  * - \b header.spacing The amount of space to put between the header and the content, e.g. "1.8". Be
  *      aware that if this is too large the header will be printed outside the pdf document. This
  *      can be corrected with the margin.top setting.
+ * - \b header.margin Top margin.
  * - \b header.htmlUrl Url for a HTML document to use for the header.
  *
  * \section pagePdfGlobal Pdf global settings
