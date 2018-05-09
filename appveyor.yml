@@ -4,7 +4,7 @@ test:         off
 
 environment:
   matrix:
-    - TARGET: msvc2013-win32
+    - TARGET: msvc2015-win32
 
 install:
   - git submodule update --init --recursive --force --depth 50
