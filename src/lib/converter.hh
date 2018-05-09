@@ -22,8 +22,8 @@
 #define __CONVERTER_HH__
 
 #include <QObject>
-#include <wkhtmltox/loadsettings.hh>
-#include <wkhtmltox/dllbegin.inc>
+#include <loadsettings.hh>
+#include <dllbegin.inc>
 
 namespace wkhtmltopdf {
 
@@ -61,5 +61,5 @@ protected:
 };
 
 }
-#include <wkhtmltox/dllend.inc>
+#include <dllend.inc>
 #endif //__CONVERTER_HH__

@@ -21,7 +21,7 @@
 #include "logging.hh"
 #include <QMap>
 #include <QString>
-#include <wkhtmltox/dllbegin.inc>
+#include <dllbegin.inc>
 namespace wkhtmltopdf {
 namespace settings {
 
@@ -59,4 +59,4 @@ QString logLevelToStr(const LogLevel & l, bool * ok) {
 
 }
 }
-#include <wkhtmltox/dllend.inc>
+#include <dllend.inc>

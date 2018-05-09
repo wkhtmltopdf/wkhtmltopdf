@@ -20,7 +20,7 @@
 
 #include "arghandler.inl"
 #include "commandlineparserbase.hh"
-#include <wkhtmltox/loadsettings.hh>
+#include <loadsettings.hh>
 using namespace wkhtmltopdf::settings;
 
 struct LoadErrorHandlingTM: public SomeSetterTM<LoadPage::LoadErrorHandling> {

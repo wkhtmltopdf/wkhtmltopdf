@@ -92,10 +92,8 @@ skip_vcruntime:
   File static-build\${TARGET}\app\bin\wkhtmltox.lib
 
   SetOutPath "$INSTDIR\include\wkhtmltox"
-  File include\wkhtmltox\dllbegin.inc
-  File include\wkhtmltox\dllend.inc
-  File include\wkhtmltox\pdf.h
-  File include\wkhtmltox\image.h
+  File src\lib\*.inc
+  File src\lib\*.h
 
   WriteRegStr HKLM "Software\wkhtmltopdf" "InstallPath" "$INSTDIR"
   WriteRegStr HKLM "Software\wkhtmltopdf" "Version"     "${VERSION}"

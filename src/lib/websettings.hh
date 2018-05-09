@@ -24,7 +24,7 @@
 #include <QNetworkProxy>
 #include <QString>
 
-#include <wkhtmltox/dllbegin.inc>
+#include <dllbegin.inc>
 namespace wkhtmltopdf {
 namespace settings {
 
@@ -61,5 +61,5 @@ struct DLL_PUBLIC Web {
 
 }
 }
-#include <wkhtmltox/dllend.inc>
+#include <dllend.inc>
 #endif //__WEBSETTINGS_HH__

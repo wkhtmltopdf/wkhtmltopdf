@@ -22,7 +22,7 @@
 #include "pdfcommandlineparser.hh"
 #include <QFile>
 #include <qglobal.h>
-#include <wkhtmltox/pdfconverter.hh>
+#include <pdfconverter.hh>
 
 /*!
   \class ArgHandler

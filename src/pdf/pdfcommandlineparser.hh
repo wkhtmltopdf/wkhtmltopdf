@@ -22,7 +22,7 @@
 #define __PDFCOMMANDLINEPARSER_HH__
 #include "commandlineparserbase.hh"
 #include <cstdio>
-#include <wkhtmltox/pdfsettings.hh>
+#include <pdfsettings.hh>
 
 class PdfCommandLineParser: public CommandLineParserBase {
 public:

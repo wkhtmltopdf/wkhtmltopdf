@@ -20,7 +20,7 @@ CONFIG(static, shared|static):lessThan(QT_MAJOR_VERSION, 5) {
     QTPLUGIN += qcncodecs qjpcodecs qkrcodecs qtwcodecs
 }
 
-INCLUDEPATH += ../../include
+INCLUDEPATH += ../../src/lib
 RESOURCES    = $$PWD/wkhtmltopdf.qrc
 
 win32:      CONFIG += console
@@ -40,4 +40,4 @@ VERSION_LIST=$$split(VERSION_TEXT, "-")
 count(VERSION_LIST, 1): VERSION=$$VERSION_TEXT
 else:                   VERSION=$$member(VERSION_LIST, 0)
 
-DEFINES += VERSION=$$VERSION FULL_VERSION=$$VERSION_TEXT
+DEFINES += VERSION=$$VERSION FULL_VERSION=$$VERSION_TEXT BUILDING_WKHTMLTOX

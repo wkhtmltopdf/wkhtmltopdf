@@ -29,9 +29,9 @@
 #else
 #include <QWebPage>
 #endif
-#include <wkhtmltox/loadsettings.hh>
+#include <loadsettings.hh>
 
-#include <wkhtmltox/dllbegin.inc>
+#include <dllbegin.inc>
 namespace wkhtmltopdf {
 
 class DLL_LOCAL MyQWebPage;
@@ -73,5 +73,5 @@ private:
 };
 
 }
-#include <wkhtmltox/dllend.inc>
+#include <dllend.inc>
 #endif //__MULTIPAGELOADER_HH__

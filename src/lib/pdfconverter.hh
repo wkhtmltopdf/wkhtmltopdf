@@ -21,10 +21,10 @@
 #ifndef __PDFCONVERTER_HH__
 #define __PDFCONVERTER_HH__
 
-#include <wkhtmltox/converter.hh>
-#include <wkhtmltox/pdfsettings.hh>
+#include <converter.hh>
+#include <pdfsettings.hh>
 
-#include <wkhtmltox/dllbegin.inc>
+#include <dllbegin.inc>
 namespace wkhtmltopdf {
 
 class DLL_LOCAL PdfConverterPrivate;
@@ -48,5 +48,5 @@ signals:
 };
 
 }
-#include <wkhtmltox/dllend.inc>
+#include <dllend.inc>
 #endif //__PDFCONVERTER_HH__

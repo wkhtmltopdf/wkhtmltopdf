@@ -24,7 +24,7 @@
 #include <QNetworkProxy>
 #include <QString>
 
-#include <wkhtmltox/dllbegin.inc>
+#include <dllbegin.inc>
 namespace wkhtmltopdf {
 namespace settings {
 
@@ -145,5 +145,5 @@ DLL_PUBLIC QString proxyToStr(const Proxy & proxy);
 
 }
 }
-#include <wkhtmltox/dllend.inc>
+#include <dllend.inc>
 #endif //__LOADSETTINGS_HH__

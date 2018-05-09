@@ -20,8 +20,8 @@
 
 #ifndef __COMMANDLINEPARSERBASE_HH__
 #define __COMMANDLINEPARSERBASE_HH__
-#include <wkhtmltox/loadsettings.hh>
-#include <wkhtmltox/websettings.hh>
+#include <loadsettings.hh>
+#include <websettings.hh>
 class Outputter;
 class CommandLineParserBase;
 

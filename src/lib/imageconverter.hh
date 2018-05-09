@@ -21,10 +21,10 @@
 #ifndef __IMAGECONVERTER_HH__
 #define __IMAGECONVERTER_HH__
 
-#include <wkhtmltox/converter.hh>
-#include <wkhtmltox/imagesettings.hh>
+#include <converter.hh>
+#include <imagesettings.hh>
 
-#include <wkhtmltox/dllbegin.inc>
+#include <dllbegin.inc>
 namespace wkhtmltopdf {
 
 class DLL_LOCAL ImageConverterPrivate;
@@ -41,6 +41,6 @@ private:
 	friend class ImageConverterPrivate;
 };
 
-#include <wkhtmltox/dllend.inc>
+#include <dllend.inc>
 }
 #endif //__IMAGECONVERTER_HH__

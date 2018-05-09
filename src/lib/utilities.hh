@@ -30,7 +30,7 @@
 #include <QSvgRenderer>
 #include <QUrl>
 
-#include <wkhtmltox/dllbegin.inc>
+#include <dllbegin.inc>
 /**
  * Custom simplistic style
  */
@@ -56,5 +56,5 @@ public slots:
 
 DLL_PUBLIC int handleError(bool success, int errorCode);
 
-#include <wkhtmltox/dllend.inc>
+#include <dllend.inc>
 #endif //__UTILITIES_HH__

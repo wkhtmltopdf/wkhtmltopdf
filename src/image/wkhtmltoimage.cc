@@ -22,9 +22,9 @@
 #include "progressfeedback.hh"
 #include <QApplication>
 #include <QWebFrame>
-#include <wkhtmltox/imageconverter.hh>
-#include <wkhtmltox/imagesettings.hh>
-#include <wkhtmltox/utilities.hh>
+#include <imageconverter.hh>
+#include <imagesettings.hh>
+#include <utilities.hh>
 
 #if defined(Q_OS_UNIX)
 #include <locale.h>

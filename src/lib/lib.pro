@@ -24,14 +24,12 @@ include(lib.pri)
 DEF_FILE = lib.def
 CONFIG(static, shared|static): DEFINES += QT_NODLL
 
-unix {
-   headers.target=headers
-   headers.files=../../include/wkhtmltox/*.h ../../include/wkhtmltox/*.inc
-   headers.path=$$INSTALLBASE/include/wkhtmltox
+headers.target=headers
+headers.files=*.h *.inc
+headers.path=$$INSTALLBASE/include/wkhtmltox
 
-   QMAKE_EXTRA_TARGETS += headers
-   INSTALLS += headers
-}
+QMAKE_EXTRA_TARGETS += headers
+INSTALLS += headers
 
 windows {
    TARGET_EXT=.dll

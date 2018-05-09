@@ -22,11 +22,11 @@
 #define __IMAGESETTINGS_HH__
 
 #include <QString>
-#include <wkhtmltox/logging.hh>
-#include <wkhtmltox/loadsettings.hh>
-#include <wkhtmltox/websettings.hh>
+#include <logging.hh>
+#include <loadsettings.hh>
+#include <websettings.hh>
 
-#include <wkhtmltox/dllbegin.inc>
+#include <dllbegin.inc>
 namespace wkhtmltopdf {
 namespace settings {
 
@@ -90,7 +90,7 @@ struct DLL_PUBLIC ImageGlobal {
 	bool set(const char * name, const QString & value);
 };
 
-#include <wkhtmltox/dllend.inc>
+#include <dllend.inc>
 }
 }
 #endif //__IMAGESETTINGS_HH__

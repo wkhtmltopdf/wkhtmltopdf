@@ -21,7 +21,12 @@
 
 #ifndef __IMAGE_H__
 #define __IMAGE_H__
+
+#ifdef BUILDING_WKHTMLTOX
+#include "dllbegin.inc"
+#else
 #include <wkhtmltox/dllbegin.inc>
+#endif
 
 struct wkhtmltoimage_global_settings;
 typedef struct wkhtmltoimage_global_settings wkhtmltoimage_global_settings;
@@ -62,5 +67,10 @@ CAPI(const char *) wkhtmltoimage_progress_string(wkhtmltoimage_converter * conve
 CAPI(int) wkhtmltoimage_http_error_code(wkhtmltoimage_converter * converter);
 CAPI(long) wkhtmltoimage_get_output(wkhtmltoimage_converter * converter, const unsigned char **);
 
+#ifdef BUILDING_WKHTMLTOX
+#include "dllend.inc"
+#else
 #include <wkhtmltox/dllend.inc>
+#endif
+
 #endif /*__IMAGE_H__*/

@@ -22,7 +22,7 @@
 #define __IMAGECOMMANDLINEPARSER_HH__
 #include "commandlineparserbase.hh"
 #include <cstdio>
-#include <wkhtmltox/imagesettings.hh>
+#include <imagesettings.hh>
 
 /*! \brief The class is responsible for parsing command line information
 */

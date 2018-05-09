@@ -950,10 +950,7 @@ def build_posix_local(config, basedir):
     os.environ['WKHTMLTOX_VERSION'] = version
     shell('../qt/bin/qmake ../../../wkhtmltopdf.pro')
     shell('%s -j%d' % (make, CPU_COUNT))
-    shell('cp bin/wkhtmlto* ../wkhtmltox-%s/bin' % version)
-    shell('cp -P bin/libwkhtmltox*.so.* ../wkhtmltox-%s/lib' % version)
-    shell('cp ../../../include/wkhtmltox/*.h ../wkhtmltox-%s/include/wkhtmltox' % version)
-    shell('cp ../../../include/wkhtmltox/dll*.inc ../wkhtmltox-%s/include/wkhtmltox' % version)
+    shell('%s install INSTALL_ROOT=../wkhtmltox-%s' % (make, version))
 
     if config.endswith('-dbg'):
         return

@@ -20,8 +20,8 @@
 
 #ifndef __PROGRESSFEEDBACK_HH__
 #define __PROGRESSFEEDBACK_HH__
-#include <wkhtmltox/converter.hh>
-#include <wkhtmltox/logging.hh>
+#include <converter.hh>
+#include <logging.hh>
 namespace wkhtmltopdf {
 
 class ProgressFeedback: public QObject {

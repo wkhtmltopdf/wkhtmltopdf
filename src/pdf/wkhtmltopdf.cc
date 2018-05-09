@@ -30,9 +30,9 @@
 #include <qapplication.h>
 #include <qglobal.h>
 #include <string.h>
-#include <wkhtmltox/pdfconverter.hh>
-#include <wkhtmltox/pdfsettings.hh>
-#include <wkhtmltox/utilities.hh>
+#include <pdfconverter.hh>
+#include <pdfsettings.hh>
+#include <utilities.hh>
 
 #if defined(Q_OS_UNIX)
 #include <locale.h>
