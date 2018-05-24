@@ -219,7 +219,7 @@ DEPENDENT_LIBS = {
                 'result': {
                     'include/zlib.h' : 'zlib.h',
                     'include/zconf.h': 'zconf.h',
-                    'lib/zdll.lib'   : 'zlib.lib'
+                    'lib/zlib.lib'   : 'zlib.lib'
                 },
                 'replace':  [('win32/Makefile.msc', '-MD', '%(cflags)s')],
                 'commands': ['nmake /f win32/Makefile.msc zlib.lib']
@@ -250,7 +250,7 @@ DEPENDENT_LIBS = {
                 },
                 'replace': [
                     ('scripts/makefile.vcwin32', '-I..\\zlib', '-I..\\deplibs\\include'),
-                    ('scripts/makefile.vcwin32', '..\\zlib\\zlib.lib', '..\\deplibs\\lib\\zdll.lib'),
+                    ('scripts/makefile.vcwin32', '..\\zlib\\zlib.lib', '..\\deplibs\\lib\\zlib.lib'),
                     ('scripts/makefile.vcwin32', '-MD', '%(cflags)s')],
                 'commands': ['nmake /f scripts/makefile.vcwin32 libpng.lib']
             },

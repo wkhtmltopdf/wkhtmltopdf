@@ -31,13 +31,11 @@ headers.path=$$INSTALLBASE/include/wkhtmltox
 QMAKE_EXTRA_TARGETS += headers
 INSTALLS += headers
 
-windows {
-   TARGET_EXT=.dll
-}
+windows: CONFIG += skip_target_version_ext
 
 TARGET=wkhtmltox
 INSTALLS += target
-wkhtmltox.path=$$INSTALLBASE/lib
 
 DESTDIR = ../../bin
-target.path=$$INSTALLBASE/lib
+!windows: target.path=$$INSTALLBASE/lib
+else:     target.path=$$INSTALLBASE/bin
