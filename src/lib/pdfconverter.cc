@@ -1044,6 +1044,7 @@ void PdfConverterPrivate::printDocument() {
 			fail();
 		}
 		outputData = i.readAll();
+		i.close();
 		tempOut.removeAll();
 	}
 	clearResources();
