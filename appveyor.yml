@@ -1,5 +1,5 @@
 version:      "{build}"
-clone_folder: c:\wkhtmltopdf
+clone_folder: c:\wkhtmltopdf\wkhtmltopdf
 test:         off
 
 environment:
@@ -8,10 +8,9 @@ environment:
 
 install:
   - git submodule update --init --recursive --force --depth 50
+  - git clone https://github.com/wkhtmltopdf/packaging.git ..\packaging
+  - pip install -q conan pyyaml
   - perl -p -i.bak -e "s/quiet = 0/quiet = 1/g" qt/bin/syncqt
 
 build_script:
-  - scripts\build.py %TARGET%
-
-artifacts:
-  - path: static-build\wkhtmltox*.exe
+  - python ..\packaging\build vagrant --version - - %TARGET% c:\wkhtmltopdf\wkhtmltopdf

@@ -47,9 +47,7 @@ script:
     elif [[ $TARGET == "custom-qt4-linux"   ]]; then ../packaging/build compile-docker stretch-amd64   $PWD ../build;
     elif [[ $TARGET == "custom-qt4-windows" ]]; then ../packaging/build compile-docker mxe-cross-win64 $PWD ../build;
     elif [[ $TARGET == "custom-qt4-osx"     ]]; then
-        WKHTMLTOX_QT_CONFIG="remove:-openssl -no-openssl" \
-        CFLAGS="-w -mmacosx-version-min=10.6" \
-        CXXFLAGS="-w -mmacosx-version-min=10.6" \
-        OBJCFLAGS="-w -mmacosx-version-min=10.6" \
-        scripts/build.py osx-cocoa-x86-64 -debug;
+        sudo -H pip install -q conan pyyaml --ignore-installed six && sudo gem install fpm --no-ri --no-rdoc && \
+        sudo xcode-select --switch /Library/Developer/CommandLineTools && \
+        MACOSX_DEPLOYMENT_TARGET=10.7 ../packaging/build vagrant macos-cocoa --clean --version - - $PWD;
     fi
