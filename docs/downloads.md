@@ -34,18 +34,18 @@ A release candidate for the next release **0.12.5-rc** is available, please test
             <td rowspan="2">Windows</td>
             <td>MSVC 2015</td>
             <td>
-                <a href="https://builds.wkhtmltopdf.org/0.12.5-rc/wkhtmltox-0.12.5-0.20180529.138.rc~37e9f91~msvc2015-win32.exe">win32</a>
+                <a href="https://builds.wkhtmltopdf.org/0.12.5-rc/wkhtmltox-0.12.5-0.20180604.140.rc~6f77c46~msvc2015-win32.exe">win32</a>
                 /
-                <a href="https://builds.wkhtmltopdf.org/0.12.5-rc/wkhtmltox-0.12.5-0.20180529.138.rc~37e9f91~msvc2015-win64.exe">win64</a>
+                <a href="https://builds.wkhtmltopdf.org/0.12.5-rc/wkhtmltox-0.12.5-0.20180604.140.rc~6f77c46~msvc2015-win64.exe">win64</a>
             </td>
             <td>Installer for Windows Vista or later</td>
         </tr>
         <tr>
             <td><a href="http://mxe.cc">MXE</a> (Mingw-w64)</td>
             <td>
-                <a href="https://builds.wkhtmltopdf.org/0.12.5-rc/wkhtmltox-0.12.5-0.20180529.138.rc~37e9f91~mxe-cross-win32.7z">win32</a>
+                <a href="https://builds.wkhtmltopdf.org/0.12.5-rc/wkhtmltox-0.12.5-0.20180604.140.rc~6f77c46~mxe-cross-win32.7z">win32</a>
                 /
-                <a href="https://builds.wkhtmltopdf.org/0.12.5-rc/wkhtmltox-0.12.5-0.20180529.138.rc~37e9f91~mxe-cross-win64.7z">win64</a>
+                <a href="https://builds.wkhtmltopdf.org/0.12.5-rc/wkhtmltox-0.12.5-0.20180604.140.rc~6f77c46~mxe-cross-win64.7z">win64</a>
             </td>
             <td>7z archive for Windows XP/2003 or later</td>
         </tr>
@@ -53,65 +53,65 @@ A release candidate for the next release **0.12.5-rc** is available, please test
             <td rowspan="7">Linux</td>
             <td>Debian 9 (stretch)</td>
             <td>
-                <a href="https://builds.wkhtmltopdf.org/0.12.5-rc/wkhtmltox_0.12.5-0.20180529.138.rc~37e9f91~stretch_amd64.deb">amd64</a>
+                <a href="https://builds.wkhtmltopdf.org/0.12.5-rc/wkhtmltox_0.12.5-0.20180604.140.rc~6f77c46~stretch_amd64.deb">amd64</a>
                 /
-                <a href="https://builds.wkhtmltopdf.org/0.12.5-rc/wkhtmltox_0.12.5-0.20180529.138.rc~37e9f91~stretch_i386.deb">i386</a>
+                <a href="https://builds.wkhtmltopdf.org/0.12.5-rc/wkhtmltox_0.12.5-0.20180604.140.rc~6f77c46~stretch_i386.deb">i386</a>
                 /
-                <a href="https://builds.wkhtmltopdf.org/0.12.5-rc/wkhtmltox_0.12.5-0.20180529.138.rc~37e9f91~raspbian.stretch_armhf.deb">raspbian</a>
+                <a href="https://builds.wkhtmltopdf.org/0.12.5-rc/wkhtmltox_0.12.5-0.20180604.140.rc~6f77c46~raspbian.stretch_armhf.deb">raspbian</a>
             </td>
             <td>Package (.deb) built on Debian 9.4</td>
         </tr>
         <tr>
             <td>Debian 8 (jessie)</td>
             <td>
-                <a href="https://builds.wkhtmltopdf.org/0.12.5-rc/wkhtmltox_0.12.5-0.20180529.138.rc~37e9f91~jessie_amd64.deb">amd64</a>
+                <a href="https://builds.wkhtmltopdf.org/0.12.5-rc/wkhtmltox_0.12.5-0.20180604.140.rc~6f77c46~jessie_amd64.deb">amd64</a>
                 /
-                <a href="https://builds.wkhtmltopdf.org/0.12.5-rc/wkhtmltox_0.12.5-0.20180529.138.rc~37e9f91~jessie_i386.deb">i386</a>
+                <a href="https://builds.wkhtmltopdf.org/0.12.5-rc/wkhtmltox_0.12.5-0.20180604.140.rc~6f77c46~jessie_i386.deb">i386</a>
             </td>
             <td>Package (.deb) built on Debian 8.10</td>
         </tr>
         <tr>
             <td>Ubuntu 18.04 (bionic)</td>
             <td>
-                <a href="https://builds.wkhtmltopdf.org/0.12.5-rc/wkhtmltox_0.12.5-0.20180529.138.rc~37e9f91~bionic_amd64.deb">amd64</a>
+                <a href="https://builds.wkhtmltopdf.org/0.12.5-rc/wkhtmltox_0.12.5-0.20180604.140.rc~6f77c46~bionic_amd64.deb">amd64</a>
                 /
-                <a href="https://builds.wkhtmltopdf.org/0.12.5-rc/wkhtmltox_0.12.5-0.20180529.138.rc~37e9f91~bionic_i386.deb">i386</a>
+                <a href="https://builds.wkhtmltopdf.org/0.12.5-rc/wkhtmltox_0.12.5-0.20180604.140.rc~6f77c46~bionic_i386.deb">i386</a>
             </td>
             <td>Package (.deb) built on Ubuntu 18.04</td>
         </tr>
         <tr>
             <td>Ubuntu 16.04 (xenial)</td>
             <td>
-                <a href="https://builds.wkhtmltopdf.org/0.12.5-rc/wkhtmltox_0.12.5-0.20180529.138.rc~37e9f91~xenial_amd64.deb">amd64</a>
+                <a href="https://builds.wkhtmltopdf.org/0.12.5-rc/wkhtmltox_0.12.5-0.20180604.140.rc~6f77c46~xenial_amd64.deb">amd64</a>
                 /
-                <a href="https://builds.wkhtmltopdf.org/0.12.5-rc/wkhtmltox_0.12.5-0.20180529.138.rc~37e9f91~xenial_i386.deb">i386</a>
+                <a href="https://builds.wkhtmltopdf.org/0.12.5-rc/wkhtmltox_0.12.5-0.20180604.140.rc~6f77c46~xenial_i386.deb">i386</a>
             </td>
             <td>Package (.deb) built on Ubuntu 16.04.4</td>
         </tr>
         <tr>
             <td>Ubuntu 14.04 (trusty)</td>
             <td>
-                <a href="https://builds.wkhtmltopdf.org/0.12.5-rc/wkhtmltox_0.12.5-0.20180529.138.rc~37e9f91~trusty_amd64.deb">amd64</a>
+                <a href="https://builds.wkhtmltopdf.org/0.12.5-rc/wkhtmltox_0.12.5-0.20180604.140.rc~6f77c46~trusty_amd64.deb">amd64</a>
                 /
-                <a href="https://builds.wkhtmltopdf.org/0.12.5-rc/wkhtmltox_0.12.5-0.20180529.138.rc~37e9f91~trusty_i386.deb">i386</a>
+                <a href="https://builds.wkhtmltopdf.org/0.12.5-rc/wkhtmltox_0.12.5-0.20180604.140.rc~6f77c46~trusty_i386.deb">i386</a>
             </td>
             <td>Package (.deb) built on Ubuntu 14.04.5</td>
         </tr>
         <tr>
             <td>CentOS 7</td>
             <td>
-                <a href="https://builds.wkhtmltopdf.org/0.12.5-rc/wkhtmltox-0.12.5-0.20180529.138.rc~37e9f91~centos7.x86_64.rpm">x86_64</a>
+                <a href="https://builds.wkhtmltopdf.org/0.12.5-rc/wkhtmltox-0.12.5-0.20180604.140.rc~6f77c46~centos7.x86_64.rpm">x86_64</a>
                 /
-                <a href="https://builds.wkhtmltopdf.org/0.12.5-rc/wkhtmltox-0.12.5-0.20180529.138.rc~37e9f91~centos7.i686.rpm">i686</a>
+                <a href="https://builds.wkhtmltopdf.org/0.12.5-rc/wkhtmltox-0.12.5-0.20180604.140.rc~6f77c46~centos7.i686.rpm">i686</a>
             </td>
             <td>Package (.rpm) built on CentOS 7.4.1804</td>
         </tr>
         <tr>
             <td>CentOS 6</td>
             <td>
-                <a href="https://builds.wkhtmltopdf.org/0.12.5-rc/wkhtmltox-0.12.5-0.20180529.138.rc~37e9f91~centos6.x86_64.rpm">x86_64</a>
+                <a href="https://builds.wkhtmltopdf.org/0.12.5-rc/wkhtmltox-0.12.5-0.20180604.140.rc~6f77c46~centos6.x86_64.rpm">x86_64</a>
                 /
-                <a href="https://builds.wkhtmltopdf.org/0.12.5-rc/wkhtmltox-0.12.5-0.20180529.138.rc~37e9f91~centos6.i686.rpm">i686</a>
+                <a href="https://builds.wkhtmltopdf.org/0.12.5-rc/wkhtmltox-0.12.5-0.20180604.140.rc~6f77c46~centos6.i686.rpm">i686</a>
             </td>
             <td>Package (.rpm) built on CentOS 6.9</td>
         </tr>
@@ -119,14 +119,14 @@ A release candidate for the next release **0.12.5-rc** is available, please test
             <td rowspan="2">macOS</td>
             <td>Cocoa</td>
             <td>
-                <a href="https://builds.wkhtmltopdf.org/0.12.5-rc/wkhtmltox-0.12.5-0.20180529.138.rc~37e9f91~macos-cocoa.pkg">64-bit</a>
+                <a href="https://builds.wkhtmltopdf.org/0.12.5-rc/wkhtmltox-0.12.5-0.20180604.140.rc~6f77c46~macos-cocoa.pkg">64-bit</a>
             </td>
             <td>Installer (.pkg) for OS X 10.7 or later</td>
         </tr>
         <tr>
             <td>Carbon</td>
             <td>
-                <a href="https://builds.wkhtmltopdf.org/0.12.5-rc/wkhtmltox-0.12.5-0.20180529.138.rc~37e9f91~macos-carbon.pkg">32-bit</a>
+                <a href="https://builds.wkhtmltopdf.org/0.12.5-rc/wkhtmltox-0.12.5-0.20180604.140.rc~6f77c46~macos-carbon.pkg">32-bit</a>
             </td>
             <td>Installer (.pkg) for OS X 10.7 or later</td>
         </tr>

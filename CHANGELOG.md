@@ -4,7 +4,10 @@ v0.12.5 (unreleased)
 * **#1524**: **[qt]** partial fix for overlapping text when repeating headers/footers in table (qt#29)
 * **#1914**: **[qt]** rotated elements not rendered on thead on second page and beyond
 * **#1870**: fixed sending of duplicate cookies (#3257)
-* **#3206**: added support for SSL client certificates
+* **#2609**: add viewportSize to C API (#3440)
+* **#2711**: fix differences between "counting" and "printing" phases (causing crashes/blank pages)
+* **#3001**: fix static builds not working with updated OpenSSL
+* **#3090**: added support for SSL client certificates (#3206)
 * **#3241**: fix for DPI regression on OS X (#3386)
 * **#3363**: added error message for network errors related to non-media files
 * **#3364**: new option `verbosity` to allow different log levels in both CLI and API
@@ -13,7 +16,6 @@ v0.12.5 (unreleased)
 * **#3680**: **[qt]** fix build on macOS 10.13
 * **#3900**: **[qt]** properly encode URLs with unicode characters in links
 * switch to self-hosted website and downloads as gna.org is shutting down (#3390)
-* add viewportSize to C API (#3440)
 * fix conversion of read-only form fields (#3550)
 * flush stderr to allow reading progress updates (#3583)
 * fix handling of errors for media URLs with query string (#3593)
@@ -21,7 +23,7 @@ v0.12.5 (unreleased)
 * correctly pass --copies to underlying QPrinter (#3747)
 * minor documentation updates and fixing compiler warnings
 * add various Qt patches to support OpenSSL 1.1 and latest MinGW/macOS environments
-* update OpenSSL to 1.0.2k, zlib to 1.2.11, libpng to 1.6.28 and xz to 5.2.3
+* removed build scripts in favor of separate repo (wkhtmltopdf/packaging)
 
 v0.12.4 (2016-11-22)
 --------------------
