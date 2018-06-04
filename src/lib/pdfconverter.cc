@@ -79,7 +79,7 @@ PdfConverterPrivate::PdfConverterPrivate(PdfGlobal & s, PdfConverter & o) :
 	settings(s), pageLoader(s.load, settings.dpi, true),
 	out(o), printer(0), painter(0)
 #ifdef __EXTENSIVE_WKHTMLTOPDF_QT_HACK__
-	, webPrinter(0), measuringHFLoader(s.load, settings.dpi), hfLoader(s.load, settings.dpi), tocLoader1(s.load, settings.dpi), tocLoader2(s.load, settings.dpi)
+	, measuringHFLoader(s.load, settings.dpi), hfLoader(s.load, settings.dpi), tocLoader1(s.load, settings.dpi), tocLoader2(s.load, settings.dpi)
 	, tocLoader(&tocLoader1), tocLoaderOld(&tocLoader2)
     , outline(0), currentHeader(0), currentFooter(0)
 #endif
@@ -308,12 +308,12 @@ void PdfConverterPrivate::preprocessPage(PageObject & obj) {
 	}
 
 
-	QWebPrinter wp(obj.page->mainFrame(), printer, *painter);
-	obj.pageCount = obj.settings.pagesCount? wp.pageCount(): 0;
+	obj.web_printer = new QWebPrinter(obj.page->mainFrame(), printer, *painter);
+	obj.pageCount = obj.settings.pagesCount? obj.web_printer->pageCount(): 0;
 	pageCount += obj.pageCount;
 
 	if (obj.settings.includeInOutline)
-		outline->addWebPage(obj.page->mainFrame()->title(), wp, obj.page->mainFrame(),
+		outline->addWebPage(obj.page->mainFrame()->title(), *obj.web_printer, obj.page->mainFrame(),
 							obj.settings, obj.localLinks, obj.anchors);
 	else
 		outline->addEmptyWebPage();
@@ -824,6 +824,7 @@ void PdfConverterPrivate::spoolPage(int page) {
 	if (actualPage != 1)
 		printer->newPage();
 
+	QWebPrinter *webPrinter = objects[currentObject].web_printer;
 	webPrinter->spoolPage(page+1);
 	foreach (QWebElement elm, pageFormElements[page+1]) {
 		QString type = elm.attribute("type");
@@ -886,7 +887,8 @@ void PdfConverterPrivate::beginPrintObject(PageObject & obj) {
 		endPrintObject(objects[obj.number-1]);
 	currentObject = obj.number;
 
-	if (!obj.loaderObject || obj.loaderObject->skip) return;
+	QWebPrinter *webPrinter = objects[currentObject].web_printer;
+	if (!obj.loaderObject || obj.loaderObject->skip || webPrinter == 0) return;
 
 	QPalette pal = obj.loaderObject->page.palette();
 	pal.setBrush(QPalette::Base, Qt::transparent);
@@ -905,11 +907,6 @@ void PdfConverterPrivate::beginPrintObject(PageObject & obj) {
 		foreach (QWebElement elm, obj.page->mainFrame()->findAllElements("textarea"))
 			elm.setStyleProperty("color","white");
 	}
-
-	//output
-	webPrinter = new QWebPrinter(obj.page->mainFrame(), printer, *painter);
-	QString l1=obj.page->mainFrame()->url().path().split("/").back()+"#";
-	QString l2=obj.page->mainFrame()->url().toString() + "#";
 
 	outline->fillAnchors(obj.number, obj.anchors);
 
@@ -953,17 +950,16 @@ void PdfConverterPrivate::endPrintObject(PageObject & obj) {
 	Q_UNUSED(obj);
 	// If this page was skipped, we might not have
 	// anything to spool to printer..
-	if (webPrinter != 0) spoolTo(webPrinter->pageCount());
+	if (obj.web_printer != 0) spoolTo(obj.web_printer->pageCount());
 
 	pageAnchors.clear();
 	pageLocalLinks.clear();
 	pageExternalLinks.clear();
 	pageFormElements.clear();
 
-	if (webPrinter != 0) {
-		QWebPrinter *tmp = webPrinter;
-		webPrinter = 0;
-		delete tmp;
+	if (obj.web_printer != 0) {
+		delete obj.web_printer;
+		obj.web_printer = 0;
 
 		painter->restore();
 	}
@@ -997,7 +993,7 @@ void PdfConverterPrivate::printDocument() {
 			beginPrintObject(objects[d]);
 			// XXX: In some cases nothing gets loaded at all,
 			//      so we would get no webPrinter instance.
-			int pageCount = webPrinter != 0 ? webPrinter->pageCount() : 0;
+			int pageCount = objects[d].web_printer != 0 ? objects[d].web_printer->pageCount() : 0;
 			//const settings::PdfObject & ps = objects[d].settings;
 
 			for(int i=0; i < pageCount; ++i) {

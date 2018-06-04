@@ -65,6 +65,8 @@ public:
     QWebPage * measuringHeader;
     // keeps preloaded footer to calculate header height
     QWebPage * measuringFooter;
+    // webprinter instance
+    QWebPrinter *web_printer;
 #endif
 
 	int firstPageNumber;
@@ -78,6 +80,9 @@ public:
 		anchors.clear();
 		localLinks.clear();
 		externalLinks.clear();
+		if (web_printer != 0)
+			delete web_printer;
+		web_printer=0;
 #endif
 		headers.clear();
 		footers.clear();
@@ -89,7 +94,7 @@ public:
 	PageObject(const settings::PdfObject & set, const QString * d=NULL):
 		settings(set), loaderObject(0), page(0)
 #ifdef __EXTENSIVE_WKHTMLTOPDF_QT_HACK__
-		, headerReserveHeight(0), footerReserveHeight(0), measuringHeader(0), measuringFooter(0)
+		, headerReserveHeight(0), footerReserveHeight(0), measuringHeader(0), measuringFooter(0), web_printer(0)
 #endif
 	{
 		if (d) data=*d;
@@ -131,7 +136,6 @@ private:
 	int actualPage;
 	int pageNumber;
 #ifdef __EXTENSIVE_WKHTMLTOPDF_QT_HACK__
-	QWebPrinter * webPrinter;
 	int objectPage;
 
 
