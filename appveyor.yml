@@ -4,7 +4,7 @@ test:         off
 
 environment:
   matrix:
-    - TARGET: msvc2015-win32
+    - TARGET: msvc2015-win64
 
 install:
   - git submodule update --init --recursive --force --depth 50
@@ -14,3 +14,6 @@ install:
 
 build_script:
   - python ..\packaging\build vagrant --version - - %TARGET% c:\wkhtmltopdf\wkhtmltopdf
+
+artifacts:
+  - path: C:\wkhtmltopdf\wkhtmltox*.exe

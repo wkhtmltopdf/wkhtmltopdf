@@ -546,13 +546,22 @@ void PdfConverterPrivate::findLinks(QWebFrame * frame, QVector<QPair<QWebElement
 		uexternal  = PageObject::webPageToObject[frame->page()]->settings.useExternalLinks;
 	}
 	if (!ulocal && !uexternal) return;
-	foreach (const QWebElement & elm, frame->findAllElements("a")) {
+	foreach (QWebElement elm, frame->findAllElements("a")) {
 		QString n=elm.attribute("name");
 		if (n.isEmpty()) n=elm.attribute("ns0:name");
 		if (n.startsWith("__WKANCHOR_")) anchors[n] = elm;
 
 		QString h=elm.attribute("href");
-		if (h.isEmpty()) h=elm.attribute("ns0:href");
+		if (h.isEmpty()) {
+			h=elm.attribute("ns0:href");
+			//to solve empty tag a
+			if(elm.firstChild().isNull()) {
+				elm.setStyleProperty("font-size","1px");
+				elm.setStyleProperty("height","0px");
+				elm.setStyleProperty("float","left");
+				elm.prependInside("&nbsp;");
+			}
+		}
 		if (h.startsWith("__WKANCHOR_")) {
 			local.push_back( qMakePair(elm, h) );
 		} else {
@@ -573,6 +582,10 @@ void PdfConverterPrivate::findLinks(QWebFrame * frame, QVector<QPair<QWebElement
 						if (e.isNull())
 							e = p->page->mainFrame()->findFirstElement("*[name=\""+href.fragment()+"\"]");
 					}
+
+					e.prependInside("<a style='font-size:1px;height:0px;float:left;'>&nbsp;</a>");
+					e = e.findFirst("a");
+
 					if (!e.isNull()) {
 						p->anchors[href.toString()] = e;
 						local.push_back( qMakePair(elm, href.toString()) );
