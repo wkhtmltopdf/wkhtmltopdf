@@ -16,4 +16,4 @@ build_script:
   - python ..\packaging\build vagrant --version - - %TARGET% c:\wkhtmltopdf\wkhtmltopdf
 
 artifacts:
-  - path: static-build\wkhtmltox*.exe
+  - path: C:\wkhtmltopdf\wkhtmltox*.exe
