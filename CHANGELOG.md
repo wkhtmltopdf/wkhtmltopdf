@@ -1,10 +1,10 @@
-v0.12.5 (unreleased)
+v0.12.5 (2018-06-11)
 --------------------
 * fixed build without patched Qt and integrate with Travis CI and AppVeyor
 * **#1524**: **[qt]** partial fix for overlapping text when repeating headers/footers in table (qt#29)
 * **#1914**: **[qt]** rotated elements not rendered on thead on second page and beyond
 * **#1870**: fixed sending of duplicate cookies (#3257)
-* **#2609**: add viewportSize to C API (#3440)
+* **#2609**: add viewportSize property to C API (#3440)
 * **#2711**: fix differences between "counting" and "printing" phases (causing crashes/blank pages)
 * **#3001**: fix static builds not working with updated OpenSSL
 * **#3090**: added support for SSL client certificates (#3206)
@@ -15,6 +15,8 @@ v0.12.5 (unreleased)
 * **#3672**: **[qt]** fix broken PDF with fonts having spaces in name (qt#38)
 * **#3680**: **[qt]** fix build on macOS 10.13
 * **#3900**: **[qt]** properly encode URLs with unicode characters in links
+* add outlineDepth property to C API (#3291)
+* add wkhtmltoimage_destroy_global_settings method to C API (#3324)
 * switch to self-hosted website and downloads as gna.org is shutting down (#3390)
 * fix conversion of read-only form fields (#3550)
 * flush stderr to allow reading progress updates (#3583)
