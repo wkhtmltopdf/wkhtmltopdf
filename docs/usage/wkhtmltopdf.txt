@@ -1,12 +1,12 @@
 Name:
-  wkhtmltopdf 0.12.4 (with patched qt)
+  wkhtmltopdf 0.12.5 (with patched qt)
 
 Synopsis:
   wkhtmltopdf [GLOBAL OPTION]... [OBJECT]... <output file>
 
 Document objects:
   wkhtmltopdf is able to put several objects into the output file, an object is
-  either a single webpage, a cover webpage or a table of content.  The objects
+  either a single webpage, a cover webpage or a table of contents.  The objects
   are put into the output document in the order they are specified on the
   command line, options can be specified on a per object basis or in the global
   options area. Options from the Global Options section can only be placed in
@@ -20,21 +20,22 @@ Document objects:
   Headers And Footer Options sections.
 
   A cover objects puts the content of a single webpage into the output document,
-  the page does not appear in the table of content, and does not have headers
+  the page does not appear in the table of contents, and does not have headers
   and footers.
 
   cover <input url/file name> [PAGE OPTION]...
   All options that can be specified for a page object can also be specified for
   a cover.
 
-  A table of content object inserts a table of content into the output document.
+  A table of contents object inserts a table of contents into the output
+  document.
 
   toc [TOC OPTION]...
   All options that can be specified for a page object can also be specified for
   a toc, further more the options from the TOC Options section can also be
-  applied. The table of content is generated via XSLT which means that it can be
-  styled to look however you want it to look. To get an idea of how to do this
-  you can dump the default xslt document by supplying the
+  applied. The table of contents is generated via XSLT which means that it can
+  be styled to look however you want it to look. To get an idea of how to do
+  this you can dump the default xslt document by supplying the
   --dump-default-toc-xsl, and the outline it works on by supplying
   --dump-outline, see the Outline Options section.
 
@@ -63,6 +64,8 @@ Global Options:
       --image-quality <integer>       When jpeg compressing images use this
                                       quality (default 94)
       --license                       Output license information and exit
+      --log-level <level>             Set log level to: none, error, warn or
+                                      info (default info)
   -l, --lowquality                    Generates lower quality pdf/ps. Useful to
                                       shrink the result document space
       --manpage                       Output program man page
@@ -78,7 +81,9 @@ Global Options:
       --page-width <unitreal>         Page width
       --no-pdf-compression            Do not use lossless compression on pdf
                                       objects
-  -q, --quiet                         Be less verbose
+  -q, --quiet                         Be less verbose, maintained for backwards
+                                      compatibility; Same as using --log-level
+                                      none
       --read-args-from-stdin          Read command line arguments from stdin
       --readme                        Output program readme
       --title <text>                  The title of the generated pdf file (The
@@ -167,6 +172,7 @@ Page Options:
       --no-print-media-type           Do not use print media-type instead of
                                       screen (default)
   -p, --proxy <proxy>                 Use a proxy
+      --proxy-hostname-lookup         Use the proxy for resolving hostnames
       --radiobutton-checked-svg <path> Use this SVG file when rendering checked
                                       radiobuttons
       --radiobutton-svg <path>        Use this SVG file when rendering unchecked
@@ -181,6 +187,12 @@ Page Options:
       --enable-smart-shrinking        Enable the intelligent shrinking strategy
                                       used by WebKit that makes the pixel/dpi
                                       ratio none constant (default)
+      --ssl-crt-path <path>           Path to the ssl client cert public key in
+                                      OpenSSL PEM format, optionally followed by
+                                      intermediate ca and trusted certs
+      --ssl-key-password <password>   Password to ssl client cert private key
+      --ssl-key-path <path>           Path to ssl client cert private key in
+                                      OpenSSL PEM format
       --stop-slow-scripts             Stop slow running javascripts (default)
       --no-stop-slow-scripts          Do not Stop slow running javascripts
       --disable-toc-back-links        Do not link from section header to toc
@@ -303,6 +315,7 @@ Footers And Headers:
   one could specify --header-html header.html, and use the following content in
   header.html:
 
+  <!DOCTYPE html>
   <html><head><script>
   function subst() {
       var vars = {};
@@ -342,19 +355,19 @@ Outlines:
   Wkhtmltopdf with patched qt has support for PDF outlines also known as book
   marks, this can be enabled by specifying the --outline switch. The outlines
   are generated based on the <h?> tags, for a in-depth description of how this
-  is done see the Table Of Content section.
+  is done see the Table Of Contents section.
 
   The outline tree can sometimes be very deep, if the <h?> tags where spread to
   generous in the HTML document.  The --outline-depth switch can be used to
   bound this.
 
-Table Of Content:
-  A table of content can be added to the document by adding a toc object to the
+Table Of Contents:
+  A table of contents can be added to the document by adding a toc object to the
   command line. For example:
 
   wkhtmltopdf toc http://qt-project.org/doc/qt-4.8/qstring.html qstring.pdf
 
-  The table of content is generated based on the H tags in the input documents.
+  The table of contents is generated based on the H tags in the input documents.
   First a XML document is generated, then it is converted to HTML using XSLT.
 
   The generated XML document can be viewed by dumping it to a file using the
