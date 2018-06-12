@@ -163,7 +163,7 @@ void PdfCommandLineParser::outputPageBreakDoc(Outputter * o) const {
 void PdfCommandLineParser::outputHeaderFooterDoc(Outputter * o) const {
 	o->beginSection("Footers And Headers");
 	o->paragraph("Headers and footers can be added to the document by the --header-* and --footer* "
-				 "arguments respectfully.  In header and footer text string supplied to e.g. --header-left, "
+				 "arguments respectively.  In header and footer text string supplied to e.g. --header-left, "
 				 "the following variables will be substituted.");
 	o->verbatim(
 " * [page]       Replaced by the number of the pages currently being printed\n"
