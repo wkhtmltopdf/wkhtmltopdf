@@ -887,8 +887,13 @@ void PdfConverterPrivate::beginPrintObject(PageObject & obj) {
 		endPrintObject(objects[obj.number-1]);
 	currentObject = obj.number;
 
+	if (!obj.loaderObject || obj.loaderObject->skip)
+		return;
+
 	QWebPrinter *webPrinter = objects[currentObject].web_printer;
-	if (!obj.loaderObject || obj.loaderObject->skip || webPrinter == 0) return;
+	if (webPrinter == 0)
+		webPrinter = objects[currentObject].web_printer = \
+			new QWebPrinter(obj.page->mainFrame(), printer, *painter);
 
 	QPalette pal = obj.loaderObject->page.palette();
 	pal.setBrush(QPalette::Base, Qt::transparent);
