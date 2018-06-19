@@ -242,8 +242,8 @@ PdfCommandLineParser::PdfCommandLineParser(PdfGlobal & s, QList<PdfObject> & ps)
 	addarg("include-in-outline", 0, "Include the page in the table of contents and outlines", new ConstSetter<bool>(od.includeInOutline, true));
 	addarg("exclude-from-outline", 0, "Do not include the page in the table of contents and outlines", new ConstSetter<bool>(od.includeInOutline, false));
 
-	addarg("disable-smart-shrinking", 0, "Disable the intelligent shrinking strategy used by WebKit that makes the pixel/dpi ratio none constant",new ConstSetter<bool>(od.web.enableIntelligentShrinking, false));
- 	addarg("enable-smart-shrinking", 0, "Enable the intelligent shrinking strategy used by WebKit that makes the pixel/dpi ratio none constant",new ConstSetter<bool>(od.web.enableIntelligentShrinking, true));
+	addarg("disable-smart-shrinking", 0, "Disable the intelligent shrinking strategy used by WebKit that makes the pixel/dpi ratio non-constant",new ConstSetter<bool>(od.web.enableIntelligentShrinking, false));
+ 	addarg("enable-smart-shrinking", 0, "Enable the intelligent shrinking strategy used by WebKit that makes the pixel/dpi ratio non-constant",new ConstSetter<bool>(od.web.enableIntelligentShrinking, true));
 
 	extended(false);
  	qthack(true);
@@ -295,7 +295,7 @@ PdfCommandLineParser::PdfCommandLineParser(PdfGlobal & s, QList<PdfObject> & ps)
 	mode(toc);
  	extended(true);
  	qthack(true);
- 	addarg("xsl-style-sheet",0,"Use the supplied xsl style sheet for printing the table of content", new QStrSetter(od.tocXsl,"file"));
+ 	addarg("xsl-style-sheet",0,"Use the supplied xsl style sheet for printing the table of contents", new QStrSetter(od.tocXsl,"file"));
 
 	addarg("toc-header-text",0,"The header text of the toc", new QStrSetter(od.toc.captionText, "text"));
 	addarg("disable-toc-links",0,"Do not link from toc to sections", new ConstSetter<bool>(od.toc.forwardLinks, false));
