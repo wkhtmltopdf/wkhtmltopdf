@@ -10,7 +10,7 @@ Document objects:
   are put into the output document in the order they are specified on the
   command line, options can be specified on a per object basis or in the global
   options area. Options from the Global Options section can only be placed in
-  the global options area.
+  the global options area
 
   A page objects puts the content of a single webpage into the output document.
 
@@ -183,10 +183,10 @@ Page Options:
                                       page is done loading (repeatable)
       --disable-smart-shrinking       Disable the intelligent shrinking strategy
                                       used by WebKit that makes the pixel/dpi
-                                      ratio non-constant
+                                      ratio none constant
       --enable-smart-shrinking        Enable the intelligent shrinking strategy
                                       used by WebKit that makes the pixel/dpi
-                                      ratio non-constant (default)
+                                      ratio none constant (default)
       --ssl-crt-path <path>           Path to the ssl client cert public key in
                                       OpenSSL PEM format, optionally followed by
                                       intermediate ca and trusted certs
@@ -245,11 +245,11 @@ TOC Options:
                                       font is scaled by this factor (default
                                       0.8)
       --xsl-style-sheet <file>        Use the supplied xsl style sheet for
-                                      printing the table of contents
+                                      printing the table of content
 
 Page sizes:
-  The default page size of the rendered document is A4, but by using the
-  --page-size option this can be changed to almost anything else, such as: A3,
+  The default page size of the rendered document is A4, but using this
+  --page-size optionthis can be changed to almost anything else, such as: A3,
   Letter and Legal.  For a full list of supported pages sizes please see
   <http://qt-project.org/doc/qt-4.8/qprinter.html#PaperSize-enum>.
 
@@ -306,7 +306,7 @@ Footers And Headers:
    * [sitepages]  Replaced by the number of pages in the current site being converted
 
 
-  As an example specifying --header-right "Page [page] of [topage]", will result
+  As an example specifying --header-right "Page [page] of [toPage]", will result
   in the text "Page x of y" where x is the number of the current page and y is
   the number of the last page, to appear in the upper left corner in the
   document.
