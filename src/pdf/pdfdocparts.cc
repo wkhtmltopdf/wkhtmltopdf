@@ -51,7 +51,7 @@ void PdfCommandLineParser::outputSynopsis(Outputter * o) const {
 			"the output document in the order they are specified on the command line, options can "
 			"be specified on a per object basis or in the global options area. Options from the ");
 	o->sectionLink("Global Options");
-	o->text(" section can only be placed in the global options area");
+	o->text(" section can only be placed in the global options area.");
 	o->endParagraph();
 
 	o->paragraph("A page objects puts the content of a single webpage into the output document.");
@@ -180,7 +180,7 @@ void PdfCommandLineParser::outputHeaderFooterDoc(Outputter * o) const {
 " * [sitepage]   Replaced by the number of the page in the current site being converted\n"
 " * [sitepages]  Replaced by the number of pages in the current site being converted\n"
 "\n");
-	o->paragraph("As an example specifying --header-right \"Page [page] of [toPage]\", "
+	o->paragraph("As an example specifying --header-right \"Page [page] of [topage]\", "
 				 "will result in the text \"Page x of y\" where x is the number of the "
 				 "current page and y is the number of the last page, to appear in the upper "
 				 "left corner in the document.");
@@ -350,8 +350,8 @@ void PdfCommandLineParser::outputInstallation(Outputter * o) const {
 void PdfCommandLineParser::outputPageSizes(Outputter * o) const {
 	o->beginSection("Page sizes");
 	o->beginParagraph();
-	o->text("The default page size of the rendered document is A4, but using this --page-size option"
-			"this can be changed to almost anything else, such as: A3, Letter and Legal.  "
+	o->text("The default page size of the rendered document is A4, but by using the --page-size "
+			"option this can be changed to almost anything else, such as: A3, Letter and Legal.  "
 			"For a full list of supported pages sizes please see ");
 	o->link("http://qt-project.org/doc/qt-4.8/qprinter.html#PaperSize-enum");
 	o->text(".");
