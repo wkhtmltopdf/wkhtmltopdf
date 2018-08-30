@@ -284,7 +284,24 @@ void OutlinePrivate::buildHFCache(OutlineItem * i, int level) {
 		buildHFCache(j, level+1);
 	}
 }
+	
+QString Outline::numberToRoman(int number) {
+	// storing roman values of digits from 0-9 
+	// when placed at different places
+	QString m[] = {"", "M", "MM", "MMM"};
+	QString c[] = {"", "C", "CC", "CCC", "CD", "D", "DC", "DCC", "DCCC", "CM"};
+	QString x[] = {"", "X", "XX", "XXX", "XL", "L", "LX", "LXX", "LXXX", "XC"};
+	QString i[] = {"", "I", "II", "III", "IV", "V", "VI", "VII", "VIII", "IX"};
 
+	// Converting to roman
+	QString thousands = m[number / 1000];
+	QString hundereds = c[(number%1000) / 100];
+	QString tens =  x[(number%100) / 10];
+	QString ones = i[number%10];
+
+	QString ans = thousands + hundereds + tens + ones;
+	return ans;
+}
 
 /*!
   \brief Fill in header footer parameters for a given page
@@ -314,6 +331,15 @@ void Outline::fillHeaderFooterParms(int page, QHash<QString, QString> & parms, c
 	parms["frompage"] = QString::number(off+1);
 	parms["topage"] = QString::number(off+d->pageCount);
 	parms["page" ] = QString::number(page+off);
+	
+	parms["frompage_roman"] = Outline::numberToRoman(off+1);
+	parms["topage_roman"] = Outline::numberToRoman(off+d->pageCount);
+	parms["page_roman" ] = Outline::numberToRoman(page+off);
+	
+	parms["frompage_roman_lower"] = Outline::numberToRoman(off+1).toLower();
+	parms["topage_roman_lower"] = Outline::numberToRoman(off+d->pageCount).toLower();
+	parms["page_roman_lower" ] = Outline::numberToRoman(page+off).toLower();
+	
 	parms["webpage"] = ps.page;
 	parms["section" ] = d->hfCache[0][page]?d->hfCache[0][page]->value:QString("");
 	parms["subsection" ] = d->hfCache[1][page]?d->hfCache[1][page]->value:QString("");
