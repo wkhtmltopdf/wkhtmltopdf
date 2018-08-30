@@ -39,6 +39,8 @@ public:
 	bool replaceWebPage(int d, const QString & name, QWebPrinter & wp, QWebFrame * f, const settings::PdfObject & ps, QVector<QPair<QWebElement, QString> > & local, QHash<QString, QWebElement> & anchors);
 	void addWebPage(const QString & name, QWebPrinter & wp, QWebFrame * frame, const settings::PdfObject & ps, QVector<QPair<QWebElement, QString> > & local, QHash<QString, QWebElement> & external);
 
+	QString Outline::numberToRoman(int number);
+	
 	void fillHeaderFooterParms(int page, QHash<QString, QString> & parms, const settings::PdfObject & ps);
 	void fillAnchors(int d, QHash<QString, QWebElement> & anchors);
 	int pageCount();
