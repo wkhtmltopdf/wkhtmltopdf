@@ -184,7 +184,7 @@ void CommandLineParserBase::addWebArgs(Web & s) {
  	addarg("disable-plugins",0,"Disable installed plugins", new ConstSetter<bool>(s.enablePlugins,false));
 
 	addarg("minimum-font-size",0,"Minimum font size", new IntSetter(s.minimumFontSize,"int"));
- 	addarg("user-style-sheet",0,"Specify a user style sheet, to load with every page", new QStrSetter(s.userStyleSheet,"url"));
+ 	addarg("user-style-sheet",0,"Specify a user style sheet, to load with every page", new QStrSetter(s.userStyleSheet,"path"));
 	addarg("no-images",0,"Do not load or print images", new ConstSetter<bool>(s.loadImages, false));
 	addarg("images",0,"Do load or print images", new ConstSetter<bool>(s.loadImages, true));
 
