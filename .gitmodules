@@ -1,4 +1,4 @@
 [submodule "qt"]
   path   = qt
-  url    = ../qt.git
+  url    = https://github.com/wkhtmltopdf/qt.git
   branch = wk_4.8.7
