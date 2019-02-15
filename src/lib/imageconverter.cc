@@ -166,12 +166,28 @@ void ImageConverterPrivate::pagesLoaded(bool ok) {
 		fail();
 	}
 
-	if (settings.crop.left < 0) settings.crop.left = 0;
-	if (settings.crop.top < 0) settings.crop.top = 0;
-	if (settings.crop.width < 0) settings.crop.width = 1000000;
-	if (settings.crop.height < 0) settings.crop.height = 1000000;
-	QRect rect = QRect(QPoint(0,0), loaderObject->page.viewportSize()).intersected(
-		QRect(settings.crop.left,settings.crop.top,settings.crop.width,settings.crop.height));
+	QRect rect;
+	if (settings.selector != "") {
+		QWebElement elem = frame->findFirstElement(settings.selector);
+		if (elem.isNull()) {
+			emit out.error("No element matched the selector");
+			fail();
+			return;
+		}
+		rect = elem.geometry().adjusted(
+			settings.crop.left == settings::CropSettings::DEFAULT ? 0 : settings.crop.left,
+			settings.crop.top == settings::CropSettings::DEFAULT ? 0 : settings.crop.top,
+			settings.crop.width == settings::CropSettings::DEFAULT ? 0 : settings.crop.width,
+			settings.crop.height == settings::CropSettings::DEFAULT ? 0 : settings.crop.height);
+
+	} else { 
+		if (settings.crop.left < 0) settings.crop.left = 0;
+		if (settings.crop.top < 0) settings.crop.top = 0;
+		if (settings.crop.width < 0) settings.crop.width = 1000000;
+		if (settings.crop.height < 0) settings.crop.height = 1000000;
+		rect = QRect(QPoint(0,0), loaderObject->page.viewportSize()).intersected(
+			QRect(settings.crop.left,settings.crop.top,settings.crop.width,settings.crop.height));
+	}
 	if (rect.width() == 0 || rect.height() == 0) {
 		emit out.error("Will not output an empty image");
 		fail();

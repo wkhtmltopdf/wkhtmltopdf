@@ -77,6 +77,9 @@ struct DLL_PUBLIC ImageGlobal {
 	QString out;
 	//! The output format
 	QString fmt;
+	
+	//! Set the CSS selector of an element to crop on
+	QString selector;
 
 	//! Set the screen width
 	int screenWidth;
