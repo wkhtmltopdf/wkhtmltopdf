@@ -146,7 +146,7 @@ void PdfConverterPrivate::beginConvert() {
 
 #ifndef __EXTENSIVE_WKHTMLTOPDF_QT_HACK__
 	if (objects.size() > 1) {
-		emit out.error("This version of wkhtmltopdf is build against an unpatched version of QT, and does not support more then one input document.");
+		emit out.error("This version of wkhtmltopdf is built against an unpatched version of QT, and does not support more than one input document.");
 		fail();
 		return;
 	}

@@ -652,7 +652,7 @@ CAPI(const char *) wkhtmltopdf_progress_string(wkhtmltopdf_converter * converter
 /**
  * \brief Return the largest HTTP error code encountered during conversion
  *
- * Return the largest HTTP code greater then or equal to 300 encountered during loading
+ * Return the largest HTTP code greater than or equal to 300 encountered during loading
  * of any of the supplied objects, if no such error code is found 0 is returned.
  * This function will only return a useful result after \ref wkhtmltopdf_convert has been called.
  *
