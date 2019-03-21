@@ -9,7 +9,7 @@ environment:
 install:
   - git submodule update --init --recursive --force --depth 50
   - git clone https://github.com/wkhtmltopdf/packaging.git ..\packaging
-  - pip install -q conan pyyaml
+  - pip install -q conan
   - perl -p -i.bak -e "s/quiet = 0/quiet = 1/g" qt/bin/syncqt
 
 build_script:
