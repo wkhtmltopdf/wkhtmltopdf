@@ -31,10 +31,13 @@ matrix:
       env:        TARGET=custom-qt4-macos
 
     - os:         linux
+      env:        TARGET=custom-qt4-mxe-win
+
+    - os:         windows
       env:        TARGET=custom-qt4-windows
 
 install:
-- sed -i -e 's/    SYNCQT_OPTS=/    SYNCQT_OPTS=-quiet/g' qt/configure
+- sed -i 's/quiet = 0/quiet = 1/g' qt/bin/syncqt
 - test -n "$CC"  && unset CC
 - test -n "$CXX" && unset CXX
 - git clone https://github.com/wkhtmltopdf/packaging.git ../packaging
@@ -44,7 +47,14 @@ script:
     if   [[ $TARGET == "system-qt4-linux"   ]]; then qmake-qt4 CONFIG+=silent && make;
     elif [[ $TARGET == "system-qt5-linux"   ]]; then /usr/lib/x86_64-linux-gnu/qt5/bin/qmake CONFIG+=silent && make;
     elif [[ $TARGET == "custom-qt4-linux"   ]]; then ../packaging/build compile-docker stretch-amd64   $PWD ../build;
-    elif [[ $TARGET == "custom-qt4-windows" ]]; then ../packaging/build compile-docker mxe-cross-win64 $PWD ../build;
+    elif [[ $TARGET == "custom-qt4-mxe-win" ]]; then ../packaging/build compile-docker mxe-cross-win64 $PWD ../build;
+    elif [[ $TARGET == "custom-qt4-windows" ]]; then
+        choco install -yr --no-progress python2 nsis vcbuildtools && \
+        choco install -yr --no-progress cmake --installargs 'ADD_CMAKE_TO_PATH=System' && \
+        export PATH="$(powershell -Command '("Process", "Machine" | % { [Environment]::GetEnvironmentVariable("PATH", $_) -Split ";" -Replace "\\$", "" } | Select -Unique | % { cygpath $_ }) -Join ":"')" && \
+        C:/Python27/Scripts/pip install -q conan && \
+        sed -i 's/-W3/-w/g' qt/mkspecs/win32-msvc2015/qmake.conf && \
+        C:/Python27/python ../packaging/build vagrant msvc2015-win64 --version - - $PWD;
     elif [[ $TARGET == "custom-qt4-macos"   ]]; then
         sudo -H pip install -q conan --ignore-installed six && sudo gem install fpm --no-ri --no-rdoc && \
         sudo xcode-select --switch /Library/Developer/CommandLineTools && \
