@@ -37,7 +37,7 @@ matrix:
       env:        TARGET=custom-qt4-windows
 
 install:
-- sed -i 's/quiet = 0/quiet = 1/g' qt/bin/syncqt
+- sed -i -e 's/quiet = 0/quiet = 1/g' qt/bin/syncqt
 - test -n "$CC"  && unset CC
 - test -n "$CXX" && unset CXX
 - git clone https://github.com/wkhtmltopdf/packaging.git ../packaging
