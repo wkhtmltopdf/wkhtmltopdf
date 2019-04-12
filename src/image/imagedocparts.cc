@@ -118,5 +118,9 @@ void ImageCommandLineParser::outputExamples(Outputter * o) const {
 	o->verbatim("wkhtmltoimage http://www.google.com google.png\n");
 	o->paragraph("To convert a local HTML file to PNG:");
 	o->verbatim("wkhtmltoimage my.html my.png\n");
+	o->paragraph("To crop on a specific HTML element:");
+	o->verbatim("wkhtmltoimage --selector '#hplogo' https://google.com google.png\n");
+	o->paragraph("To crop a part of the element by an offset (use a negative offset for a margin):");
+	o->verbatim("wkhtmltoimage --selector '#hplogo' --crop-x 70 https://google.com google.png\n");
 	o->endSection();
 }
