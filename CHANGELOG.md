@@ -37,7 +37,7 @@ v0.12.4 (2016-11-22)
 * add support for building with VS2015
 * update OpenSSL to 1.0.2j and libpng to 1.6.26
 * **[qt]** change screen size in headless mode to a more sane value (1366x768)
-* **[qt]** allow screen size in headless mode to be overriden via environment variables
+* **[qt]** allow screen size in headless mode to be overridden via environment variables
 * **[qt]** fix compilation failure on OS X 10.11 due to usage of deprecated APIs
 * **#1768**: allow using long argument list (without hardcoded limits)
 * **#2004**: **[qt]** fix rendering of form fields in PDF output
