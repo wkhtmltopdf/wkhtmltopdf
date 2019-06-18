@@ -121,7 +121,7 @@ The current stable series is **0.12.5**, which was released on June 11, 2018 -- 
     </tbody>
 </table>
 
-Please make sure to verify the [checksums](https://downloads.wkhtmltopdf.org/0.12/0.12.5/SHA256SUMS) which [are signed](https://downloads.wkhtmltopdf.org/0.12/0.12.5/SHA256SUMS.asc) using the key [`86DA3091E25554F156F214F6A86EF3CB8C64CF2A`](https://pgp.mit.edu/pks/lookup?search=ashish+kulkarni+open+source&op=vindex), especially if you are using it from an automated script/process.
+Please make sure to verify the [checksums](https://downloads.wkhtmltopdf.org/0.12/0.12.5/SHA256SUMS) which [are signed](https://downloads.wkhtmltopdf.org/0.12/0.12.5/SHA256SUMS.asc) using the key [`86DA 3091 E255 54F1 56F2 14F6 A86E F3CB 8C64 CF2A`](https://pgp.mit.edu/pks/lookup?search=ashish+kulkarni+open+source&op=vindex&fingerprint=on), especially if you are using it from an automated script/process.
 
 ## Bleeding Edge
 
