@@ -56,5 +56,7 @@ public slots:
 
 DLL_PUBLIC int handleError(bool success, int errorCode);
 
+QString escapeCSS(QString input);
+
 #include <dllend.inc>
 #endif //__UTILITIES_HH__
