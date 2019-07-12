@@ -56,7 +56,7 @@ script:
         sed -i 's/-W3/-w/g' qt/mkspecs/win32-msvc2015/qmake.conf && \
         C:/Python27/python ../packaging/build vagrant msvc2015-win64 --version - - $PWD;
     elif [[ $TARGET == "custom-qt4-macos"   ]]; then
-        sudo -H pip install -q conan --ignore-installed six && sudo gem install fpm --no-ri --no-rdoc && \
+        brew install conan && sudo -H pip install pyyaml --ignore-installed six && sudo gem install fpm --no-ri --no-rdoc && \
         sudo xcode-select --switch /Library/Developer/CommandLineTools && \
         MACOSX_DEPLOYMENT_TARGET=10.7 ../packaging/build vagrant macos-cocoa --clean --version - - $PWD;
     fi
