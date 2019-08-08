@@ -821,8 +821,43 @@ void PdfConverterPrivate::headersLoaded(bool ok) {
 void PdfConverterPrivate::spoolPage(int page) {
 	progressString = QString("Page ") + QString::number(actualPage) + QString(" of ") + QString::number(actualPages);
 	emit out.progressChanged(actualPage * 100 / actualPages);
-	if (actualPage != 1)
-		printer->newPage();
+
+// Original Code Prior to page-orientation Landscape/Portrait
+//	if (actualPage != 1)
+//	printer->newPage();
+
+// Start Hack to print per page orientation
+	if (actualPage != 1){
+	// We skip the --page-orientation arg for the first page and instead rely on --orientation Landscape in Global Args if needed
+	// Page Format must be specified before call to newPage();
+
+  // This will set the landscape/portrait output of the PDF pages but will not 
+  // set the correct width for landscape which necessitates the code at lines
+  // 920 in the beginPrintObject(PageObject & obj) function
+  
+	if (objects[currentObject].settings.pageSpecificOrientation != NULL){
+
+		QChar c = objects[currentObject].settings.pageSpecificOrientation.at(0);
+		char orientParam = c.toUpper().toLatin1();
+
+      	//fprintf(stdout, "Custom page orientation - Page %d ", actualPage);	
+
+		if (orientParam == 'L'){
+				printer->setOrientation(QPrinter::Landscape);
+		    	//fprintf(stdout, "Landscape\n");		 	
+				}
+				else{
+				printer->setOrientation(QPrinter::Portrait);
+		      //fprintf(stdout, "Portrait\n");	
+				}			
+		}	
+	printer->newPage();
+    }else{
+    	
+    	//fprintf(stdout, "Custom page orientation - Page %d\n", actualPage);	
+
+    }
+// End Hack to print per page orientation
 
 	QWebPrinter *webPrinter = objects[currentObject].web_printer;
 	webPrinter->spoolPage(page+1);
@@ -890,10 +925,33 @@ void PdfConverterPrivate::beginPrintObject(PageObject & obj) {
 	if (!obj.loaderObject || obj.loaderObject->skip)
 		return;
 
-	QWebPrinter *webPrinter = objects[currentObject].web_printer;
-	if (webPrinter == 0)
-		webPrinter = objects[currentObject].web_printer = \
-			new QWebPrinter(obj.page->mainFrame(), printer, *painter);
+//	QWebPrinter *webPrinter = objects[currentObject].web_printer;
+//	if (webPrinter == 0)
+//		webPrinter = objects[currentObject].web_printer = \
+//			new QWebPrinter(obj.page->mainFrame(), printer, *painter);
+
+// Need to set the Orientation of the Page again before generating the Output
+	if (obj.settings.pageSpecificOrientation != NULL){
+
+			QChar c = obj.settings.pageSpecificOrientation.at(0);
+			char orientParam = c.toUpper().toLatin1();
+      		//fprintf(stdout, "Custom page orientation (in beginPrntObject) Page %d ",currentObject);	
+
+			if (orientParam == 'L'){
+				printer->setOrientation(QPrinter::Landscape);
+		      //fprintf(stdout, "Landscape\n");	
+				}
+				else{
+				printer->setOrientation(QPrinter::Portrait);
+		      //fprintf(stdout, "Portrait\n");	
+				}			
+			}
+
+// With the above original code the web printer if !=0 would not hold the Portrait or Landscape resetting
+// Replaced with the below - a forced new webPrinter
+  QWebPrinter *webPrinter = objects[currentObject].web_printer;
+	webPrinter = objects[currentObject].web_printer = new QWebPrinter(obj.page->mainFrame(), printer, *painter);
+//
 
 	QPalette pal = obj.loaderObject->page.palette();
 	pal.setBrush(QPalette::Base, Qt::transparent);
