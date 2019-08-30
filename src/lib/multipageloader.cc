@@ -416,7 +416,8 @@ void ResourceObject::amfinished(QNetworkReply * reply) {
 			else {
 				warning(QString("Failed to load %1, with network status code %2 and http status code %3 - %4 (%5)")
 					.arg(reply->url().toString()).arg(networkStatus).arg(httpStatus).arg(reply->errorString())
-					.arg(settings.mediaLoadErrorHandling));
+					.arg(settings::loadErrorHandlingToStr(settings.mediaLoadErrorHandling))
+					);
 			}
 			return;
 		}
