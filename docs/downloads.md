@@ -38,7 +38,16 @@ The current stable series is **0.12.5**, which was released on June 11, 2018 -- 
             <td>7z archive for Windows XP/2003 or later</td>
         </tr>
         <tr>
-            <td rowspan="7">Linux</td>
+            <td rowspan="9">Linux</td>
+            <td>Debian 10 (buster)</td>
+            <td>
+                <a href="https://downloads.wkhtmltopdf.org/0.12/0.12.5/wkhtmltox_0.12.5-1.buster_amd64.deb">amd64</a>
+                /
+                <a href="https://downloads.wkhtmltopdf.org/0.12/0.12.5/wkhtmltox_0.12.5-1.buster_i386.deb">i386</a>
+            </td>
+            <td>Package (.deb) built on Debian 10.1</td>
+        </tr>
+        <tr>
             <td>Debian 9 (stretch)</td>
             <td>
                 <a href="https://downloads.wkhtmltopdf.org/0.12/0.12.5/wkhtmltox_0.12.5-1.stretch_amd64.deb">amd64</a>
@@ -84,6 +93,13 @@ The current stable series is **0.12.5**, which was released on June 11, 2018 -- 
                 <a href="https://downloads.wkhtmltopdf.org/0.12/0.12.5/wkhtmltox_0.12.5-1.trusty_i386.deb">i386</a>
             </td>
             <td>Package (.deb) built on Ubuntu 14.04.5</td>
+        </tr>
+        <tr>
+            <td>CentOS 8</td>
+            <td>
+                <a href="https://downloads.wkhtmltopdf.org/0.12/0.12.5/wkhtmltox-0.12.5-1.centos8.x86_64.rpm">x86_64</a>
+            </td>
+            <td>Package (.rpm) built on CentOS 8.0.1905</td>
         </tr>
         <tr>
             <td>CentOS 7</td>
