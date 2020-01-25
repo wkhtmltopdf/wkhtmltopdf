@@ -162,6 +162,7 @@ Please note that bug reports **will not be accepted** against the following, whi
 
 Date       | Release
 ----       | -------
+2019-04-30 | [0.12.1.4](https://github.com/wkhtmltopdf/packaging/releases/0.12.1.4-2/) (linux-only)
 2016-11-22 | [0.12.4](https://downloads.wkhtmltopdf.org/0.12/0.12.4/)
 2016-03-02 | [0.12.3.2](https://downloads.wkhtmltopdf.org/0.12/0.12.3.2/) (windows-only)
 2016-01-30 | [0.12.3.1](https://downloads.wkhtmltopdf.org/0.12/0.12.3.1/) (windows-only)
