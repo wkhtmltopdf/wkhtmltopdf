@@ -36,9 +36,9 @@ namespace wkhtmltopdf {
 
 
 void ConverterPrivate::updateWebSettings(QWebSettings * ws, const settings::Web & s) const {
-#ifdef  __EXTENSIVE_WKHTMLTOPDF_QT_HACK__
 	if (!s.defaultEncoding.isEmpty())
 		ws->setDefaultTextEncoding(s.defaultEncoding);
+#ifdef  __EXTENSIVE_WKHTMLTOPDF_QT_HACK__
 	if (!s.enableIntelligentShrinking) {
 		ws->setPrintingMaximumShrinkFactor(1.0);
 		ws->setPrintingMinimumShrinkFactor(1.0);
