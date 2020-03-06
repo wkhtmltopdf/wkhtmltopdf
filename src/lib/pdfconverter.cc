@@ -840,6 +840,7 @@ void PdfConverterPrivate::spoolPage(int page) {
 		QString type = elm.attribute("type");
 		QString tn = elm.tagName();
 		QString name = elm.attribute("name");
+		QString value = elm.hasAttribute("value") ? elm.attribute("value") : "";
 		QStringList attributes = elm.attributeNames();
 		QMap<QString, QString> data;
 		foreach (const QString &attributeName, attributes) {
@@ -869,11 +870,19 @@ void PdfConverterPrivate::spoolPage(int page) {
 				elm.evaluateJavaScript("this.checked;").toBool(),
 				name,
 				elm.evaluateJavaScript("this.readOnly;").toBool());
+		} else if (type == "radio") {
+			painter->addRadioButton(
+				webPrinter->elementLocation(elm).second,
+				data,
+				elm.evaluateJavaScript("this.checked;").toBool(),
+				name,
+				value,
+				elm.evaluateJavaScript("this.readOnly;").toBool());
 		} else if (type == "hidden") {
             painter->addHiddenField(
                 webPrinter->elementLocation(elm).second,
                 data,
-                elm.attribute("value"), name
+                value, name
             );
 		} else if (tn == "SELECT") {
             QWebElementCollection options = elm.findAll("option");
