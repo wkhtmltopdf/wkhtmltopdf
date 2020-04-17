@@ -230,8 +230,8 @@ void CommandLineParserBase::addPageLoadArgs(LoadPage & s) {
 
 	addarg("cache-dir", 0, "Web cache directory", new QStrSetter(s.cacheDir,"path"));
 
-	addarg("debug-javascript", 0,"Show javascript debugging output", new ConstSetter<bool>(s.debugJavascript, true));
-	addarg("no-debug-javascript", 0,"Do not show javascript debugging output", new ConstSetter<bool>(s.debugJavascript, false));
+	addarg("debug-javascript", 0,"Show javascript console output", new ConstSetter<bool>(s.debugJavascript, true));
+	addarg("no-debug-javascript", 0,"Do not show javascript console output", new ConstSetter<bool>(s.debugJavascript, false));
 	addarg("stop-slow-scripts", 0, "Stop slow running javascripts", new ConstSetter<bool>(s.stopSlowScripts, true));
 	addarg("no-stop-slow-scripts", 0, "Do not Stop slow running javascripts", new ConstSetter<bool>(s.stopSlowScripts, false));
 	addarg("run-script", 0, "Run this additional javascript after the page is done loading (repeatable)", new StringListSetter(s.runScript, "js"));

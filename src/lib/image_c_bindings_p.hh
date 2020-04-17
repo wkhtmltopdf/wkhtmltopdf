@@ -30,6 +30,8 @@
 class DLL_LOCAL MyImageConverter: public QObject {
     Q_OBJECT
 public:
+	wkhtmltoimage_str_callback debug_cb;
+	wkhtmltoimage_str_callback info_cb;
 	wkhtmltoimage_str_callback warning_cb;
 	wkhtmltoimage_str_callback error_cb;
 	wkhtmltoimage_void_callback phase_changed;
@@ -43,6 +45,8 @@ public:
 	MyImageConverter(wkhtmltopdf::settings::ImageGlobal * gs, const QString * data);
 	~MyImageConverter();
 public slots:
+    void debug(const QString & message);
+    void info(const QString & message);
     void warning(const QString & message);
     void error(const QString & message);
     void phaseChanged();

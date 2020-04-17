@@ -58,6 +58,8 @@ ImageConverterPrivate::ImageConverterPrivate(ImageConverter & o, wkhtmltopdf::se
 	connect(&loader, SIGNAL(loadFinished(bool)), this, SLOT(pagesLoaded(bool)));
 	connect(&loader, SIGNAL(error(QString)), this, SLOT(forwardError(QString)));
 	connect(&loader, SIGNAL(warning(QString)), this, SLOT(forwardWarning(QString)));
+	connect(&loader, SIGNAL(info(QString)), this, SLOT(forwardInfo(QString)));
+	connect(&loader, SIGNAL(debug(QString)), this, SLOT(forwardDebug(QString)));
 }
 
 void ImageConverterPrivate::beginConvert() {

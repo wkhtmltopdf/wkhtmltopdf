@@ -48,6 +48,14 @@
 #include "dllbegin.inc"
 using namespace wkhtmltopdf;
 
+void MyImageConverter::debug(const QString & message) {
+	if (debug_cb && globalSettings->logLevel > settings::Info) (debug_cb)(reinterpret_cast<wkhtmltoimage_converter*>(this), message.toUtf8().constData());
+}
+
+void MyImageConverter::info(const QString & message) {
+	if (info_cb && globalSettings->logLevel > settings::Warn) (info_cb)(reinterpret_cast<wkhtmltoimage_converter*>(this), message.toUtf8().constData());
+}
+
 void MyImageConverter::warning(const QString & message) {
 	if (warning_cb && globalSettings->logLevel > settings::Error) (warning_cb)(reinterpret_cast<wkhtmltoimage_converter*>(this), message.toUtf8().constData());
 }
@@ -69,9 +77,11 @@ void MyImageConverter::finished(bool ok) {
 }
 
 MyImageConverter::MyImageConverter(settings::ImageGlobal * gs, const QString * data):
-	warning_cb(0), error_cb(0), phase_changed(0), progress_changed(0), finished_cb(0),
+	debug_cb(0), info_cb(0), warning_cb(0), error_cb(0), phase_changed(0), progress_changed(0), finished_cb(0),
 	converter(*gs, data), globalSettings(gs) {
 
+    connect(&converter, SIGNAL(debug(const QString &)), this, SLOT(debug(const QString &)));
+    connect(&converter, SIGNAL(info(const QString &)), this, SLOT(info(const QString &)));
     connect(&converter, SIGNAL(warning(const QString &)), this, SLOT(warning(const QString &)));
 	connect(&converter, SIGNAL(error(const QString &)), this, SLOT(error(const QString &)));
 	connect(&converter, SIGNAL(phaseChanged()), this, SLOT(phaseChanged()));
@@ -126,6 +136,14 @@ CAPI(wkhtmltoimage_converter *) wkhtmltoimage_create_converter(wkhtmltoimage_glo
 
 CAPI(void) wkhtmltoimage_destroy_converter(wkhtmltoimage_converter * converter) {
 	delete reinterpret_cast<MyImageConverter *>(converter);
+}
+
+CAPI(void) wkhtmltoimage_set_debug_callback(wkhtmltoimage_converter * converter, wkhtmltoimage_str_callback cb) {
+	reinterpret_cast<MyImageConverter *>(converter)->debug_cb = cb;
+}
+
+CAPI(void) wkhtmltoimage_set_info_callback(wkhtmltoimage_converter * converter, wkhtmltoimage_str_callback cb) {
+	reinterpret_cast<MyImageConverter *>(converter)->info_cb = cb;
 }
 
 CAPI(void) wkhtmltoimage_set_warning_callback(wkhtmltoimage_converter * converter, wkhtmltoimage_str_callback cb) {

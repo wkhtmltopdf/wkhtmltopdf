@@ -31,7 +31,8 @@ enum LogLevel {
 	None,
 	Error,
 	Warn,
-	Info
+	Info,
+	Debug
 };
 
 DLL_PUBLIC LogLevel strToLogLevel(const char * s, bool * ok=0);
