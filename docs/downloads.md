@@ -38,7 +38,7 @@ The current stable series is **0.12.5**, which was released on June 11, 2018 -- 
             <td>7z archive for Windows XP/2003 or later</td>
         </tr>
         <tr>
-            <td rowspan="9">Linux</td>
+            <td rowspan="10">Linux</td>
             <td>Debian 10 (buster)</td>
             <td>
                 <a href="https://github.com/wkhtmltopdf/wkhtmltopdf/releases/download/0.12.5/wkhtmltox_0.12.5-1.buster_amd64.deb">amd64</a>
@@ -66,6 +66,13 @@ The current stable series is **0.12.5**, which was released on June 11, 2018 -- 
                 <a href="https://github.com/wkhtmltopdf/wkhtmltopdf/releases/download/0.12.5/wkhtmltox_0.12.5-1.jessie_i386.deb">i386</a>
             </td>
             <td>Package (.deb) built on Debian 8.10</td>
+        </tr>
+        <tr>
+            <td>Ubuntu 20.04 (focal)</td>
+            <td>
+                <a href="https://github.com/wkhtmltopdf/wkhtmltopdf/releases/download/0.12.5/wkhtmltox_0.12.5-1.focal_amd64.deb">amd64</a>
+            </td>
+            <td>Package (.deb) built on Ubuntu 20.04</td>
         </tr>
         <tr>
             <td>Ubuntu 18.04 (bionic)</td>
