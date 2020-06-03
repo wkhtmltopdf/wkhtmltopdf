@@ -1,8 +1,12 @@
 v0.12.6 (unreleased)
 --------------------
+* **#2124**: **[qt]** avoid "QFont::setPixelSize: Pixel size <= 0" (qt#42)
 * **#3953**: fix TOC and other special pages not present in output PDF (#3962)
 * **#3242**: **[qt]** fix regression from #2353 in setLineDash for Canvas (qt#35)
 * **#4536**: BREAKING CHANGE: block local filesystem access by default
+* **#4612**: allow --encoding to work for non-patched builds
+* **[qt]** add support for ppc64le, thanks to @notorca (qt#40)
+* **[qt]** add support for 64-bit ARM, thanks to @soleson (qt#45, qt#46)
 
 v0.12.5 (2018-06-11)
 --------------------
