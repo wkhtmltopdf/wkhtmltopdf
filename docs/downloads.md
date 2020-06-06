@@ -4,6 +4,188 @@ layout: default
 
 All downloads are currently hosted via [Github releases](https://github.com/wkhtmltopdf/wkhtmltopdf/releases), so you can browse for a specific download or use the links below.
 
+## Release Candidate
+
+This is a [release candidate](https://github.com/wkhtmltopdf/packaging/releases/0.12.6-rc) for **0.12.6**, the final release is expected on June 11, 2020 -- see changes [since 0.12.5](https://github.com/wkhtmltopdf/wkhtmltopdf/blob/master/CHANGELOG.md#v0126-unreleased).
+
+<table>
+    <thead>
+        <tr>
+            <th>OS/Distro</th>
+            <th>Supported on</th>
+            <th colspan="7" style="text-align: center">Architectures</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td rowspan="2" valign="top">Windows</td>
+            <td>Installer (Vista or later)</td>
+            <td>
+                <a href="https://github.com/wkhtmltopdf/packaging/releases/download/0.12.6-rc/wkhtmltox-0.12.6-0.20200605.30.rc.faa06fa.msvc2015-win64.exe">64-bit</a>
+             </td><td>
+                <a href="https://github.com/wkhtmltopdf/packaging/releases/download/0.12.6-rc/wkhtmltox-0.12.6-0.20200605.30.rc.faa06fa.msvc2015-win32.exe">32-bit</a>
+            </td>
+            <td colspan="5">&nbsp;</td>
+        </tr>
+        <tr>
+            <td>7z Archive (XP/2003 or later)</td>
+            <td>
+                <a href="https://github.com/wkhtmltopdf/packaging/releases/download/0.12.6-rc/wkhtmltox-0.12.6-0.20200605.30.rc.faa06fa.mxe-cross-win64.7z">64-bit</a>
+             </td><td>
+                <a href="https://github.com/wkhtmltopdf/packaging/releases/download/0.12.6-rc/wkhtmltox-0.12.6-0.20200605.30.rc.faa06fa.mxe-cross-win32.7z">32-bit</a>
+            </td>
+            <td colspan="5">&nbsp;</td>
+        </tr>
+        <tr>
+            <td>macOS</td>
+            <td>Installer (10.7 or later)</td>
+            <td>
+                <a href="https://github.com/wkhtmltopdf/packaging/releases/download/0.12.6-rc/wkhtmltox-0.12.6-0.20200605.30.rc.faa06fa.macos-cocoa.pkg">64-bit</a>
+            </td>
+            <td colspan="6">&nbsp;</td>
+        </tr>
+        <tr>
+            <td rowspan="2" valign="top"><a href="https://www.debian.org/releases/">Debian</a></td>
+            <td>10 (<code>buster</code>)</td>
+            <td>
+                <a href="https://github.com/wkhtmltopdf/packaging/releases/download/0.12.6-rc/wkhtmltox_0.12.6-0.20200605.30.rc.faa06fa.buster_amd64.deb">amd64</a>
+             </td><td>
+                <a href="https://github.com/wkhtmltopdf/packaging/releases/download/0.12.6-rc/wkhtmltox_0.12.6-0.20200605.30.rc.faa06fa.buster_i386.deb">i386</a>
+             </td><td>
+                <a href="https://github.com/wkhtmltopdf/packaging/releases/download/0.12.6-rc/wkhtmltox_0.12.6-0.20200605.30.rc.faa06fa.buster_arm64.deb">arm64</a>
+             </td><td>
+                <a href="https://github.com/wkhtmltopdf/packaging/releases/download/0.12.6-rc/wkhtmltox_0.12.6-0.20200605.30.rc.faa06fa.buster_armhf.deb">armhf</a>
+             </td><td>
+                <a href="https://github.com/wkhtmltopdf/packaging/releases/download/0.12.6-rc/wkhtmltox_0.12.6-0.20200605.30.rc.faa06fa.buster_armel.deb">armel</a>
+             </td><td>
+                <a href="https://github.com/wkhtmltopdf/packaging/releases/download/0.12.6-rc/wkhtmltox_0.12.6-0.20200605.30.rc.faa06fa.buster_ppc64le.deb">ppc64le</a>
+             </td><td>
+                <a href="https://github.com/wkhtmltopdf/packaging/releases/download/0.12.6-rc/wkhtmltox_0.12.6-0.20200605.30.rc.faa06fa.raspberrypi.buster_armhf.deb">raspberrypi</a>
+            </td>
+        </tr>
+        <tr>
+            <td>9 (<code>stretch</code>)</td>
+            <td>
+                <a href="https://github.com/wkhtmltopdf/packaging/releases/download/0.12.6-rc/wkhtmltox_0.12.6-0.20200605.30.rc.faa06fa.stretch_amd64.deb">amd64</a>
+             </td><td>
+                <a href="https://github.com/wkhtmltopdf/packaging/releases/download/0.12.6-rc/wkhtmltox_0.12.6-0.20200605.30.rc.faa06fa.stretch_i386.deb">i386</a>
+             </td><td>
+                <a href="https://github.com/wkhtmltopdf/packaging/releases/download/0.12.6-rc/wkhtmltox_0.12.6-0.20200605.30.rc.faa06fa.stretch_arm64.deb">arm64</a>
+             </td><td>
+                <a href="https://github.com/wkhtmltopdf/packaging/releases/download/0.12.6-rc/wkhtmltox_0.12.6-0.20200605.30.rc.faa06fa.stretch_armhf.deb">armhf</a>
+             </td><td>
+                <!--<a href="https://github.com/wkhtmltopdf/packaging/releases/download/0.12.6-rc/wkhtmltox_0.12.6-0.20200605.30.rc.faa06fa.stretch_armel.deb">armel</a>-->
+             </td><td>
+                <a href="https://github.com/wkhtmltopdf/packaging/releases/download/0.12.6-rc/wkhtmltox_0.12.6-0.20200605.30.rc.faa06fa.stretch_ppc64le.deb">ppc64le</a>
+             </td><td>
+                <a href="https://github.com/wkhtmltopdf/packaging/releases/download/0.12.6-rc/wkhtmltox_0.12.6-0.20200605.30.rc.faa06fa.raspberrypi.stretch_armhf.deb">raspberrypi</a>
+            </td>
+        </tr>
+        <tr>
+            <td rowspan="3" valign="top"><a href="https://releases.ubuntu.com">Ubuntu</a></td>
+            <td>20.04 (<code>focal</code>)</td>
+            <td>
+                <a href="https://github.com/wkhtmltopdf/packaging/releases/download/0.12.6-rc/wkhtmltox_0.12.6-0.20200605.30.rc.faa06fa.focal_amd64.deb">amd64</a>
+             </td><td>&nbsp;</td><td>
+                <a href="https://github.com/wkhtmltopdf/packaging/releases/download/0.12.6-rc/wkhtmltox_0.12.6-0.20200605.30.rc.faa06fa.focal_arm64.deb">arm64</a>
+             </td><td>
+                <a href="https://github.com/wkhtmltopdf/packaging/releases/download/0.12.6-rc/wkhtmltox_0.12.6-0.20200605.30.rc.faa06fa.focal_armhf.deb">armhf</a>
+             </td><td>&nbsp;</td><td>
+                <a href="https://github.com/wkhtmltopdf/packaging/releases/download/0.12.6-rc/wkhtmltox_0.12.6-0.20200605.30.rc.faa06fa.focal_ppc64le.deb">ppc64le</a>
+            </td>
+            <td>&nbsp;</td>
+        </tr>
+        <tr>
+            <td>18.04 (<code>bionic</code>)</td>
+            <td>
+                <a href="https://github.com/wkhtmltopdf/packaging/releases/download/0.12.6-rc/wkhtmltox_0.12.6-0.20200605.30.rc.faa06fa.bionic_amd64.deb">amd64</a>
+             </td><td>
+                <a href="https://github.com/wkhtmltopdf/packaging/releases/download/0.12.6-rc/wkhtmltox_0.12.6-0.20200605.30.rc.faa06fa.bionic_i386.deb">i386</a>
+             </td><td>
+                <a href="https://github.com/wkhtmltopdf/packaging/releases/download/0.12.6-rc/wkhtmltox_0.12.6-0.20200605.30.rc.faa06fa.bionic_arm64.deb">arm64</a>
+             </td><td>
+                <a href="https://github.com/wkhtmltopdf/packaging/releases/download/0.12.6-rc/wkhtmltox_0.12.6-0.20200605.30.rc.faa06fa.bionic_armhf.deb">armhf</a>
+             </td><td>&nbsp;</td><td>
+                <a href="https://github.com/wkhtmltopdf/packaging/releases/download/0.12.6-rc/wkhtmltox_0.12.6-0.20200605.30.rc.faa06fa.bionic_ppc64le.deb">ppc64le</a>
+            </td>
+            <td>&nbsp;</td>
+        </tr>
+        <tr>
+            <td>16.04 (<code>xenial</code>)</td>
+            <td>
+                <a href="https://github.com/wkhtmltopdf/packaging/releases/download/0.12.6-rc/wkhtmltox_0.12.6-0.20200605.30.rc.faa06fa.xenial_amd64.deb">amd64</a>
+             </td><td>
+                <a href="https://github.com/wkhtmltopdf/packaging/releases/download/0.12.6-rc/wkhtmltox_0.12.6-0.20200605.30.rc.faa06fa.xenial_i386.deb">i386</a>
+             </td><td>
+                <a href="https://github.com/wkhtmltopdf/packaging/releases/download/0.12.6-rc/wkhtmltox_0.12.6-0.20200605.30.rc.faa06fa.xenial_arm64.deb">arm64</a>
+             </td><td>
+                <a href="https://github.com/wkhtmltopdf/packaging/releases/download/0.12.6-rc/wkhtmltox_0.12.6-0.20200605.30.rc.faa06fa.xenial_armhf.deb">armhf</a>
+             </td><td>&nbsp;</td><td>
+                <a href="https://github.com/wkhtmltopdf/packaging/releases/download/0.12.6-rc/wkhtmltox_0.12.6-0.20200605.30.rc.faa06fa.xenial_ppc64le.deb">ppc64le</a>
+            </td>
+            <td>&nbsp;</td>
+        </tr>
+        <tr>
+            <td rowspan="3" valign="top"><a href="https://wiki.centos.org/Download">CentOS</a></td>
+            <td>8</td>
+            <td>
+                <a href="https://github.com/wkhtmltopdf/packaging/releases/download/0.12.6-rc/wkhtmltox-0.12.6-0.20200605.30.rc.faa06fa.centos8.x86_64.rpm">x86_64</a>
+             </td><td>&nbsp;</td><td>
+                <a href="https://github.com/wkhtmltopdf/packaging/releases/download/0.12.6-rc/wkhtmltox-0.12.6-0.20200605.30.rc.faa06fa.centos8.aarch64.rpm">aarch64</a>
+             </td><td colspan="2">&nbsp;</td><td>
+                <!--<a href="https://github.com/wkhtmltopdf/packaging/releases/download/0.12.6-rc/wkhtmltox-0.12.6-0.20200605.30.rc.faa06fa.centos8.ppc64le.rpm">ppc64le</a>-->
+            </td>
+            <td>&nbsp;</td>
+        </tr>
+        <tr>
+            <td>7</td>
+            <td>
+                <a href="https://github.com/wkhtmltopdf/packaging/releases/download/0.12.6-rc/wkhtmltox-0.12.6-0.20200605.30.rc.faa06fa.centos7.x86_64.rpm">x86_64</a>
+             </td><td>
+                <a href="https://github.com/wkhtmltopdf/packaging/releases/download/0.12.6-rc/wkhtmltox-0.12.6-0.20200605.30.rc.faa06fa.centos7.i686.rpm">i686</a>
+             </td><td>
+                <a href="https://github.com/wkhtmltopdf/packaging/releases/download/0.12.6-rc/wkhtmltox-0.12.6-0.20200605.30.rc.faa06fa.centos7.aarch64.rpm">aarch64</a>
+             </td><td colspan="2">&nbsp;</td><td>
+                <a href="https://github.com/wkhtmltopdf/packaging/releases/download/0.12.6-rc/wkhtmltox-0.12.6-0.20200605.30.rc.faa06fa.centos7.ppc64le.rpm">ppc64le</a>
+            </td>
+            <td>&nbsp;</td>
+        </tr>
+        <tr>
+            <td>6</td>
+            <td>
+                <a href="https://github.com/wkhtmltopdf/packaging/releases/download/0.12.6-rc/wkhtmltox-0.12.6-0.20200605.30.rc.faa06fa.centos6.x86_64.rpm">x86_64</a>
+             </td><td>
+                <a href="https://github.com/wkhtmltopdf/packaging/releases/download/0.12.6-rc/wkhtmltox-0.12.6-0.20200605.30.rc.faa06fa.centos6.i686.rpm">i686</a>
+            </td>
+            <td colspan="5">&nbsp;</td>
+        </tr>
+        <tr>
+            <td><a href="https://aws.amazon.com/amazon-linux-2/">Amazon Linux</a></td>
+            <td>2</td>
+            <td>
+                <a href="https://github.com/wkhtmltopdf/packaging/releases/download/0.12.6-rc/wkhtmltox-0.12.6-0.20200605.30.rc.faa06fa.amazonlinux2.x86_64.rpm">x86_64</a>
+             </td><td>&nbsp;</td><td>
+                <a href="https://github.com/wkhtmltopdf/packaging/releases/download/0.12.6-rc/wkhtmltox-0.12.6-0.20200605.30.rc.faa06fa.amazonlinux2.aarch64.rpm">aarch64</a>
+            </td>
+            <td colspan="4">&nbsp;</td>
+        </tr>
+        <tr>
+            <td><a href="https://software.opensuse.org/distributions/leap">openSUSE Leap</a></td>
+            <td>15</td>
+            <td>
+                <a href="https://github.com/wkhtmltopdf/packaging/releases/download/0.12.6-rc/wkhtmltox-0.12.6-0.20200605.30.rc.faa06fa.opensuse.leap15.x86_64.rpm">x86_64</a>
+             </td><td>&nbsp;</td><td>
+                <a href="https://github.com/wkhtmltopdf/packaging/releases/download/0.12.6-rc/wkhtmltox-0.12.6-0.20200605.30.rc.faa06fa.opensuse.leap15.aarch64.rpm">aarch64</a>
+             </td><td colspan="2">&nbsp;</td><td>
+                <a href="https://github.com/wkhtmltopdf/packaging/releases/download/0.12.6-rc/wkhtmltox-0.12.6-0.20200605.30.rc.faa06fa.opensuse.leap15.ppc64le.rpm">ppc64le</a>
+            </td>
+            <td>&nbsp;</td>
+        </tr>
+    </tbody>
+</table>
+
+All of the above packages were [produced automatically via Azure Pipelines](https://github.com/wkhtmltopdf/packaging).
+
 ## Stable
 
 The current stable series is **0.12.5**, which was released on June 11, 2018 -- see changes [since 0.12.4](https://github.com/wkhtmltopdf/wkhtmltopdf/releases/0.12.5/).
@@ -172,10 +354,6 @@ If you need versions older than `0.12.0`, you can look at the [obsolete download
 #### Where are the "generic" Linux builds?
 
 The above binaries depend on packages provided by your distribution. Due to incompatibilities between library versions (specifically OpenSSL) provided by each distribution, the only option is to use static linking which isn't recommended for OpenSSL -- hence removed for now.
-
-#### Where are the builds for 0.13?
-
-They haven't been updated in over 3 years, and nowadays most distributions provide effectively the same version in their repositories (the non-patched build). The packages are still available [at BitBucket](https://bitbucket.org/wkhtmltopdf/wkhtmltopdf/downloads/), but may be removed in the future.
 
 #### My platform is not supported! What should I do?
 
