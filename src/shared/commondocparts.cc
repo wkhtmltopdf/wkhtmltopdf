@@ -67,7 +67,7 @@ void CommandLineParserBase::outputStaticProblems(Outputter * o) const {
 	o->beginSection("Static version");
 	o->beginParagraph();
 	o->text("On the wkhtmltopdf website you can download a static version of wkhtmltopdf ");
-	o->link("http://wkhtmltopdf.org/downloads.html");
+	o->link("https://wkhtmltopdf.org/downloads.html");
 	o->text(". This static binary will work on most systems and comes with a build in patched QT.");
 	o->endParagraph();
 

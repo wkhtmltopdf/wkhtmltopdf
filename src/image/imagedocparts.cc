@@ -115,7 +115,7 @@ void ImageCommandLineParser::outputExamples(Outputter * o) const {
 	o->beginSection("Examples");
 	o->paragraph("This section presents a number of examples of how to invoke wkhtmltoimage.");
 	o->paragraph("To convert a remote HTML file to PNG:");
-	o->verbatim("wkhtmltoimage http://www.google.com google.png\n");
+	o->verbatim("wkhtmltoimage https://www.google.com google.png\n");
 	o->paragraph("To convert a local HTML file to PNG:");
 	o->verbatim("wkhtmltoimage my.html my.png\n");
 	o->endSection();
