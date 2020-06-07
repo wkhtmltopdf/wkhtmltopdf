@@ -1,7 +1,7 @@
 // -*- mode: c++; tab-width: 4; indent-tabs-mode: t; eval: (progn (c-set-style "stroustrup") (c-set-offset 'innamespace 0)); -*-
 // vi:set ts=4 sts=4 sw=4 noet :
 //
-// Copyright 2010, 2011 wkhtmltopdf authors
+// Copyright 2010-2020 wkhtmltopdf authors
 //
 // This file is part of wkhtmltopdf.
 //
@@ -50,7 +50,7 @@ namespace wkhtmltopdf {
 
 LoaderObject::LoaderObject(QWebPage & p): page(p), skip(false) {};
 
-MyNetworkAccessManager::MyNetworkAccessManager(const settings::LoadPage & s): 
+MyNetworkAccessManager::MyNetworkAccessManager(const settings::LoadPage & s):
 	disposed(false),
 	settings(s) {
 
@@ -121,7 +121,7 @@ QNetworkReply * MyNetworkAccessManager::createRequest(Operation op, const QNetwo
 			QSslKey key(&keyFile, QSsl::Rsa, QSsl::Pem, QSsl::PrivateKey, settings.clientSslKeyPassword.toUtf8());
 			sslConfig.setPrivateKey(key);
 			keyFile.close();
-			
+
 			QList<QSslCertificate> chainCerts =
 				QSslCertificate::fromPath(settings.clientSslCrtPath.toLatin1(),  QSsl::Pem, QRegExp::FixedString);
 			QList<QSslCertificate> cas =  sslConfig.caCertificates();
@@ -415,7 +415,7 @@ void ResourceObject::amfinished(QNetworkReply * reply) {
 		if (settings.mediaLoadErrorHandling == settings::LoadPage::abort)
 		{
 			httpErrorCode = networkStatus > 0 ? (networkStatus + 1000) : httpStatus;
-			error(QString("Failed to load ") + reply->url().toString() + ", with code: " + QString::number(httpErrorCode) + 
+			error(QString("Failed to load ") + reply->url().toString() + ", with code: " + QString::number(httpErrorCode) +
 				" (sometimes it will work just to ignore this error with --load-media-error-handling ignore)");
 		}
 		else {
@@ -511,7 +511,7 @@ void ResourceObject::load() {
 }
 
 void MyCookieJar::clearExtraCookies() {
-	extraCookies.clear();	
+	extraCookies.clear();
 }
 
 void MyCookieJar::useCookie(const QUrl &, const QString & name, const QString & value) {

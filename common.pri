@@ -1,4 +1,4 @@
-# Copyright 2010, 2011 wkhtmltopdf authors
+# Copyright 2010-2020 wkhtmltopdf authors
 #
 # This file is part of wkhtmltopdf.
 #
