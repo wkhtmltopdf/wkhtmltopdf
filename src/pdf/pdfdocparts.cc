@@ -291,7 +291,7 @@ void PdfCommandLineParser::outputContact(Outputter * o) const {
 	o->beginSection("Contact");
 	o->beginParagraph();
 	o->text("If you experience bugs or want to request new features please visit ");
-	o->link("https://github.com/wkhtmltopdf/wkhtmltopdf/issues");
+	o->link("https://wkhtmltopdf.org/support.html");
 	o->endParagraph();
 	o->endSection();
 }
