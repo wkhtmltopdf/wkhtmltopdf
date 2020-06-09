@@ -11,7 +11,7 @@ This is a [release candidate](https://github.com/wkhtmltopdf/packaging/releases/
 <table>
     <thead>
         <tr>
-            <th>OS/Distro</th>
+            <th>OS/Distribution</th>
             <th>Supported on</th>
             <th colspan="7" style="text-align: center">Architectures</th>
         </tr>
@@ -184,7 +184,7 @@ This is a [release candidate](https://github.com/wkhtmltopdf/packaging/releases/
     </tbody>
 </table>
 
-All of the above packages were [produced automatically via Azure Pipelines](https://github.com/wkhtmltopdf/packaging).
+All of the above packages were [produced automatically via Azure Pipelines](https://github.com/wkhtmltopdf/packaging) and were built on the latest OS/distribution patch release at the time the packages were built.
 
 ## Stable
 
@@ -351,13 +351,29 @@ If you need versions older than `0.12.0`, you can look at the [obsolete download
 
 ## FAQ
 
-#### Where are the "generic" Linux builds?
+#### Why are there no "generic" Linux builds (_which were provided earlier_)?
 
-The above binaries depend on packages provided by your distribution. Due to incompatibilities between library versions (specifically OpenSSL) provided by each distribution, the only option is to use static linking which isn't recommended for OpenSSL -- hence removed for now.
+Although the builds are static, it is very important to understand what it means in the context of Qt -- on which wkhtmltopdf is built. A static build means that _only_ Qt is linked in this manner -- the remaining system packages still need to be installed. Over a period of time, major areas of divergence between distributions were found by trial and error:
 
-#### My platform is not supported! What should I do?
+* **different library versions**: not every distribution provides the same versions. This was especially the case for `libpng` and `libjpeg`, with a lot of distributions choosing between the 1.2, 1.5 and 1.6 series for the former and multiple versions of `libjpeg` and/or its fork `libjpeg-turbo`. While this could be addressed easily by linking them statically (and was actually done so for previous releases) -- it broke down when it came to the next point.
+* **different OpenSSL versions**: due to OpenSSL having a bad track record then (_it's better now_), distributions started aggressively upgrading their OpenSSL version and disabling unused part of the library. This led to a situation where there was effectively zero backward compatibility and things started breaking randomly -- see [#3001](https://github.com/wkhtmltopdf/wkhtmltopdf/issues/3001) for a very long read of the problems faced. This was the direct motivation to create a [separate packaging repository](https://github.com/wkhtmltopdf/packaging).
+* **incompatible libc**: not every distribution has the same glibc version. If you compile with a later version, it won't work on a distro which uses an older version. This was worked around earlier by using CentOS 6 (which had an old enough glibc version). But due to the rise of Docker, the `alpine` image became very popular. This doesn't use glibc at all, but the musl libc. So the generic binaries never really worked on Alpine.
 
-Head over to the [packaging repository](https://github.com/wkhtmltopdf/packaging) and open an issue to start the discussion.
+While Python has also tried to do this using [manylinux](https://github.com/pypa/manylinux) -- it doesn't always work well (e.g. `alpine` is _not_ recommended with binary wheels if you google for it), and requires you to statically link everything. This may work for them, but wkhtmltopdf also depends on the runtime configuration on actual fonts installed (i.e. `fontconfig` and `freetype2`). It's not possible to abstract everything out and test/fix everything for every OS/distribution with the limited resources this project has -- it makes more sense to make distribution-specific versions which are almost guaranteed to work, as they use the specific versions that the distribution has packaged.
+
+#### I don't see an appropriate download for my platform!
+
+If the distribution you are using is listed:
+  * but not the specific patch release -- try it, as it's very likely to work regardless.
+  * the major release isn't listed -- we only support LTS versions, so try a LTS version older than your release.
+  * cannot install package -- you can always extract it (google for `extract from <format>`), but you'll need to have the dependencies installed.
+* I cannot If the distribution you are using is listed, but not the specific patch release -- try it, as it's very likely to work regardless.
+
+Head over to the [packaging repository](https://github.com/wkhtmltopdf/packaging) and start a discussion if your platform isn't listed.
+
+#### How do I use it with [FaaS](https://en.wikipedia.org/wiki/Function_as_a_service) setups?
+
+You'll need to extract the distribution-specific package, bundle it with necessary libraries, configuration and/or fonts and then upload it. See [this ticket](https://github.com/wkhtmltopdf/wkhtmltopdf/issues/4523) for AWS Lambda and [this StackOverflow question](https://stackoverflow.com/q/46639273) for Google Cloud Functions. PRs are welcome to expand this section, if you have more information about this -- this is not a setup that the maintainer uses 😄
 
 #### Symantec reports a virus `WS.Reputation.1` for the Windows builds
 
