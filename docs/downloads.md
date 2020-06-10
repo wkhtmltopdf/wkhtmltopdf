@@ -4,6 +4,8 @@ layout: default
 
 All downloads are currently hosted via [Github releases](https://github.com/wkhtmltopdf/wkhtmltopdf/releases), so you can browse for a specific download or use the links below.
 
+**Do not use wkhtmltopdf with any untrusted HTML** -- be sure to sanitize any user-supplied HTML/JS, otherwise it can lead to complete takeover of the server it is running on! Please read the [project status](status.html) for the gory details.
+
 ## Release Candidate
 
 This is a [release candidate](https://github.com/wkhtmltopdf/packaging/releases/0.12.6-rc) for **0.12.6**, the final release is expected on June 11, 2020 -- see changes [since 0.12.5](https://github.com/wkhtmltopdf/wkhtmltopdf/blob/master/CHANGELOG.md#v0126-unreleased).
