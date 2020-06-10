@@ -1,22 +1,22 @@
 Name:
-  wkhtmltopdf 0.12.5 (with patched qt)
+  wkhtmltopdf 0.12.6 (with patched qt)
 
 Synopsis:
   wkhtmltopdf [GLOBAL OPTION]... [OBJECT]... <output file>
-
+  
 Document objects:
   wkhtmltopdf is able to put several objects into the output file, an object is
   either a single webpage, a cover webpage or a table of contents.  The objects
   are put into the output document in the order they are specified on the
   command line, options can be specified on a per object basis or in the global
   options area. Options from the Global Options section can only be placed in
-  the global options area
+  the global options area.
 
   A page objects puts the content of a single webpage into the output document.
 
   (page)? <input url/file name> [PAGE OPTION]...
   Options for the page object can be placed in the global options and the page
-  options areas. The applicable options can be found in the Page Options and
+  options areas. The applicable options can be found in the Page Options and 
   Headers And Footer Options sections.
 
   A cover objects puts the content of a single webpage into the output document,
@@ -153,9 +153,9 @@ Page Options:
                                       (default ignore)
       --disable-local-file-access     Do not allowed conversion of a local file
                                       to read in other local files, unless
-                                      explicitly allowed with --allow
+                                      explicitly allowed with --allow (default)
       --enable-local-file-access      Allowed conversion of a local file to read
-                                      in other local files. (default)
+                                      in other local files.
       --minimum-font-size <int>       Minimum font size
       --exclude-from-outline          Do not include the page in the table of
                                       contents and outlines
@@ -183,10 +183,10 @@ Page Options:
                                       page is done loading (repeatable)
       --disable-smart-shrinking       Disable the intelligent shrinking strategy
                                       used by WebKit that makes the pixel/dpi
-                                      ratio none constant
+                                      ratio non-constant
       --enable-smart-shrinking        Enable the intelligent shrinking strategy
                                       used by WebKit that makes the pixel/dpi
-                                      ratio none constant (default)
+                                      ratio non-constant (default)
       --ssl-crt-path <path>           Path to the ssl client cert public key in
                                       OpenSSL PEM format, optionally followed by
                                       intermediate ca and trusted certs
@@ -198,7 +198,7 @@ Page Options:
       --disable-toc-back-links        Do not link from section header to toc
                                       (default)
       --enable-toc-back-links         Link from section header to toc
-      --user-style-sheet <url>        Specify a user style sheet, to load with
+      --user-style-sheet <path>       Specify a user style sheet, to load with
                                       every page
       --username <username>           HTTP Authentication username
       --viewport-size <>              Set viewport size if you have custom
@@ -245,13 +245,13 @@ TOC Options:
                                       font is scaled by this factor (default
                                       0.8)
       --xsl-style-sheet <file>        Use the supplied xsl style sheet for
-                                      printing the table of content
+                                      printing the table of contents
 
 Page sizes:
-  The default page size of the rendered document is A4, but using this
-  --page-size optionthis can be changed to almost anything else, such as: A3,
-  Letter and Legal.  For a full list of supported pages sizes please see
-  <http://qt-project.org/doc/qt-4.8/qprinter.html#PaperSize-enum>.
+  The default page size of the rendered document is A4, but by using the
+  --page-size option this can be changed to almost anything else, such as: A3,
+  Letter and Legal.  For a full list of supported pages sizes please see 
+  <https://qt-project.org/doc/qt-4.8/qprinter.html#PaperSize-enum>.
 
   For a more fine grained control over the page size the --page-height and
   --page-width options may be used
@@ -267,10 +267,10 @@ Reading arguments from stdin:
 
   For example one could do the following:
 
-  echo "http://qt-project.org/doc/qt-4.8/qapplication.html qapplication.pdf" >> cmds
-  echo "cover google.com http://en.wikipedia.org/wiki/Qt_(software) qt.pdf" >> cmds
+  echo "https://qt-project.org/doc/qt-4.8/qapplication.html qapplication.pdf" >> cmds
+  echo "cover google.com https://en.wikipedia.org/wiki/Qt_(software) qt.pdf" >> cmds
   wkhtmltopdf --read-args-from-stdin --book < cmds
-
+  
 Specifying A Proxy:
   By default proxy information will be read from the environment variables:
   proxy, all_proxy and http_proxy, proxy options can also by specified with the
@@ -279,16 +279,16 @@ Specifying A Proxy:
   <type> := "http://" | "socks5://"
   <serif> := <username> (":" <password>)? "@"
   <proxy> := "None" | <type>? <string>? <host> (":" <port>)?
-
+  
   Here are some examples (In case you are unfamiliar with the BNF):
 
   http://user:password@myproxyserver:8080
   socks5://myproxyserver
   None
-
+  
 Footers And Headers:
   Headers and footers can be added to the document by the --header-* and
-  --footer* arguments respectfully.  In header and footer text string supplied
+  --footer* arguments respectively.  In header and footer text string supplied
   to e.g. --header-left, the following variables will be substituted.
 
    * [page]       Replaced by the number of the pages currently being printed
@@ -304,9 +304,9 @@ Footers And Headers:
    * [doctitle]   Replaced by the title of the output document
    * [sitepage]   Replaced by the number of the page in the current site being converted
    * [sitepages]  Replaced by the number of pages in the current site being converted
-
-
-  As an example specifying --header-right "Page [page] of [toPage]", will result
+  
+  
+  As an example specifying --header-right "Page [page] of [topage]", will result
   in the text "Page x of y" where x is the number of the current page and y is
   the number of the last page, to appear in the upper left corner in the
   document.
@@ -346,8 +346,8 @@ Footers And Headers:
     </tr>
   </table>
   </body></html>
-
-
+  
+  
   As can be seen from the example, the arguments are sent to the header/footer
   html documents in get fashion.
 
@@ -355,7 +355,7 @@ Outlines:
   Wkhtmltopdf with patched qt has support for PDF outlines also known as book
   marks, this can be enabled by specifying the --outline switch. The outlines
   are generated based on the <h?> tags, for a in-depth description of how this
-  is done see the Table Of Contents section.
+  is done see the Table Of Contents section. 
 
   The outline tree can sometimes be very deep, if the <h?> tags where spread to
   generous in the HTML document.  The --outline-depth switch can be used to
@@ -365,21 +365,21 @@ Table Of Contents:
   A table of contents can be added to the document by adding a toc object to the
   command line. For example:
 
-  wkhtmltopdf toc http://qt-project.org/doc/qt-4.8/qstring.html qstring.pdf
-
+  wkhtmltopdf toc https://qt-project.org/doc/qt-4.8/qstring.html qstring.pdf
+  
   The table of contents is generated based on the H tags in the input documents.
   First a XML document is generated, then it is converted to HTML using XSLT.
 
   The generated XML document can be viewed by dumping it to a file using the
   --dump-outline switch. For example:
 
-  wkhtmltopdf --dump-outline toc.xml http://qt-project.org/doc/qt-4.8/qstring.html qstring.pdf
-
+  wkhtmltopdf --dump-outline toc.xml https://qt-project.org/doc/qt-4.8/qstring.html qstring.pdf
+  
   The XSLT document can be specified using the --xsl-style-sheet switch. For
   example:
 
-  wkhtmltopdf toc --xsl-style-sheet my.xsl http://qt-project.org/doc/qt-4.8/qstring.html qstring.pdf
-
+  wkhtmltopdf toc --xsl-style-sheet my.xsl https://qt-project.org/doc/qt-4.8/qstring.html qstring.pdf
+  
   The --dump-default-toc-xsl switch can be used to dump the default XSLT style
   sheet to stdout. This is a good start for writing your own style sheet
 
@@ -398,6 +398,6 @@ Table Of Contents:
   work when specifying a custom style sheet.
 
 Contact:
-  If you experience bugs or want to request new features please visit
-  <https://github.com/wkhtmltopdf/wkhtmltopdf/issues>
+  If you experience bugs or want to request new features please visit 
+  <https://wkhtmltopdf.org/support.html>
 
