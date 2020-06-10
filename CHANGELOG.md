@@ -1,4 +1,4 @@
-v0.12.6 (unreleased)
+v0.12.6 (2020-06-11)
 --------------------
 * **#2124**: **[qt]** avoid "QFont::setPixelSize: Pixel size <= 0" (qt#42)
 * **#3953**: fix TOC and other special pages not present in output PDF (#3962)
