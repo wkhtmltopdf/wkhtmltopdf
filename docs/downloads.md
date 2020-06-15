@@ -42,7 +42,7 @@ The current stable series is **0.12.6**, which was released on June 11, 2020 -- 
             <td>macOS</td>
             <td>Installer (10.7 or later)</td>
             <td>
-                <a href="https://github.com/wkhtmltopdf/packaging/releases/download/0.12.6-1/wkhtmltox-0.12.6-1.macos-cocoa.pkg">64-bit</a>
+                <a href="https://github.com/wkhtmltopdf/packaging/releases/download/0.12.6-2/wkhtmltox-0.12.6-2.macos-cocoa.pkg">64-bit</a>
             </td>
             <td colspan="4">&nbsp;</td>
         </tr>
