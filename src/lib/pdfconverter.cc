@@ -46,7 +46,7 @@ using namespace wkhtmltopdf::settings;
 #define STRINGIZE_(x) #x
 #define STRINGIZE(x) STRINGIZE_(x)
 
-const qreal PdfConverter::millimeterToPointMultiplier = 2.83464567;
+const qreal PdfConverter::millimeterToPointMultiplier = 3.779527559;
 
 DLL_LOCAL QMap<QWebPage *, PageObject *> PageObject::webPageToObject;
 
