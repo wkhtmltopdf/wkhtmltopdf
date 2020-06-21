@@ -51,6 +51,7 @@ struct DLL_LOCAL ReflectImpl<ImageGlobal>: public ReflectClass {
 		WKHTMLTOPDF_REFLECT(quality);
 		WKHTMLTOPDF_REFLECT(loadGlobal);
 		WKHTMLTOPDF_REFLECT(loadPage);
+		WKHTMLTOPDF_REFLECT(smartWidth);
 	}
 };
 
