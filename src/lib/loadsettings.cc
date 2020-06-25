@@ -146,6 +146,7 @@ LoadPage::LoadPage():
 	loadErrorHandling(abort),
 	mediaLoadErrorHandling(ignore),
 	cacheDir(""),
+	printMediaType(false),
 	proxyHostNameLookup(false) {};
 
 }

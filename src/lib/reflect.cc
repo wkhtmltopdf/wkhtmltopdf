@@ -81,6 +81,7 @@ ReflectImpl<LoadPage>::ReflectImpl(LoadPage & c) {
 	WKHTMLTOPDF_REFLECT(cacheDir);
 	WKHTMLTOPDF_REFLECT(bypassProxyForHosts);
 	WKHTMLTOPDF_REFLECT(proxyHostNameLookup);
+	WKHTMLTOPDF_REFLECT(printMediaType);
 }
 
 ReflectImpl<Web>::ReflectImpl(Web & c) {
@@ -89,7 +90,6 @@ ReflectImpl<Web>::ReflectImpl(Web & c) {
 	WKHTMLTOPDF_REFLECT(enableJavascript);
 	WKHTMLTOPDF_REFLECT(enableIntelligentShrinking);
 	WKHTMLTOPDF_REFLECT(minimumFontSize);
-	WKHTMLTOPDF_REFLECT(printMediaType);
 	WKHTMLTOPDF_REFLECT(defaultEncoding);
 	WKHTMLTOPDF_REFLECT(userStyleSheet);
 	WKHTMLTOPDF_REFLECT(enablePlugins);

@@ -43,7 +43,6 @@ void ConverterPrivate::updateWebSettings(QWebSettings * ws, const settings::Web 
 		ws->setPrintingMaximumShrinkFactor(1.0);
 		ws->setPrintingMinimumShrinkFactor(1.0);
 	}
-	ws->setPrintingMediaType(s.printMediaType?"print":"screen");
 #endif
 	ws->setAttribute(QWebSettings::JavaEnabled, s.enablePlugins);
 	ws->setAttribute(QWebSettings::JavascriptEnabled, s.enableJavascript);

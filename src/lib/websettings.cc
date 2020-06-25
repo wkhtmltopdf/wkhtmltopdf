@@ -29,7 +29,6 @@ Web::Web() :
 	enableJavascript(true),
 	enableIntelligentShrinking(true),
 	minimumFontSize(-1),
-	printMediaType(false),
 	defaultEncoding(""),
 	userStyleSheet(""),
 	enablePlugins(false) {}

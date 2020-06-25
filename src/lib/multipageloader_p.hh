@@ -74,6 +74,7 @@ public:
 	virtual bool javaScriptConfirm(QWebFrame * frame, const QString & msg);
 	virtual bool javaScriptPrompt(QWebFrame * frame, const QString & msg, const QString & defaultValue, QString * result);
 	virtual void javaScriptConsoleMessage(const QString & message, int lineNumber, const QString & sourceID);
+	virtual QString overrideMediaType() const;
 public slots:
 	bool shouldInterruptJavaScript();
 };

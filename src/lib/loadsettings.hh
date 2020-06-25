@@ -135,6 +135,9 @@ struct DLL_PUBLIC LoadPage {
 
 	//! Whether to use the proxy for resolving hostnames
 	bool proxyHostNameLookup;
+
+	//! Should we use the print or the screen media type
+	bool printMediaType;
 };
 
 DLL_PUBLIC LoadPage::LoadErrorHandling strToLoadErrorHandling(const char * s, bool * ok=0);

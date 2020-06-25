@@ -49,8 +49,6 @@
  * - \b web.enableIntelligentShrinking Should we enable intelligent shrinkng to fit more content
  *      on one page? Must be either "true" or "false". Has no effect for wkhtmltoimage.
  * - \b web.minimumFontSize The minimum font size allowed. E.g. "9"
- * - \b web.printMediaType Should the content be printed using the print media type instead
- *      of the screen media type. Must be either "true" or "false". Has no effect for wkhtmltoimage.
  * - \b web.defaultEncoding What encoding should we guess content is using if they do not
  *      specify it properly? E.g. "utf-8"
  * - \b web.userStyleSheet Url er path to a user specified style sheet.
@@ -81,6 +79,8 @@
  *      - "ignore" Try to add the object to the final output.
  * - \b load.proxy String describing what proxy to use when loading the object.
  * - \b load.runScript TODO
+ * - \b load.printMediaType Should the content be printed using the print media type instead
+ *      of the screen media type. Must be either "true" or "false". Has no effect for wkhtmltoimage.
  *
  * \section pageHeaderFooter Header and footer settings
  * The same settings can be applied for headers and footers, here there are explained in
@@ -423,6 +423,9 @@ CAPI(void) wkhtmltopdf_destroy_object_settings(wkhtmltopdf_object_settings * obj
  * \returns 1 if the setting was updated successfully and 0 otherwise.
  */
 CAPI(int) wkhtmltopdf_set_object_setting(wkhtmltopdf_object_settings * settings, const char * name, const char * value) {
+	if (!strcmp(name, "web.printMediaType")) {
+		name = "load.printMediaType";
+	}
 	return reinterpret_cast<settings::PdfObject *>(settings)->set(name, QString::fromUtf8(value));
 }
 

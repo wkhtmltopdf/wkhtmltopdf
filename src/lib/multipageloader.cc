@@ -184,6 +184,11 @@ bool MyQWebPage::shouldInterruptJavaScript() {
 	return false;
 }
 
+QString MyQWebPage::overrideMediaType() const
+{
+    return resource.settings.printMediaType ? "print" : "screen";
+}
+
 ResourceObject::ResourceObject(MultiPageLoaderPrivate & mpl, const QUrl & u, const settings::LoadPage & s):
 	networkAccessManager(s),
 	url(u),

@@ -46,9 +46,6 @@ struct DLL_PUBLIC Web {
 	//! Minimum font size
 	int minimumFontSize;
 
-	//! Should we use the print or the screen media type
-	bool printMediaType;
-
 	//! Encoding used to enterpit a document with do supplied encoding
 	QString defaultEncoding;
 
