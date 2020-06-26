@@ -75,7 +75,7 @@ File: /etc/apparmor.d/usr.local.bin.wkhtmltopdf
   #include <abstractions/openssl>
 
   # Allow access to font infrastructure
-  #include <abstractions/font>
+  #include <abstractions/fonts>
   
   deny capability sys_ptrace,
 
