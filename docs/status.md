@@ -167,7 +167,7 @@ complete takeover of the server it is running on!
 [annulen]:                    https://github.com/annulen
 [qtwebkit-dev-wip]:           https://github.com/qtwebkit/qtwebkit
 [the future of Qt]:           https://lwn.net/Articles/817129/
-[puppeteer page.pdf]:         https://github.com/puppeteer/puppeteer/blob/master/docs/api.md#pagepdfoptions
+[puppeteer page.pdf]:         https://github.com/puppeteer/puppeteer/blob/v4.0.0/docs/api.md#pagepdfoptions
 [maintainer stepping down]:   https://groups.google.com/forum/m/#!topic/phantomjs/9aI5d-LDuNE
 [submitted PRs]:              https://github.com/wkhtmltopdf/wkhtmltopdf/pulls
 [rebaselining the patches]:   https://github.com/wkhtmltopdf/wkhtmltopdf/issues/3217
