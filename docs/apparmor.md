@@ -72,6 +72,7 @@ File: /etc/apparmor.d/usr.local.bin.wkhtmltopdf
   #  - Ability to interact with name-services like nis, ldap, winbind, kerberos
   # Remove if you don't need network access.
   #include <abstractions/nameservice>
+  #include <abstractions/openssl>
 
   # Allow access to font infrastructure
   #include <abstractions/font>
