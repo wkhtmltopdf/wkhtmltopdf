@@ -134,14 +134,13 @@ please stop asking about that 🙏
 ## Recommendations
 
 * **Do not use wkhtmltopdf with any untrusted HTML** -- be sure to
-sanitize any user-supplied HTML/JS, otherwise it can lead to
-complete takeover of the server it is running on!
+  sanitize any user-supplied HTML/JS, otherwise it can lead to
+  complete takeover of the server it is running on! Please consider
+  using a Mandatory Access Control system like AppArmor or SELinux,
+  see [recommended AppArmor policy](apparmor.html).
 * If you're using it for report generation (i.e. with HTML you control),
   also consider using [WeasyPrint] or the [commercial tool Prince] --
   note that I'm not affiliated with either project, and do your diligence.
-* If you simply must use it for user-supplied HTML/JS, consider using a 
-  Mandatory Access Control system like AppArmor or SELinux.
-  [We have recommendations for an AppArmor policy][apparmor.html].
 * If you're using it to convert a site which uses dynamic JS, consider
   using [puppeteer] or one of the many wrappers it has.
 
