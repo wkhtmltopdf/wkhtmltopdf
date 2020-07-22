@@ -165,6 +165,14 @@ The current stable series is **0.12.6**, which was released on June 11, 2020 -- 
             </td>
             <td>&nbsp;</td>
         </tr>
+        <tr>
+            <td><a href="https://www.archlinux.org/">Arch Linux</a></td>
+            <td>20200705</td>
+            <td>
+                <a href="https://github.com/wkhtmltopdf/packaging/releases/download/0.12.6-3/wkhtmltox-0.12.6-3.archlinux-x86_64.pkg.tar.xz">x86_64</a>
+             </td>
+            <td colspan="4">&nbsp;</td>
+        </tr>
     </tbody>
 </table>
 
