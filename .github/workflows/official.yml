@@ -1,0 +1,71 @@
+name: Official
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+
+jobs:
+  linux:
+    name: Qt 4.8 on Linux
+    runs-on: ubuntu-20.04
+    steps:
+      - name: checkout source
+        uses: actions/checkout@v2
+        with:
+          path: wkhtmltopdf
+          submodules: true
+      - name: checkout packaging
+        uses: actions/checkout@v2
+        with:
+          repository: wkhtmltopdf/packaging
+          path: packaging
+      - name: build
+        run: cd packaging && python3 ./build package-docker buster-amd64 ../wkhtmltopdf
+
+  macos:
+    name: Qt 4.8 on macOS
+    runs-on: macos-10.15
+    steps:
+      - name: checkout source
+        uses: actions/checkout@v2
+        with:
+          path: wkhtmltopdf
+          submodules: true
+      - name: checkout packaging
+        uses: actions/checkout@v2
+        with:
+          repository: wkhtmltopdf/packaging
+          path: packaging
+      - name: setup build environment
+        run: |
+          brew install conan
+          pip3 install pyyaml
+          sudo gem install fpm --no-document
+          sudo xcode-select --switch /Library/Developer/CommandLineTools
+          sed -i -e 's/CFLAGS CXXFLAGS LDFLAGS/CFLAGS CXXFLAGS OBJECTIVE_CFLAGS LDFLAGS/g' wkhtmltopdf/qt/configure
+          sed -i -e 's/compiler.version=9.0/compiler.version=11.0/g' packaging/.conan/profiles/macos-cocoa
+      - name: build
+        run: cd packaging && MACOSX_DEPLOYMENT_TARGET=10.7 python3 ./build vagrant macos-cocoa --clean --version - - ../wkhtmltopdf
+
+  windows:
+    name: Qt 4.8 on Windows
+    runs-on: windows-2019
+    steps:
+      - name: checkout source
+        uses: actions/checkout@v2
+        with:
+          path: wkhtmltopdf
+          submodules: true
+      - name: checkout packaging
+        uses: actions/checkout@v2
+        with:
+          repository: wkhtmltopdf/packaging
+          path: packaging
+      - name: setup build environment
+        run: |
+          choco install -yr --no-progress vcbuildtools -ia "/Full"
+          pip install -q conan
+          cmd /c attrib "C:\Program Files (x86)\Windows Kits\10\include\wdf" +H
+      - name: build
+        run: cd packaging && python ./build vagrant msvc2015-win64 --clean --version - - ../wkhtmltopdf
