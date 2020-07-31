@@ -183,7 +183,7 @@ void PdfCommandLineParser::outputHeaderFooterDoc(Outputter * o) const {
 	o->paragraph("As an example specifying --header-right \"Page [page] of [topage]\", "
 				 "will result in the text \"Page x of y\" where x is the number of the "
 				 "current page and y is the number of the last page, to appear in the upper "
-				 "left corner in the document.");
+				 "right corner in the document.");
 	o->paragraph("Headers and footers can also be supplied with HTML documents. As an example one "
 				 "could specify --header-html header.html, and use the following content in header.html:");
 	o->verbatim(
@@ -244,9 +244,9 @@ void PdfCommandLineParser::outputTableOfContentDoc(Outputter * o) const {
 				 "own style sheet");
 	o->verbatim("wkhtmltopdf --dump-default-toc-xsl");
 	o->paragraph("The XML document is in the namespace "
-				 "\"http://wkhtmltopdf.org/outline\" "
+				 "\"http://wkhtmltopdf.org/outline\", "
 				 "it has a root node called \"outline\" which contains a number of "
-				 "\"item\" nodes. An item can contain any number of item. These are the "
+				 "\"item\" nodes. An item can contain any number of items. These are the "
 				 "outline subsections to the section the item represents. A item node "
 				 "has the following attributes:");
 	o->beginList();
@@ -271,14 +271,14 @@ void PdfCommandLineParser::outputOutlineDoc(Outputter * o) const {
 	o->text(
 		"Wkhtmltopdf with patched qt has support for PDF outlines also known as "
 		"book marks, this can be enabled by specifying the --outline switch. "
-		"The outlines are generated based on the <h?> tags, for a in-depth "
+		"The outlines are generated based on the <h?> tags, for an in-depth "
 		"description of how this is done see the ");
 	o->sectionLink("Table Of Contents");
 	o->text(" section. ");
 	o->endParagraph();
 	o->paragraph(
-		"The outline tree can sometimes be very deep, if the <h?> tags where "
-		"spread to generous in the HTML document.  The --outline-depth switch can "
+		"The outline tree can sometimes be very deep, if the <h?> tags are "
+		"spread too generously in the HTML document.  The --outline-depth switch can "
 		"be used to bound this.");
 	o->endSection();
 }
