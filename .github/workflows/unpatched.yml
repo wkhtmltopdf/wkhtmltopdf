@@ -12,7 +12,7 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - name: install packages
-        run: sudo apt-get install -y libqtwebkit-dev
+        run: sudo apt-get update && sudo apt-get install -y libqtwebkit-dev
       - name: build
         run: qmake-qt4 CONFIG+=silent && make
 
@@ -22,6 +22,6 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - name: install packages
-        run: sudo apt-get install -y libqt5webkit5-dev libqt5xmlpatterns5-dev libqt5svg5-dev
+        run: sudo apt-get update && sudo apt-get install -y libqt5webkit5-dev libqt5xmlpatterns5-dev libqt5svg5-dev
       - name: build
         run: qmake CONFIG+=silent && make
