@@ -154,6 +154,14 @@ The current stable series is **0.12.6**, which was released on June 11, 2020 -- 
             <td colspan="2">&nbsp;</td>
         </tr>
         <tr>
+            <td><a href="https://aws.amazon.com/amazon-linux-2/">Amazon Linux Lambda</a></td>
+            <td>2</td>
+            <td>
+                <a href="https://github.com/wkhtmltopdf/packaging/releases/download/0.12.6-4/wkhtmltox-0.12.6-4.amazonlinux2_lambda.zip">x86_64</a>
+            </td>
+            <td colspan="4">&nbsp;</td>
+        </tr>
+        <tr>
             <td><a href="https://software.opensuse.org/distributions/leap">openSUSE Leap</a></td>
             <td>15</td>
             <td>
@@ -182,21 +190,21 @@ All of the above packages were [produced automatically via Azure Pipelines](http
 
 Please note that bug reports **will not be accepted** against the following, which are considered obsolete. It is recommended to use the latest stable release instead, and report an issue if there is a regression from a previous release.
 
-Date       | Release
-----       | -------
-2018-06-11 | [0.12.5](https://github.com/wkhtmltopdf/wkhtmltopdf/releases/0.12.5/)
-2019-04-30 | [0.12.1.4](https://github.com/wkhtmltopdf/packaging/releases/0.12.1.4-2/) (linux-only)
-2016-11-22 | [0.12.4](https://github.com/wkhtmltopdf/wkhtmltopdf/releases/0.12.4/)
-2016-03-02 | [0.12.3.2](https://github.com/wkhtmltopdf/wkhtmltopdf/releases/0.12.3.2/) (windows-only)
-2016-01-30 | [0.12.3.1](https://github.com/wkhtmltopdf/wkhtmltopdf/releases/0.12.3.1/) (windows-only)
-2016-01-20 | [0.12.3](https://github.com/wkhtmltopdf/wkhtmltopdf/releases/0.12.3/)
-2015-07-12 | [0.12.2.4](https://github.com/wkhtmltopdf/wkhtmltopdf/releases/0.12.2.4/) (windows-only)
-2015-06-20 | [0.12.2.3](https://github.com/wkhtmltopdf/wkhtmltopdf/releases/0.12.2.3/) (windows-only)
-2015-04-06 | [0.12.2.2](https://github.com/wkhtmltopdf/wkhtmltopdf/releases/0.12.2.2/) (windows-only)
-2015-01-19 | [0.12.2.1](https://github.com/wkhtmltopdf/wkhtmltopdf/releases/0.12.2.1/)
-2015-01-09 | [0.12.2](https://github.com/wkhtmltopdf/wkhtmltopdf/releases/0.12.2/)
-2014-06-26 | [0.12.1](https://github.com/wkhtmltopdf/wkhtmltopdf/releases/0.12.1/)
-2014-02-06 | [0.12.0](https://github.com/wkhtmltopdf/wkhtmltopdf/releases/0.12.0/)
+| Date       | Release                                                                                  |
+| ---------- | ---------------------------------------------------------------------------------------- |
+| 2018-06-11 | [0.12.5](https://github.com/wkhtmltopdf/wkhtmltopdf/releases/0.12.5/)                    |
+| 2019-04-30 | [0.12.1.4](https://github.com/wkhtmltopdf/packaging/releases/0.12.1.4-2/) (linux-only)   |
+| 2016-11-22 | [0.12.4](https://github.com/wkhtmltopdf/wkhtmltopdf/releases/0.12.4/)                    |
+| 2016-03-02 | [0.12.3.2](https://github.com/wkhtmltopdf/wkhtmltopdf/releases/0.12.3.2/) (windows-only) |
+| 2016-01-30 | [0.12.3.1](https://github.com/wkhtmltopdf/wkhtmltopdf/releases/0.12.3.1/) (windows-only) |
+| 2016-01-20 | [0.12.3](https://github.com/wkhtmltopdf/wkhtmltopdf/releases/0.12.3/)                    |
+| 2015-07-12 | [0.12.2.4](https://github.com/wkhtmltopdf/wkhtmltopdf/releases/0.12.2.4/) (windows-only) |
+| 2015-06-20 | [0.12.2.3](https://github.com/wkhtmltopdf/wkhtmltopdf/releases/0.12.2.3/) (windows-only) |
+| 2015-04-06 | [0.12.2.2](https://github.com/wkhtmltopdf/wkhtmltopdf/releases/0.12.2.2/) (windows-only) |
+| 2015-01-19 | [0.12.2.1](https://github.com/wkhtmltopdf/wkhtmltopdf/releases/0.12.2.1/)                |
+| 2015-01-09 | [0.12.2](https://github.com/wkhtmltopdf/wkhtmltopdf/releases/0.12.2/)                    |
+| 2014-06-26 | [0.12.1](https://github.com/wkhtmltopdf/wkhtmltopdf/releases/0.12.1/)                    |
+| 2014-02-06 | [0.12.0](https://github.com/wkhtmltopdf/wkhtmltopdf/releases/0.12.0/)                    |
 
 If you need versions older than `0.12.0`, you can look at the [obsolete downloads](https://github.com/wkhtmltopdf/obsolete-downloads/blob/master/README.md).
 
@@ -234,3 +242,6 @@ You'll need to extract the distribution-specific package, bundle it with necessa
 #### Symantec reports a virus `WS.Reputation.1` for the Windows builds
 
 This is a false positive reported because Symantec has not seen this file before -- see [this clarification](http://community.norton.com/forums/clarification-wsreputation1-detection) for details.
+
+#### How do I use it with [AWS Lambda](https://aws.amazon.com/lambda/) setups?
+All files required for lambda layer are packed in one zip archive ([layer](https://github.com/wkhtmltopdf/packaging/releases/download/0.12.6-4/wkhtmltox-0.12.6-4.amazonlinux2_lambda.zip)).
