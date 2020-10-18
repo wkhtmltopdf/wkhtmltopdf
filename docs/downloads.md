@@ -244,7 +244,7 @@ You'll need to extract the distribution-specific package, bundle it with necessa
 This is a false positive reported because Symantec has not seen this file before -- see [this clarification](http://community.norton.com/forums/clarification-wsreputation1-detection) for details.
 
 #### How do I use it with [AWS Lambda](https://aws.amazon.com/lambda/) setups?
-All files required for lambda layer are packed in one zip archive ([layer](https://github.com/wkhtmltopdf/packaging/releases/download/0.12.6-4/wkhtmltox-0.12.6-4.amazonlinux2_lambda.zip)). You may test it locally by unpacking the archive and running next commands:
+All files required for lambda layer are packed in one zip archive ([wkhtmltox-0.12.6-4.amazonlinux2_lambda.zip](https://github.com/wkhtmltopdf/packaging/releases/download/0.12.6-4/wkhtmltox-0.12.6-4.amazonlinux2_lambda.zip)). You may test it locally by unpacking the archive and running next commands:
 ```bash
 $ docker run --rm -it -v$PWD/lambda:/opt amazonlinux:2
 bash-4.2# LD_LIBRARY_PATH=/opt/lib FONTCONFIG_PATH=/opt/fonts /opt/bin/wkhtmltopdf https://google.com/ /opt/google.pdf
