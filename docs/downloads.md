@@ -249,6 +249,6 @@ All files required for lambda layer are packed in one zip archive ([layer](https
 $ docker run --rm -it -v$PWD/lambda:/opt amazonlinux:2
 bash-4.2# LD_LIBRARY_PATH=/opt/lib FONTCONFIG_PATH=/opt/fonts /opt/bin/wkhtmltopdf https://google.com/ /opt/google.pdf
 ```
-After that you may find a pdf file generated from google home page in you `layer` directory.
+After that, you may find a pdf file generated from the google home page in your `layer` directory.
 
-To use `wkhtmltox` in your lambda function you may put the content of the archive together with your lambda function or create a [layer](https://docs.aws.amazon.com/lambda/latest/dg/configuration-layers.html). Don't forget to provide environment variable for fontconfig (`FONTCONFIG_PATH=/opt/fonts`).
+To use `wkhtmltox` in your lambda function you may put the content of the archive together with your lambda function or create a [layer](https://docs.aws.amazon.com/lambda/latest/dg/configuration-layers.html). Don't forget to provide an environment variable for `fontconfig` (`FONTCONFIG_PATH=/opt/fonts`).
