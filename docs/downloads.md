@@ -252,3 +252,21 @@ bash-4.2# LD_LIBRARY_PATH=/opt/lib FONTCONFIG_PATH=/opt/fonts /opt/bin/wkhtmltop
 After that, you may find a pdf file generated from the google home page in your `layer` directory.
 
 To use `wkhtmltox` in your lambda function you may put the content of the archive together with your lambda function or create a [layer](https://docs.aws.amazon.com/lambda/latest/dg/configuration-layers.html). Don't forget to provide an environment variable for `fontconfig` (`FONTCONFIG_PATH=/opt/fonts`).
+
+In case you use Serverless framework you may add the next lines to your `serverless.yml` file:
+```yaml
+layers:
+  wkhtmltoxLayer:
+    name: wkhtmltox
+    description: wkhtmltox binaries for pdf/image generation
+    package:
+      artifact: wkhtmltox-0.12.6-4.amazonlinux2_lambda.zip
+
+functions:
+    PdfGenerator:
+        handler: generatePdf.handler
+        layers:
+        - { Ref: WkhtmltoxLayerLambdaLayer }
+        environment:
+            FONTCONFIG_PATH: /opt/fonts
+```
