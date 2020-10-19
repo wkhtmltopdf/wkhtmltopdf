@@ -257,7 +257,7 @@ functions:
     PdfGenerator:
         handler: generatePdf.handler
         layers:
-        - { Ref: WkhtmltoxLayerLambdaLayer }
+            - { Ref: WkhtmltoxLayerLambdaLayer }
         environment:
             FONTCONFIG_PATH: /opt/fonts
 ```
