@@ -151,15 +151,10 @@ The current stable series is **0.12.6**, which was released on June 11, 2020 -- 
              </td><td>&nbsp;</td><td>
                 <a href="https://github.com/wkhtmltopdf/packaging/releases/download/0.12.6-1/wkhtmltox-0.12.6-1.amazonlinux2.aarch64.rpm">aarch64</a>
             </td>
-            <td colspan="2">&nbsp;</td>
-        </tr>
-        <tr>
-            <td><a href="https://aws.amazon.com/amazon-linux-2/">Amazon Linux Lambda</a></td>
-            <td>2</td>
+            <td>&nbsp;</td>
             <td>
-                <a href="https://github.com/wkhtmltopdf/packaging/releases/download/0.12.6-4/wkhtmltox-0.12.6-4.amazonlinux2_lambda.zip">x86_64</a>
+                <a href="https://github.com/wkhtmltopdf/packaging/releases/download/0.12.6-4/wkhtmltox-0.12.6-4.amazonlinux2_lambda.zip">lambda zip</a>
             </td>
-            <td colspan="4">&nbsp;</td>
         </tr>
         <tr>
             <td><a href="https://software.opensuse.org/distributions/leap">openSUSE Leap</a></td>
