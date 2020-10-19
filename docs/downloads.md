@@ -205,13 +205,13 @@ If you need versions older than `0.12.0`, you can look at the [obsolete download
 
 ## FAQ
 
-#### Why do you have static builds with patched Qt?
+### Why do you have static builds with patched Qt?
 
 Good question. Some features require you to use a patched Qt, because those aren't yet upstream -- please read the [project status](status.html) for a longer explanation.
 
 Most Linux distributions (_quite understandably_) would prefer that this project upstreamed the patches, and choose to compile without those features. This leads to quite different behavior -- you get a later web engine, but behavior can vary from distribution to distribution.
 
-#### Why are there no "generic" Linux builds (_which were provided earlier_)?
+### Why are there no "generic" Linux builds (_which were provided earlier_)?
 
 Although the builds are static, it is very important to understand what it means in the context of Qt -- on which wkhtmltopdf is built. A static build means that _only_ Qt is linked in this manner -- the remaining system packages still need to be installed. Over a period of time, major areas of divergence between distributions were found by trial and error:
 
