@@ -221,7 +221,7 @@ Although the builds are static, it is very important to understand what it means
 
 While Python has also tried to do this using [manylinux](https://github.com/pypa/manylinux) -- it doesn't always work well (e.g. `alpine` is _not_ recommended with binary wheels if you google for it), and requires you to statically link everything. This may work for them, but wkhtmltopdf also depends on the runtime configuration on actual fonts installed (i.e. `fontconfig` and `freetype2`). It's not possible to abstract everything out and test/fix everything for every OS/distribution with the limited resources this project has -- it makes more sense to make distribution-specific versions which are almost guaranteed to work, as they use the specific versions that the distribution has packaged.
 
-#### I don't see an appropriate download for my platform!
+### I don't see an appropriate download for my platform!
 
 If the distribution you are using is listed:
   * but not the specific patch release -- try it, as it's very likely to work regardless.
@@ -230,16 +230,12 @@ If the distribution you are using is listed:
 
 Head over to the [packaging repository](https://github.com/wkhtmltopdf/packaging) and start a discussion if your platform isn't listed.
 
-#### How do I use it with [FaaS](https://en.wikipedia.org/wiki/Function_as_a_service) setups?
+### How do I use it with [FaaS](https://en.wikipedia.org/wiki/Function_as_a_service) setups?
 
-You'll need to extract the distribution-specific package, bundle it with necessary libraries, configuration and/or fonts and then upload it. See [this ticket](https://github.com/wkhtmltopdf/wkhtmltopdf/issues/4523) for AWS Lambda and [this StackOverflow question](https://stackoverflow.com/q/46639273) for Google Cloud Functions. PRs are welcome to expand this section, if you have more information about this -- this is not a setup that the maintainer uses 😄
+You'll need to extract the distribution-specific package, bundle it with necessary libraries, configuration and/or fonts and then upload it. See [this StackOverflow question](https://stackoverflow.com/q/46639273) for Google Cloud Functions. PRs are welcome to expand this section, if you have more information about this -- this is not a setup that the maintainer uses 😄
 
-#### Symantec reports a virus `WS.Reputation.1` for the Windows builds
-
-This is a false positive reported because Symantec has not seen this file before -- see [this clarification](http://community.norton.com/forums/clarification-wsreputation1-detection) for details.
-
-#### How do I use it with [AWS Lambda](https://aws.amazon.com/lambda/) setups?
-All files required for lambda layer are packed in one zip archive ([wkhtmltox-0.12.6-4.amazonlinux2_lambda.zip](https://github.com/wkhtmltopdf/packaging/releases/download/0.12.6-4/wkhtmltox-0.12.6-4.amazonlinux2_lambda.zip)). You may test it locally by unpacking the archive into the `layer` directory and running next commands:
+#### How do I use it in [AWS Lambda](https://aws.amazon.com/lambda/)?
+All files required for lambda layer are packed in one zip archive (Amazon Linux 2 / lambda zip). You may test it locally by unpacking the archive into the `layer` directory and running next commands:
 ```bash
 $ docker run --rm -it -v$PWD/layer:/opt amazonlinux:2
 bash-4.2# LD_LIBRARY_PATH=/opt/lib FONTCONFIG_PATH=/opt/fonts /opt/bin/wkhtmltopdf https://google.com/ /opt/google.pdf
@@ -255,7 +251,7 @@ layers:
     name: wkhtmltox
     description: wkhtmltox binaries for pdf/image generation
     package:
-      artifact: wkhtmltox-0.12.6-4.amazonlinux2_lambda.zip
+      artifact: wkhtmltox-x.xx.xxx.amazonlinux2_lambda.zip
 
 functions:
     PdfGenerator:
@@ -265,3 +261,7 @@ functions:
         environment:
             FONTCONFIG_PATH: /opt/fonts
 ```
+
+### Symantec reports a virus `WS.Reputation.1` for the Windows builds
+
+This is a false positive reported because Symantec has not seen this file before -- see [this clarification](http://community.norton.com/forums/clarification-wsreputation1-detection) for details.
