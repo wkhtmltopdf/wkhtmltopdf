@@ -32,6 +32,8 @@ unix {
 }
 
 macx {
+    man.extra=DYLD_LIBRARY_PATH=../../bin ../../bin/wkhtmltopdf --manpage | gzip > $(INSTALL_ROOT)$$INSTALLBASE/share/man/man1/wkhtmltopdf.1.gz
+
     CONFIG -= app_bundle
 }
 
