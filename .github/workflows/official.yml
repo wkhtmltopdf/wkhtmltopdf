@@ -44,7 +44,7 @@ jobs:
           sudo gem install fpm --no-document
           sudo xcode-select --switch /Library/Developer/CommandLineTools
           sed -i -e 's/CFLAGS CXXFLAGS LDFLAGS/CFLAGS CXXFLAGS OBJECTIVE_CFLAGS LDFLAGS/g' wkhtmltopdf/qt/configure
-          sed -i -e 's/compiler.version=9.0/compiler.version=11.0/g' packaging/.conan/profiles/macos-cocoa
+          sed -i -e 's/compiler.version=9.0/compiler.version=12.0/g' packaging/.conan/profiles/macos-cocoa
       - name: build
         run: cd packaging && MACOSX_DEPLOYMENT_TARGET=10.7 python3 ./build vagrant macos-cocoa --clean --version - - ../wkhtmltopdf
 
