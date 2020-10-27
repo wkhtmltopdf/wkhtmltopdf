@@ -33,6 +33,34 @@ namespace wkhtmltopdf {
 
 #define S(t) ((t).toLocal8Bit().constData())
 
+void ProgressFeedback::finishLine(int start) {
+	for (; start < lw; ++start)
+		fprintf(stderr, " ");
+	fprintf(stderr, "\n");
+	lw = 0;
+	fflush(stderr);
+}
+
+/*!
+  \brief Write out a debug message
+  \param message The debug message
+*/
+void ProgressFeedback::debug(const QString &message) {
+	if (logLevel < settings::Debug) return;
+	fprintf(stderr, "Debug: %s",S(message));
+	finishLine(7 + message.size());
+}
+
+/*!
+  \brief Write out a info message
+  \param message The info message
+*/
+void ProgressFeedback::info(const QString &message) {
+	if (logLevel < settings::Info) return;
+	fprintf(stderr, "Info: %s",S(message));
+	finishLine(6 + message.size());
+}
+
 /*!
   \brief Write out a warning message
   \param message The warning message
@@ -40,11 +68,7 @@ namespace wkhtmltopdf {
 void ProgressFeedback::warning(const QString &message) {
 	if (logLevel < settings::Warn) return;
 	fprintf(stderr, "Warning: %s",S(message));
-	for (int l = 9 + message.size(); l < lw; ++l)
-		fprintf(stderr, " ");
-	fprintf(stderr, "\n");
-	lw = 0;
-	fflush(stderr);
+	finishLine(9 + message.size());
 }
 
 /*!
@@ -54,11 +78,7 @@ void ProgressFeedback::warning(const QString &message) {
 void ProgressFeedback::error(const QString &message) {
 	if (logLevel < settings::Error) return;
 	fprintf(stderr, "Error: %s",S(message));
-	for (int l = 7 + message.size(); l < lw; ++l)
-		fprintf(stderr, " ");
-	fprintf(stderr, "\n");
-	lw = 0;
-	fflush(stderr);
+	finishLine(7 + message.size());
 }
 
 /*!
@@ -104,6 +124,8 @@ void ProgressFeedback::progressChanged(int progress) {
 
 ProgressFeedback::ProgressFeedback(settings::LogLevel l, Converter & _):
     logLevel(l), converter(_), lw(0) {
+    connect(&converter, SIGNAL(debug(const QString &)), this, SLOT(debug(const QString &)));
+    connect(&converter, SIGNAL(info(const QString &)), this, SLOT(info(const QString &)));
     connect(&converter, SIGNAL(warning(const QString &)), this, SLOT(warning(const QString &)));
 	connect(&converter, SIGNAL(error(const QString &)), this, SLOT(error(const QString &)));
 	connect(&converter, SIGNAL(phaseChanged()), this, SLOT(phaseChanged()));

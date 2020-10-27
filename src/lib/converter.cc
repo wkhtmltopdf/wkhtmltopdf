@@ -82,6 +82,14 @@ void ConverterPrivate::forwardWarning(QString warning) {
 	emit outer().warning(warning);
 }
 
+void ConverterPrivate::forwardInfo(QString info) {
+	emit outer().info(info);
+}
+
+void ConverterPrivate::forwardDebug(QString debug) {
+	emit outer().debug(debug);
+}
+
 void ConverterPrivate::cancel() {
 	error=true;
 }

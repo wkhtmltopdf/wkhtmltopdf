@@ -51,6 +51,8 @@ CAPI(int) wkhtmltoimage_get_global_setting(wkhtmltoimage_global_settings * setti
 CAPI(wkhtmltoimage_converter *) wkhtmltoimage_create_converter(wkhtmltoimage_global_settings * settings, const char * data);
 CAPI(void) wkhtmltoimage_destroy_converter(wkhtmltoimage_converter * converter);
 
+CAPI(void) wkhtmltoimage_set_debug_callback(wkhtmltoimage_converter * converter, wkhtmltoimage_str_callback cb);
+CAPI(void) wkhtmltoimage_set_info_callback(wkhtmltoimage_converter * converter, wkhtmltoimage_str_callback cb);
 CAPI(void) wkhtmltoimage_set_warning_callback(wkhtmltoimage_converter * converter, wkhtmltoimage_str_callback cb);
 CAPI(void) wkhtmltoimage_set_error_callback(wkhtmltoimage_converter * converter, wkhtmltoimage_str_callback cb);
 CAPI(void) wkhtmltoimage_set_phase_changed_callback(wkhtmltoimage_converter * converter, wkhtmltoimage_void_callback cb);

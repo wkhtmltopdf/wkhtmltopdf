@@ -63,6 +63,8 @@ signals:
 	void loadFinished(bool ok);
 	void loadProgress(int progress);
 	void loadStarted();
+	void debug(QString text);
+	void info(QString text);
 	void warning(QString text);
 	void error(QString text);
 private:

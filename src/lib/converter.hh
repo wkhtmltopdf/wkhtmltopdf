@@ -40,6 +40,8 @@ public:
     QString progressString();
     int httpErrorCode();
 signals:
+    void debug(const QString & message);
+    void info(const QString & message);
     void warning(const QString & message);
     void error(const QString & message);
     void phaseChanged();

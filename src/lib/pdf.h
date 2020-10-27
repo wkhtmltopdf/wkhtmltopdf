@@ -61,6 +61,8 @@ CAPI(int) wkhtmltopdf_get_object_setting(wkhtmltopdf_object_settings * settings,
 CAPI(wkhtmltopdf_converter *) wkhtmltopdf_create_converter(wkhtmltopdf_global_settings * settings);
 CAPI(void) wkhtmltopdf_destroy_converter(wkhtmltopdf_converter * converter);
 
+CAPI(void) wkhtmltopdf_set_debug_callback(wkhtmltopdf_converter * converter, wkhtmltopdf_str_callback cb);
+CAPI(void) wkhtmltopdf_set_info_callback(wkhtmltopdf_converter * converter, wkhtmltopdf_str_callback cb);
 CAPI(void) wkhtmltopdf_set_warning_callback(wkhtmltopdf_converter * converter, wkhtmltopdf_str_callback cb);
 CAPI(void) wkhtmltopdf_set_error_callback(wkhtmltopdf_converter * converter, wkhtmltopdf_str_callback cb);
 CAPI(void) wkhtmltopdf_set_phase_changed_callback(wkhtmltopdf_converter * converter, wkhtmltopdf_void_callback cb);
