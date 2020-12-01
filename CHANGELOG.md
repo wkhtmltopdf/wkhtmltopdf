@@ -116,7 +116,7 @@ v0.12.2 (2015-01-09)
 
 v0.12.1 (2014-06-26)
 --------------------
-* removed support for PostScript output which is not supported in QT5
+* removed support for PostScript output which is not supported in Qt 5
 * use OpenSSL 1.0.1h for the Windows builds
 * **#1502**: fix spurious "exit with code 1 due to http error: 1xxx" errors
 * **#1504**: **[qt]** fix rendering issues for JPEG with XMP metadata
@@ -156,7 +156,7 @@ v0.12.0 (2014-02-06)
 * reserve heights when not using HTML header/footer
 * lots of improvements in the build system
 * lots of typos were fixed in various places
-* **[qt]** rebase patch series on QT 4.8.5 (now hosted on github)
+* **[qt]** rebase patch series on Qt 4.8.5 (now hosted on github)
 * **[qt]** fixes to get static builds working for MSVC 2010 (32/64 bit)
 * **[qt]** prevent page breaks in table rows
 * **[qt]** repeat THEAD/TFOOT when table contains page breaks

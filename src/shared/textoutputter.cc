@@ -167,7 +167,7 @@ public:
 
 	void endSwitch() {
 		if (doc)
-			fprintf(fd, "\nItems marked * are only available using patched QT.\n");
+			fprintf(fd, "\nItems marked * are only available using a patched Qt.\n");
 		printf("\n");
 	}
 

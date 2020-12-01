@@ -122,7 +122,7 @@ public:
 
 	void endSwitch() {
 		fprintf(fd, "</table>\n");
-		fprintf(fd, "<p>Items marked <span style=\"font-weight: normal; font-size: 80%%; color:red;\">*</span> are only available using patched QT.</p>");
+		fprintf(fd, "<p>Items marked <span style=\"font-weight: normal; font-size: 80%%; color:red;\">*</span> are only available using a patched Qt.</p>");
 	}
 
 };

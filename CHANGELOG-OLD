@@ -47,7 +47,7 @@ v0.10.0 beta4:
 * Command line layout reworked
 * Allow for options to be parsed on a per page section
 * Table of content is now generated via XSLT
-* Updated to use QT 4.7
+* Updated to use Qt 4.7
 * Mac binary no longer displayes in dock.
 * #72: the font spacing issues on linux solved when using --use-xserver
 * #55: wkhtmltopdf dies on unavaliable url or network disconnection
@@ -227,12 +227,12 @@ v0.6
 v0.5
 * Added support for reading command line options from stdin, to do multiple conversions fast.
 * Added options to set page margins.
-* Now shipping a binary statically compiled against QT4.5rc1, that shuld run as is on just about any Linux System.
+* Now shipping a binary statically compiled against Qt4.5rc1, that shuld run as is on just about any Linux System.
 
 v0.4
 * Added support for generation deb packages
 * Added option for dpi, low resolution and grayscale
-* Added (untested) support for removing background image when running under QT 4.5
+* Added (untested) support for removing background image when running under Qt 4.5
 
 v0.3
 * Added support for printing sites with self signed certificates

@@ -114,15 +114,15 @@ void PdfCommandLineParser::outputNotPatched(Outputter * o, bool sure) const {
 	o->beginSection("Reduced Functionality");
 	if (sure)
 		o->paragraph("This version of wkhtmltopdf has been compiled against a version of "
-					 "QT without the wkhtmltopdf patches. Therefore some features are missing, "
+					 "Qt without the wkhtmltopdf patches. Therefore some features are missing, "
 					 "if you need these features please use the static version.");
 	else
-		o->paragraph("Some versions of wkhtmltopdf are compiled against a version of QT "
+		o->paragraph("Some versions of wkhtmltopdf are compiled against a version of Qt "
 					 "without the wkhtmltopdf patches. These versions are missing some features, "
 					 "you can find out if your version of wkhtmltopdf is one of these by running wkhtmltopdf --version "
-					 "if your version is against an unpatched QT, you can use the static version to get all functionality.");
+					 "if your version is against an unpatched Qt, you can use the static version to get all functionality.");
 
-	o->paragraph("Currently the list of features only supported with patch QT includes:");
+	o->paragraph("Currently the list of features only supported with a patch Qt includes:");
 	o->beginList();
 	o->listItem("Printing more than one HTML document into a PDF file.");
 	o->listItem("Running without an X11 server.");
@@ -149,7 +149,7 @@ void PdfCommandLineParser::outputPageBreakDoc(Outputter * o) const {
 		"vertically shifted by half a line. Then WebKit will cut a line into to pieces "
 		"display the top half on one page. And the bottom half on another page. "
 		"It will also break image in two and so on.  If you are using the patched version of "
-		"QT you can use the CSS page-break-inside property to remedy this somewhat. "
+		"Qt you can use the CSS page-break-inside property to remedy this somewhat. "
 		"There is no easy solution to this problem, until this is solved try organizing "
 		"your HTML documents such that it contains many lines on which pages can be cut "
 		"cleanly.");

@@ -49,7 +49,7 @@ void ConverterPrivate::updateWebSettings(QWebSettings * ws, const settings::Web 
 	ws->setAttribute(QWebSettings::JavascriptCanOpenWindows, false);
 	ws->setAttribute(QWebSettings::JavascriptCanAccessClipboard, false);
 	ws->setFontSize(QWebSettings::MinimumFontSize, s.minimumFontSize);
-	//Newer versions of QT have even more settings to change
+	//Newer versions of Qt have even more settings to change
 	ws->setAttribute(QWebSettings::PrintElementBackgrounds, s.background);
 	ws->setAttribute(QWebSettings::AutoLoadImages, s.loadImages);
 	ws->setAttribute(QWebSettings::PluginsEnabled, s.enablePlugins);
