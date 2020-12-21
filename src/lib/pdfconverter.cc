@@ -948,9 +948,14 @@ void PdfConverterPrivate::beginPrintObject(PageObject & obj) {
 			}
 
 // With the above original code the web printer if !=0 would not hold the Portrait or Landscape resetting
-// Replaced with the below - a forced new webPrinter
+// Replaced with the below - a forced new webPrinter if webPrinter == 0 and Orientation specified
+
   QWebPrinter *webPrinter = objects[currentObject].web_printer;
-	webPrinter = objects[currentObject].web_printer = new QWebPrinter(obj.page->mainFrame(), printer, *painter);
+
+	if (webPrinter == 0 || obj.settings.pageSpecificOrientation != NULL)
+	webPrinter = objects[currentObject].web_printer = \
+	new QWebPrinter(obj.page->mainFrame(), printer, *painter);	
+	
 //
 
 	QPalette pal = obj.loaderObject->page.palette();
