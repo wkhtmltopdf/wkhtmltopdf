@@ -227,6 +227,7 @@ void ImageConverterPrivate::pagesLoaded(bool ok) {
 	loadProgress(100);
 
 	currentPhase = 2;
+	clearResources();
 	emit out.phaseChanged();
 	conversionDone = true;
 	emit out.finished(true);
