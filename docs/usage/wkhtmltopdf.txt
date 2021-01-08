@@ -251,7 +251,7 @@ Page sizes:
   The default page size of the rendered document is A4, but by using the
   --page-size option this can be changed to almost anything else, such as: A3,
   Letter and Legal.  For a full list of supported pages sizes please see 
-  <https://qt-project.org/doc/qt-4.8/qprinter.html#PaperSize-enum>.
+  <https://doc.qt.io/archives/qt-4.8/qprinter.html#PaperSize-enum>.
 
   For a more fine grained control over the page size the --page-height and
   --page-width options may be used
@@ -267,7 +267,7 @@ Reading arguments from stdin:
 
   For example one could do the following:
 
-  echo "https://qt-project.org/doc/qt-4.8/qapplication.html qapplication.pdf" >> cmds
+  echo "https://doc.qt.io/archives/qt-4.8/qapplication.html qapplication.pdf" >> cmds
   echo "cover google.com https://en.wikipedia.org/wiki/Qt_(software) qt.pdf" >> cmds
   wkhtmltopdf --read-args-from-stdin --book < cmds
   
@@ -365,7 +365,7 @@ Table Of Contents:
   A table of contents can be added to the document by adding a toc object to the
   command line. For example:
 
-  wkhtmltopdf toc https://qt-project.org/doc/qt-4.8/qstring.html qstring.pdf
+  wkhtmltopdf toc https://doc.qt.io/archives/qt-4.8/qstring.html qstring.pdf
   
   The table of contents is generated based on the H tags in the input documents.
   First a XML document is generated, then it is converted to HTML using XSLT.
@@ -373,12 +373,12 @@ Table Of Contents:
   The generated XML document can be viewed by dumping it to a file using the
   --dump-outline switch. For example:
 
-  wkhtmltopdf --dump-outline toc.xml https://qt-project.org/doc/qt-4.8/qstring.html qstring.pdf
+  wkhtmltopdf --dump-outline toc.xml https://doc.qt.io/archives/qt-4.8/qstring.html qstring.pdf
   
   The XSLT document can be specified using the --xsl-style-sheet switch. For
   example:
 
-  wkhtmltopdf toc --xsl-style-sheet my.xsl https://qt-project.org/doc/qt-4.8/qstring.html qstring.pdf
+  wkhtmltopdf toc --xsl-style-sheet my.xsl https://doc.qt.io/archives/qt-4.8/qstring.html qstring.pdf
   
   The --dump-default-toc-xsl switch can be used to dump the default XSLT style
   sheet to stdout. This is a good start for writing your own style sheet

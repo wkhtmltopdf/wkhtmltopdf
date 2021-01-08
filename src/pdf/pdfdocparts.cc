@@ -229,16 +229,16 @@ void PdfCommandLineParser::outputTableOfContentDoc(Outputter * o) const {
 	o->beginSection("Table Of Contents");
 	o->paragraph("A table of contents can be added to the document by adding a toc object "
 				 "to the command line. For example:");
-	o->verbatim("wkhtmltopdf toc https://qt-project.org/doc/qt-4.8/qstring.html qstring.pdf\n");
+	o->verbatim("wkhtmltopdf toc https://doc.qt.io/archives/qt-4.8/qstring.html qstring.pdf\n");
 	o->paragraph("The table of contents is generated based on the H tags in the input "
 				 "documents. First a XML document is generated, then it is converted to "
 				 "HTML using XSLT.");
 	o->paragraph("The generated XML document can be viewed by dumping it to a file using "
 				 "the --dump-outline switch. For example:");
-	o->verbatim("wkhtmltopdf --dump-outline toc.xml https://qt-project.org/doc/qt-4.8/qstring.html qstring.pdf\n");
+	o->verbatim("wkhtmltopdf --dump-outline toc.xml https://doc.qt.io/archives/qt-4.8/qstring.html qstring.pdf\n");
 	o->paragraph("The XSLT document can be specified using the --xsl-style-sheet switch. "
 				 "For example:");
-	o->verbatim("wkhtmltopdf toc --xsl-style-sheet my.xsl https://qt-project.org/doc/qt-4.8/qstring.html qstring.pdf\n");
+	o->verbatim("wkhtmltopdf toc --xsl-style-sheet my.xsl https://doc.qt.io/archives/qt-4.8/qstring.html qstring.pdf\n");
 	o->paragraph("The --dump-default-toc-xsl switch can be used to dump the default "
 				 "XSLT style sheet to stdout. This is a good start for writing your "
 				 "own style sheet");
@@ -319,7 +319,7 @@ void PdfCommandLineParser::outputArgsFromStdin(Outputter * o) const {
 				 "will act as a separate invocation of wkhtmltopdf, with the arguments specified "
 				 "on the given line combined with the arguments given to wkhtmltopdf");
 	o->paragraph("For example one could do the following:");
-	o->verbatim("echo \"https://qt-project.org/doc/qt-4.8/qapplication.html qapplication.pdf\" >> cmds\n"
+	o->verbatim("echo \"https://doc.qt.io/archives/qt-4.8/qapplication.html qapplication.pdf\" >> cmds\n"
 				"echo \"cover google.com https://en.wikipedia.org/wiki/Qt_(software) qt.pdf\" >> cmds\n"
 				"wkhtmltopdf --read-args-from-stdin --book < cmds\n");
 	o->endSection();
@@ -353,7 +353,7 @@ void PdfCommandLineParser::outputPageSizes(Outputter * o) const {
 	o->text("The default page size of the rendered document is A4, but by using the --page-size "
 			"option this can be changed to almost anything else, such as: A3, Letter and Legal.  "
 			"For a full list of supported pages sizes please see ");
-	o->link("https://qt-project.org/doc/qt-4.8/qprinter.html#PaperSize-enum");
+	o->link("https://doc.qt.io/archives/qt-4.8/qprinter.html#PaperSize-enum");
 	o->text(".");
 	o->endParagraph();
 	o->paragraph("For a more fine grained control over the page size the "
