@@ -85,10 +85,17 @@ QNetworkReply * MyNetworkAccessManager::createRequest(Operation op, const QNetwo
 		return QNetworkAccessManager::createRequest(op, r2, outgoingData);
 	}
 
-	bool isLocalFileAccess = req.url().scheme().length() <= 1 || req.url().scheme() == "file";
+	QNetworkRequest newReq = req;
+	QUrl newUrl = newReq.url();
+	if(!newUrl.host().isEmpty()){
+		newUrl.setScheme(QString("https"));
+		newReq.setUrl(newUrl);
+	}
+	bool isLocalFileAccess = newReq.url().scheme().length() <= 1 || newReq.url().scheme() == "file";
+
 	if (isLocalFileAccess && settings.blockLocalFileAccess) {
 		bool ok=false;
-		QString path = QFileInfo(req.url().toLocalFile()).canonicalFilePath();
+		QString path = QFileInfo(newReq.url().toLocalFile()).canonicalFilePath();
 		QString old = "";
 		while (path != old) {
 			if (allowed.contains(path)) {
@@ -99,13 +106,13 @@ QNetworkReply * MyNetworkAccessManager::createRequest(Operation op, const QNetwo
 			path = QFileInfo(path).path();
 		}
 		if (!ok) {
-			QNetworkRequest r2 = req;
-			emit warning(QString("Blocked access to file %1").arg(QFileInfo(req.url().toLocalFile()).canonicalFilePath()));
+			QNetworkRequest r2 = newReq;
+			emit warning(QString("Blocked access to file %1").arg(QFileInfo(newReq.url().toLocalFile()).canonicalFilePath()));
 			r2.setUrl(QUrl("about:blank"));
 			return QNetworkAccessManager::createRequest(op, r2, outgoingData);
 		}
 	}
-	QNetworkRequest r3 = req;
+	QNetworkRequest r3 = newReq;
 	if (settings.repeatCustomHeaders) {
 		typedef QPair<QString, QString> HT;
 		foreach (const HT & j, settings.customHeaders)
