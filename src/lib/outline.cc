@@ -275,12 +275,16 @@ void Outline::addEmptyWebPage() {
 void OutlinePrivate::buildHFCache(OutlineItem * i, int level) {
 	buildPrefixSum();
 	if (level >= hfCache.size()) return;
+
+	OutlineItem * latest = 0;
 	foreach (OutlineItem * j, i->children) {
 		int page = j->page + prefixSum[j->document];
 		while (hfCache[level].size() < page)
-			hfCache[level].push_back(hfCache[level].back());
+			hfCache[level].push_back(latest ? latest : hfCache[level].back());
 		if (hfCache[level].size() == page)
 			hfCache[level].push_back(j);
+
+		latest = j;
 		buildHFCache(j, level+1);
 	}
 }
