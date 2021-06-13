@@ -24,6 +24,7 @@
 #include <QDateTime>
 #include <QDir>
 #include <QFile>
+#include <QFileInfo>
 #include <QPair>
 #include <QPrintEngine>
 #include <QTimer>
@@ -344,7 +345,7 @@ void PdfConverterPrivate::pagesLoaded(bool ok) {
 	lout = settings.out;
 	if (settings.out == "-") {
 #ifndef Q_OS_WIN32
-		 if (QFile::exists("/dev/stdout"))
+		 if ((QFile::exists("/dev/stdout")) && (QFileInfo("/dev/stdout").isWritable()))
 			 lout = "/dev/stdout";
 		 else
 #endif
