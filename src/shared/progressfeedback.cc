@@ -36,7 +36,7 @@ namespace wkhtmltopdf {
 void ProgressFeedback::finishLine(int start) {
 	for (; start < lw; ++start)
 		fprintf(stderr, " ");
-	fprintf(stderr, "\n");
+	fprintf(stdout, "\n");
 	lw = 0;
 	fflush(stderr);
 }
@@ -47,7 +47,7 @@ void ProgressFeedback::finishLine(int start) {
 */
 void ProgressFeedback::debug(const QString &message) {
 	if (logLevel < settings::Debug) return;
-	fprintf(stderr, "Debug: %s",S(message));
+	fprintf(stdout, "Debug: %s",S(message));
 	finishLine(7 + message.size());
 }
 
@@ -57,7 +57,7 @@ void ProgressFeedback::debug(const QString &message) {
 */
 void ProgressFeedback::info(const QString &message) {
 	if (logLevel < settings::Info) return;
-	fprintf(stderr, "Info: %s",S(message));
+	fprintf(stdout, "Info: %s",S(message));
 	finishLine(6 + message.size());
 }
 
@@ -67,7 +67,7 @@ void ProgressFeedback::info(const QString &message) {
 */
 void ProgressFeedback::warning(const QString &message) {
 	if (logLevel < settings::Warn) return;
-	fprintf(stderr, "Warning: %s",S(message));
+	fprintf(stdout, "Warning: %s",S(message));
 	finishLine(9 + message.size());
 }
 
@@ -87,16 +87,16 @@ void ProgressFeedback::error(const QString &message) {
 void ProgressFeedback::phaseChanged() {
 	if (logLevel < settings::Info) return;
 	QString desc=converter.phaseDescription();
-	fprintf(stderr, "%s", S(desc));
+	fprintf(stdout, "%s", S(desc));
 
 	int l = desc.size();
 	if (converter.currentPhase() < converter.phaseCount() -1)
-		l += fprintf(stderr," (%d/%d)",converter.currentPhase()+1,converter.phaseCount()-1);
+		l += fprintf(stdout," (%d/%d)",converter.currentPhase()+1,converter.phaseCount()-1);
 	for (; l < lw; ++l)
 		fprintf(stderr, " ");
-	fprintf(stderr, "\n");
+	fprintf(stdout, "\n");
 	lw = 0;
-	fflush(stderr);
+	fflush(stdout);
 }
 
 /*!
@@ -104,22 +104,22 @@ void ProgressFeedback::phaseChanged() {
 */
 void ProgressFeedback::progressChanged(int progress) {
 	if (logLevel < settings::Info) return;
-	fprintf(stderr, "[");
+	fprintf(stdout, "[");
 	int w=60;
 	progress *= w;
 	progress /= 100;
 	for (int i=0; i < w; ++i) {
-		if (i < progress) fprintf(stderr, "=");
-		else if (i == progress) fprintf(stderr, ">");
-		else fprintf(stderr, " ");
+		if (i < progress) fprintf(stdout, "=");
+		else if (i == progress) fprintf(stdout, ">");
+		else fprintf(stdout, " ");
 	}
-	fprintf(stderr, "]");
-	fprintf(stderr, " %s", S(converter.progressString()));
+	fprintf(stdout, "]");
+	fprintf(stdout, " %s", S(converter.progressString()));
 	int l=1+w+2+converter.progressString().size();
-	for (int i=l; i < lw; ++i) fprintf(stderr, " ");
+	for (int i=l; i < lw; ++i) fprintf(stdout, " ");
 	lw = l;
-	fprintf(stderr, "\r");
-	fflush(stderr);
+	fprintf(stdout, "\r");
+	fflush(stdout);
 }
 
 ProgressFeedback::ProgressFeedback(settings::LogLevel l, Converter & _):
