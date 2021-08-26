@@ -241,10 +241,10 @@ MyPdfConverter::MyPdfConverter(settings::PdfGlobal * gs):
 	debug_cb(0), info_cb(0), warning_cb(0), error_cb(0), phase_changed(0), progress_changed(0), finished_cb(0),
 	converter(*gs), globalSettings(gs) {
 
-    connect(&converter, SIGNAL(debug(const QString &)), this, SLOT(debug(const QString &)));
-    connect(&converter, SIGNAL(info(const QString &)), this, SLOT(info(const QString &)));
-    connect(&converter, SIGNAL(warning(const QString &)), this, SLOT(warning(const QString &)));
-	connect(&converter, SIGNAL(error(const QString &)), this, SLOT(error(const QString &)));
+	connect(&converter, SIGNAL(debug(QString)), this, SLOT(debug(QString)));
+	connect(&converter, SIGNAL(info(QString)), this, SLOT(info(QString)));
+	connect(&converter, SIGNAL(warning(QString)), this, SLOT(warning(QString)));
+	connect(&converter, SIGNAL(error(QString)), this, SLOT(error(QString)));
 	connect(&converter, SIGNAL(phaseChanged()), this, SLOT(phaseChanged()));
 	connect(&converter, SIGNAL(progressChanged(int)), this, SLOT(progressChanged(int)));
 	connect(&converter, SIGNAL(finished(bool)), this, SLOT(finished(bool)));

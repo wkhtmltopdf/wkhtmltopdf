@@ -124,7 +124,13 @@ QNetworkReply * MyNetworkAccessManager::createRequest(Operation op, const QNetwo
 			keyFile.close();
 
 			QList<QSslCertificate> chainCerts =
-				QSslCertificate::fromPath(settings.clientSslCrtPath.toLatin1(),  QSsl::Pem, QRegExp::FixedString);
+				QSslCertificate::fromPath(settings.clientSslCrtPath.toLatin1(),  QSsl::Pem,
+#if QT_VERSION >= 0x050105
+										  QSslCertificate::PatternSyntax::FixedString
+#else
+										  QRegExp::FixedString
+#endif
+										  );
 			QList<QSslCertificate> cas =  sslConfig.caCertificates();
 			cas.append(chainCerts);
 			if(!chainCerts.isEmpty()){
@@ -205,8 +211,8 @@ ResourceObject::ResourceObject(MultiPageLoaderPrivate & mpl, const QUrl & u, con
 	httpErrorCode(0),
 	settings(s) {
 
-	connect(&networkAccessManager, SIGNAL(authenticationRequired(QNetworkReply*, QAuthenticator *)),this,
-	        SLOT(handleAuthenticationRequired(QNetworkReply *, QAuthenticator *)));
+	connect(&networkAccessManager, SIGNAL(authenticationRequired(QNetworkReply*,QAuthenticator*)),this,
+			SLOT(handleAuthenticationRequired(QNetworkReply*,QAuthenticator*)));
 	foreach (const QString & path, s.allowed)
 		networkAccessManager.allow(path);
 	if (url.scheme() == "file")
@@ -218,23 +224,23 @@ ResourceObject::ResourceObject(MultiPageLoaderPrivate & mpl, const QUrl & u, con
 	connect(&webPage, SIGNAL(printRequested(QWebFrame*)), this, SLOT(printRequested(QWebFrame*)));
 
 	//If some ssl error occurs we want sslErrors to be called, so the we can ignore it
-	connect(&networkAccessManager, SIGNAL(sslErrors(QNetworkReply*, const QList<QSslError>&)),this,
-	        SLOT(sslErrors(QNetworkReply*, const QList<QSslError>&)));
+	connect(&networkAccessManager, SIGNAL(sslErrors(QNetworkReply*,QList<QSslError>&)),this,
+			SLOT(sslErrors(QNetworkReply*,QList<QSslError>&)));
 
-	connect(&networkAccessManager, SIGNAL(finished (QNetworkReply *)),
-			this, SLOT(amfinished (QNetworkReply *) ) );
+	connect(&networkAccessManager, SIGNAL(finished(QNetworkReply*)),
+			this, SLOT(amfinished(QNetworkReply*)) );
 
-	connect(&networkAccessManager, SIGNAL(debug(const QString &)),
-			this, SLOT(debug(const QString &)));
+	connect(&networkAccessManager, SIGNAL(debug(QString&)),
+			this, SLOT(debug(QString&)));
 
-	connect(&networkAccessManager, SIGNAL(info(const QString &)),
-			this, SLOT(info(const QString &)));
+	connect(&networkAccessManager, SIGNAL(info(QString&)),
+			this, SLOT(info(QString&)));
 
-	connect(&networkAccessManager, SIGNAL(warning(const QString &)),
-			this, SLOT(warning(const QString &)));
+	connect(&networkAccessManager, SIGNAL(warning(QString&)),
+			this, SLOT(warning(QString&)));
 
-	connect(&networkAccessManager, SIGNAL(error(const QString &)),
-			this, SLOT(error(const QString &)));
+	connect(&networkAccessManager, SIGNAL(error(QString&)),
+			this, SLOT(error(QString&)));
 
 	networkAccessManager.setCookieJar(multiPageLoader.cookieJar);
 
@@ -329,9 +335,11 @@ void ResourceObject::loadFinished(bool ok) {
 	bool isMain = multiPageLoader.isMainLoader;
 
 	// Evaluate extra user supplied javascript for the main loader
-	if (isMain)
-		foreach (const QString & str, settings.runScript)
+	if (isMain) {
+		foreach (const QString & str, settings.runScript) {
 			webPage.mainFrame()->evaluateJavaScript(str);
+		}
+	}
 
 	// XXX: If loading failed there's no need to wait
 	//      for javascript on this resource.
@@ -485,9 +493,9 @@ void ResourceObject::load() {
 		foreach (const settings::PostItem & pi, settings.post) {
 			//TODO escape values here
 			postData.append("--");
-			postData.append(boundary);
+			postData.append(boundary.toUtf8());
 			postData.append("\ncontent-disposition: form-data; name=\"");
-			postData.append(pi.name);
+			postData.append(pi.name.toUtf8());
 			postData.append('\"');
 			if (pi.file) {
 				QFile f(pi.value);
@@ -496,19 +504,19 @@ void ResourceObject::load() {
 					multiPageLoader.fail();
 				}
 				postData.append("; filename=\"");
-				postData.append( QFileInfo(pi.value).fileName());
+				postData.append( QFileInfo(pi.value).fileName().toUtf8());
 				postData.append("\"\n\n");
 				postData.append( f.readAll() );
 				//TODO ADD MIME TYPE
 			} else {
 				postData.append("\n\n");
-				postData.append(pi.value);
+				postData.append(pi.value.toUtf8());
 			}
 			postData.append('\n');
 		}
 		if (!postData.isEmpty()) {
 			postData.append("--");
-			postData.append(boundary);
+			postData.append(boundary.toUtf8());
 			postData.append("--\n");
 		}
 	} else {
