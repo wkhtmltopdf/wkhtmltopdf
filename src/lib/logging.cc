@@ -39,7 +39,7 @@ QMap<QString, LogLevel> logLevelMap() {
 QMap<QString, LogLevel> logLevels = logLevelMap();
 
 LogLevel strToLogLevel(const char * s, bool * ok) {
-	for (QMap<QString, LogLevel>::const_iterator i = logLevels.begin(); i != logLevels.end(); ++i) {
+	for (QMap<QString, LogLevel>::const_iterator i = logLevels.cbegin(); i != logLevels.cend(); ++i) {
 		if (i.key().compare(s, Qt::CaseInsensitive) != 0) continue;
 		if (ok) *ok = true;
 		return i.value();
@@ -49,7 +49,7 @@ LogLevel strToLogLevel(const char * s, bool * ok) {
 }
 
 QString logLevelToStr(const LogLevel & l, bool * ok) {
-	for (QMap<QString, LogLevel>::const_iterator i = logLevels.begin(); i != logLevels.end(); ++i) {
+	for (QMap<QString, LogLevel>::const_iterator i = logLevels.cbegin(); i != logLevels.cend(); ++i) {
 		if (i.value() != l) continue;
 		if (ok) *ok = true;
 		return i.key();
