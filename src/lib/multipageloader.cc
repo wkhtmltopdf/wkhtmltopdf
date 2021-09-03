@@ -435,16 +435,24 @@ void ResourceObject::amfinished(QNetworkReply * reply) {
 		QString extension = fi.completeSuffix().toLower().remove(QRegExp("\\?.*$"));
 		bool mediaFile = settings::LoadPage::mediaFilesExtensions.contains(extension);
 		if ( ! mediaFile) {
-			// XXX: Notify network errors as higher priority than HTTP errors.
-			//      QT's QNetworkReply::NetworkError enum uses values overlapping
-			//      HTTP status codes, so adding 1000 to QT's codes will avoid
-			//      confusion. Also a network error at this point will probably mean
-			//      no HTTP access at all, so we want network errors to be reported
-			//      with a higher priority than HTTP ones.
-			//      See: http://doc-snapshot.qt-project.org/4.8/qnetworkreply.html#NetworkError-enum
-			error(QString("Failed to load %1, with network status code %2 and http status code %3 - %4")
-				.arg(reply->url().toString()).arg(networkStatus).arg(httpStatus).arg(reply->errorString()));
-			httpErrorCode = networkStatus > 0 ? (networkStatus + 1000) : httpStatus;
+            if (settings.loadErrorHandling == settings::LoadPage::abort)
+            {
+                // XXX: Notify network errors as higher priority than HTTP errors.
+                //      QT's QNetworkReply::NetworkError enum uses values overlapping
+                //      HTTP status codes, so adding 1000 to QT's codes will avoid
+                //      confusion. Also a network error at this point will probably mean
+                //      no HTTP access at all, so we want network errors to be reported
+                //      with a higher priority than HTTP ones.
+                //      See: http://doc-snapshot.qt-project.org/4.8/qnetworkreply.html#NetworkError-enum
+                error(QString("Failed to load %1, with network status code %2 and http status code %3 - %4")
+                              .arg(reply->url().toString()).arg(networkStatus).arg(httpStatus).arg(reply->errorString()));
+                httpErrorCode = networkStatus > 0 ? (networkStatus + 1000) : httpStatus;
+            }
+            else {
+                warning(QString("Failed to load %1, with network status code %2 and http status code %3 - %4 (%5)")
+                                .arg(reply->url().toString()).arg(networkStatus).arg(httpStatus).arg(reply->errorString())
+                                .arg(settings.mediaLoadErrorHandling));
+            }
 			return;
 		}
 		if (settings.mediaLoadErrorHandling == settings::LoadPage::abort)
