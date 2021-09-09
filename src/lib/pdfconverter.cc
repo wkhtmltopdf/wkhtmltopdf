@@ -1,4 +1,4 @@
-// -*- mode: c++; tab-width: 4; indent-tabs-mode: t; eval: (progn (c-set-style "stroustrup") (c-set-offset 'innamespace 0)); -*-
+// -*- mode: c++; tab-width: 4; indent-tabs-mode: t; eval: (progn (c-set-style "stroustrup") (c-set-offset "innamespace 0)); -*-
 // vi:set ts=4 sts=4 sw=4 noet :
 //
 // Copyright 2010-2020 wkhtmltopdf authors
@@ -840,9 +840,22 @@ void PdfConverterPrivate::spoolPage(int page) {
 		QString type = elm.attribute("type");
 		QString tn = elm.tagName();
 		QString name = elm.attribute("name");
+		QString value = elm.hasAttribute("value") ? elm.attribute("value") : "";
+		QStringList attributes = elm.attributeNames();
+		QMap<QString, QString> data;
+		foreach (const QString &attributeName, attributes) {
+           if (attributeName.startsWith("data-", Qt::CaseInsensitive)) {
+               QString name(attributeName);
+               data.insert(name.replace("data-","", Qt::CaseInsensitive), elm.attribute(attributeName));
+           }
+        }
 		if (tn == "TEXTAREA" || type == "text" || type == "password") {
+		    if (elm.hasAttribute("placeholder")) {
+		        data["placeholder"] = elm.attribute("placeholder");
+		    }
 			painter->addTextField(
 				webPrinter->elementLocation(elm).second,
+				data,
 				tn == "TEXTAREA"?elm.toPlainText():elm.attribute("value"),
 				name,
 				tn == "TEXTAREA",
@@ -853,10 +866,58 @@ void PdfConverterPrivate::spoolPage(int page) {
 		} else if (type == "checkbox") {
 			painter->addCheckBox(
 				webPrinter->elementLocation(elm).second,
+				data,
 				elm.evaluateJavaScript("this.checked;").toBool(),
 				name,
 				elm.evaluateJavaScript("this.readOnly;").toBool());
-		}
+		} else if (type == "radio") {
+			painter->addRadioButton(
+				webPrinter->elementLocation(elm).second,
+				data,
+				elm.evaluateJavaScript("this.checked;").toBool(),
+				name,
+				value,
+				elm.evaluateJavaScript("this.readOnly;").toBool());
+		} else if (type == "hidden") {
+            painter->addHiddenField(
+                webPrinter->elementLocation(elm).second,
+                data,
+                value, name
+            );
+		} else if (tn == "SELECT") {
+            QWebElementCollection options = elm.findAll("option");
+            QString option_list = "";
+            QString default_value = "";
+            QString style = elm.attribute("style");
+            // so that it will ignore the drawing of the actual combo box
+            elm.setAttribute("style", "color: transparent; " + style);
+
+            foreach (QWebElement opt_elm, options) {
+		        QString text = opt_elm.toPlainText();
+		        QString value = opt_elm.attribute("value");
+                option_list += "[(" + value + ")(" + text + ")]";
+                if (opt_elm.evaluateJavaScript("this.selected").toBool()) {
+                    default_value = value;
+                }
+            }
+            option_list = "[" + option_list + "]";
+            painter->addComboBox(
+                webPrinter->elementLocation(elm).second,
+				data,
+                name,
+                option_list,
+                default_value,
+                elm.evaluateJavaScript("this.readOnly;").toBool()
+            );
+        } else if (tn == "SCRIPT") {
+            //add page javascript ONLY if data-acroform-include=true
+            if (elm.hasAttribute("data-acroform-include") && elm.attribute("data-acroform-include").compare("true", Qt::CaseInsensitive) == 0) {
+                painter->addPageJavaScript(
+                    data,
+                    elm.toPlainText()
+                );
+            }
+        }
 	}
 	for (QHash<QString, QWebElement>::iterator i=pageAnchors[page+1].begin();
 		 i != pageAnchors[page+1].end(); ++i) {
@@ -939,10 +1000,17 @@ void PdfConverterPrivate::beginPrintObject(PageObject & obj) {
 		pageExternalLinks[webPrinter->elementLocation(i->first).first].push_back(*i);
 
 	if (ps.produceForms) {
-		foreach (const QWebElement & elm, obj.page->mainFrame()->findAllElements("input"))
-			pageFormElements[webPrinter->elementLocation(elm).first].push_back(elm);
+		foreach (const QWebElement & elm, obj.page->mainFrame()->findAllElements("input")) {
+		    int pageNo = webPrinter->elementLocation(elm).first;
+			pageFormElements[pageNo > 0 ? pageNo : 1].push_back(elm);
+        }
 		foreach (const QWebElement & elm, obj.page->mainFrame()->findAllElements("textarea"))
 			pageFormElements[webPrinter->elementLocation(elm).first].push_back(elm);
+		foreach (const QWebElement & elm, obj.page->mainFrame()->findAllElements("select"))
+			pageFormElements[webPrinter->elementLocation(elm).first].push_back(elm);
+        foreach (const QWebElement & elm, obj.page->mainFrame()->findAllElements("script")) {
+            pageFormElements[1].push_back(elm);
+        }
 	}
 	emit out.producingForms(obj.settings.produceForms);
 	out.emitCheckboxSvgs(obj.settings.load);
