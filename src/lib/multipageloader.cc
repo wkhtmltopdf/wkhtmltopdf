@@ -77,7 +77,8 @@ QNetworkReply * MyNetworkAccessManager::createRequest(Operation op, const QNetwo
 	if (disposed)
 	{
 		emit warning("Received createRequest signal on a disposed ResourceObject's NetworkAccessManager. "
-			     "This might be an indication of an iframe taking too long to load.");
+			     "This might be an indication of an iframe taking too long to load or --javascript-delay "
+			     "being set too short.");
 		// Needed to avoid race conditions by spurious network requests
 		// by scripts or iframes taking too long to load.
 		QNetworkRequest r2 = req;
