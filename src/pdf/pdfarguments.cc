@@ -228,6 +228,7 @@ PdfCommandLineParser::PdfCommandLineParser(PdfGlobal & s, QList<PdfObject> & ps)
 
 	section("Page Options");
 	mode(page);
+	addarg("page-orientation",0, "Set Page orientation to (L)andscape or (P)ortrait", new QStrSetter(od.pageSpecificOrientation, "P"));	
  	addarg("default-header",0,"Add a default header, with the name of the page to the left, and the page number to the right, this is short for: --header-left='[webpage]' --header-right='[page]/[toPage]' --top 2cm --header-line", new Caller<DefaultHeaderFunc>());
 
 	addarg("viewport-size", 0, "Set viewport size if you have custom scrollbars or css attribute overflow to emulate window size",new QStrSetter(s.viewportSize,""));
