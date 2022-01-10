@@ -71,11 +71,11 @@ void MyNetworkAccessManager::allow(QString path) {
 	allowed.insert(x);
 }
 
-class networkDeniedReply: public QNetworkReply {
+class NetworkDeniedReply: public QNetworkReply {
 	Q_OBJECT
 
 public:
-	networkDeniedReply(const QNetworkRequest & req) {
+	NetworkDeniedReply(const QNetworkRequest & req) {
 		setRequest(req);
 		setOperation(QNetworkAccessManager::GetOperation);
 		setUrl(req.url());
@@ -88,7 +88,7 @@ public:
 		QTimer::singleShot(0, this, SIGNAL(finished()));
 	}
 
-	virtual ~networkDeniedReply() {
+	virtual ~NetworkDeniedReply() {
 	}
 
 	virtual void abort() {
@@ -133,7 +133,7 @@ QNetworkReply * MyNetworkAccessManager::createRequest(Operation op, const QNetwo
 		if (!ok) {
 			QNetworkRequest r2 = req;
 			emit warning(QString("Blocked access to file %1").arg(QFileInfo(req.url().toLocalFile()).canonicalFilePath()));
-			return new networkDeniedReply(req);
+			return new NetworkDeniedReply(req);
 		}
 	}
 	QNetworkRequest r3 = req;
