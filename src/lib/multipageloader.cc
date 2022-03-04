@@ -400,7 +400,7 @@ void ResourceObject::amfinished(QNetworkReply * reply) {
 		QString extension = fi.completeSuffix().toLower().remove(QRegExp("\\?.*$"));
 		bool mediaFile = settings::LoadPage::mediaFilesExtensions.contains(extension);
 		if ( ! mediaFile) {
-			if (settings.mediaLoadErrorHandling == settings::LoadPage::abort)
+			if (settings.loadErrorHandling == settings::LoadPage::abort)
 			{
 				// XXX: Notify network errors as higher priority than HTTP errors.
 				//      QT's QNetworkReply::NetworkError enum uses values overlapping
