@@ -47,21 +47,7 @@ The current stable series is **0.12.6**, which was released on June 11, 2020 -- 
             <td colspan="4">&nbsp;</td>
         </tr>
         <tr>
-            <td rowspan="3" valign="top"><a href="https://www.debian.org/releases/">Debian</a></td>
-            <td>11 (<code>bullseye</code>)</td>
-            <td>
-                <a href="https://github.com/wkhtmltopdf/packaging/releases/download/0.12.6.1-1/wkhtmltox_0.12.6.1-1.bullseye_amd64.deb">amd64</a>
-             </td><td>
-                <a href="https://github.com/wkhtmltopdf/packaging/releases/download/0.12.6.1-1/wkhtmltox_0.12.6.1-1.bullseye_i386.deb">i386</a>
-             </td><td>
-                <a href="https://github.com/wkhtmltopdf/packaging/releases/download/0.12.6.1-1/wkhtmltox_0.12.6.1-1.bullseye_arm64.deb">arm64</a>
-             </td><td>
-                <a href="https://github.com/wkhtmltopdf/packaging/releases/download/0.12.6.1-1/wkhtmltox_0.12.6.1-1.bullseye_ppc64el.deb">ppc64el</a>
-             </td><td>
-                <a href="https://github.com/wkhtmltopdf/packaging/releases/download/0.12.6.1-1/wkhtmltox_0.12.6.1-1.raspberrypi.bullseye_armhf.deb">raspberrypi</a>
-            </td>
-        </tr>
-        <tr>
+            <td rowspan="2" valign="top"><a href="https://www.debian.org/releases/">Debian</a></td>
             <td>10 (<code>buster</code>)</td>
             <td>
                 <a href="https://github.com/wkhtmltopdf/packaging/releases/download/0.12.6-1/wkhtmltox_0.12.6-1.buster_amd64.deb">amd64</a>
@@ -70,7 +56,7 @@ The current stable series is **0.12.6**, which was released on June 11, 2020 -- 
              </td><td>
                 <a href="https://github.com/wkhtmltopdf/packaging/releases/download/0.12.6-1/wkhtmltox_0.12.6-1.buster_arm64.deb">arm64</a>
              </td><td>
-                <a href="https://github.com/wkhtmltopdf/packaging/releases/download/0.12.6.1-1/wkhtmltox_0.12.6.1-1.buster_ppc64el.deb">ppc64el</a>
+                <a href="https://github.com/wkhtmltopdf/packaging/releases/download/0.12.6-1/wkhtmltox_0.12.6-1.buster_ppc64le.deb">ppc64le</a>
              </td><td>
                 <a href="https://github.com/wkhtmltopdf/packaging/releases/download/0.12.6-1/wkhtmltox_0.12.6-1.raspberrypi.buster_armhf.deb">raspberrypi</a>
             </td>
@@ -88,25 +74,14 @@ The current stable series is **0.12.6**, which was released on June 11, 2020 -- 
             </td>
         </tr>
         <tr>
-            <td rowspan="4" valign="top"><a href="https://releases.ubuntu.com">Ubuntu</a></td>
-            <td>22.04 (<code>jammy</code>)</td>
-            <td>
-                <a href="https://github.com/wkhtmltopdf/packaging/releases/download/0.12.6.1-1/wkhtmltox_0.12.6.1-1.jammy_amd64.deb">amd64</a>
-             </td><td>&nbsp;</td><td>
-                <a href="https://github.com/wkhtmltopdf/packaging/releases/download/0.12.6.1-1/wkhtmltox_0.12.6.1-1.jammy_arm64.deb">arm64</a>
-             </td><td>
-                <a href="https://github.com/wkhtmltopdf/packaging/releases/download/0.12.6.1-1/wkhtmltox_0.12.6.1-1.jammy_ppc64el.deb">ppc64el</a>
-            </td>
-            <td colspan="2">&nbsp;</td>
-        </tr>
-        <tr>
+            <td rowspan="3" valign="top"><a href="https://releases.ubuntu.com">Ubuntu</a></td>
             <td>20.04 (<code>focal</code>)</td>
             <td>
                 <a href="https://github.com/wkhtmltopdf/packaging/releases/download/0.12.6-1/wkhtmltox_0.12.6-1.focal_amd64.deb">amd64</a>
              </td><td>&nbsp;</td><td>
                 <a href="https://github.com/wkhtmltopdf/packaging/releases/download/0.12.6-1/wkhtmltox_0.12.6-1.focal_arm64.deb">arm64</a>
              </td><td>
-                <a href="https://github.com/wkhtmltopdf/packaging/releases/download/0.12.6.1-1/wkhtmltox_0.12.6.1-1.focal_ppc64el.deb">ppc64el</a>
+                <a href="https://github.com/wkhtmltopdf/packaging/releases/download/0.12.6-1/wkhtmltox_0.12.6-1.focal_ppc64le.deb">ppc64le</a>
             </td>
             <td colspan="2">&nbsp;</td>
         </tr>
@@ -119,7 +94,7 @@ The current stable series is **0.12.6**, which was released on June 11, 2020 -- 
              </td><td>
                 <a href="https://github.com/wkhtmltopdf/packaging/releases/download/0.12.6-1/wkhtmltox_0.12.6-1.bionic_arm64.deb">arm64</a>
              </td><td>
-                <a href="https://github.com/wkhtmltopdf/packaging/releases/download/0.12.6.1-1/wkhtmltox_0.12.6.1-1.bionic_ppc64el.deb">ppc64el</a>
+                <a href="https://github.com/wkhtmltopdf/packaging/releases/download/0.12.6-1/wkhtmltox_0.12.6-1.bionic_ppc64le.deb">ppc64le</a>
             </td>
             <td>&nbsp;</td>
         </tr>
@@ -135,30 +110,18 @@ The current stable series is **0.12.6**, which was released on June 11, 2020 -- 
             <td colspan="2">&nbsp;</td>
         </tr>
         <tr>
-            <td rowspan="2" valign="top"><a href="https://almalinux.org">AlmaLinux</a></td>
-            <td>9</td>
-            <td>
-                <a href="https://github.com/wkhtmltopdf/packaging/releases/download/0.12.6.1-1/wkhtmltox-0.12.6.1-1.almalinux9.x86_64.rpm">x86_64</a>
-             </td><td>&nbsp;</td><td>
-                <a href="https://github.com/wkhtmltopdf/packaging/releases/download/0.12.6.1-1/wkhtmltox-0.12.6.1-1.almalinux9.aarch64.rpm">aarch64</a>
-             </td><td>
-                <a href="https://github.com/wkhtmltopdf/packaging/releases/download/0.12.6.1-1/wkhtmltox-0.12.6.1-1.almalinux9.ppc64le.rpm">ppc64le</a>
-            </td>
-            <td>&nbsp;</td>
-        </tr>
-        <tr>
+            <td rowspan="3" valign="top"><a href="https://wiki.centos.org/Download">CentOS</a></td>
             <td>8</td>
             <td>
-                <a href="https://github.com/wkhtmltopdf/packaging/releases/download/0.12.6.1-1/wkhtmltox-0.12.6.1-1.almalinux8.x86_64.rpm">x86_64</a>
+                <a href="https://github.com/wkhtmltopdf/packaging/releases/download/0.12.6-1/wkhtmltox-0.12.6-1.centos8.x86_64.rpm">x86_64</a>
              </td><td>&nbsp;</td><td>
-                <a href="https://github.com/wkhtmltopdf/packaging/releases/download/0.12.6.1-1/wkhtmltox-0.12.6.1-1.almalinux8.aarch64.rpm">aarch64</a>
+                <a href="https://github.com/wkhtmltopdf/packaging/releases/download/0.12.6-1/wkhtmltox-0.12.6-1.centos8.aarch64.rpm">aarch64</a>
              </td><td>
-                <a href="https://github.com/wkhtmltopdf/packaging/releases/download/0.12.6.1-1/wkhtmltox-0.12.6.1-1.almalinux8.ppc64le.rpm">ppc64le</a>
+                <a href="https://github.com/wkhtmltopdf/packaging/releases/download/0.12.6-1/wkhtmltox-0.12.6-1.centos8.ppc64le.rpm">ppc64le</a>
             </td>
             <td>&nbsp;</td>
         </tr>
         <tr>
-            <td rowspan="2" valign="top"><a href="https://wiki.centos.org/Download">CentOS</a></td>
             <td>7</td>
             <td>
                 <a href="https://github.com/wkhtmltopdf/packaging/releases/download/0.12.6-1/wkhtmltox-0.12.6-1.centos7.x86_64.rpm">x86_64</a>
@@ -181,21 +144,17 @@ The current stable series is **0.12.6**, which was released on June 11, 2020 -- 
             <td colspan="3">&nbsp;</td>
         </tr>
         <tr>
-            <td rowspan="2" valign="top"><a href="https://aws.amazon.com/linux/">Amazon Linux</a></td>
-            <td>2 (package)</td>
+            <td><a href="https://aws.amazon.com/amazon-linux-2/">Amazon Linux</a></td>
+            <td>2</td>
             <td>
                 <a href="https://github.com/wkhtmltopdf/packaging/releases/download/0.12.6-1/wkhtmltox-0.12.6-1.amazonlinux2.x86_64.rpm">x86_64</a>
              </td><td>&nbsp;</td><td>
                 <a href="https://github.com/wkhtmltopdf/packaging/releases/download/0.12.6-1/wkhtmltox-0.12.6-1.amazonlinux2.aarch64.rpm">aarch64</a>
             </td>
-            <td colspan="2">&nbsp;</td>
-        </tr>
-        <tr>
-            <td>2 (lambda zip)</td>
+            <td>&nbsp;</td>
             <td>
-                <a href="https://github.com/wkhtmltopdf/packaging/releases/download/0.12.6-4/wkhtmltox-0.12.6-4.amazonlinux2_lambda.zip">x86_64</a>
+                <a href="https://github.com/wkhtmltopdf/packaging/releases/download/0.12.6-4/wkhtmltox-0.12.6-4.amazonlinux2_lambda.zip">lambda zip</a>
             </td>
-            <td colspan="4">&nbsp;</td>
         </tr>
         <tr>
             <td><a href="https://software.opensuse.org/distributions/leap">openSUSE Leap</a></td>
