@@ -48,6 +48,7 @@ struct DLL_LOCAL ReflectImpl<ImageGlobal>: public ReflectClass {
 		WKHTMLTOPDF_REFLECT(in);
 		WKHTMLTOPDF_REFLECT(out);
 		WKHTMLTOPDF_REFLECT(fmt);
+		WKHTMLTOPDF_REFLECT(selector);
 		WKHTMLTOPDF_REFLECT(quality);
 		WKHTMLTOPDF_REFLECT(loadGlobal);
 		WKHTMLTOPDF_REFLECT(loadPage);
@@ -55,11 +56,13 @@ struct DLL_LOCAL ReflectImpl<ImageGlobal>: public ReflectClass {
 	}
 };
 
+const int CropSettings::DEFAULT = std::numeric_limits<int>::min();
+
 CropSettings::CropSettings():
-	left(-1),
-	top(-1),
-	width(-1),
-	height(-1) {}
+	left(DEFAULT),
+	top(DEFAULT),
+	width(DEFAULT),
+	height(DEFAULT) {}
 
 ImageGlobal::ImageGlobal():
 	logLevel(Info),
@@ -68,6 +71,7 @@ ImageGlobal::ImageGlobal():
 	in(""),
 	out(""),
 	fmt(""),
+	selector(""),
 	screenWidth(1024),
 	screenHeight(0),
 	quality(94),

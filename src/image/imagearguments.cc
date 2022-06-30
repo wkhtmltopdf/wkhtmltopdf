@@ -38,6 +38,7 @@ ImageCommandLineParser::ImageCommandLineParser(wkhtmltopdf::settings::ImageGloba
 	// addarg("scale-w",0,"Set width for resizing", new IntSetter(s.scale.width,"int"));
 	// addarg("scale-h",0,"Set height for resizing", new IntSetter(s.scale.height,"int"));
 
+	addarg("selector", 0, "Set a CSS2 selector that points to an element to crop on", new QStrSetter(s.selector, "selector"));
 	addarg("crop-x",0,"Set x coordinate for cropping", new IntSetter(s.crop.left,"int"));
 	addarg("crop-y",0,"Set y coordinate for cropping", new IntSetter(s.crop.top,"int"));
 	addarg("crop-w",0,"Set width for cropping", new IntSetter(s.crop.width,"int"));
