@@ -25,6 +25,9 @@
 #include <QMetaEnum>
 #include <QNetworkReply>
 
+#define CSS_ESCAPE_CHARACTER(character) (QString("\\") + character)
+#define CSS_ESCAPE_UNICODE_AS_CODEPOINT(unicode) QString("\\%1").arg(unicode, 0, 16)
+
 void loadSvg(QSvgRenderer * & ptr, const QString & path, const char * def, int w, int h) {
 	 delete ptr;
 	 ptr = 0;
@@ -178,6 +181,48 @@ int handleError(bool success, int errorCode) {
 	}
 	return success?EXIT_SUCCESS:EXIT_FAILURE;
 }
+
+// Escape a CSS selector as per CSS.escape() in CSS Object Model spec
+// see https://www.w3.org/TR/cssom-1/#the-css.escape()-method
+QString escapeCSS(QString input) {
+	QString output;
+	QTextStream outputStream(&output);
+
+	if (input == "-")
+		return QString("\\-");
+
+	for (int i=0; i<input.length(); i++) {
+		QChar character = input.at(i);
+		ushort unicode = character.unicode();
+
+		if (unicode == 0)
+			outputStream << QChar(0xFFFD);
+
+		else if (
+			unicode < 0x1F || unicode == 0x7F ||
+			(
+				(i == 0 || (i == 1 && input[0].unicode() == 0x2D)) &&
+				unicode >= 0x30 && unicode <= 0x39
+			)
+		)
+			outputStream << CSS_ESCAPE_UNICODE_AS_CODEPOINT(unicode);
+
+		else if (
+			unicode >= 0x80 || unicode == 0x2D || unicode == 0x5F ||
+			(unicode >= 0x30 && unicode <= 0x39) ||
+			(unicode >= 0x41 && unicode <= 0x5A) ||
+			(unicode >= 0x61 && unicode <= 0x7A)
+		)
+			outputStream << character;
+
+		else
+			outputStream << CSS_ESCAPE_CHARACTER(character);
+
+	}
+
+	return output;
+}
+
 
 QSvgRenderer * MyLooksStyle::checkbox = 0;
 QSvgRenderer * MyLooksStyle::checkbox_checked = 0;

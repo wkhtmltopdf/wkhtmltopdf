@@ -39,6 +39,7 @@
 #include <io.h>
 #endif
 
+#include "utilities.hh"
 #include "dllbegin.inc"
 using namespace wkhtmltopdf;
 using namespace wkhtmltopdf::settings;
@@ -570,6 +571,11 @@ void PdfConverterPrivate::findLinks(QWebFrame * frame, QVector<QPair<QWebElement
 			if (href.isEmpty()) continue;
 			href=frame->baseUrl().resolved(href);
 			QString key = QUrl::fromPercentEncoding(href.toString(QUrl::RemoveFragment).toLocal8Bit());
+			QString decodedFragement = QUrl::fromPercentEncoding(href.fragment().toLocal8Bit());
+
+			QString escapedFragement = escapeCSS(href.fragment());
+			QString escapedDecodedFragement = escapeCSS(decodedFragement);
+
 			if (urlToPageObj.contains(key)) {
 				if (ulocal) {
 					PageObject * p = urlToPageObj[key];
@@ -577,11 +583,13 @@ void PdfConverterPrivate::findLinks(QWebFrame * frame, QVector<QPair<QWebElement
 					if (!href.hasFragment())
 						e = p->page->mainFrame()->findFirstElement("body");
 					else {
-						e = p->page->mainFrame()->findFirstElement("a[name=\""+href.fragment()+"\"]");
+						e = p->page->mainFrame()->findFirstElement("#"+escapedFragement);
 						if (e.isNull())
-							e = p->page->mainFrame()->findFirstElement("*[id=\""+href.fragment()+"\"]");
+							e = p->page->mainFrame()->findFirstElement("a[name=\""+escapedFragement+"\"]");
 						if (e.isNull())
-							e = p->page->mainFrame()->findFirstElement("*[name=\""+href.fragment()+"\"]");
+							e = p->page->mainFrame()->findFirstElement("#"+escapedDecodedFragement);
+						if (e.isNull())
+							e = p->page->mainFrame()->findFirstElement("a[name=\""+escapedDecodedFragement+"\"]");
 					}
 					if (!e.isNull()) {
 						p->anchors[href.toString()] = e;
