@@ -44,7 +44,7 @@ LoadPage::LoadErrorHandling strToLoadErrorHandling(const char * s, bool * ok) {
 	if (!strcasecmp(s, "abort")) return LoadPage::abort;
 	if (!strcasecmp(s, "skip")) return LoadPage::skip;
 	if (!strcasecmp(s, "ignore")) return LoadPage::ignore;
-	*ok = false;
+	if (ok) *ok = false;
 	return LoadPage::abort;
 }
 
@@ -94,18 +94,18 @@ Proxy strToProxy(const char * proxy, bool * ok) {
 		}
 	}
 
- 	//Read hostname and port
- 	val = (char *) strchr(proxy,':');
- 	p.port = 1080; //Default proxy port
- 	if (val == NULL) p.host = proxy;
- 	else {
+	//Read hostname and port
+	val = (char *) strchr(proxy,':');
+	p.port = 1080; //Default proxy port
+	if (val == NULL) p.host = proxy;
+	else {
 		p.port = QString(val+1).toInt(ok);
 		if (p.port < 0 || p.port > 65535) {
 			p.port = 1080;
-			*ok = false;
+			if (ok) *ok = false;
 		}
 		p.host = QString(proxy).left(val-proxy);
- 	}
+	}
 	if (ok && p.host.size() == 0) *ok = false;
 	return p;
 }
@@ -127,7 +127,7 @@ QString proxyToStr(const Proxy & p) {
 }
 
 Proxy::Proxy():
-    type(QNetworkProxy::NoProxy),
+	type(QNetworkProxy::NoProxy),
 	port(-1),
 	host(),
 	user(),
@@ -147,8 +147,7 @@ LoadPage::LoadPage():
 	loadErrorHandling(abort),
 	mediaLoadErrorHandling(ignore),
 	cacheDir(""),
-	printMediaType(false),
-	proxyHostNameLookup(false) {};
-
+	proxyHostNameLookup(false),
+	printMediaType(false) {}
 }
 }
