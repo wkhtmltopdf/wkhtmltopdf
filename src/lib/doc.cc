@@ -27,7 +27,7 @@
  *
  * The file \ref pdf.h contains a
  * fairly high level and stable pure c binding to wkhtmltopdf.  These
- * binding are well documented and do not depend on QT.  Using this is
+ * bindings are well documented and do not depend on Qt.  Using this is
  * the recommended way of interfacing with the PDF portion of
  * libwkhtmltox.
  *
@@ -55,7 +55,7 @@
  *
  * The file \ref image.h contains a
  * fairly high level and stable pure c binding to wkhtmltoimage.  These
- * binding are well documented and do not depend on QT.  Using this is
+ * binding are well documented and do not depend on Qt.  Using this is
  * the recommended way of interfacing with the image portion of
  * libwkhtmltox.
  *
@@ -75,7 +75,7 @@
  *
  * \section RESTH The rest of the headers.
  *
- * The rest of the headers directly exposes the C++ QT dependent class
+ * The rest of the headers directly exposes the C++ Qt-dependent class
  * used internally by wkhtmltopdf and wkhtmltoimage. They are not
  * fairly well documented and are not guaranteed to remain stable.
  * unless you know what you are doing you should not use these bindings.

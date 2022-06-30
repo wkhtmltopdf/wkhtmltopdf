@@ -259,9 +259,9 @@ MyPdfConverter::~MyPdfConverter() {
 
 
 /**
- * \brief Check if the library is build against the wkhtmltopdf version of QT
+ * \brief Check if the library is build against the wkhtmltopdf version of Qt
  *
- * \return 1 if the library was build against the wkhtmltopdf version of QT and 0 otherwise
+ * \return 1 if the library was build against the wkhtmltopdf version of Qt and 0 otherwise
  */
 CAPI(int) wkhtmltopdf_extended_qt() {
 #ifdef __EXTENSIVE_WKHTMLTOPDF_QT_HACK__
