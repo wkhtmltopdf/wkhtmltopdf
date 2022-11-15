@@ -566,7 +566,7 @@ void PdfConverterPrivate::findLinks(QWebFrame * frame, QVector<QPair<QWebElement
 		if (h.startsWith("__WKANCHOR_")) {
 			local.push_back( qMakePair(elm, h) );
 		} else {
-			QUrl href(h);
+			QUrl href = QUrl::fromEncoded(h.toLocal8Bit());
 			if (href.isEmpty()) continue;
 			href=frame->baseUrl().resolved(href);
 			QString key = QUrl::fromPercentEncoding(href.toString(QUrl::RemoveFragment).toLocal8Bit());
@@ -589,7 +589,7 @@ void PdfConverterPrivate::findLinks(QWebFrame * frame, QVector<QPair<QWebElement
 					}
 				}
 			} else if (uexternal) {
-				external.push_back( qMakePair(elm, settings.resolveRelativeLinks ? href.toString() : h) );
+				external.push_back( qMakePair(elm, settings.resolveRelativeLinks ? QString::fromLocal8Bit(href.toEncoded()) : h) );
 			}
 		}
 	}
@@ -680,7 +680,7 @@ void PdfConverterPrivate::endPage(PageObject & object, bool hasHeaderFooter, int
 		}
 		foreach (const p_t & p, external) {
 			QRectF r = wp.elementLocation(p.first).second;
-			painter->addHyperlink(r, QUrl(p.second));
+			painter->addHyperlink(r, QUrl::fromEncoded(p.second.toLocal8Bit()));
 		}
 		wp.spoolPage(1);
         // restore margins
@@ -713,7 +713,7 @@ void PdfConverterPrivate::endPage(PageObject & object, bool hasHeaderFooter, int
 		}
 		foreach (const p_t & p, external) {
 			QRectF r = wp.elementLocation(p.first).second;
-			painter->addHyperlink(r, QUrl(p.second));
+			painter->addHyperlink(r, QUrl::fromEncoded(p.second.toLocal8Bit()));
 		}
 		wp.spoolPage(1);
         // restore margins
@@ -871,7 +871,7 @@ void PdfConverterPrivate::spoolPage(int page) {
 	for (QVector< QPair<QWebElement,QString> >::iterator i=pageExternalLinks[page+1].begin();
 		 i != pageExternalLinks[page+1].end(); ++i) {
 		QRectF r = webPrinter->elementLocation(i->first).second;
-		painter->addHyperlink(r, QUrl(i->second));
+		painter->addHyperlink(r, QUrl::fromEncoded(i->second.toLocal8Bit()));
 	}
 	endPage(objects[currentObject], pageHasHeaderFooter, page, pageNumber);
 	actualPage++;
